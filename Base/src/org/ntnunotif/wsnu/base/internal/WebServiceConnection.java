@@ -5,4 +5,9 @@ package org.ntnunotif.wsnu.base.internal;
  */
 public interface WebServiceConnection {
 
+    public void acceptMessage();
+
+    public String getServiceType();
+
+    public String getServiceFunctionality();
 }
