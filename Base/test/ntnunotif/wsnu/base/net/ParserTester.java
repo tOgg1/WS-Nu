@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
+ * Tests the parser implementation in a very simple manner.
+ * @author Inge Edward Halsaunet
  * Created by Inge on 06.03.14.
  */
 public class ParserTester {
