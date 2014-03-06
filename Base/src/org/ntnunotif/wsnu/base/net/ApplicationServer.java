@@ -1,14 +1,18 @@
 package org.ntnunotif.wsnu.base.net;
 
-import org.eclipse.jetty.annotations.AnnotationParser;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.ntnunotif.wsnu.base.internal.Bus;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 
 
@@ -31,6 +35,16 @@ public class ApplicationServer{
      * Thread for the server to run on
      */
     private static Thread _serverThread;
+
+    /**
+     * A bus object as parent. Needed to reroute requests to bus.
+     */
+    private static Bus _parentBus;
+
+    /**
+     * Variable to check if this server is running. Primarily used to avoid double @start calls.
+     */
+    private static boolean _isRunning = false;
 
     /**
      * As this class is a singleton no external instantiation is allowed.
@@ -58,7 +72,14 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public static void start() throws Exception{
+    public static void start(Bus bus) throws Exception{
+        if(_isRunning){
+            return;
+        }
+
+        _isRunning = true;
+        _parentBus = bus;
+
         try {
             _serverThread = new Thread(new Runnable() {
                 @Override
@@ -103,7 +124,7 @@ public class ApplicationServer{
         }
 
         /**
-         * Handles an httpRequest
+         * Handles an httpRequest.
          * @param s
          * @param request
          * @param httpServletRequest
@@ -114,21 +135,44 @@ public class ApplicationServer{
         @Override
         public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
 
-            System.out.println(httpServletRequest.getContentType());
-            System.out.println(httpServletRequest.getAuthType());
-            System.out.println(httpServletRequest.getMethod());
-            System.out.println(httpServletRequest.getQueryString());
-
+            /* Handle headers */
             Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
 
             while(headerNames.hasMoreElements()){
-                Enumeration<String> headers = httpServletRequest.getHeaders(headerNames.nextElement());
+                String headerName = headerNames.nextElement();
+                Enumeration<String> headers = httpServletRequest.getHeaders(headerName);
 
+                // TODO: Here we need to handle all headers that is necessary.
+                // Temporary debugging
                 while(headers.hasMoreElements()){
-                    System.out.println(headers.nextElement());
+                    System.out.println(headerName + "=" + headers.nextElement());
                 }
             }
 
+            /* Get content */
+            if(httpServletRequest.getContentLength() != 0){
+
+                InputStream input = httpServletRequest.getInputStream();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+                /* For temporary debugging */
+                char[] content;
+                content = new char[httpServletRequest.getContentLength()];
+
+                reader.read(content);
+                System.out.println(content);
+                /**/
+
+                ApplicationServer.this._parentBus.acceptNetMessage(input);
+            }
+            /* No content found, return a 204: No content */
+            else{
+                httpServletResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                request.setHandled(true);
+            }
+
+            // Temporary for testing purposes
             httpServletResponse.setContentType("text/html;charset=utf-8");
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             request.setHandled(true);

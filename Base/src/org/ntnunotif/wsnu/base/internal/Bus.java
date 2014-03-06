@@ -30,7 +30,7 @@ public class Bus implements Connector{
     public Bus() throws Exception {
         _server = ApplicationServer.getInstance();
         _services = new ArrayList<WebServiceConnection>();
-        _server.start();
+        _server.start(this);
     }
 
     public void stop() throws Exception {
