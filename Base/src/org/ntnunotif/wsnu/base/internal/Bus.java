@@ -51,8 +51,6 @@ public class Bus implements Connector{
             e.printStackTrace();
         }
 
-
-
         // Send the message forward
         for(WebServiceConnection connection : _services){
 
