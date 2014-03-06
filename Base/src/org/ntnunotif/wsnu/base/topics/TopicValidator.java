@@ -15,7 +15,23 @@ public class TopicValidator {
      */
     private TopicValidator() {}
 
-    public static boolean validateXPath(String xExpression, TopicType topicType) {
+    public static boolean evaluateSimpleTopicExpression(QName expression, TopicType topicType) {
+        // TODO write
+        return false;
+    }
+
+    public  static boolean evaluateConcreteTopicExpression(){
+        // TODO write
+        return false;
+    }
+
+    public static boolean evaluateFullTopicExpression() {
+        // TODO write
+        return false;
+    }
+
+    public static boolean evaluateXPathTopicExpression(String xExpression, TopicType topicType) {
+        // TODO check input parameters, are they correct?
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         XPathExpression xPathExpression = null;
