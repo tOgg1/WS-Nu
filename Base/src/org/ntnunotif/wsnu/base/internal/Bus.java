@@ -23,19 +23,24 @@ public class Bus implements Connector{
      */
     private ApplicationServer _server;
 
-    /**
-     * Topic-validator object
-     */
-    private TopicValidator _topicValidator;
-
 
     /**
      * Default constructor
      */
-    public Bus(){
-        _server = new ApplicationServer();
+    public Bus() throws Exception {
+        _server = ApplicationServer.getInstance();
         _services = new ArrayList<WebServiceConnection>();
-        _topicValidator = new TopicValidator();
+        _server.start();
+    }
+
+    public void stop() throws Exception {
+
+        // Enforce garbage collection
+        _server.stop();
+        _server = null;
+
+        _services.clear();
+        _services = null;
     }
 
     /**
