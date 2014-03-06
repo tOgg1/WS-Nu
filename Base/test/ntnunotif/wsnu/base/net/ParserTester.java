@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
  */
 public class ParserTester {
     public static void main(String[] args) {
-        File file = new File("Base\\test\\ntnunotif\\wsnu\\base\\net\\parse_test_notify.xml");
+        File file = new File("Base/test/ntnunotif/wsnu/base/net/parse_test_notify.xml");
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             Object parsedObj = XMLParser.parse(fileInputStream);
