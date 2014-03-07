@@ -51,5 +51,6 @@ public class XMLParserTest {
     public void testSoapParsing() throws Exception {
         Object parsedObject = XMLParser.parse(soapTestStream);
         Assert.assertNotNull("Parsed object was null", parsedObject);
+        // TODO Complete test
     }
 }
