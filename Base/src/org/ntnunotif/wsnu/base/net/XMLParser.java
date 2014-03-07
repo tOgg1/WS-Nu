@@ -3,7 +3,7 @@ package org.ntnunotif.wsnu.base.net;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.soap.Node;
+import javax.xml.soap.*;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 
@@ -18,7 +18,9 @@ public class XMLParser {
      * <code>classPaths</code> hold all package names for the realized Java objects. The package must contain a class
      * <code>ObjectFactory</code> that can produce all parseable classes in that package.
      */
-    private static String[] classPaths = { "org.oasis_open.docs.wsn.b_2",
+    private static String[] classPaths = {
+            "org.w3._2001._12.soap_envelope",
+            "org.oasis_open.docs.wsn.b_2",
             "org.oasis_open.docs.wsn.br_2",
             "org.oasis_open.docs.wsn.t_1",
             "org.oasis_open.docs.wsrf.bf_2",

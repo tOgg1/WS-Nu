@@ -2,10 +2,8 @@ package ntnunotif.wsnu.base.net;
 
 import org.junit.*;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import javax.xml.bind.JAXBException;
 import java.io.*;
 
 /**
