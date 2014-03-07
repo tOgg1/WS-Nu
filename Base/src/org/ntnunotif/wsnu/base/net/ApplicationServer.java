@@ -150,7 +150,7 @@ public class ApplicationServer{
             }
 
             /* Get content */
-            if(httpServletRequest.getContentLength() != 0){
+            if(httpServletRequest.getContentLength() > 0){
 
                 InputStream input = httpServletRequest.getInputStream();
 
