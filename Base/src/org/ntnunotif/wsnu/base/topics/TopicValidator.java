@@ -1,5 +1,8 @@
 package org.ntnunotif.wsnu.base.topics;
 
+import org.oasis_open.docs.wsn.b_2.FilterType;
+import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
+import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
 import javax.xml.namespace.QName;
@@ -14,6 +17,13 @@ public class TopicValidator {
      * Should never be instantiated
      */
     private TopicValidator() {}
+
+
+
+    public static boolean evaluateFilterLegality(FilterType filter, TopicSetType topicSetType) throws InvalidFilterFault {
+        // TODO
+        return false;
+    }
 
     public static boolean evaluateSimpleTopicExpression(QName expression, TopicType topicType) {
         // TODO write
