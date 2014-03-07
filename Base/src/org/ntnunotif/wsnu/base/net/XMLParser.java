@@ -2,17 +2,24 @@ package org.ntnunotif.wsnu.base.net;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.*;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * The <code>XMLParser</code> is a static tool utility for parsing XML documents into Java objects.
+ * The <code>XMLParser</code> is a static tool utility for parsing XML documents to and from Java objects.
  *
  * @author Inge Edward Halsaunet
  */
 public class XMLParser {
+
+    /**
+     * Remember the jaxbContext between parse tasks.
+     */
+    private static JAXBContext jaxbContext = null;
 
     /**
      * <code>classPaths</code> hold all package names for the realized Java objects. The package must contain a class
@@ -45,6 +52,7 @@ public class XMLParser {
      */
     public static void registerReturnObjectPackageWithObjectFactory(String classPath) {
         synchronized (XMLParser.class) {
+            jaxbContext = null;
             String[] newPaths = new String[classPaths.length + 1];
             for (int i = 0; i < classPaths.length; i++) {
                 newPaths[i] = classPaths[i];
@@ -61,12 +69,39 @@ public class XMLParser {
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     private static Unmarshaller getUnmarshaller() throws JAXBException {
-        String cp = null;
+       return getJaxbContext().createUnmarshaller();
+    }
+
+    /**
+     * gets current jaxbContext. Ensures that it is updated with current classpaths. Used for parsing xml to java
+     * objects.
+     *
+     * @return the current jaxbContext
+     *
+     * @throws JAXBException if new instance of jaxbContext fails for some reason.
+     */
+    private static JAXBContext getJaxbContext() throws JAXBException {
         synchronized (XMLParser.class) {
-            for (String s: classPaths)
-                cp = cp == null ? s : cp + ":" + s;
+            if (jaxbContext == null) {
+                String cp = null;
+                for (String s: classPaths)
+                    cp = cp == null ? s : cp + ":" + s;
+                jaxbContext = JAXBContext.newInstance(cp, classLoader);
+            }
+            return jaxbContext;
         }
-       return JAXBContext.newInstance(cp, classLoader).createUnmarshaller();
+    }
+
+    /**
+     * get the {@link javax.xml.bind.Marshaller} with context given by context paths. Used to convert java objects to
+     * xml.
+     *
+     * @return the apropriate <code>Marshaller</code>
+     *
+     * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
+     */
+    private static Marshaller getMarshaller() throws JAXBException{
+        return getJaxbContext().createMarshaller();
     }
 
     /**
@@ -106,5 +141,18 @@ public class XMLParser {
      */
     public static Object parse(XMLStreamReader xmlStreamReader) throws JAXBException {
         return getUnmarshaller().unmarshal(xmlStreamReader);
+    }
+
+    /**
+     * Converts the given object to XML and writes its content to the stream.
+     *
+     * @param object the object to parse to XML
+     * @param outputStream the stream to write to
+     * @throws JAXBException if JAXBContext could not be created or any unexpected events happens during writing.
+     *      {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
+     *      {@link javax.xml.bind.Marshaller#marshal(Object, java.io.OutputStream)}
+     */
+    public static void writeObjectToStream(Object object, OutputStream outputStream) throws JAXBException {
+        getMarshaller().marshal(object, outputStream);
     }
 }

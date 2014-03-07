@@ -14,11 +14,11 @@ public class XMLParserTest {
     private static final String notifyFilePlace = "Base/test/ntnunotif/wsnu/base/net/parse_test_notify.xml";
     private static final String soapFilePlace = "Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml";
 
-    private static InputStream notifyTestStream = null;
-    private static InputStream soapTestStream = null;
+    private InputStream notifyTestStream = null;
+    private InputStream soapTestStream = null;
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         try {
             notifyTestStream = new FileInputStream(notifyFilePlace);
             soapTestStream = new FileInputStream(soapFilePlace);
@@ -28,8 +28,8 @@ public class XMLParserTest {
         }
     }
 
-    @AfterClass
-    public static void breakDown() throws IOException{
+    @After
+    public void breakDown() throws IOException{
         if (notifyTestStream != null)
             notifyTestStream.close();
         if (soapTestStream != null)
@@ -52,5 +52,18 @@ public class XMLParserTest {
         Object parsedObject = XMLParser.parse(soapTestStream);
         Assert.assertNotNull("Parsed object was null", parsedObject);
         // TODO Complete test
+    }
+
+    @Test
+    public void testToXmlParse() throws Exception {
+        Object parsedObject1 = XMLParser.parse(notifyTestStream);
+        Object parsedObject2 = XMLParser.parse(soapTestStream);
+        // TODO write to real tests:
+        FileOutputStream fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_n2xml.xml");
+        XMLParser.writeObjectToStream(parsedObject1, fileOutputStream);
+        fileOutputStream.close();
+        fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_s2xml.xml");
+        XMLParser.writeObjectToStream(parsedObject2, fileOutputStream);
+        fileOutputStream.close();
     }
 }
