@@ -47,18 +47,22 @@ public class Bus implements Connector{
      * Takes a net-message, depacks it (parses it), and sends it forward in the system
      */
     @Override
-    public void acceptNetMessage(Object object){
-        // Decrypt message
+    public void acceptNetMessage(InputStream inputStream){
+        /* Decrypt message */
+        Object parsedObject = null;
         try {
-            Object parsedObject = XMLParser.parse((InputStream)object);
+            parsedObject = XMLParser.parse(inputStream);
         } catch (JAXBException e) {
             //TODO: Send some fault from the specification that I cant remember right now
             e.printStackTrace();
         }
 
-        // Send the message forward
-        for(WebServiceConnection connection : _services){
+        /* Find out where to send the message */
 
+
+        /* Send the message forward */
+        for(WebServiceConnection service : _services){
+            service.acceptMessage(parsedObject);
         }
     }
 

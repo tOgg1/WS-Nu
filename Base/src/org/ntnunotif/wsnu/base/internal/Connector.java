@@ -14,7 +14,7 @@ public interface Connector {
     /**
      * Function to accept a message from the net
      */
-    public void acceptNetMessage(Object object);
+    public void acceptNetMessage(InputStream inputStream);
 
     /**
      * Function to accept a message from a local service
