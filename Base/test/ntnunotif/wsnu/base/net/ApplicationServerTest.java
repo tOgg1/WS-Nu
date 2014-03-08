@@ -12,6 +12,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.Bus;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -169,19 +170,26 @@ public class ApplicationServerTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
+
         // Send response
+
+        FileInputStream file = new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml");
+        Object object = XMLParser.parse(file);
+        System.out.println(object);
+
+
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml")),
+        request.content(new InputStreamContentProvider(file),
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
         assertEquals(200, response.getStatus());
 
         //TODO: This should contain some WS error, unless we can process the ws:notify in server_test_soap.
-        response.getContentAsString();
+        System.out.println(response.getContentAsString());
 
         _server.stop();
     }

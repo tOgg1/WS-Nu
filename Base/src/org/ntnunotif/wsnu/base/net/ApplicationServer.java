@@ -1,5 +1,12 @@
 package org.ntnunotif.wsnu.base.net;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponse;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -9,15 +16,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 
 /**
- * Created by tormod on 3/3/14.
+ * Implementation of jetty's application server. Implemented as singleton to avoid multiple instantiations which MIGHT cause port-bind exceptions.
+ * @Author: Tormod Haugland
+ * @Date: 06/03/2014
  */
 public class ApplicationServer{
 
@@ -30,6 +39,11 @@ public class ApplicationServer{
      * Jetty-http server instance.
      */
     private static Server _server;
+
+    /**
+     * Jetty-http client
+     */
+    private static HttpClient _client;
 
     /**
      * Thread for the server to run on
@@ -79,7 +93,11 @@ public class ApplicationServer{
 
         _isRunning = true;
         _parentBus = bus;
+        _client = new HttpClient();
+        _client.setFollowRedirects(false);
+        _client.start();
 
+        /* Start server */
         try {
             _serverThread = new Thread(new Runnable() {
                 @Override
@@ -112,6 +130,61 @@ public class ApplicationServer{
     }
 
     /**
+     * Takes a message as an inputStream and sends it to several recipients over HTML. This function does
+     * NOT wait for any response as it would have to do this for multiple recipients. Ideally, this function should be used ONLY
+     * by a NotificationProducer/Broker wishing to flush out Notify messages.
+     * @param inputStream Message content to be sent
+     * @param recipients Recipient
+     */
+    public static void sendMessages(InputStream inputStream, ArrayList<String> recipients){
+        for(String recipient : recipients){
+            org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
+            request.method(HttpMethod.POST);
+            request.header(HttpHeader.CONTENT_LENGTH, "200");
+            request.content(new InputStreamContentProvider(inputStream),
+                    "application/soap+xml;charset/utf-8");
+            //TODO: Handle exceptions
+            try {
+                request.send();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
+     * and sends this response back up the system.
+     * @param inputStream
+     * @param recipient
+     * @return An array with <code>{int status, InputStream contentRecieved}</code>
+     */
+    public static Object[] sendMessage(InputStream inputStream, String recipient){
+        org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
+        request.method(HttpMethod.POST);
+        request.header(HttpHeader.CONTENT_LENGTH, "200");
+        request.content(new InputStreamContentProvider(inputStream),
+                "application/soap+xml;charset/utf-8");
+        //TODO: Handle exceptions
+        try {
+            ContentResponse response = request.send();
+            return new Object[]{response.getStatus(), new ByteArrayInputStream(response.getContent())};
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        /* Some error has occured, return error-code TODO: Handle exceptions */
+        return new Object[]{HttpStatus.NOT_FOUND_404, null};
+    }
+
+    /**
      * Class to handle http-requests.
      */
     private class HttpHandler extends AbstractHandler {
@@ -133,7 +206,7 @@ public class ApplicationServer{
          * @throws ServletException
          */
         @Override
-        public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
+        public void handle(String s, org.eclipse.jetty.server.Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
 
             /* Handle headers */
             Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
