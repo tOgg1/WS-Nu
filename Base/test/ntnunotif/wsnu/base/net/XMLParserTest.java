@@ -2,8 +2,14 @@ package ntnunotif.wsnu.base.net;
 
 import org.junit.*;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.b_2.Subscribe;
+import org.w3._2001._12.soap_envelope.Body;
+import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import java.io.*;
 
 /**
@@ -13,15 +19,18 @@ public class XMLParserTest {
 
     private static final String notifyFilePlace = "Base/test/ntnunotif/wsnu/base/net/parse_test_notify.xml";
     private static final String soapFilePlace = "Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml";
+    private static final String subscribeFilePlace = "Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml";
 
     private InputStream notifyTestStream = null;
     private InputStream soapTestStream = null;
+    private InputStream subscribeTestStream = null;
 
     @Before
     public void setup() {
         try {
             notifyTestStream = new FileInputStream(notifyFilePlace);
             soapTestStream = new FileInputStream(soapFilePlace);
+            subscribeTestStream = new FileInputStream(subscribeFilePlace);
         } catch (Exception e) {
             System.err.println("Could not read test files");
             e.printStackTrace();
@@ -58,12 +67,37 @@ public class XMLParserTest {
     public void testToXmlParse() throws Exception {
         Object parsedObject1 = XMLParser.parse(notifyTestStream);
         Object parsedObject2 = XMLParser.parse(soapTestStream);
+        Object parsedObject3 = XMLParser.parse(subscribeTestStream);
+        // The following code is a consequence of questions of how things are parsed, and meant as a demonstration only.
+        try {
+            if (parsedObject3 instanceof JAXBElement) {
+                // This was discovered through printing of class names
+                JAXBElement<Envelope> jaxEl1 = (JAXBElement<Envelope>) parsedObject3;
+                Envelope env = jaxEl1.getValue();
+                Body body = env.getBody();
+                // This was discovered by printing class names. Might also be discovered by xml inspection.
+                Subscribe subscribe = (Subscribe)body.getAny().get(0);
+                FilterType ft = subscribe.getFilter();
+                for (Object o : ft.getAny()) {
+                    JAXBElement el = (JAXBElement) o;
+                    // printing of element content information
+                    System.out.println(el.getName());
+                    System.out.println(el.getDeclaredType());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // TODO write to real tests:
+        // Writing the three parsed objects to file for manual inspection:
         FileOutputStream fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_n2xml.xml");
         XMLParser.writeObjectToStream(parsedObject1, fileOutputStream);
         fileOutputStream.close();
         fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_s2xml.xml");
         XMLParser.writeObjectToStream(parsedObject2, fileOutputStream);
+        fileOutputStream.close();
+        fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_sub2xml.xml");
+        XMLParser.writeObjectToStream(parsedObject3, fileOutputStream);
         fileOutputStream.close();
     }
 }
