@@ -13,7 +13,11 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.Bus;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.w3._2001._12.soap_envelope.Body;
+import org.w3._2001._12.soap_envelope.Envelope;
+import org.w3._2001._12.soap_envelope.Header;
 
+import javax.xml.bind.JAXBElement;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -131,11 +135,16 @@ public class ApplicationServerTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
+        Object object = XMLParser.parse(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml"));
+        Envelope env = (Envelope)object;
+        Header head = env.getHeader();
+        Body body = env.getBody();
+        System.out.println(head);
+        System.out.println(body);
+
         // Send response
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
-        request.header(HttpHeader.CONTENT_TYPE, "application");
-        request.header(HttpHeader.CONTENT_LENGTH, "200");
         request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml")),
                 "application/soap+xml;charset/utf-8");
 
@@ -170,13 +179,15 @@ public class ApplicationServerTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
-
         // Send response
-
         FileInputStream file = new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml");
         Object object = XMLParser.parse(file);
+        Envelope env = (Envelope)object;
+        Header head = env.getHeader();
+        Body body = env.getBody();
+        System.out.println(head);
+        System.out.println(body);
         System.out.println(object);
-
 
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);

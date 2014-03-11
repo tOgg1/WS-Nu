@@ -224,18 +224,7 @@ public class ApplicationServer{
 
             /* Get content */
             if(httpServletRequest.getContentLength() > 0){
-
                 InputStream input = httpServletRequest.getInputStream();
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-
-                /* For temporary debugging */
-                char[] content;
-                content = new char[httpServletRequest.getContentLength()];
-
-                reader.read(content);
-                System.out.println(content);
-                /**/
 
                 ApplicationServer.this._parentBus.acceptNetMessage(input);
             }

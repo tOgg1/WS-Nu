@@ -8,7 +8,7 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
-import javax.xml.bind.JAXBContext;
+
 import javax.xml.bind.JAXBElement;
 import java.io.*;
 
@@ -54,13 +54,17 @@ public class XMLParserTest {
         Notify message = (Notify)parsedObj;
         Assert.assertEquals("Any elements of file were too many", 0, message.getAny().size());
         Assert.assertEquals("Wrong number of NotificationMessages detected", 1, message.getNotificationMessage().size());
-}
+    }
 
     @Test
     public void testSoapParsing() throws Exception {
         Object parsedObject = XMLParser.parse(soapTestStream);
         Assert.assertNotNull("Parsed object was null", parsedObject);
+        JAXBElement element = (JAXBElement) parsedObject;
+        System.out.println(element.getDeclaredType());
+        System.out.println(element.getName());
         // TODO Complete test
+        Envelope env = (Envelope)parsedObject;
     }
 
     @Test
