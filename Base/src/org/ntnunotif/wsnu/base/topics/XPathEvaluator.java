@@ -19,7 +19,7 @@ public class XPathEvaluator extends AbstractTopicEvaluator {
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         // TODO
          /* Something for inspiration:
-         
+
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         XPathExpression xPathExpression = null;

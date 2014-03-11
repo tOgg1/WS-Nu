@@ -30,8 +30,12 @@ public interface TopicExpressionEvaluatorInterface {
      * @param topicExpressionType the expression to evaluate with
      * @param topicType           the Topic to evaluate
      * @return <code>true</code> if topic is covered. <code>false</code> otherwise.
-     * @throws TopicExpressionDialectUnknownFault
-     * @throws InvalidTopicExpressionFault
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
@@ -43,8 +47,12 @@ public interface TopicExpressionEvaluatorInterface {
      * @param topicExpressionType the expression to evaluate with.
      * @param topicSetType        the TopicSet to evaluate.
      * @return the set of all Topics in the queried set covered by the expression, <code>null</code> if none are covered
-     * @throws TopicExpressionDialectUnknownFault
-     * @throws InvalidTopicExpressionFault
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
@@ -56,8 +64,12 @@ public interface TopicExpressionEvaluatorInterface {
      * @param expression The expression to examine
      * @param namespace  The namespace under consideration
      * @return <code>true</code> if allowed. <code>false</code> if not allowed.
-     * @throws TopicExpressionDialectUnknownFault
-     * @throws InvalidTopicExpressionFault
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;

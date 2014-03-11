@@ -7,10 +7,24 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by tormod on 3/3/14.
  */
 public class TopicValidator {
+    private static Map<String, TopicExpressionEvaluatorInterface> topicExpressionEvaluators;
+
+    /**
+     * Instantiates the delegated evaluators.
+     */
+    static {
+        topicExpressionEvaluators = new HashMap<String, TopicExpressionEvaluatorInterface>();
+        TopicExpressionEvaluatorInterface evaluator = new XPathEvaluator();
+        topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
+        // TODO Add the rest of the evaluators as they are written
+    }
 
     /**
      * Should never be instantiated
@@ -20,44 +34,98 @@ public class TopicValidator {
 
 
     /**
-     * Evaluate the Topic a TopicExpression is describing is permitted in TopicNamespace given. Described in
+     * Evaluate the <code>Topic</code> a {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} is describing is
+     * permitted in {@link org.oasis_open.docs.wsn.t_1.TopicNamespaceType} given. Described in
      * [Web Services Topics 1.3 (WS-Topics) OASIS Standard, 1 October 2006, section 8.5]
      *
      * @param expression The expression to examine
      * @param namespace  The namespace under consideration
      * @return <code>true</code> if allowed. <code>false</code> if not allowed.
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
     public static boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        // TODO
-        return false;
+        // Delegating work
+        String dialect = expression.getDialect();
+        TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
+        // Check if we know this dialect
+        if (evaluator == null) {
+            // TODO fill in exception
+            throw new TopicExpressionDialectUnknownFault();
+        }
+        return evaluator.isExpressionPermittedInNamespace(expression, namespace);
     }
 
     /**
-     * Gets the intersection between the Topics selected by an TopicExpression and a given TopicSet. Described in
+     * Gets the intersection between the <code>Topic</code>s selected by an
+     * {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} and a given
+     * {@link org.oasis_open.docs.wsn.t_1.TopicSetType}. Described in
      * [Web Services Topics 1.3 (WS-Topics) OASIS Standard, 1 October 2006, section 8.5]
      *
      * @param expression the expression to examine
      * @param topicSet   the TopicSet to evaluate against
      * @return The TopicSet given by the intersection. <code>null</code> if no elements are in the intersection.
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
     public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        // TODO
-        return null;
+        // Delegating work
+        String dialect = expression.getDialect();
+        TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
+        // Check if we know this dialect
+        if (evaluator == null) {
+            // TODO fill in exception
+            throw new TopicExpressionDialectUnknownFault();
+        }
+        return evaluator.getIntersection(expression, topicSet);
     }
 
     /**
-     * Evaluates if a given TopicExpression fits a given Topic. This hides complexity with TopicExpressionDialects.
+     * Evaluates if a given {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} fits a given
+     * {@link org.oasis_open.docs.wsn.t_1.TopicType}. This hides complexity with <code>TopicExpressionDialect</code>s.
      *
      * @param expression The expression to examine
      * @param topic      The Topic to evaluate against.
      * @return <code>true</code> if expression covers Topic. <code>false</code> otherwise.
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault        If the dialect of the {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was inconsistent with actual expression.
      */
-    public static boolean evaluateTopicExpressionAgainstTopic(TopicExpressionType expression, TopicType topic)
+    public static boolean evaluateTopicWithExpression(TopicExpressionType expression, TopicType topic)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        // TODO write
-        return false;
+        // Delegating work
+        String dialect = expression.getDialect();
+        TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
+        // Check if we know this dialect
+        if (evaluator == null) {
+            // TODO fill in exception
+            throw new TopicExpressionDialectUnknownFault();
+        }
+        return evaluator.evaluateTopicWithExpression(expression, topic);
+    }
+
+    /**
+     * Adds a {@link org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface} the <code>TopicValidator</code>.
+     * This is an easy way of adding validation for <code>TopicExpressionDialect</code>s not supported by default.
+     *
+     * @param evaluator the evaluator to add
+     */
+    public static void addTopicExpressionEvaluator(TopicExpressionEvaluatorInterface evaluator) {
+        synchronized (TopicValidator.class) {
+            topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
+        }
     }
 
 }
