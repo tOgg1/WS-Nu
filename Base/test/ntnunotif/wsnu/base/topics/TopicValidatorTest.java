@@ -12,7 +12,6 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.bind.JAXBElement;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
