@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wstop:TopicNamespace final="true" name="TestTopicNamespaceName" targetNamespace="http://ws-nu.org/testTopicSpace1"
+                      xmlns:wstop="http://docs.oasis-open.org/wsn/t-1"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://docs.oasis-open.org/wsn/t-1 http://docs.oasis-open.org/wsn/t-1.xsd">
+    <wstop:documentation/>
+    <wstop:Topic final="false" name="root_topic1" parent="token">
+        <wstop:documentation/>
+        <wstop:Topic final="false" name="child_topic"/>
+    </wstop:Topic>
+    <wstop:Topic name="root_topic2" final="true"></wstop:Topic>
+</wstop:TopicNamespace>

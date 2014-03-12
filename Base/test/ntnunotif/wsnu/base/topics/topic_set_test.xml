@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wstop:TopicSet xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:tns="http://ws-nu.org/testTopicSpace1"
+                xsi:schemaLocation="http://docs.oasis-open.org/wsn/t-1 http://docs.oasis-open.org/wsn/t-1.xsd ">
+    <tns:root_topic1 wstop:topic="true">
+        <child_topic wstop:topic="true"/>
+    </tns:root_topic1>
+    <tns:root_topic2 />
+</wstop:TopicSet>
