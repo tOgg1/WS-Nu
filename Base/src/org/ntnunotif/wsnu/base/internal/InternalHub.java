@@ -2,7 +2,6 @@ package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.base.topics.TopicValidator;
 
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by tormod on 3/3/14.
  */
-public class Bus implements Connector{
+public class InternalHub implements Hub {
 
     /**
      * List of internal web-service connections.
@@ -27,7 +26,7 @@ public class Bus implements Connector{
     /**
      * Default constructor
      */
-    public Bus() throws Exception {
+    public InternalHub() throws Exception {
         _server = ApplicationServer.getInstance();
         _services = new ArrayList<WebServiceConnection>();
         _server.start(this);
@@ -67,7 +66,7 @@ public class Bus implements Connector{
     }
 
     @Override
-    public void acceptLocalMessage(Object object) {
+    public void acceptLocalMessage(InputStream inputStream) {
 
     }
 }

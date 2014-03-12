@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by tormod on 3/3/14.
  */
-public interface Connector {
+public interface Hub {
 
     /**
      * Function to accept a message from the net
@@ -19,5 +19,5 @@ public interface Connector {
     /**
      * Function to accept a message from a local service
      */
-    public void acceptLocalMessage(Object object);
+    public void acceptLocalMessage(InputStream inputStream);
 }

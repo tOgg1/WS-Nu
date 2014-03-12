@@ -1,21 +1,18 @@
 package org.ntnunotif.wsnu.base.net;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.ntnunotif.wsnu.base.internal.Bus;
+import org.ntnunotif.wsnu.base.internal.InternalHub;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -53,7 +50,7 @@ public class ApplicationServer{
     /**
      * A bus object as parent. Needed to reroute requests to bus.
      */
-    private static Bus _parentBus;
+    private static InternalHub _parentInternalHub;
 
     /**
      * Variable to check if this server is running. Primarily used to avoid double @start calls.
@@ -86,13 +83,13 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public static void start(Bus bus) throws Exception{
+    public static void start(InternalHub internalHub) throws Exception{
         if(_isRunning){
             return;
         }
 
         _isRunning = true;
-        _parentBus = bus;
+        _parentInternalHub = internalHub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();
@@ -226,7 +223,7 @@ public class ApplicationServer{
             if(httpServletRequest.getContentLength() > 0){
                 InputStream input = httpServletRequest.getInputStream();
 
-                ApplicationServer.this._parentBus.acceptNetMessage(input);
+                ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
             }
             /* No content found, return a 204: No content */
             else{
