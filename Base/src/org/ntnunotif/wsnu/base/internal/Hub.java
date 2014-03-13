@@ -13,8 +13,9 @@ public interface Hub {
 
     /**
      * Function to accept a message from the net.
+     * @return Returns the message that is going back, can
      */
-    public void acceptNetMessage(InputStream inputStream);
+    public InternalMessage acceptNetMessage(InputStream inputStream);
 
     /**
      * Function to accept a message from a local service, and forward it out into the internet.

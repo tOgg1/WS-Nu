@@ -48,7 +48,7 @@ public class InternalHub implements Hub {
      * Takes a net-message, depacks it (parses it), and sends it forward in the system
      */
     @Override
-    public void acceptNetMessage(InputStream inputStream){
+    public InternalMessage acceptNetMessage(InputStream inputStream){
         /* Decrypt message */
         Object parsedObject = null;
         try {
@@ -64,9 +64,21 @@ public class InternalHub implements Hub {
         for(WebServiceConnection service : _services){
             InternalMessage message = service.acceptMessage(parsedObject);
 
-            /* */
-            if((message.statusCode | InternalMessage.STATUS_OK) > 0){
+            /* We can at this point figure out what to send back*/
+            if((message.statusCode & InternalMessage.STATUS_OK) > 0){
 
+            }else if((message.statusCode & InternalMessage.STATUS_FAULT) > 0){
+
+                /* There is not specified any specific fault, so we treat it as a generic fault */
+                if(message.statusCode == InternalMessage.STATUS_FAULT) {
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_INTERNAL_ERROR) > 0){
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_INVALID_PAYLOAD) > 0){
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_UNKNOWN_METHOD) > 0){
+
+                }
             }
         }
     }
