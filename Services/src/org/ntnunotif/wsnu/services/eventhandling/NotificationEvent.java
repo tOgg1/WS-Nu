@@ -16,8 +16,8 @@ public class NotificationEvent {
     /**
      * Get the raw data of Notify-message
      */
-    public byte[] getRaw(){
-        return null;
+    public Notify getRaw(){
+        return _notification;
     }
 
     /**
