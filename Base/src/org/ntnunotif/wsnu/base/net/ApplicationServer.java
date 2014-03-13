@@ -127,33 +127,6 @@ public class ApplicationServer{
     }
 
     /**
-     * Takes a message as an inputStream and sends it to several recipients over HTML. This function does
-     * NOT wait for any response as it would have to do this for multiple recipients. Ideally, this function should be used ONLY
-     * by a NotificationProducer/Broker wishing to flush out Notify messages.
-     * @param inputStream Message content to be sent
-     * @param recipients Recipient
-     */
-    public static void sendMessages(InputStream inputStream, ArrayList<String> recipients){
-        for(String recipient : recipients){
-            org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
-            request.method(HttpMethod.POST);
-            request.header(HttpHeader.CONTENT_LENGTH, "200");
-            request.content(new InputStreamContentProvider(inputStream),
-                    "application/soap+xml;charset/utf-8");
-            //TODO: Handle exceptions
-            try {
-                request.send();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
      * and sends this response back up the system.
      * @param inputStream

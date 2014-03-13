@@ -4,7 +4,9 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import javax.xml.bind.JAXBException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
@@ -66,7 +68,15 @@ public class InternalHub implements Hub {
     }
 
     @Override
-    public void acceptLocalMessage(InputStream inputStream, String endPoint) {
-        //TODO:
+    public void acceptLocalMessage(Object object, String endPoint) {
+        ByteArrayOutputStream generatedMessage = new ByteArrayOutputStream();
+        try {
+            XMLParser.writeObjectToStream(object, generatedMessage);
+        } catch (JAXBException e) {
+            System.err.println("Error parsing object from web service, is the service sending a valid WSN-object for parsing?");
+            e.printStackTrace();
+        }
+
+
     }
 }
