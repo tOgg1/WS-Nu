@@ -5,5 +5,5 @@
     <tns:root_topic1 wstop:topic="true">
         <child_topic wstop:topic="true"/>
     </tns:root_topic1>
-    <tns:root_topic2 />
+    <tns:root_topic2 wstop:topic="true" />
 </wstop:TopicSet>

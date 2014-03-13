@@ -156,7 +156,6 @@ public class TopicValidatorTest {
     public void testEvaluateTopicWithExpressionLegal() throws Exception {
         // Child of first root topic should evaluate to true
         TopicType topic = topicNamespace.getTopic().get(0).getTopic().get(0);
-        System.out.println("Topic name: " + topic.getName());
         Assert.assertTrue("XPath evaluated topic falsely to false", TopicValidator.evaluateTopicWithExpression(xPathSingleHit, topic));
         // TODO testcode
     }
