@@ -59,11 +59,15 @@ public class InternalHub implements Hub {
         }
 
         /* Find out where to send the message */
-        
 
         /* Send the message forward */
         for(WebServiceConnection service : _services){
-            service.acceptMessage(parsedObject);
+            InternalMessage message = service.acceptMessage(parsedObject);
+
+            /* */
+            if((message.statusCode | InternalMessage.STATUS_OK) > 0){
+
+            }
         }
     }
 

@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+
 /**
  * Created by tormod on 3/11/14.
  */
@@ -49,7 +51,7 @@ public class GenericConnector implements WebServiceConnection{
     }
 
     @Override
-    public Object acceptMessage(Object message) {
+    public InternalMessage acceptMessage(Object message) {
         Class objectClass = message.getClass();
 
         Annotation[] messageAnnotations = objectClass.getAnnotations();
@@ -65,7 +67,18 @@ public class GenericConnector implements WebServiceConnection{
                     Method method = _allowedMethods.get(xmlRootElement.name());
                     try {
                         /* Run method on the Web Service */
-                        return method.invoke(_webService, message);
+                        InternalMessage returnMessage;
+                        Object method_returnedData = method.invoke(_webService, message);
+
+                        /* If is the case, nothing is being returned */
+                        if(method.getReturnType().equals(Void.TYPE)){
+                            returnMessage = new InternalMessage(STATUS_OK, null);
+                        }else{
+                            System.out.println("Hey!");
+                            returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                                                                method_returnedData);
+                        }
+                        return returnMessage;
                     } catch (IllegalAccessException e) {
                         System.err.println("The method being accessed is not public. Something must be wrong with the" +
                                            "generated classes.\n A @WebMethod can not have private access");
