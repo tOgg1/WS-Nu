@@ -8,6 +8,7 @@ import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,7 +78,7 @@ public class TopicValidator {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet)
+    public static List<TopicType> getIntersection(TopicExpressionType expression, TopicSetType topicSet)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         // Delegating work
         String dialect = expression.getDialect();

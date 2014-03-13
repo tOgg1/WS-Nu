@@ -7,6 +7,8 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
+import java.util.List;
+
 /**
  * A <code>TopicExpressionEvaluatorInterface</code> is an interface that should be implemented by objects that wishes
  * to compare a {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} with a given dialect to
@@ -54,7 +56,7 @@ public interface TopicExpressionEvaluatorInterface {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
+    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
 
     /**
