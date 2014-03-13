@@ -4,6 +4,7 @@ import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * Created by tormod on 3/11/14.
@@ -11,7 +12,7 @@ import java.lang.reflect.Method;
 public class GenericConnector implements WebServiceConnection{
 
     private Object _webService;
-    private Method[] _allowedMethods;
+    private HashMap<String, Method> _allowedMethods;
 
     /**
      * Default constructor
@@ -33,7 +34,7 @@ public class GenericConnector implements WebServiceConnection{
     }
 
     @Override
-    public Method[] getServiceFunctionality() {
+    public HashMap<String, Method> getServiceFunctionality() {
         return _allowedMethods;
     }
 

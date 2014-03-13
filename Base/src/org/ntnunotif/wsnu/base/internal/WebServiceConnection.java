@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * Created by tormod on 3/3/14.
@@ -23,5 +24,5 @@ public interface WebServiceConnection {
      * Return the functionality this Web Service offers.
      * @return The methods allowed by the Web Service
      */
-    public Method[] getServiceFunctionality();
+    public HashMap<String, Method> getServiceFunctionality();
 }
