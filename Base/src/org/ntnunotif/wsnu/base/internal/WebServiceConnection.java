@@ -11,8 +11,9 @@ public interface WebServiceConnection {
     /**
      * Accept a message from a hub. This function forwards the message to its connected Web Service.
      * @param message
+     * @return Returns the appropriate response, null if no response is expected
      */
-    public void acceptMessage(Object message);
+    public Object acceptMessage(Object message);
 
     /**
      * Return the type of the Web Service connected to this connection.
