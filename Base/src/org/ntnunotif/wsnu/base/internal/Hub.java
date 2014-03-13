@@ -12,12 +12,12 @@ import java.util.ArrayList;
 public interface Hub {
 
     /**
-     * Function to accept a message from the net
+     * Function to accept a message from the net.
      */
     public void acceptNetMessage(InputStream inputStream);
 
     /**
-     * Function to accept a message from a local service
+     * Function to accept a message from a local service, and forward it out into the internet.
      */
-    public void acceptLocalMessage(InputStream inputStream);
+    public void acceptLocalMessage(InputStream inputStream, String endPoint);
 }

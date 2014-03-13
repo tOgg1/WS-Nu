@@ -66,7 +66,7 @@ public class InternalHub implements Hub {
     }
 
     @Override
-    public void acceptLocalMessage(InputStream inputStream) {
-
+    public void acceptLocalMessage(InputStream inputStream, String endPoint) {
+        //TODO:
     }
 }
