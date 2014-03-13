@@ -155,7 +155,7 @@ public class ApplicationServer{
     }
 
     /**
-     * Class to handle http-requests.
+     * Inner class to handle http-requests.
      */
     private class HttpHandler extends AbstractHandler {
 
