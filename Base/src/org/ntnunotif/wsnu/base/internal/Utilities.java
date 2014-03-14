@@ -5,11 +5,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * Utility function for the Base module.
+ * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
 public class Utilities {
-
-    //TODO: Add functionality flags for producer and brokers
 
     /**
      * Takes an outputstream with data. Then prepares an inputstream with this data and
@@ -21,4 +21,14 @@ public class Utilities {
         return null;
     }
 
+
+    /**
+     * Takes any object, and tries to convert its data to an inputstream.
+     * @param message
+     * @return
+     */
+    public static InputStream convertUnknownToInputStream(Object message) {
+        //TODO:
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
+ * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
 public interface WebServiceConnection {

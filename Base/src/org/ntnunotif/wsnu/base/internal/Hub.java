@@ -7,15 +7,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
+ * Interface for a hub. Implementations of this interface should be able to receive net-messages, and local messages (from connected web services)
+ * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
 public interface Hub {
 
     /**
      * Function to accept a message from the net.
-     * @return Returns the message that is going back, can
+     * @return Returns the message(s) that is going back
      */
-    public InternalMessage acceptNetMessage(InputStream inputStream);
+    public ArrayList<InternalMessage> acceptNetMessage(InputStream inputStream);
 
     /**
      * Function to accept a message from a local service, and forward it out into the internet.

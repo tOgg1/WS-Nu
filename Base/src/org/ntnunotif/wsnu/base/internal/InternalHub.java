@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
+ * The default Hub-implementation by WS-Nu. Implements the basic functionality of the hub-interface.
+ * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
 public class InternalHub implements Hub {
@@ -34,6 +36,10 @@ public class InternalHub implements Hub {
         _server.start(this);
     }
 
+    /**
+     * Stop the hub and its delegates.
+     * @throws Exception
+     */
     public void stop() throws Exception {
 
         // Enforce garbage collection
@@ -48,7 +54,8 @@ public class InternalHub implements Hub {
      * Takes a net-message, depacks it (parses it), and sends it forward in the system
      */
     @Override
-    public InternalMessage acceptNetMessage(InputStream inputStream){
+    //TODO: Rethink the design of this method. Can everything be done sequentially?
+    public ArrayList<InternalMessage> acceptNetMessage(InputStream inputStream){
         /* Decrypt message */
         Object parsedObject = null;
         try {
@@ -58,29 +65,88 @@ public class InternalHub implements Hub {
             e.printStackTrace();
         }
 
-        /* Find out where to send the message */
+        ArrayList<InternalMessage> returnMessages = new ArrayList<>();
 
-        /* Send the message forward */
+        /* Try sending the message to everyone */
         for(WebServiceConnection service : _services){
+
+            /* Send the message forward */
             InternalMessage message = service.acceptMessage(parsedObject);
 
-            /* We can at this point figure out what to send back*/
             if((message.statusCode & InternalMessage.STATUS_OK) > 0){
+                if((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
+                    /* This is easy, now we can convert it, and send it straight out*/
+                    if((message.statusCode & InternalMessage.STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0){
+                        try{
+                            InputStream returningStream = Utilities.convertToInputStream((OutputStream)message.getMessage());
+                            returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK
+                                                       | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                                                       | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream));
+                            continue;
+                        }catch(ClassCastException e){
+                            System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                            e.printStackTrace();
+                        }
+                    /* Even better, the stream is already an inputstream */
+                    } else if((message.statusCode & InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0){
+                        try{
+                            InputStream returningStream = (InputStream)message.getMessage();
+                            returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK
+                                                       | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                                                       | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream));
+                            continue;
+                        }catch(ClassCastException e){
+                            System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                            e.printStackTrace();
+                        }
+                    }
 
+                    /* This is worse, now we have to find out what the payload is, and convert it to a stream*/
+                    InputStream returningStream = Utilities.convertUnknownToInputStream(message);
+                    if(returningStream == null){
+                        System.err.println("Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
+                        returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK, null));
+                        continue;
+                    }else{
+                        returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK
+                                                   | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                                                   | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream));
+                        continue;
+                    }
+                /* Everything is fine, and no message is to be returned */
+                }else{
+                    returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK, null));
+                }
             }else if((message.statusCode & InternalMessage.STATUS_FAULT) > 0){
+
+                /* At the time of writing, all of these functions will do the same thing. We are keeping them,
+                however, to make possible additions easier.
+                 */
 
                 /* There is not specified any specific fault, so we treat it as a generic fault */
                 if(message.statusCode == InternalMessage.STATUS_FAULT) {
-
+                    returnMessages.add(new InternalMessage(message.statusCode, null));
+                    continue;
                 }else if((message.statusCode & InternalMessage.STATUS_FAULT_INTERNAL_ERROR) > 0){
-
+                    returnMessages.add(new InternalMessage(message.statusCode, null));
+                    continue;
                 }else if((message.statusCode & InternalMessage.STATUS_FAULT_INVALID_PAYLOAD) > 0){
-
+                    returnMessages.add(new InternalMessage(message.statusCode, null));
+                    continue;
                 }else if((message.statusCode & InternalMessage.STATUS_FAULT_UNKNOWN_METHOD) > 0){
-
+                    returnMessages.add(new InternalMessage(message.statusCode, null));
+                    continue;
+                }else{
+                    returnMessages.add(new InternalMessage(message.statusCode, null));
+                    continue;
                 }
+            /* Something weird is going on, neither OK or FAULT is flagged*/
+            }else{
+                returnMessages.add(new InternalMessage(InternalMessage.STATUS_FAULT, null));
+                continue;
             }
         }
+        return returnMessages;
     }
 
     @Override
