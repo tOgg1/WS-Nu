@@ -102,9 +102,7 @@ public class TopicValidatorTest {
     @Test
     public void disassembleNamespaceContext() {
         NamespaceContext nsc = xPathMulMsg.getNamespaceContext();
-        System.out.println("\n\nNSC:\n\n" + nsc + "\n");
-        System.out.println("Prefix for http://ws-nu.org/testTopicSpace1:\t" + nsc.getPrefix("http://ws-nu.org/testTopicSpace1"));
-        System.out.println("Prefix for http://docs.oasis-open.org/wsn/t-1:\t" + nsc.getPrefix("http://docs.oasis-open.org/wsn/t-1"));
+        System.out.println("\n\nNamespace Context:\n\n" + nsc + "\n");
     }
 
     @Test
