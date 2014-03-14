@@ -152,9 +152,9 @@ public class TopicValidatorTest {
     @Test
     public void testGetIntersectionOne() throws Exception{
         TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
-        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret);
+        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        //Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , retAsList.size());
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , retAsList.size());
         JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
         XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathSinPath));
     }
@@ -162,9 +162,9 @@ public class TopicValidatorTest {
     @Test
     public void testGetIntersectionTwo() throws Exception{
         TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
-        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret);
+        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        //Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsList.size());
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsList.size());
         JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
         XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathMulPath));
     }

@@ -15,7 +15,7 @@ public class TopicUtils {
      */
     private TopicUtils() {}
 
-    public static List<TopicType> topicSetToTopicTypeList(TopicSetType set) {
+    public static List<TopicType> topicSetToTopicTypeList(TopicSetType set, boolean includeChildren) {
         // TODO
         return new ArrayList<TopicType>();
     }
