@@ -17,9 +17,11 @@ import org.w3c.dom.NodeList;
 import sun.plugin.dom.core.Document;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Inge on 10.03.14.
@@ -94,6 +96,11 @@ public class XPathEvaluator extends AbstractTopicEvaluator {
                 }
                 expression = (String) o;
             }
+        }
+        Map<QName,String> other = topicExpressionType.getOtherAttributes();
+        System.out.println("\nOther attributes: \n");
+        for (QName n: other.keySet()) {
+            System.out.println(n.toString() + "\t:\t" + other.get(n));
         }
         if (expression == null) {
             // TODO Find exception for no expression in tag

@@ -16,6 +16,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -134,7 +136,7 @@ public class TopicValidatorTest {
     public void testGetIntersectionTwo() throws Exception{
         List<TopicType> ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 2, ret.size());
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, ret.size());
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)
