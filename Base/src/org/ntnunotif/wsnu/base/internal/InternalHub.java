@@ -4,7 +4,9 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import javax.xml.bind.JAXBException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
@@ -46,7 +48,7 @@ public class InternalHub implements Hub {
      * Takes a net-message, depacks it (parses it), and sends it forward in the system
      */
     @Override
-    public void acceptNetMessage(InputStream inputStream){
+    public InternalMessage acceptNetMessage(InputStream inputStream){
         /* Decrypt message */
         Object parsedObject = null;
         try {
@@ -57,16 +59,40 @@ public class InternalHub implements Hub {
         }
 
         /* Find out where to send the message */
-        
 
         /* Send the message forward */
         for(WebServiceConnection service : _services){
-            service.acceptMessage(parsedObject);
+            InternalMessage message = service.acceptMessage(parsedObject);
+
+            /* We can at this point figure out what to send back*/
+            if((message.statusCode & InternalMessage.STATUS_OK) > 0){
+
+            }else if((message.statusCode & InternalMessage.STATUS_FAULT) > 0){
+
+                /* There is not specified any specific fault, so we treat it as a generic fault */
+                if(message.statusCode == InternalMessage.STATUS_FAULT) {
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_INTERNAL_ERROR) > 0){
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_INVALID_PAYLOAD) > 0){
+
+                }else if((message.statusCode & InternalMessage.STATUS_FAULT_UNKNOWN_METHOD) > 0){
+
+                }
+            }
         }
     }
 
     @Override
-    public void acceptLocalMessage(InputStream inputStream) {
+    public void acceptLocalMessage(Object object, String endPoint) {
+        ByteArrayOutputStream generatedMessage = new ByteArrayOutputStream();
+        try {
+            XMLParser.writeObjectToStream(object, generatedMessage);
+        } catch (JAXBException e) {
+            System.err.println("Error parsing object from web service, is the service sending a valid WSN-object for parsing?");
+            e.printStackTrace();
+        }
+
 
     }
 }

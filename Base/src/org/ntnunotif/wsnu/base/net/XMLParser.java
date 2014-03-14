@@ -155,4 +155,6 @@ public class XMLParser {
     public static void writeObjectToStream(Object object, OutputStream outputStream) throws JAXBException {
         getMarshaller().marshal(object, outputStream);
     }
+
+
 }
