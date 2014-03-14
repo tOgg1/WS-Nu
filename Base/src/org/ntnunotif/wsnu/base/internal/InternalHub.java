@@ -80,8 +80,8 @@ public class InternalHub implements Hub {
                         try{
                             InputStream returningStream = Utilities.convertToInputStream((OutputStream)message.getMessage());
                             returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK
-                                                       | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                                                       | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream));
+                                    | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                                    | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream));
                             continue;
                         }catch(ClassCastException e){
                             System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
@@ -103,6 +103,7 @@ public class InternalHub implements Hub {
 
                     /* This is worse, now we have to find out what the payload is, and convert it to a stream*/
                     InputStream returningStream = Utilities.convertUnknownToInputStream(message);
+                    
                     if(returningStream == null){
                         System.err.println("Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
                         returnMessages.add(new InternalMessage(InternalMessage.STATUS_OK, null));

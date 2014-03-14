@@ -9,6 +9,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.InternalMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -196,7 +197,7 @@ public class ApplicationServer{
             if(httpServletRequest.getContentLength() > 0){
                 InputStream input = httpServletRequest.getInputStream();
 
-                ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
+                ArrayList<InternalMessage> returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
             }
             /* No content found, return a 204: No content */
             else{
