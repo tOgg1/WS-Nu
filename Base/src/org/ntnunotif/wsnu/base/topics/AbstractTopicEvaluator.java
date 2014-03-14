@@ -17,17 +17,6 @@ import java.util.List;
 public abstract class AbstractTopicEvaluator implements TopicExpressionEvaluatorInterface {
 
     @Override
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
-            throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        List<TopicType> retList = new ArrayList<TopicType>();
-        for (TopicType tt: TopicUtils.topicSetToTopicTypeList(topicSetType)) {
-            if (evaluateTopicWithExpression(topicExpressionType, tt))
-                retList.add(tt);
-        }
-        return retList.size() == 0 ? null : retList;
-    }
-
-    @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         // TODO

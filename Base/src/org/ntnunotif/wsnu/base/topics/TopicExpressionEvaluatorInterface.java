@@ -57,7 +57,7 @@ public interface TopicExpressionEvaluatorInterface {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
+    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
 
     /**

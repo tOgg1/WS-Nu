@@ -1,12 +1,12 @@
 package ntnunotif.wsnu.base.topics;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import com.sun.org.apache.xerces.internal.util.NamespaceContextWrapper;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -19,11 +19,10 @@ import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.namespace.QName;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,6 +36,8 @@ public class TopicValidatorTest {
     private static final String gcmIllegalDialectPath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_illegal_dialect_test.xml";
     private static final String topicNamespacePath = "Base/test/ntnunotif/wsnu/base/topics/topic_namespace_test.xml";
     private static final String topicSetPath = "Base/test/ntnunotif/wsnu/base/topics/topic_set_test.xml";
+    private static final String OUTGcmXPathMulPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_multiple_test.xml";
+    private static final String OUTGcmXPathSinPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_single_test.xml";
 
     private static TopicExpressionType xPathMultipleHits;
     private static TopicExpressionType xPathSingleHit;
@@ -150,16 +151,22 @@ public class TopicValidatorTest {
 
     @Test
     public void testGetIntersectionOne() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
+        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , ret.size());
+        //Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , retAsList.size());
+        JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathSinPath));
     }
 
     @Test
     public void testGetIntersectionTwo() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
+        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, ret.size());
+        //Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsList.size());
+        JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathMulPath));
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)

@@ -79,7 +79,7 @@ public class TopicValidator {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public static List<TopicType> getIntersection(TopicExpressionType expression, TopicSetType topicSet, NamespaceContext namespaceContext)
+    public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         // Delegating work
         String dialect = expression.getDialect();
