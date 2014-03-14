@@ -14,7 +14,7 @@ public interface WebServiceConnection {
      * @param message
      * @return Returns the appropriate response, null if no response is expected, or the message could not be processed
      */
-    public InternalMessage acceptMessage(Object message);
+    public InternalMessage acceptMessage(InternalMessage message);
 
     /**
      * Return the type of the Web Service connected to this connection.

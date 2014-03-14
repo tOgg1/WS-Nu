@@ -51,7 +51,10 @@ public class GenericConnector implements WebServiceConnection{
     }
 
     @Override
-    public InternalMessage acceptMessage(Object message) {
+    public InternalMessage acceptMessage(InternalMessage internalMessage) {
+
+        Object message = internalMessage.getMessage();
+
         Class objectClass = message.getClass();
 
         Annotation[] messageAnnotations = objectClass.getAnnotations();

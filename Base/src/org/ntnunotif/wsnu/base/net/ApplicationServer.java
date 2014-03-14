@@ -197,7 +197,10 @@ public class ApplicationServer{
             if(httpServletRequest.getContentLength() > 0){
                 InputStream input = httpServletRequest.getInputStream();
 
+                /* Get all returnMessages */
                 ArrayList<InternalMessage> returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
+
+
             }
             /* No content found, return a 204: No content */
             else{

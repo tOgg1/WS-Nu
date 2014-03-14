@@ -1,25 +1,17 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.dom.DocumentFragmentImpl;
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import com.sun.org.apache.xpath.internal.NodeSet;
-import com.sun.xml.internal.bind.v2.runtime.output.NamespaceContextImpl;
-import com.sun.xml.internal.ws.util.xml.NodeListIterator;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import sun.plugin.dom.core.Document;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

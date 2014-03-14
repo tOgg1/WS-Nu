@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.NamespaceContext;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,22 +57,26 @@ public class InternalHub implements Hub {
     @Override
     //TODO: Rethink the design of this method. Can everything be done sequentially?
     public ArrayList<InternalMessage> acceptNetMessage(InputStream inputStream){
-        /* Decrypt message */
-        Object parsedObject = null;
-        try {
-            parsedObject = XMLParser.parse(inputStream);
-        } catch (JAXBException e) {
-            //TODO: Send some fault from the specification that I cant remember right now
-            e.printStackTrace();
-        }
 
         ArrayList<InternalMessage> returnMessages = new ArrayList<>();
+
+        /* Decrypt message */
+        InternalMessage parsedMessage;
+        try {
+            parsedMessage = XMLParser.parse(inputStream);
+        } catch (JAXBException e) {
+            //TODO: Move this handling to the parser?
+            returnMessages.add(new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR, null));
+            e.printStackTrace();
+            return returnMessages;
+        }
+
 
         /* Try sending the message to everyone */
         for(WebServiceConnection service : _services){
 
             /* Send the message forward */
-            InternalMessage message = service.acceptMessage(parsedObject);
+            InternalMessage message = service.acceptMessage(parsedMessage);
 
             if((message.statusCode & InternalMessage.STATUS_OK) > 0){
                 if((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
