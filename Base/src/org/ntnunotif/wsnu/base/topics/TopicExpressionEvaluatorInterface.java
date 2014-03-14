@@ -7,6 +7,7 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
+import javax.xml.namespace.NamespaceContext;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public interface TopicExpressionEvaluatorInterface {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
+    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
 
     /**

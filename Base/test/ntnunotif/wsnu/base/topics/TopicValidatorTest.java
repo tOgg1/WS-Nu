@@ -1,9 +1,11 @@
 package ntnunotif.wsnu.base.topics;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
+import com.sun.org.apache.xerces.internal.util.NamespaceContextWrapper;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
@@ -16,10 +18,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,32 +45,45 @@ public class TopicValidatorTest {
     private static TopicNamespaceType topicNamespace;
     private static TopicSetType topicSet;
 
+    private static InternalMessage xPathMulMsg;
+    private static InternalMessage xPathSinMsg;
+    private static InternalMessage xPathFalMsg;
+    private static InternalMessage illExprDiaMsg;
+    private static InternalMessage topNSMsg;
+    private static InternalMessage topSetMsg;
+
     @BeforeClass
     public static void setup() {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(gcmXPathFalsePath);
-            GetCurrentMessage msg = (GetCurrentMessage)XMLParser.parse(fis);
+            xPathFalMsg = XMLParser.parse(fis);
+            GetCurrentMessage msg = (GetCurrentMessage)xPathFalMsg.getMessage();
             xPathFalse = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmXPathMulPath);
-            msg = (GetCurrentMessage)XMLParser.parse(fis);
+            xPathMulMsg = XMLParser.parse(fis);
+            msg = (GetCurrentMessage)xPathMulMsg.getMessage();
             xPathMultipleHits = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmXPathSinPath);
-            msg = (GetCurrentMessage)XMLParser.parse(fis);
+            xPathSinMsg = XMLParser.parse(fis);
+            msg = (GetCurrentMessage)xPathSinMsg.getMessage();
             xPathSingleHit = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmIllegalDialectPath);
-            msg = (GetCurrentMessage)XMLParser.parse(fis);
+            illExprDiaMsg = XMLParser.parse(fis);
+            msg = (GetCurrentMessage)illExprDiaMsg.getMessage();
             illegalExpressionDialect = msg.getTopic();
             fis.close();
             fis = new FileInputStream(topicNamespacePath);
-            JAXBElement<TopicNamespaceType> ns = (JAXBElement)XMLParser.parse(fis);
+            topNSMsg = XMLParser.parse(fis);
+            JAXBElement<TopicNamespaceType> ns = (JAXBElement)topNSMsg.getMessage();
             topicNamespace = ns.getValue();
             fis.close();
             fis = new FileInputStream(topicSetPath);
-            JAXBElement<TopicSetType> ts = (JAXBElement)XMLParser.parse(fis);
+            topSetMsg = XMLParser.parse(fis);
+            JAXBElement<TopicSetType> ts = (JAXBElement)topSetMsg.getMessage();
             topicSet = ts.getValue();
             fis.close();
         } catch (Exception e) {
@@ -81,6 +98,14 @@ public class TopicValidatorTest {
     }
 
     // TODO Very few test cases are covered. Should cover more!
+
+    @Test
+    public void disassembleNamespaceContext() {
+        NamespaceContext nsc = xPathMulMsg.getNamespaceContext();
+        System.out.println("\n\nNSC:\n\n" + nsc + "\n");
+        System.out.println("Prefix for http://ws-nu.org/testTopicSpace1:\t" + nsc.getPrefix("http://ws-nu.org/testTopicSpace1"));
+        System.out.println("Prefix for http://docs.oasis-open.org/wsn/t-1:\t" + nsc.getPrefix("http://docs.oasis-open.org/wsn/t-1"));
+    }
 
     @Test
     public void disassembleTopicSetToOutput() {
@@ -122,19 +147,19 @@ public class TopicValidatorTest {
 
     @Test
     public void testGetIntersectionNull() throws Exception{
-        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(xPathFalse, topicSet));
+        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(xPathFalse, topicSet, xPathFalMsg.getNamespaceContext()));
     }
 
     @Test
     public void testGetIntersectionOne() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathSingleHit, topicSet);
+        List<TopicType> ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
         Assert.assertNotNull("TopicValidator returned null!", ret);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , ret.size());
     }
 
     @Test
     public void testGetIntersectionTwo() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet);
+        List<TopicType> ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
         Assert.assertNotNull("TopicValidator returned null!", ret);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, ret.size());
     }
@@ -146,7 +171,7 @@ public class TopicValidatorTest {
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)
     public void testIllegalExpressionDialectIntersection() throws Exception {
-        TopicValidator.getIntersection(illegalExpressionDialect, topicSet);
+        TopicValidator.getIntersection(illegalExpressionDialect, topicSet, illExprDiaMsg.getNamespaceContext());
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)

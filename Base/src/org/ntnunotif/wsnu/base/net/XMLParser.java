@@ -1,10 +1,19 @@
 package org.ntnunotif.wsnu.base.net;
 
+import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.topics.WSNamespaceContext;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.NamespaceSupport;
+import org.xml.sax.helpers.XMLFilterImpl;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.soap.*;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -113,9 +122,9 @@ public class XMLParser {
      *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
-    public static Object parse(Node node) throws JAXBException {
-        return getUnmarshaller().unmarshal(node);
-    }
+    //public static Object parse(Node node) throws JAXBException {
+    //    return getUnmarshaller().unmarshal(node);
+    //}
 
     /**
      * Parses the {@link java.io.InputStream}, and returns the parsed tree structure
@@ -126,8 +135,16 @@ public class XMLParser {
      *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
-    public static Object parse(InputStream inputStream) throws JAXBException {
-        return getUnmarshaller().unmarshal(inputStream);
+    public static InternalMessage parse(InputStream inputStream) throws JAXBException {
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        try {
+            XMLStreamReader streamReader = factory.createXMLStreamReader(inputStream);
+            return parse(streamReader);
+        } catch (XMLStreamException e) {
+            // TODO
+            e.printStackTrace();
+            throw new JAXBException("Could not create XMLStream to read from");
+        }
     }
 
     /**
@@ -139,8 +156,12 @@ public class XMLParser {
      *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
-    public static Object parse(XMLStreamReader xmlStreamReader) throws JAXBException {
-        return getUnmarshaller().unmarshal(xmlStreamReader);
+    public static InternalMessage parse(XMLStreamReader xmlStreamReader) throws JAXBException {
+        NamespaceContext nsc = xmlStreamReader.getNamespaceContext();
+        NamespaceSupport namespaceSupport = new NamespaceSupport();
+        InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
+        msg.setNamespaceContext(nsc);
+        return msg;
     }
 
     /**
@@ -154,6 +175,20 @@ public class XMLParser {
      */
     public static void writeObjectToStream(Object object, OutputStream outputStream) throws JAXBException {
         getMarshaller().marshal(object, outputStream);
+    }
+
+
+    private class WSXMLFilter extends XMLFilterImpl {
+        WSNamespaceContext namespaceContext = new WSNamespaceContext();
+        @Override
+        public void startElement(String uri, String localName, String qName,
+                                 Attributes atts) throws SAXException {
+            if (qName != null) {
+                String prefix = qName.substring(0, qName.indexOf(':'));
+                namespaceContext.put(prefix, uri);
+            }
+            super.startElement(uri, localName, qName, atts);
+        }
     }
 
 

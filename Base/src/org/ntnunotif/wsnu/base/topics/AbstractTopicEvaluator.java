@@ -7,6 +7,7 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
+import javax.xml.namespace.NamespaceContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public abstract class AbstractTopicEvaluator implements TopicExpressionEvaluatorInterface {
 
     @Override
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
+    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         List<TopicType> retList = new ArrayList<TopicType>();
         for (TopicType tt: TopicUtils.topicSetToTopicTypeList(topicSetType)) {

@@ -82,7 +82,7 @@ public class XPathEvaluator extends AbstractTopicEvaluator {
     }
 
     @Override
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType)
+    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         if (!topicExpressionType.getDialect().equals(dialectURI)) {
             // TODO Fill in exception
@@ -109,6 +109,8 @@ public class XPathEvaluator extends AbstractTopicEvaluator {
 
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
+
+        xPath.setNamespaceContext(namespaceContext);
 
 
         for (Object o: topicSetType.getAny()) {
