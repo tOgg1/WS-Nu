@@ -46,7 +46,8 @@ public class GenericConnectorTest extends TestCase{
         };
         consumer.addConsumerListener(listen);
         stackTester = false;
-        InternalMessage message = consumerConnector.acceptMessage(messages.get(0));
+        InternalMessage sendMessage = new InternalMessage(InternalMessage.STATUS_OK, messages.get(0));
+        InternalMessage message = consumerConnector.acceptMessage(sendMessage);
         assertTrue((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) == 0);
         assertTrue(stackTester);
     }

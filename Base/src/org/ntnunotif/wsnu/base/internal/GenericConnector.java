@@ -45,11 +45,10 @@ public class GenericConnector implements WebServiceConnection{
                     continue;
                 }
             }
-            continue;
         }
-
     }
 
+    //TODO: ContextHandling
     @Override
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
@@ -88,7 +87,7 @@ public class GenericConnector implements WebServiceConnection{
                         e.printStackTrace();
                         return null;
                     } catch (InvocationTargetException e) {
-                        System.err.println("The method beinc accessed are being feeded an invalid amount of " +
+                        System.err.println("The method being accessed are being feeded an invalid amount of " +
                                            "parameters, or something even more obscure has occured.");
                     }
                 }else{

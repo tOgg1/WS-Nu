@@ -55,7 +55,7 @@ public class InternalHub implements Hub {
      * Takes a net-message, depacks it (parses it), and sends it forward in the system
      */
     @Override
-    //TODO: Rethink the design of this method. Can everything be done sequentially?
+    //TODO: Rethink the design of this method. Can everything be done sequentially? First STATUS_OK/FAILED handling and so on
     public ArrayList<InternalMessage> acceptNetMessage(InputStream inputStream){
 
         ArrayList<InternalMessage> returnMessages = new ArrayList<>();
@@ -70,7 +70,6 @@ public class InternalHub implements Hub {
             e.printStackTrace();
             return returnMessages;
         }
-
 
         /* Try sending the message to everyone */
         for(WebServiceConnection service : _services){
@@ -125,10 +124,6 @@ public class InternalHub implements Hub {
                 }
             }else if((message.statusCode & InternalMessage.STATUS_FAULT) > 0){
 
-                /* At the time of writing, all of these functions will do the same thing. We are keeping them,
-                however, to make possible additions easier.
-                 */
-
                 /* There is not specified any specific fault, so we treat it as a generic fault */
                 if(message.statusCode == InternalMessage.STATUS_FAULT) {
                     returnMessages.add(new InternalMessage(message.statusCode, null));
@@ -164,7 +159,5 @@ public class InternalHub implements Hub {
             System.err.println("Error parsing object from web service, is the service sending a valid WSN-object for parsing?");
             e.printStackTrace();
         }
-
-
     }
 }
