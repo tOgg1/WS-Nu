@@ -1,5 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import javax.xml.namespace.NamespaceContext;
+
 /**
  * Created by tormod on 3/13/14.
  */
@@ -17,6 +19,8 @@ public class InternalMessage {
     public int statusCode;
     private Object message;
 
+    private NamespaceContext context;
+
     public InternalMessage(int statusCode, Object message) {
         this.statusCode = statusCode;
         this.message = message;
@@ -24,5 +28,13 @@ public class InternalMessage {
 
     public Object getMessage() {
         return message;
+    }
+
+    public void setNamespaceContext(NamespaceContext context) {
+        this.context = context;
+    }
+
+    public NamespaceContext getNamespaceContext() {
+        return context;
     }
 }

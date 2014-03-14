@@ -64,7 +64,7 @@ public class XMLParserTest {
         System.out.println(element.getDeclaredType());
         System.out.println(element.getName());
         // TODO Complete test
-        Envelope env = (Envelope)parsedObject;
+        Envelope env =(Envelope) ((JAXBElement) parsedObject).getValue();
     }
 
     @Test
