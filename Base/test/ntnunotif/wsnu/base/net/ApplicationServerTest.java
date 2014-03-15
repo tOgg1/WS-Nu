@@ -72,7 +72,6 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSendingXML() throws Exception {
-
         InternalHub internalHub = new InternalHub();
 
         // Start the server

@@ -84,6 +84,9 @@ public class InternalHub implements Hub {
             /* Send the message forward */
             InternalMessage message = service.acceptMessage(parsedMessage);
 
+
+            System.out.println(message);
+            System.out.println(message.statusCode);
             /* Incorrect destination */
             if((message.statusCode & InternalMessage.STATUS_INVALID_DESTINATION) > 0)
             {

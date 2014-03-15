@@ -226,8 +226,9 @@ public class ApplicationServer{
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                     request.setHandled(true);
                     return;
-                }else if(((InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                          | InternalMessage.STATUS_OK) & returnMessage.statusCode) > 0){
+                //TODO: A bit unecessary perhaps? Redo into two layers?
+                }else if(((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0) &&
+                          (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){

@@ -14,7 +14,9 @@ import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.oasis_open.docs.wsn.bw_2.NotificationConsumer;
+import org.ntnunotif.wsnu.services.NotificationConsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
+import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -29,13 +31,18 @@ public class ApplicationServerWithHubTest extends TestCase {
     private InternalHub _hub;
 
     private NotificationConsumer _consumer;
+    private ConsumerListener _listener;
     private GenericConnector _consumerConnector;
 
     private ArrayList<InputStream> _sendMessages;
     private ArrayList<InternalMessage> _messages;
 
+    private boolean _stackFlag;
+
     public void setUp() throws Exception {
         super.setUp();
+
+        _stackFlag = false;
 
         _sendMessages = new ArrayList<>();
         _messages = new ArrayList<>();
@@ -43,6 +50,18 @@ public class ApplicationServerWithHubTest extends TestCase {
         _server = ApplicationServer.getInstance();
         _hub = new InternalHub();
         _server.start(_hub);
+
+        _consumer = new NotificationConsumer();
+        _listener = new ConsumerListener() {
+            @Override
+            public void notify(NotificationEvent event) {
+                _stackFlag = true;
+            }
+        };
+        _consumer.addConsumerListener(_listener);
+        _consumerConnector = new GenericConnector(_consumer);
+
+        _hub.registerService(_consumerConnector);
 
         InputStream sendStream_1_1 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
         InputStream sendStream_1_2 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
@@ -75,12 +94,17 @@ public class ApplicationServerWithHubTest extends TestCase {
 
         ContentResponse response = request.send();
 
-        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, response.getStatus());
 
         // Send a notify-request, expect something
         request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(_sendMessages.get(0)));
+
+        response = request.send();
+
+        assertTrue(_stackFlag);
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test

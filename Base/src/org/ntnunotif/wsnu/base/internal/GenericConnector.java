@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import javax.jws.WebMethod;
@@ -74,6 +75,7 @@ public class GenericConnector implements WebServiceConnection{
 
                         /* If is the case, nothing is being returned */
                         if(method.getReturnType().equals(Void.TYPE)){
+                            System.out.println("Heeeey!");;
                             returnMessage = new InternalMessage(STATUS_OK, null);
                         }else{
                             System.out.println("Hey!");
@@ -95,7 +97,7 @@ public class GenericConnector implements WebServiceConnection{
                 }
             }
         }
-        return null;
+        return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 
     @Override
