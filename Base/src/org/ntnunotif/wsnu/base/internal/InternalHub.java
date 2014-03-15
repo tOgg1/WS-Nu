@@ -236,6 +236,6 @@ public class InternalHub implements Hub {
 
     @Override
     public boolean isServiceRegistered(WebServiceConnection webServiceConnection) {
-        return false;
+        return this._services.contains(webServiceConnection);
     }
 }
