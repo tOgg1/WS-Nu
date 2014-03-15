@@ -2,9 +2,9 @@ package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.Utilities;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.NamespaceContext;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,14 +77,18 @@ public class InternalHub implements Hub {
             /* Send the message forward */
             InternalMessage message = service.acceptMessage(parsedMessage);
 
-
+            /* Incorrect destination */
+            if((message.statusCode & InternalMessage.STATUS_INVALID_DESTINATION) > 0)
+            {
+                continue;
+            }
 
             if((message.statusCode & InternalMessage.STATUS_OK) > 0){
                 if((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
                     /* This is easy, now we can convert it, and send it straight out*/
                     if((message.statusCode & InternalMessage.STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0){
                         try{
-                            InputStream returningStream = Utilities.convertToInputStream((OutputStream)message.getMessage());
+                            InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.getMessage());
                             returnMessage = new InternalMessage(InternalMessage.STATUS_OK
                                     | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
                                     | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
@@ -122,7 +126,6 @@ public class InternalHub implements Hub {
                                                    | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
                                                    | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                         break;
-
                     }
                 /* Everything is fine, and no message is to be returned */
                 }else{
