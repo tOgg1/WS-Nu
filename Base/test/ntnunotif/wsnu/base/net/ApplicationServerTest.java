@@ -66,8 +66,7 @@ public class ApplicationServerTest extends TestCase {
         request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_html_content.html")),
                                                                            "text/html;charset/utf-8");
         ContentResponse response = request.send();
-        //TODO: This should be changed to some error status, as the server should not be able to process html
-        assertEquals(200, response.getStatus());
+        assertEquals(500, response.getStatus());
         _server.stop();
     }
 

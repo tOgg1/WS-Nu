@@ -203,8 +203,9 @@ public class ApplicationServer{
                 InputStream input = httpServletRequest.getInputStream();
 
                 /* Get all returnMessages */
-                ArrayList<InternalMessage> returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
-                
+                // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
+                ArrayList<InternalMessage> returnMessages = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
+                httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
             }
             /* No content requested, return a 204: No content */
