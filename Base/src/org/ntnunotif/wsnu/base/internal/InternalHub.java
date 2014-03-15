@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The default Hub-implementation by WS-Nu. Implements the basic functionality of the hub-interface.
@@ -32,9 +33,15 @@ public class InternalHub implements Hub {
      * Default constructor
      */
     public InternalHub() throws Exception {
-        _server = ApplicationServer.getInstance();
-        _services = new ArrayList<WebServiceConnection>();
-        _server.start(this);
+        this._services = new ArrayList<WebServiceConnection>();
+        this._server = ApplicationServer.getInstance();
+        this._server.start(this);
+    }
+
+    public InternalHub(ApplicationServer server) throws Exception{
+        this._services = new ArrayList<WebServiceConnection>();
+        this._server = server;
+        this._server.start(this);
     }
 
     /**
@@ -174,13 +181,58 @@ public class InternalHub implements Hub {
         }
     }
 
+    /**
+     * Extra method for adding several Web Services with an args parameter.
+     * @param args
+     */
+    public void registerServices(WebServiceConnection... args){
+        for(WebServiceConnection webServiceConnection : args){
+            this.registerService(webServiceConnection);
+        }
+    }
+
+    /**
+     * Extra method for adding several Web Services with a collection
+     * @param webServiceConnections
+     */
+    public void registerServices(Collection<WebServiceConnection> webServiceConnections){
+        for(WebServiceConnection webServiceConnection : webServiceConnections){
+            this.registerService(webServiceConnection);
+        }
+    }
+
+    /**
+     * Extra method for removing several Web Services with an args parameter.
+     * @param args
+     */
+    public void removeServices(WebServiceConnection... args){
+        for(WebServiceConnection webServiceConnection : args){
+            this.removeService(webServiceConnection);
+        }
+    }
+
+    /**
+     * Extra method for removing several Web Services with a collection.
+     * @param webServiceConnections
+     */
+    public void removeServices(Collection<WebServiceConnection> webServiceConnections){
+        for(WebServiceConnection webServiceConnection : webServiceConnections){
+            this.removeService(webServiceConnection);
+        }
+    }
+
     @Override
     public void registerService(WebServiceConnection webServiceConnection) {
-
+        this._services.add(webServiceConnection);
     }
 
     @Override
     public void removeService(WebServiceConnection webServiceConnection) {
+        this._services.remove(webServiceConnection);
+    }
 
+    @Override
+    public boolean isServiceRegistered(WebServiceConnection webServiceConnection) {
+        return false;
     }
 }

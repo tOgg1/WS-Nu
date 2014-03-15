@@ -35,4 +35,11 @@ public interface Hub {
      * @param webServiceConnection
      */
     public void removeService(WebServiceConnection webServiceConnection);
+
+    /**
+     * Checks if the webServiceConnection is registered with the hub
+     * @param webServiceConnection
+     * @return
+     */
+    public boolean isServiceRegistered(WebServiceConnection webServiceConnection);
 }
