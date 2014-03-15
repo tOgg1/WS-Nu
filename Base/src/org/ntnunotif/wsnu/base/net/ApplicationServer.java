@@ -99,7 +99,7 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public static void start(InternalHub internalHub) throws Exception{
+    public void start(InternalHub internalHub) throws Exception{
         if(_isRunning){
             return;
         }
@@ -133,7 +133,7 @@ public class ApplicationServer{
      * Stop the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public static void stop(){
+    public void stop(){
         try {
             _server.stop();
             _serverThread.join();
@@ -149,7 +149,7 @@ public class ApplicationServer{
      * @param recipient
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
-    public static Object[] sendMessage(InternalMessage message, String recipient){
+    public Object[] sendMessage(InternalMessage message, String recipient){
         //TODO: Distinguish between different faults?
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
@@ -226,8 +226,8 @@ public class ApplicationServer{
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                     request.setHandled(true);
                     return;
-                }else if((InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                          | InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
+                }else if(((InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                          | InternalMessage.STATUS_OK) & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){

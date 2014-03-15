@@ -65,7 +65,8 @@ public class InternalHub implements Hub {
             parsedMessage = XMLParser.parse(inputStream);
         } catch (JAXBException e) {
             //TODO: Move this handling to the parser?
-            returnMessage = new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR, null);
+            returnMessage = new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR
+                                                |InternalMessage.STATUS_FAULT, null);
             e.printStackTrace();
             return returnMessage;
         }
@@ -171,5 +172,15 @@ public class InternalHub implements Hub {
             System.err.println("Error parsing object from web service, is the service sending a valid WSN-object for parsing?");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void registerService(WebServiceConnection webServiceConnection) {
+
+    }
+
+    @Override
+    public void removeService(WebServiceConnection webServiceConnection) {
+
     }
 }

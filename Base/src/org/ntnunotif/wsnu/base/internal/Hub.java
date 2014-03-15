@@ -23,4 +23,16 @@ public interface Hub {
      * Function to accept a message from a local service, and forward it out into the internet.
      */
     public void acceptLocalMessage(Object object, String endPoint);
+
+    /**
+     * Register's a service for usage with this hub object.
+     * @param webServiceConnection
+     */
+    public void registerService(WebServiceConnection webServiceConnection);
+
+    /**
+     * Removes a registered service for usage with this hub object.
+     * @param webServiceConnection
+     */
+    public void removeService(WebServiceConnection webServiceConnection);
 }

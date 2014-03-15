@@ -44,14 +44,21 @@ public class ApplicationServerWithHubTest extends TestCase {
         _hub = new InternalHub();
         _server.start(_hub);
 
+
         InputStream sendStream_1_1 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
         InputStream sendStream_1_2 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
         _sendMessages.add(sendStream_1_1);
         _messages.add(XMLParser.parse(sendStream_1_2));
 
-        InputStream sendStream_2 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
-        _sendMessages.add(sendStream_2);
-        _messages.add(XMLParser.parse(sendStream_2));
+        InputStream sendStream_2_1 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
+        InputStream sendStream_2_2 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
+        _sendMessages.add(sendStream_2_1);
+        _messages.add(XMLParser.parse(sendStream_2_2));
+    }
+
+    public void tearDown() throws Exception {
+        super.tearDown();
+        _server.stop();
     }
 
     @Test
@@ -62,14 +69,19 @@ public class ApplicationServerWithHubTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
-        // Send response
+        // Send a soap-request, expect nothing
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(_sendMessages.get(0)));
+        request.content(new InputStreamContentProvider(_sendMessages.get(1)));
 
         ContentResponse response = request.send();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, response.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND_404, response.getStatus());
+
+        // Send a notify-request, expect something
+        request = client.newRequest("http://localhost:8080/");
+        request.method(HttpMethod.POST);
+        request.content(new InputStreamContentProvider(_sendMessages.get(0)));
     }
 
     @Test
