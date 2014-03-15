@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.net;
 
+import com.google.common.io.ByteStreams;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
@@ -204,9 +205,16 @@ public class ApplicationServer{
 
                 /* Get all returnMessages */
                 // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
-                ArrayList<InternalMessage> returnMessages = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
+                InternalMessage returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
                 httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+                InputStream inputStream = (InputStream)returnMessage.getMessage();
+                OutputStream outputStream = httpServletResponse.getOutputStream();
 
+                /*google.commons helper function*/
+                ByteStreams.copy(inputStream, outputStream);
+
+                httpServletResponse.setStatus(HttpStatus.OK_200);
+                outputStream.flush();
             }
             /* No content requested, return a 204: No content */
             else{

@@ -93,7 +93,6 @@ public class InternalHub implements Hub {
                                     | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
                                     | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                             break;
-
                         }catch(ClassCastException e){
                             System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
@@ -106,7 +105,6 @@ public class InternalHub implements Hub {
                                                        | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
                                                        | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                             break;
-
                         }catch(ClassCastException e){
                             System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();

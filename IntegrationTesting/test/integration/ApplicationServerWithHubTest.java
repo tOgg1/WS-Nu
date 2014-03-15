@@ -69,7 +69,6 @@ public class ApplicationServerWithHubTest extends TestCase {
         ContentResponse response = request.send();
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, response.getStatus());
-
     }
 
     @Test
