@@ -229,6 +229,14 @@ public class ApplicationServer{
                 }else if((InternalMessage.STATUS_HAS_RETURNING_MESSAGE
                           | InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
 
+                    /* Liar liar pants on fire */
+                    if(returnMessage.getMessage() == null){
+                        System.err.println("The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
+                        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                        request.setHandled(true);
+                        return;
+                    }
+
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
                     InputStream inputStream = (InputStream)returnMessage.getMessage();
