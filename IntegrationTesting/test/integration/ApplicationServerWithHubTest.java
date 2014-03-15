@@ -44,13 +44,14 @@ public class ApplicationServerWithHubTest extends TestCase {
         _hub = new InternalHub();
         _server.start(_hub);
 
-        InputStream sendStream = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
-        _sendMessages.add(sendStream);
-        _messages.add(XMLParser.parse(sendStream));
+        InputStream sendStream_1_1 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
+        InputStream sendStream_1_2 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
+        _sendMessages.add(sendStream_1_1);
+        _messages.add(XMLParser.parse(sendStream_1_2));
 
-        sendStream = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
-        _sendMessages.add(sendStream);
-        _messages.add(XMLParser.parse(sendStream));
+        InputStream sendStream_2 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
+        _sendMessages.add(sendStream_2);
+        _messages.add(XMLParser.parse(sendStream_2));
     }
 
     @Test

@@ -7,8 +7,10 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 
@@ -21,12 +23,12 @@ import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-
 /**
  * Implementation of jetty's application server. Implemented as singleton to avoid multiple instantiations which MIGHT cause port-bind exceptions.
  * @Author: Tormod Haugland
  * @Date: 06/03/2014
  */
+//TODO: Add modifiability for the server
 public class ApplicationServer{
 
     /**
@@ -40,24 +42,34 @@ public class ApplicationServer{
     private static Server _server;
 
     /**
-     * Jetty-http client
+     * The server's connectors.
+     */
+    private ArrayList<Connector> _connectors;
+
+    /**
+     * Jetty-http client.
      */
     private static HttpClient _client;
 
     /**
-     * Thread for the server to run on
+     * Thread for the server to run on.
      */
     private static Thread _serverThread;
 
     /**
      * A bus object as parent. Needed to reroute requests to bus.
      */
-    private static InternalHub _parentInternalHub;
+    private static Hub _parentHub;
 
     /**
      * Variable to check if this server is running. Primarily used to avoid double @start calls.
      */
     private static boolean _isRunning = false;
+
+    /**
+     * Variable that signifies whether or getInstance() ever has been invoked.
+     */
+    private static boolean _hasBeenInvoked = false;
 
     /**
      * As this class is a singleton no external instantiation is allowed.
@@ -70,11 +82,13 @@ public class ApplicationServer{
 
     /**
      * Function to return the singleton instance. Will create a new instance if no instance has yet been instantiated.
-     * @return Returns the running singleton instance
+     * If any custom settings are to be set for this instance, they MUST be called before the first invocation of this method.
+     * @return Returns the running singleton instance,
      */
     public static ApplicationServer getInstance() throws Exception{
-        if(_singleton == null){
+        if(!_hasBeenInvoked){
             _singleton = new ApplicationServer();
+            _hasBeenInvoked = true;
             return _singleton;
         }else{
             return _singleton;
@@ -91,7 +105,7 @@ public class ApplicationServer{
         }
 
         _isRunning = true;
-        _parentInternalHub = internalHub;
+        _parentHub = internalHub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();
@@ -162,7 +176,7 @@ public class ApplicationServer{
     }
 
     /**
-     * Inner class to handle http-requests.
+     * WS-Nu's default http-handler.
      */
     private class HttpHandler extends AbstractHandler {
 
@@ -203,18 +217,55 @@ public class ApplicationServer{
             if(httpServletRequest.getContentLength() > 0){
                 InputStream input = httpServletRequest.getInputStream();
 
-                /* Get all returnMessages */
+                /* Send the message to the hub */
                 // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
-                InternalMessage returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
-                httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
-                InputStream inputStream = (InputStream)returnMessage.getMessage();
-                OutputStream outputStream = httpServletResponse.getOutputStream();
+                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(input);
 
-                /*google.commons helper function*/
-                ByteStreams.copy(inputStream, outputStream);
+                /* Handle possible errors */
+                if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    request.setHandled(true);
+                    return;
+                }else if((InternalMessage.STATUS_HAS_RETURNING_MESSAGE
+                          | InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
 
-                httpServletResponse.setStatus(HttpStatus.OK_200);
-                outputStream.flush();
+                    httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+
+                    InputStream inputStream = (InputStream)returnMessage.getMessage();
+                    OutputStream outputStream = httpServletResponse.getOutputStream();
+
+                    /* google.commons helper function*/
+                    ByteStreams.copy(inputStream, outputStream);
+
+                    httpServletResponse.setStatus(HttpStatus.OK_200);
+                    outputStream.flush();
+                    request.setHandled(true);
+                /* Something went wrong, and an error-message is being returned
+                 * This is only here for theoretical reasons. Calling something like this should make you
+                 * rethink your Web Service's architecture */
+                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
+                    httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+
+                    InputStream inputStream = (InputStream)returnMessage.getMessage();
+                    OutputStream outputStream = httpServletResponse.getOutputStream();
+
+                    /* google.commons helper function*/
+                    ByteStreams.copy(inputStream, outputStream);
+
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    outputStream.flush();
+                    request.setHandled(true);
+                /* Everything is fine, and nothing is expected */
+                }else if((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
+                    httpServletResponse.setStatus(HttpStatus.OK_200);
+                    request.setHandled(true);
+                }else if((InternalMessage.STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
+                    httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
+                    request.setHandled(true);
+                }else{
+                    httpServletResponse.setStatus(HttpStatus.OK_200);
+                    request.setHandled(true);
+                }
             }
             /* No content requested, return a 204: No content */
             else{

@@ -91,7 +91,7 @@ public class GenericConnector implements WebServiceConnection{
                                            "parameters, or something even more obscure has occured.");
                     }
                 }else{
-                    return null;
+                    return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                 }
             }
         }

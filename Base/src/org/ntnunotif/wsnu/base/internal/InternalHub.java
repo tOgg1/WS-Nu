@@ -57,7 +57,6 @@ public class InternalHub implements Hub {
     @Override
     //TODO: Rethink the design of this method. Can everything be done sequentially? First STATUS_OK/FAILED handling and so on
     public InternalMessage acceptNetMessage(InputStream inputStream){
-
         InternalMessage returnMessage = null;
 
         /* Decrypt message */
@@ -71,7 +70,7 @@ public class InternalHub implements Hub {
             return returnMessage;
         }
 
-        /* Try sending the message to everyone, perhaps do endpoint-reference testing here? */
+        /* Try sending the message to everyone */
         for(WebServiceConnection service : _services){
 
             /* Send the message forward */
@@ -151,11 +150,14 @@ public class InternalHub implements Hub {
                     returnMessage = new InternalMessage(message.statusCode, null);
                     break;
                 }
-            /* Something weird is going on, neither OK or FAULT is flagged*/
+            /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
             }else{
                 returnMessage = new InternalMessage(InternalMessage.STATUS_FAULT, null);
                 break;
             }
+        }
+        if(returnMessage == null){
+            returnMessage = new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
         }
         return returnMessage;
     }

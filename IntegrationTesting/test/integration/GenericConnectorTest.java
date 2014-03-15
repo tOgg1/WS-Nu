@@ -65,7 +65,7 @@ public class GenericConnectorTest extends TestCase{
         Method notify = methods[0];
 
         assertTrue(functionality.size() == 1);
-        assertTrue(functionality.values().contains(notify));
-
+        Method notifyFromFunc = functionality.get("Notify");
+        assertTrue(notify.getName() == notifyFromFunc.getName());
     }
 }
