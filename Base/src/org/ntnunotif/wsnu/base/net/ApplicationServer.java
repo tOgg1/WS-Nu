@@ -130,20 +130,25 @@ public class ApplicationServer{
     /**
      * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
      * and sends this response back up the system.
-     * @param inputStream
+     * @param message
      * @param recipient
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
-    public static Object[] sendMessage(InputStream inputStream, String recipient){
+    public static Object[] sendMessage(InternalMessage message, String recipient){
+        //TODO: Distinguish between different faults?
+        //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
+
         org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(inputStream),
-                "application/soap+xml;charset/utf-8");
+
         //TODO: Handle exceptions
         try {
+            request.content(new InputStreamContentProvider((InputStream)message.getMessage()), "application/soap+xml;charset/utf-8");
             ContentResponse response = request.send();
             return new Object[]{response.getStatus(), new ByteArrayInputStream(response.getContent())};
+        } catch(ClassCastException e){
+            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
@@ -152,7 +157,7 @@ public class ApplicationServer{
             e.printStackTrace();
         }
         /* Some error has occured, return error-code TODO: Handle exceptions */
-        return new Object[]{HttpStatus.NOT_FOUND_404, null};
+        return new Object[]{HttpStatus.INTERNAL_SERVER_ERROR_500, null};
     }
 
     /**
@@ -199,20 +204,14 @@ public class ApplicationServer{
 
                 /* Get all returnMessages */
                 ArrayList<InternalMessage> returnMessage = ApplicationServer.this._parentInternalHub.acceptNetMessage(input);
-
+                
 
             }
-            /* No content found, return a 204: No content */
+            /* No content requested, return a 204: No content */
             else{
                 httpServletResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 request.setHandled(true);
             }
-
-            // Temporary for testing purposes
-            httpServletResponse.setContentType("text/html;charset=utf-8");
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            request.setHandled(true);
-            httpServletResponse.getWriter().println("<h1>Hello world</h1>");
         }
     }
 }
