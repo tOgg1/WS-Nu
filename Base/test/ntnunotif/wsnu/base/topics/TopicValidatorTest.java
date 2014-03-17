@@ -53,6 +53,11 @@ public class TopicValidatorTest {
     private static InternalMessage topNSMsg;
     private static InternalMessage topSetMsg;
 
+    private static final String testNamespace = "http://ws-nu.org/testTopicSpace1";
+    private static final String testRootTopic1 = "root_topic1";
+    private static final String testChildTopic = "root_topic1/child_topic";
+    private static final String testRootTopic2 = "root_topic2";
+
     @BeforeClass
     public static void setup() {
         FileInputStream fis = null;
@@ -151,21 +156,40 @@ public class TopicValidatorTest {
 
     @Test
     public void testGetIntersectionOne() throws Exception{
+        // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
-        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret, false);
+        // Convert to more easily readable format
+        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , retAsList.size());
-        JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1, retAsQNameList.size());
+
+        // Check for correctness
+        QName expectedName = new QName(testNamespace, testChildTopic);
+        Assert.assertEquals("Topic selected had unexpected name!", expectedName, retAsQNameList.get(0));
+
+        // Write to file, so it is possible to see actual content of returned set
+        JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
         XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathSinPath));
     }
 
     @Test
     public void testGetIntersectionTwo() throws Exception{
+        // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
-        List<TopicType> retAsList = TopicUtils.topicSetToTopicTypeList(ret, false);
+        // Convert to more easily readable format
+        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsList.size());
-        JAXBElement e = new JAXBElement(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsQNameList.size());
+
+        // Check for correct content
+        QName root1 = new QName(testNamespace, testRootTopic1);
+        QName child = new QName(testNamespace, testChildTopic);
+        QName root2 = new QName(testNamespace, testRootTopic2);
+        Assert.assertTrue("Returned list did not contain root_topic1!", retAsQNameList.contains(root1));
+        Assert.assertTrue("Returned list did not contain root_topic2!", retAsQNameList.contains(root2));
+        Assert.assertTrue("Returned list did not contain child_topic!", retAsQNameList.contains(child));
+
+        JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
         XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathMulPath));
     }
 

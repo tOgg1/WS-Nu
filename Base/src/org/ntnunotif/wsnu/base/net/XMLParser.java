@@ -105,6 +105,7 @@ public class XMLParser {
         return getJaxbContext().createMarshaller();
     }
 
+    /*
     /**
      * Parses the {@link javax.xml.soap.Node}, and returns the parsed tree structure
      *
