@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * Generated source version: 2.7.10
  * 
  */
-@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationConsumer")
+@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
 @XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public interface NotificationConsumer {

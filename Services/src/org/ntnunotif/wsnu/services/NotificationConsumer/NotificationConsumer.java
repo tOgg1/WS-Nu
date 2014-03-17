@@ -11,14 +11,14 @@ import javax.jws.WebService;
 import java.util.ArrayList;
 
 /**
- * The NotificationConsumer Web Service as defined per the Oasis WS-N Base specification
+ * The SimpleConsumer Web Service as defined per the Oasis WS-N Base specification
  * Created by tormod on 3/11/14.
  */
-@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationConsumer")
+@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
 public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer {
 
     /**
-     * All listeners to this NotificationConsumer.
+     * All listeners to this SimpleConsumer.
      */
     private ArrayList<ConsumerListener> _listeners;
 

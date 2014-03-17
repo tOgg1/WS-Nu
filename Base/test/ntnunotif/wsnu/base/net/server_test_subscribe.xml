@@ -12,7 +12,7 @@
         <wsnt:Subscribe xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2">
             <wsnt:ConsumerReference>
                 <wsa:Address>
-                    http://www.example.org/NotificationConsumer
+                    http://www.example.org/SimpleConsumer
                 </wsa:Address>
             </wsnt:ConsumerReference>
             <wsnt:Filter>
