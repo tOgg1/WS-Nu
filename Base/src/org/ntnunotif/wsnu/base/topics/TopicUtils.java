@@ -133,17 +133,19 @@ public class TopicUtils {
             return null;
         // Check for topic tag. If not present, throw an IllegalArgumentException
         String namespace = topicNode.getNamespaceURI();
-        String localName = topicNode.getLocalName();
+        String localName = topicNode.getLocalName() == null ? topicNode.getNodeName() : topicNode.getLocalName();
         String prefix = topicNode.getPrefix();
         topicNode = topicNode.getParentNode();
         while(namespace == null && topicNode != null) {
-            String local = topicNode.getLocalName();
+            String local = topicNode.getLocalName() == null ? topicNode.getNodeName() : topicNode.getLocalName();
             if (local != null)
                 localName = local +"/"+ localName;
             prefix = topicNode.getPrefix();
             namespace = topicNode.getNamespaceURI();
             topicNode = topicNode.getParentNode();
         }
+        if (prefix == null)
+            return new QName(namespace, localName);
         return new QName(namespace, localName, prefix);
     }
 
@@ -165,27 +167,35 @@ public class TopicUtils {
         // Add the topic itself to the stack, and go through all its parents until a namespace is defined.
         topicStack.push(topic);
         String namespace = topic.getNamespaceURI();
+        String tLocalN = topic.getLocalName();
         Node current = topic;
         while (namespace == null && current != null) {
             current = current.getParentNode();
-            namespace = current.getNamespaceURI();
-            if (current != null)
+            if (current != null) {
+                namespace = current.getNamespaceURI();
+                tLocalN = current.getLocalName();
                 topicStack.push(current);
+            }
         }
 
-        // Find element to merge from, if any
+        // Find element to merge from, if any. Sort by both local names and namespaces
         Node mergeFromNode = null;
         for (Object o: topicSet.getAny()) {
             if (o instanceof  Node) {
                 Node setNode = (Node) o;
                 String setNS = setNode.getNamespaceURI();
+                String setLocalName = setNode.getLocalName();
                 if (setNS == null && namespace == null) {
-                    mergeFromNode = setNode;
-                    break;
+                    if (setLocalName.equals(tLocalN)) {
+                        mergeFromNode = setNode;
+                        break;
+                    }
                 }
                 if (setNS != null && setNS.equals(namespace)) {
-                    mergeFromNode = setNode;
-                    break;
+                    if (setLocalName.equals(tLocalN)) {
+                        mergeFromNode = setNode;
+                        break;
+                    }
                 }
             }
         }
@@ -212,7 +222,8 @@ public class TopicUtils {
         }
         if (foundNode) {
             // The mergeFromNode is now where we shall inject current
-            mergeFromNode.appendChild(current);
+            Node importedNode = mergeFromNode.getOwnerDocument().importNode(current, true);
+            mergeFromNode.appendChild(importedNode);
         } else {
             // We stopped looking for element because stack went dry. We must therefore ensure that mergeNode is topic
             makeTopicNode(mergeFromNode);
@@ -260,10 +271,11 @@ public class TopicUtils {
     public static void makeTopicNode(Node node) {
         if (node.getNodeType() != Node.ELEMENT_NODE)
             throw new IllegalArgumentException("Tried to make a non-element node topic!");
-        Document owner = node.getOwnerDocument();
+        Element element = (Element) node;
+        Document owner = element.getOwnerDocument();
         Attr topicAttr = owner.createAttributeNS(WS_TOPIC_NAMESPACE, "topic");
         topicAttr.setValue("true");
-        node.appendChild(topicAttr);
+        element.setAttributeNodeNS(topicAttr);
     }
 
     public static boolean isTopic(Node node) {
