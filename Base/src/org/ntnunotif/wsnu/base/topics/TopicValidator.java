@@ -11,7 +11,6 @@ import org.oasis_open.docs.wsn.t_1.TopicType;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,7 +26,12 @@ public class TopicValidator {
         topicExpressionEvaluators = new HashMap<String, TopicExpressionEvaluatorInterface>();
         TopicExpressionEvaluatorInterface evaluator = new XPathEvaluator();
         topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
-        // TODO Add the rest of the evaluators as they are written
+        evaluator = new SimpleEvaluator();
+        topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
+        evaluator = new ConcreteEvaluator();
+        topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
+        evaluator = new FullEvaluator();
+        topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
     }
 
     /**
