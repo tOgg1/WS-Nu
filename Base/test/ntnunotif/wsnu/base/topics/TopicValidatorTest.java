@@ -213,13 +213,11 @@ public class TopicValidatorTest {
         // Child of first root topic should evaluate to true
         TopicType topic = topicNamespace.getTopic().get(0).getTopic().get(0);
         Assert.assertTrue("XPath evaluated topic falsely to false", TopicValidator.evaluateTopicWithExpression(xPathSingleHit, topic));
-        // TODO testcode
     }
 
     @Test
     public void testEvaluateTopicWithExpressionIllegal() throws Exception {
         TopicType topic = topicNamespace.getTopic().get(0).getTopic().get(0);
         Assert.assertFalse("XPath evaluated topic falsely to true", TopicValidator.evaluateTopicWithExpression(xPathFalse, topic));
-        // TODO testcode
     }
 }
