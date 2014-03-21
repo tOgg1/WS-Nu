@@ -159,7 +159,7 @@ public class TopicValidatorTest {
         // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
         // Convert to more easily readable format
-        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret);
+        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1, retAsQNameList.size());
 
@@ -177,7 +177,7 @@ public class TopicValidatorTest {
         // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
         // Convert to more easily readable format
-        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret);
+        List<QName> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsQNameList.size());
 
