@@ -58,7 +58,6 @@ public class GenericConnector implements WebServiceConnection{
 
         /* The class of this message */
         Class objectClass = message.getClass();
-        System.out.println(objectClass);
         Annotation[] messageAnnotations = objectClass.getAnnotations();
 
         for(Annotation annotation : messageAnnotations){

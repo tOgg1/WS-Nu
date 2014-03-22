@@ -100,7 +100,6 @@ public class InternalHub implements Hub {
 
         /* If this exception is thrown, the message received can not be soap */
         } catch (ClassCastException e) {
-            System.out.println("Ehhm");
             return new InternalMessage(InternalMessage.STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
