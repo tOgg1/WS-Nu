@@ -41,7 +41,7 @@ public class TopicUtilsTest {
                 rootList.add(new QName(ns, loc));
             }
         }
-        // 6 root topics, 18 full topic trees
+        // 6 root topics, 18 full topic trees, combining to 24 topics
         for (QName root: rootList) {
             for (String loc: localNames) {
                 List<QName> curList = new ArrayList<>();
@@ -72,6 +72,7 @@ public class TopicUtilsTest {
 
         Assert.assertEquals("QNames returned from root topics was wrong amount", 6, translatedRootList.size());
         Assert.assertEquals("QNames returned from full topic list was wrong amount", fullQNameList.size(), translatedFullList.size());
+        Assert.assertEquals("QNames returned from full topic list was wrong amount", 24, translatedFullList.size());
 
         for (int i = 0; i < translatedRootList.size(); i++) {
             List<QName> name = translatedRootList.get(i);
