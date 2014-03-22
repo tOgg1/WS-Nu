@@ -41,35 +41,6 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         throw new UnsupportedOperationException("Namespace evaluation is still not implemented");
-        /*
-        if (!topicExpressionType.getDialect().equals(dialectURI)) {
-            // TODO Fill in exception
-            throw new TopicExpressionDialectUnknownFault();
-        }
-        String expression = null;
-        for (Object o : topicExpressionType.getContent()) {
-            if (o instanceof String) {
-                if (expression != null) {
-                    // TODO respond to multiple strings in expression
-                }
-                expression = (String) o;
-            }
-        }
-        if (expression == null) {
-            // TODO Find exception for no expression in tag
-        }
-        XPathFactory xPathFactory = XPathFactory.newInstance();
-        XPath xPath = xPathFactory.newXPath();
-        XPathExpression xPathExpression = null;
-        try {
-            xPathExpression = xPath.compile(expression);
-        } catch (XPathExpressionException e) {
-            // TODO fill in exception
-            throw new InvalidTopicExpressionFault();
-        }
-        // TODO This is not yet implemented
-        return false;
-        */
     }
 
     @Override
@@ -87,30 +58,7 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
         }
 
         // Find expression string
-        String expression = null;
-        for (Object o : topicExpressionType.getContent()) {
-            if (o instanceof String) {
-                if (expression != null) {
-                    InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-                    faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-                    BaseFaultType.Description description = new BaseFaultType.Description();
-                    description.setLang("en");
-                    description.setValue("The given content of the expression was not an XPath expression!");
-                    faultType.getDescription().add(description);
-                    throw new InvalidTopicExpressionFault(description.getValue(), faultType);
-                }
-                expression = (String) o;
-            }
-        }
-        if (expression == null) {
-            InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-            faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-            BaseFaultType.Description description = new BaseFaultType.Description();
-            description.setLang("en");
-            description.setValue("No expression was given, and thus can not be evaluated!");
-            faultType.getDescription().add(description);
-            throw new InvalidTopicExpressionFault(description.getValue(), faultType);
-        }
+        String expression = TopicUtils.extractExpression(topicExpressionType);
 
         // Build XPath environment
         XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -142,7 +90,9 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
                 returnCount += nodeList.getLength();
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
-                    returnSet.getAny().add(node);
+                    // Ensure that it is actual topics we have selected
+                    if (TopicUtils.isTopic(node))
+                        returnSet.getAny().add(node);
                 }
             } catch (XPathExpressionException e) {
                 InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();

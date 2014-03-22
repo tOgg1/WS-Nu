@@ -1,15 +1,18 @@
 package org.ntnunotif.wsnu.base.topics;
 
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
+import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
+import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.w3c.dom.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by Inge on 13.03.14.
@@ -76,56 +79,6 @@ public class TopicUtils {
             addTopicToTopicSet(qNameList, topicSet);
         }
         return topicSet;
-    }
-
-    /* TODO not prioritized
-        public static List<TopicType> topicSetToTopicTypeList(TopicSetType set) {
-            List<TopicType> list = new ArrayList<>();
-            for (Object o: set.getAny()) {
-                if (o instanceof Node) {
-                    Node node = (Node)o;
-                    // TODO remove:
-                    System.out.println("\n\n" + topicToQName(node) + "\n");
-                    System.out.println("PARENT:");
-                    printNode(node.getParentNode());
-
-                    node.normalize();
-                    list.add(nodeToTopicType(node));
-                }
-            }
-            return list;
-        }
-
-        public static TopicSetType topicTypeListToTopicSet(List<TopicType> list) {
-            // TODO
-            return null;
-        }
-
-        private static TopicType nodeToTopicType(Node node) {
-            // TODO This will be written recursively here. Since topic tree may be arbitrary deep, this implementation is prone to stack overflow issues
-            TopicType topicType = new TopicType();
-            // TODO Fill in with more data
-            if (node.hasChildNodes()) {
-                Node child = node.getFirstChild();
-                while (child != null) {
-                    topicType.getTopic().add(nodeToTopicType(child));
-                    child = child.getNextSibling();
-                }
-            }
-            // TODO remove
-            printNode(node);
-            return topicType;
-        }
-    */
-    private static void printNode(Node node) {
-        // TODO remove, debugging code
-        System.out.println("\n\nNode:\t" + node.getLocalName());
-        System.out.println("\tHas parent:\t" + (node.getParentNode() != null));
-        System.out.println("\tBaseURI:\t" + node.getBaseURI());
-        System.out.println("\tText content:\t" + node.getTextContent());
-        System.out.println("\tNamespace URI:\t" + node.getNamespaceURI());
-        System.out.println("\tNode name:\t" + node.getNodeName());
-        System.out.println("\tValue:\t" + node.getNodeValue());
     }
 
     /**
@@ -340,5 +293,33 @@ public class TopicUtils {
         if (topicAttr == null)
             return false;
         return topicAttr.getTextContent().equalsIgnoreCase("true");
+    }
+
+    public static String extractExpression(TopicExpressionType topicExpressionType) throws InvalidTopicExpressionFault{
+        String expression = null;
+        for (Object o : topicExpressionType.getContent()) {
+            if (o instanceof String) {
+                if (expression != null) {
+                    InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
+                    faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+                    BaseFaultType.Description description = new BaseFaultType.Description();
+                    description.setLang("en");
+                    description.setValue("The given content of the expression was not a simple expression!");
+                    faultType.getDescription().add(description);
+                    throw new InvalidTopicExpressionFault(description.getValue(), faultType);
+                }
+                expression = (String) o;
+            }
+        }
+        if (expression == null) {
+            InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
+            faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+            BaseFaultType.Description description = new BaseFaultType.Description();
+            description.setLang("en");
+            description.setValue("No expression was given, and thus can not be evaluated!");
+            faultType.getDescription().add(description);
+            throw new InvalidTopicExpressionFault(description.getValue(), faultType);
+        }
+        return expression.trim();
     }
 }
