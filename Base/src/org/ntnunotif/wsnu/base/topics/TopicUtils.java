@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.base.topics;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.w3c.dom.*;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,41 +21,44 @@ public class TopicUtils {
     /**
      * Should never be instantiated.
      */
-    private TopicUtils() {}
+    private TopicUtils() {
+    }
 
-    public static List<QName> topicSetToQNameList(TopicSetType set, boolean recursive) {
+    public static List<List<QName>> topicSetToQNameList(TopicSetType set, boolean recursive) {
         if (recursive)
             return topicSetToQNameListRecursive(set);
         return topicSetToQNameListNonRecursive(set);
     }
 
-    private static List<QName> topicSetToQNameListNonRecursive(TopicSetType set) {
-        List<QName> list = new ArrayList<>();
-        for (Object o: set.getAny()) {
+    private static List<List<QName>> topicSetToQNameListNonRecursive(TopicSetType set) {
+        List<List<QName>> list = new ArrayList<>();
+        for (Object o : set.getAny()) {
             if (o instanceof Node) {
-                Node node = (Node)o;
-                list.add(topicNodeToQName(node));
+                Node node = (Node) o;
+                List<QName> name = topicNodeToQNameList(node);
+                if (name != null)
+                    list.add(name);
             }
         }
         return list;
     }
 
-    private static List<QName> topicSetToQNameListRecursive(TopicSetType set) {
-        List<QName> list = new ArrayList<>();
+    private static List<List<QName>> topicSetToQNameListRecursive(TopicSetType set) {
+        List<List<QName>> list = new ArrayList<>();
         Stack<Node> nodeStack = new Stack<>();
         // Push all nodes to stack we are exploring from.
-        for (Object o: set.getAny()) {
+        for (Object o : set.getAny()) {
             if (o instanceof Node) {
                 nodeStack.push((Node) o);
             }
         }
-        while(!nodeStack.empty()) {
+        while (!nodeStack.empty()) {
             // Pop a node from stack, if it is a topic node, add it to the topic list
             Node node = nodeStack.pop();
-            QName nodeName = topicNodeToQName(node);
-            if (nodeName != null) {
+            List<QName> nodeName = topicNodeToQNameList(node);
+            if (nodeName != null)
                 list.add(nodeName);
-            }
+
             // Get all its element children and add them to the stack
             NodeList children = node.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
@@ -66,55 +70,56 @@ public class TopicUtils {
         return list;
     }
 
-    public static TopicSetType qNameListToTopicSet(List<QName> names) {
+    public static TopicSetType qNameListListToTopicSet(List<List<QName>> names) {
         TopicSetType topicSet = new TopicSetType();
-        for (QName qName: names) {
-            addTopicToTopicSet(qName, topicSet);
+        for (List<QName> qNameList : names) {
+            addTopicToTopicSet(qNameList, topicSet);
         }
         return topicSet;
     }
-/* TODO not prioritized
-    public static List<TopicType> topicSetToTopicTypeList(TopicSetType set) {
-        List<TopicType> list = new ArrayList<>();
-        for (Object o: set.getAny()) {
-            if (o instanceof Node) {
-                Node node = (Node)o;
-                // TODO remove:
-                System.out.println("\n\n" + topicToQName(node) + "\n");
-                System.out.println("PARENT:");
-                printNode(node.getParentNode());
 
-                node.normalize();
-                list.add(nodeToTopicType(node));
+    /* TODO not prioritized
+        public static List<TopicType> topicSetToTopicTypeList(TopicSetType set) {
+            List<TopicType> list = new ArrayList<>();
+            for (Object o: set.getAny()) {
+                if (o instanceof Node) {
+                    Node node = (Node)o;
+                    // TODO remove:
+                    System.out.println("\n\n" + topicToQName(node) + "\n");
+                    System.out.println("PARENT:");
+                    printNode(node.getParentNode());
+
+                    node.normalize();
+                    list.add(nodeToTopicType(node));
+                }
             }
+            return list;
         }
-        return list;
-    }
 
-    public static TopicSetType topicTypeListToTopicSet(List<TopicType> list) {
-        // TODO
-        return null;
-    }
+        public static TopicSetType topicTypeListToTopicSet(List<TopicType> list) {
+            // TODO
+            return null;
+        }
 
-    private static TopicType nodeToTopicType(Node node) {
-        // TODO This will be written recursively here. Since topic tree may be arbitrary deep, this implementation is prone to stack overflow issues
-        TopicType topicType = new TopicType();
-        // TODO Fill in with more data
-        if (node.hasChildNodes()) {
-            Node child = node.getFirstChild();
-            while (child != null) {
-                topicType.getTopic().add(nodeToTopicType(child));
-                child = child.getNextSibling();
+        private static TopicType nodeToTopicType(Node node) {
+            // TODO This will be written recursively here. Since topic tree may be arbitrary deep, this implementation is prone to stack overflow issues
+            TopicType topicType = new TopicType();
+            // TODO Fill in with more data
+            if (node.hasChildNodes()) {
+                Node child = node.getFirstChild();
+                while (child != null) {
+                    topicType.getTopic().add(nodeToTopicType(child));
+                    child = child.getNextSibling();
+                }
             }
+            // TODO remove
+            printNode(node);
+            return topicType;
         }
-        // TODO remove
-        printNode(node);
-        return topicType;
-    }
-*/
+    */
     private static void printNode(Node node) {
         // TODO remove, debugging code
-        System.out.println("\n\nNode:\t"+node.getLocalName());
+        System.out.println("\n\nNode:\t" + node.getLocalName());
         System.out.println("\tHas parent:\t" + (node.getParentNode() != null));
         System.out.println("\tBaseURI:\t" + node.getBaseURI());
         System.out.println("\tText content:\t" + node.getTextContent());
@@ -124,39 +129,53 @@ public class TopicUtils {
     }
 
     /**
-     * Converts a topicNode to a QName.
+     * Converts a topicNode to a QName List.
+     *
      * @param topicNode the node to convert
-     * @return qname of topic or null if node is not a topic.
+     * @return List of QNames representing topic or null if node is not a topic.
      */
-    public static QName topicNodeToQName(Node topicNode) {
+    public static List<QName> topicNodeToQNameList(Node topicNode) {
         if (!isTopic(topicNode))
             return null;
-        // Check for topic tag. If not present, throw an IllegalArgumentException
-        String namespace = topicNode.getNamespaceURI();
-        String localName = topicNode.getLocalName() == null ? topicNode.getNodeName() : topicNode.getLocalName();
-        String prefix = topicNode.getPrefix();
-        topicNode = topicNode.getParentNode();
-        while(namespace == null && topicNode != null) {
-            String local = topicNode.getLocalName() == null ? topicNode.getNodeName() : topicNode.getLocalName();
-            if (local != null)
-                localName = local +"/"+ localName;
-            prefix = topicNode.getPrefix();
-            namespace = topicNode.getNamespaceURI();
-            topicNode = topicNode.getParentNode();
+        List<QName> qNames = new ArrayList<>();
+        Node current = topicNode;
+        // TODO check up on if assumption that if grandparent is null, we are at root topic
+        // Create a stack holding all the topics we shall add to list of QNames from root to leaf
+        Stack<Node> nodeStack = new Stack<>();
+
+        // build stack
+        while (current.getParentNode() != null) {
+            nodeStack.push(current);
+            current = current.getParentNode();
         }
-        if (prefix == null)
-            return new QName(namespace, localName);
-        return new QName(namespace, localName, prefix);
+
+        // Go through stack, creating QNames as we go and add them to list
+        while (!nodeStack.empty()) {
+            current = nodeStack.pop();
+            String ns = current.getNamespaceURI();
+            String name = current.getLocalName() == null ? current.getNodeName() : current.getLocalName();
+            if (ns == null || ns.equals(XMLConstants.NULL_NS_URI)) {
+                qNames.add(new QName(name));
+            } else {
+                if (current.getPrefix() == null)
+                    qNames.add(new QName(ns, name));
+                else
+                    qNames.add(new QName(ns, name, current.getPrefix()));
+            }
+        }
+
+        return qNames;
     }
 
-    public static void addTopicToTopicSet(QName topic, TopicSetType topicSet) {
-        Node topicNode = qNameToTopicNode(topic);
+    public static void addTopicToTopicSet(List<QName> topic, TopicSetType topicSet) {
+        Node topicNode = qNameListToTopicNode(topic);
         addTopicToTopicSet(topicNode, topicSet);
     }
 
     /**
      * Merges the tree defined from the parent of the topic that has common path as a child in topicSet
-     * @param topic The topic that shall be added from its common root as is in or is added to topicSet
+     *
+     * @param topic    The topic that shall be added from its common root as is in or is added to topicSet
      * @param topicSet The TopicSetType to merge topic into
      */
     public static void addTopicToTopicSet(Node topic, TopicSetType topicSet) {
@@ -164,35 +183,37 @@ public class TopicUtils {
             throw new IllegalArgumentException("Tried to add a non-topic to a topic set!");
         // A stack that will contain the parent nodes of topic from top to bottom.
         Stack<Node> topicStack = new Stack<>();
-        // Add the topic itself to the stack, and go through all its parents until a namespace is defined.
+        // TODO check this assumption:
+        // Add the topic itself to the stack, and go through all its parents until grandparent is not defined.
         topicStack.push(topic);
-        String namespace = topic.getNamespaceURI();
-        String tLocalN = topic.getLocalName();
-        Node current = topic;
-        while (namespace == null && current != null) {
+        Node current = topic.getParentNode();
+        while (current.getParentNode() != null) {
+            topicStack.push(current);
             current = current.getParentNode();
-            if (current != null) {
-                namespace = current.getNamespaceURI();
-                tLocalN = current.getLocalName();
-                topicStack.push(current);
-            }
         }
 
-        // Find element to merge from, if any. Sort by both local names and namespaces
+        // Pop first element from stack, so we can see what we should merge from
+        current = topicStack.pop();
+
+        // Find root element to merge from, if any. Sort by both local names and namespaces
         Node mergeFromNode = null;
-        for (Object o: topicSet.getAny()) {
-            if (o instanceof  Node) {
+        String topNS = current.getNamespaceURI();
+        String topName = current.getLocalName() == null ? current.getNodeName() : current.getLocalName();
+        String setNS;
+        String setName;
+        for (Object o : topicSet.getAny()) {
+            if (o instanceof Node) {
                 Node setNode = (Node) o;
-                String setNS = setNode.getNamespaceURI();
-                String setLocalName = setNode.getLocalName();
-                if (setNS == null && namespace == null) {
-                    if (setLocalName.equals(tLocalN)) {
+                setNS = setNode.getNamespaceURI();
+                setName = setNode.getLocalName() == null ? setNode.getNodeName() : setNode.getLocalName();
+                if ((setNS == null || setNS.equals(XMLConstants.NULL_NS_URI)) && (topNS == null || topNS.equals(XMLConstants.NULL_NS_URI))) {
+                    if (setName.equals(topName)) {
                         mergeFromNode = setNode;
                         break;
                     }
                 }
-                if (setNS != null && setNS.equals(namespace)) {
-                    if (setLocalName.equals(tLocalN)) {
+                if (setNS != null && setNS.equals(topNS)) {
+                    if (setName.equals(topName)) {
                         mergeFromNode = setNode;
                         break;
                     }
@@ -202,23 +223,35 @@ public class TopicUtils {
 
         // If we did not find any to merge from, we can just add it to the any list in the topicSet
         if (mergeFromNode == null) {
-            topicSet.getAny().add(topicStack.pop());
+            topicSet.getAny().add(current);
             return;
         }
+
         // If not, we find the first element that does not already exist in topicSet and merge from there
-        current = topicStack.pop();
         // Ensure there still are elements to merge from, and that we shall continue down the set tree
         boolean foundNode = false;
-        while ((!topicStack.empty()) && current.getLocalName().equals(mergeFromNode.getLocalName())) {
+        setNS = mergeFromNode.getNamespaceURI();
+        setName = mergeFromNode.getLocalName() == null ? mergeFromNode.getNodeName() : mergeFromNode.getLocalName();
+        // Helper to make namespace comparison easier
+        boolean bothNSisNull = (topNS == null || topNS.equals(XMLConstants.NULL_NS_URI)) &&
+                (setNS == null || setNS.equals(XMLConstants.NULL_NS_URI));
+        while ((!topicStack.empty()) && topName.equals(setName) && (bothNSisNull || (topNS != null && topNS.equals(setNS)))) {
             // pop next node
             current = topicStack.pop();
+            topName = current.getLocalName() == null ? current.getNodeName() : current.getLocalName();
+            topNS = current.getNamespaceURI();
             // Find child of topicSetMergeNode that fits current node
-            Node correctChild = findElementWithLocalName(mergeFromNode, current.getLocalName());
+            Node correctChild = findElementWithNameAndNamespace(mergeFromNode, topName, topNS);
+            // If there were no children, the merge from node is the one we should merge from.
             if (correctChild == null) {
                 foundNode = true;
                 break;
             }
             mergeFromNode = correctChild;
+            setName = mergeFromNode.getLocalName() == null ? mergeFromNode.getNodeName() : mergeFromNode.getLocalName();
+            setNS = mergeFromNode.getNamespaceURI();
+            bothNSisNull = (topNS == null || topNS.equals(XMLConstants.NULL_NS_URI)) &&
+                    (setNS == null || setNS.equals(XMLConstants.NULL_NS_URI));
         }
         if (foundNode) {
             // The mergeFromNode is now where we shall inject current
@@ -230,38 +263,55 @@ public class TopicUtils {
         }
     }
 
-    private static Node findElementWithLocalName(Node root, String localName) {
+    private static Node findElementWithNameAndNamespace(Node root, String name, String namespace) {
         NodeList nodeList = root.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             // see if child is element, and if so, has local name equal to string given
             Node child = nodeList.item(i);
-            if (child.getNodeType() == Node.ELEMENT_NODE && child.getLocalName().equals(localName))
-                return child;
+            String n = child.getLocalName() == null ? child.getNodeName() : child.getLocalName();
+            String ns = child.getNamespaceURI();
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (namespace == null || namespace.equals(XMLConstants.NULL_NS_URI)) {
+                    if (n != null && (ns == null || ns.equals(XMLConstants.NULL_NS_URI)) && n.equals(name))
+                        return child;
+                } else {
+                    if (n != null && n.equals(name) && ns.equals(namespace))
+                        return child;
+                }
+            }
+
         }
         // Did not find child, return null
         return null;
     }
 
-    public static Node qNameToTopicNode(QName name) {
+    public static Node qNameListToTopicNode(List<QName> nameList) {
+        if (nameList == null || nameList.size() == 0)
+            return null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             Document owner = factory.newDocumentBuilder().newDocument();
-            String localName = name.getLocalPart();
-            String[] paths = localName.split("/");
-            if (paths == null || paths.length == 0)
-                throw new IllegalArgumentException("QName was ill formed: could not create topic node!");
-            Node root = owner.createElementNS(name.getNamespaceURI(), paths[0]);
-            owner.appendChild(root);
-            Node finalNode = root;
-            for (int i = 1; i < paths.length; i++) {
-                Node newNode = owner.createElement(paths[i]);
-                finalNode.appendChild(newNode);
-                finalNode = newNode;
+
+            Node node = null;
+            for (QName qName : nameList) {
+                Node oldNode = node;
+                String lName = qName.getLocalPart();
+                String ns = qName.getNamespaceURI();
+                if (ns == null || ns.equals(XMLConstants.NULL_NS_URI)) {
+                    node = owner.createElement(lName);
+                } else {
+                    node = owner.createElementNS(ns, lName);
+                }
+                if (oldNode == null)
+                    owner.appendChild(node);
+                else
+                    oldNode.appendChild(node);
             }
-            // Add the topic attribute to the final node
-            makeTopicNode(finalNode);
-            return finalNode;
+
+            if (node != null)
+                makeTopicNode(node);
+            return node;
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
@@ -269,6 +319,8 @@ public class TopicUtils {
     }
 
     public static void makeTopicNode(Node node) {
+        if (node == null)
+            return;
         if (node.getNodeType() != Node.ELEMENT_NODE)
             throw new IllegalArgumentException("Tried to make a non-element node topic!");
         Element element = (Element) node;
@@ -279,6 +331,8 @@ public class TopicUtils {
     }
 
     public static boolean isTopic(Node node) {
+        if (node == null)
+            return false;
         NamedNodeMap nodeMap = node.getAttributes();
         if (nodeMap == null)
             return false;

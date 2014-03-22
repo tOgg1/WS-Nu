@@ -19,6 +19,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -165,7 +166,7 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public QName evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType)
+    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
         throw new UnsupportedOperationException("The XPath evaluator is unable to evaluate " +
                 "an expression without context");

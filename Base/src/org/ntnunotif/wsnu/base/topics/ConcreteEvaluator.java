@@ -10,6 +10,7 @@ import org.oasis_open.docs.wsn.t_1.TopicType;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * Created by Inge on 21.03.2014.
@@ -41,7 +42,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public QName evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType) throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
+    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context) throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
         return null;
     }
 }

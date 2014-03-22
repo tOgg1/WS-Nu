@@ -11,6 +11,7 @@ import org.oasis_open.docs.wsn.t_1.TopicType;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -129,6 +130,7 @@ public class TopicValidator {
      * represented as a {@link javax.xml.namespace.QName}.
      *
      * @param topicExpressionType The <code>TopicExpressionType</code> to evaluate
+     * @param context             The {@link javax.xml.namespace.NamespaceContext} the expression stands in
      * @return the <code>QName</code> of the Topic.
      * @throws UnsupportedOperationException                                   If the delegated evaluator is unable to identify topics on expression only. Try
      *                                                                         {@link org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface#getIntersection(org.oasis_open.docs.wsn.b_2.TopicExpressionType, org.oasis_open.docs.wsn.t_1.TopicSetType, javax.xml.namespace.NamespaceContext)}
@@ -138,7 +140,7 @@ public class TopicValidator {
      * @throws org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault       If more than one topic was identified by expression.
      * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect was unknown by this validator
      */
-    public QName evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType)
+    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault, TopicExpressionDialectUnknownFault {
         // Delegating work
         String dialect = topicExpressionType.getDialect();
@@ -148,7 +150,7 @@ public class TopicValidator {
             // TODO fill in exception
             throw new TopicExpressionDialectUnknownFault();
         }
-        return evaluator.evaluateTopicExpressionToQName(topicExpressionType);
+        return evaluator.evaluateTopicExpressionToQName(topicExpressionType, context);
     }
 
     /**

@@ -10,6 +10,7 @@ import org.oasis_open.docs.wsn.t_1.TopicType;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * A <code>TopicExpressionEvaluatorInterface</code> is an interface that should be implemented by objects that wishes
@@ -91,6 +92,6 @@ public interface TopicExpressionEvaluatorInterface {
      *                                       dialect specified.
      * @throws MultipleTopicsSpecifiedFault  If more than one topic was identified by expression.
      */
-    public QName evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType)
+    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault;
 }
