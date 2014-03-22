@@ -1,11 +1,8 @@
 package org.ntnunotif.wsnu.base.topics;
 
-<<<<<<< HEAD
-=======
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
->>>>>>> 2a85ae4a8b45b88347a51299481e44eafcb97390
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -13,22 +10,15 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-<<<<<<< HEAD
-import org.w3c.dom.NamedNodeMap;
-=======
 
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
->>>>>>> 2a85ae4a8b45b88347a51299481e44eafcb97390
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
-<<<<<<< HEAD
-=======
 import java.util.GregorianCalendar;
->>>>>>> 2a85ae4a8b45b88347a51299481e44eafcb97390
 import java.util.List;
 import java.util.TimeZone;
 
