@@ -1,12 +1,12 @@
 package ntnunotif.wsnu.base.topics;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import com.sun.org.apache.xerces.internal.util.NamespaceContextWrapper;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -19,11 +19,10 @@ import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.namespace.QName;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,6 +36,8 @@ public class TopicValidatorTest {
     private static final String gcmIllegalDialectPath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_illegal_dialect_test.xml";
     private static final String topicNamespacePath = "Base/test/ntnunotif/wsnu/base/topics/topic_namespace_test.xml";
     private static final String topicSetPath = "Base/test/ntnunotif/wsnu/base/topics/topic_set_test.xml";
+    private static final String OUTGcmXPathMulPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_multiple_test.xml";
+    private static final String OUTGcmXPathSinPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_single_test.xml";
 
     private static TopicExpressionType xPathMultipleHits;
     private static TopicExpressionType xPathSingleHit;
@@ -51,6 +52,11 @@ public class TopicValidatorTest {
     private static InternalMessage illExprDiaMsg;
     private static InternalMessage topNSMsg;
     private static InternalMessage topSetMsg;
+
+    private static final String testNamespace = "http://ws-nu.org/testTopicSpace1";
+    private static final String testRootTopic1 = "root_topic1";
+    private static final String testChildTopic = "root_topic1/child_topic";
+    private static final String testRootTopic2 = "root_topic2";
 
     @BeforeClass
     public static void setup() {
@@ -102,9 +108,7 @@ public class TopicValidatorTest {
     @Test
     public void disassembleNamespaceContext() {
         NamespaceContext nsc = xPathMulMsg.getNamespaceContext();
-        System.out.println("\n\nNSC:\n\n" + nsc + "\n");
-        System.out.println("Prefix for http://ws-nu.org/testTopicSpace1:\t" + nsc.getPrefix("http://ws-nu.org/testTopicSpace1"));
-        System.out.println("Prefix for http://docs.oasis-open.org/wsn/t-1:\t" + nsc.getPrefix("http://docs.oasis-open.org/wsn/t-1"));
+        System.out.println("\n\nNamespace Context:\n\n" + nsc + "\n");
     }
 
     @Test
@@ -152,16 +156,41 @@ public class TopicValidatorTest {
 
     @Test
     public void testGetIntersectionOne() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
+        // Do calculation
+        TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
+        // Convert to more easily readable format
+        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1 , ret.size());
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1, retAsQNameList.size());
+
+        // Check for correctness
+        QName expectedName = new QName(testNamespace, testChildTopic);
+        Assert.assertEquals("Topic selected had unexpected name!", expectedName, retAsQNameList.get(0));
+
+        // Write to file, so it is possible to see actual content of returned set
+        JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathSinPath));
     }
 
     @Test
     public void testGetIntersectionTwo() throws Exception{
-        List<TopicType> ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
+        // Do calculation
+        TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
+        // Convert to more easily readable format
+        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
-        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, ret.size());
+        Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsQNameList.size());
+
+        // Check for correct content
+        QName root1 = new QName(testNamespace, testRootTopic1);
+        QName child = new QName(testNamespace, testChildTopic);
+        QName root2 = new QName(testNamespace, testRootTopic2);
+        Assert.assertTrue("Returned list did not contain root_topic1!", retAsQNameList.contains(root1));
+        Assert.assertTrue("Returned list did not contain root_topic2!", retAsQNameList.contains(root2));
+        Assert.assertTrue("Returned list did not contain child_topic!", retAsQNameList.contains(child));
+
+        JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        XMLParser.writeObjectToStream(e, new FileOutputStream(OUTGcmXPathMulPath));
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)
@@ -184,13 +213,11 @@ public class TopicValidatorTest {
         // Child of first root topic should evaluate to true
         TopicType topic = topicNamespace.getTopic().get(0).getTopic().get(0);
         Assert.assertTrue("XPath evaluated topic falsely to false", TopicValidator.evaluateTopicWithExpression(xPathSingleHit, topic));
-        // TODO testcode
     }
 
     @Test
     public void testEvaluateTopicWithExpressionIllegal() throws Exception {
         TopicType topic = topicNamespace.getTopic().get(0).getTopic().get(0);
         Assert.assertFalse("XPath evaluated topic falsely to true", TopicValidator.evaluateTopicWithExpression(xPathFalse, topic));
-        // TODO testcode
     }
 }

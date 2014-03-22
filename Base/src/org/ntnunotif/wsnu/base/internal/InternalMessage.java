@@ -27,6 +27,14 @@ public class InternalMessage {
         this.message = message;
     }
 
+    public void setMessage(Object message) {
+        this.message = message;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
     public Object getMessage() {
         return message;
     }

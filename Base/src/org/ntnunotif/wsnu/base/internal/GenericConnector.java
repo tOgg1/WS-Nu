@@ -53,10 +53,12 @@ public class GenericConnector implements WebServiceConnection{
     @Override
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
+        /* The message */
         Object message = internalMessage.getMessage();
 
+        /* The class of this message */
         Class objectClass = message.getClass();
-
+        System.out.println(objectClass);
         Annotation[] messageAnnotations = objectClass.getAnnotations();
 
         for(Annotation annotation : messageAnnotations){
@@ -64,7 +66,7 @@ public class GenericConnector implements WebServiceConnection{
             /* Look for the annotation @XmlRootElement */
             if(annotation instanceof XmlRootElement){
                 XmlRootElement xmlRootElement = (XmlRootElement)annotation;
-
+                System.out.println(xmlRootElement.name());
                 /* Check if this connector's web service has a matching method */
                 if(_allowedMethods.containsKey(xmlRootElement.name())){
                     Method method = _allowedMethods.get(xmlRootElement.name());
@@ -93,10 +95,13 @@ public class GenericConnector implements WebServiceConnection{
                                            "parameters, or something even more obscure has occured.");
                     }
                 }else{
+                    System.out.println("Invalid Dest :/");
+
                     return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                 }
             }
         }
+        System.out.println("No method :/");
         return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 

@@ -4,5 +4,5 @@
                         xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:xml="http://www.w3.org/XML/1998/namespace"
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://docs.oasis-open.org/wsn/b-2 http://docs.oasis-open.org/wsn/b-2.xsd ">
-    <wsnt:Topic Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">//*</wsnt:Topic>
+    <wsnt:Topic Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">//child_topic[@wstop:topic="true"]</wsnt:Topic>
 </wsnt:GetCurrentMessage>

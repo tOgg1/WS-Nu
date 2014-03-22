@@ -1,17 +1,9 @@
 package org.ntnunotif.wsnu.base.net;
 
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
-import org.ntnunotif.wsnu.base.topics.WSNamespaceContext;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.NamespaceSupport;
-import org.xml.sax.helpers.XMLFilterImpl;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.NamespaceContext;
+import javax.xml.bind.*;
+import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -113,6 +105,7 @@ public class XMLParser {
         return getJaxbContext().createMarshaller();
     }
 
+    /*
     /**
      * Parses the {@link javax.xml.soap.Node}, and returns the parsed tree structure
      *
@@ -157,10 +150,17 @@ public class XMLParser {
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     public static InternalMessage parse(XMLStreamReader xmlStreamReader) throws JAXBException {
-        NamespaceContext nsc = xmlStreamReader.getNamespaceContext();
-        NamespaceSupport namespaceSupport = new NamespaceSupport();
+        XMLParser p = new XMLParser();
+        WSStreamFilter filter = p.new WSStreamFilter();
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        try {
+            xmlStreamReader = factory.createFilteredReader(xmlStreamReader, filter);
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+            throw new JAXBException("Could not create XMLStream to read from");
+        }
         InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
-        msg.setNamespaceContext(nsc);
+        msg.setNamespaceContext(filter.getNamespaceContext());
         return msg;
     }
 
@@ -178,16 +178,22 @@ public class XMLParser {
     }
 
 
-    private class WSXMLFilter extends XMLFilterImpl {
-        WSNamespaceContext namespaceContext = new WSNamespaceContext();
+    private class WSStreamFilter implements StreamFilter {
+        NuNamespaceContext namespaceContext = new NuNamespaceContext();
+
         @Override
-        public void startElement(String uri, String localName, String qName,
-                                 Attributes atts) throws SAXException {
-            if (qName != null) {
-                String prefix = qName.substring(0, qName.indexOf(':'));
-                namespaceContext.put(prefix, uri);
+        public boolean accept(XMLStreamReader reader) {
+            if (reader.isStartElement()) {
+                for (int i = 0; i < reader.getNamespaceCount(); i++) {
+                    String prefix = reader.getNamespacePrefix(i);
+                    namespaceContext.put(prefix, reader.getNamespaceURI(i));
+                }
             }
-            super.startElement(uri, localName, qName, atts);
+            return true;
+        }
+
+        public NuNamespaceContext getNamespaceContext() {
+            return namespaceContext;
         }
     }
 

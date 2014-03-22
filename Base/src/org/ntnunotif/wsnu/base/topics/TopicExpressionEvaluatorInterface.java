@@ -2,12 +2,14 @@ package org.ntnunotif.wsnu.base.topics;
 
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import java.util.List;
 
 /**
@@ -57,7 +59,7 @@ public interface TopicExpressionEvaluatorInterface {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public List<TopicType> getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
+    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
 
     /**
@@ -76,4 +78,20 @@ public interface TopicExpressionEvaluatorInterface {
      */
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
+
+    /**
+     * Tries to evaluate the given {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} with a single Topic
+     * represented as a {@link javax.xml.namespace.QName}.
+     *
+     * @param topicExpressionType The <code>TopicExpressionType</code> to evaluate
+     * @return the <code>QName</code> of the Topic.
+     * @throws UnsupportedOperationException If this evaluator is unable to identify topics on expression only. Try
+     *                                       {@link org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface#getIntersection(org.oasis_open.docs.wsn.b_2.TopicExpressionType, org.oasis_open.docs.wsn.t_1.TopicSetType, javax.xml.namespace.NamespaceContext)}
+     *                                       instead.
+     * @throws InvalidTopicExpressionFault   If the content of the <code>TopicExpressionType</code> did not match the
+     *                                       dialect specified.
+     * @throws MultipleTopicsSpecifiedFault  If more than one topic was identified by expression.
+     */
+    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
+            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault;
 }
