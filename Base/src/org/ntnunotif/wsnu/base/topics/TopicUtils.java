@@ -322,4 +322,14 @@ public class TopicUtils {
         }
         return expression.trim();
     }
+
+    public static void throwInvalidTopicExpressionFault(String lang, String desc) throws InvalidTopicExpressionFault {
+        InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
+        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        BaseFaultType.Description description = new BaseFaultType.Description();
+        description.setLang(lang);
+        description.setValue(desc);
+        faultType.getDescription().add(description);
+        throw new InvalidTopicExpressionFault(desc, faultType);
+    }
 }
