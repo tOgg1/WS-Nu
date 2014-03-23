@@ -2,6 +2,7 @@ package ntnunotif.wsnu.base.net;
 
 import org.junit.*;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -17,9 +18,9 @@ import java.io.*;
  */
 public class XMLParserTest {
 
-    private static final String notifyFilePlace = "Base/test/ntnunotif/wsnu/base/net/parse_test_notify.xml";
-    private static final String soapFilePlace = "Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml";
-    private static final String subscribeFilePlace = "Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml";
+    private static final String notifyFilePlace = "Base/testres/parse_test_notify.xml";
+    private static final String soapFilePlace = "Base/testres/server_test_soap.xml";
+    private static final String subscribeFilePlace = "Base/testres/server_test_subscribe.xml";
 
     private InputStream notifyTestStream = null;
     private InputStream soapTestStream = null;
@@ -49,16 +50,16 @@ public class XMLParserTest {
     public void testNotificationParsing() throws Exception {
         Object parsedObj = XMLParser.parse(notifyTestStream);
         Assert.assertNotNull("Parser returned null object", parsedObj);
-        Assert.assertEquals("Parser returned wrong object type", Notify.class, parsedObj.getClass());
+        Assert.assertEquals("Parser returned wrong object type", Notify.class, ((InternalMessage) parsedObj).getMessage().getClass());
         // This is dependent of content of file:
-        Notify message = (Notify)parsedObj;
+        Notify message = (Notify) ((InternalMessage)parsedObj).getMessage();
         Assert.assertEquals("Any elements of file were too many", 0, message.getAny().size());
         Assert.assertEquals("Wrong number of NotificationMessages detected", 1, message.getNotificationMessage().size());
     }
 
     @Test
     public void testSoapParsing() throws Exception {
-        Object parsedObject = XMLParser.parse(soapTestStream);
+        Object parsedObject = XMLParser.parse(soapTestStream).getMessage();
         Assert.assertNotNull("Parsed object was null", parsedObject);
         JAXBElement element = (JAXBElement) parsedObject;
         System.out.println(element.getDeclaredType());
@@ -69,9 +70,9 @@ public class XMLParserTest {
 
     @Test
     public void testToXmlParse() throws Exception {
-        Object parsedObject1 = XMLParser.parse(notifyTestStream);
-        Object parsedObject2 = XMLParser.parse(soapTestStream);
-        Object parsedObject3 = XMLParser.parse(subscribeTestStream);
+        Object parsedObject1 = XMLParser.parse(notifyTestStream).getMessage();
+        Object parsedObject2 = XMLParser.parse(soapTestStream).getMessage();
+        Object parsedObject3 = XMLParser.parse(subscribeTestStream).getMessage();
         // The following code is a consequence of questions of how things are parsed, and meant as a demonstration only.
         try {
             if (parsedObject3 instanceof JAXBElement) {
@@ -94,13 +95,13 @@ public class XMLParserTest {
         }
         // TODO write to real tests:
         // Writing the three parsed objects to file for manual inspection:
-        FileOutputStream fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_n2xml.xml");
+        FileOutputStream fileOutputStream = new FileOutputStream("Base/testres/parser_n2xml.xml");
         XMLParser.writeObjectToStream(parsedObject1, fileOutputStream);
         fileOutputStream.close();
-        fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_s2xml.xml");
+        fileOutputStream = new FileOutputStream("Base/testres/parser_s2xml.xml");
         XMLParser.writeObjectToStream(parsedObject2, fileOutputStream);
         fileOutputStream.close();
-        fileOutputStream = new FileOutputStream("Base/test/ntnunotif/wsnu/base/net/parser_sub2xml.xml");
+        fileOutputStream = new FileOutputStream("Base/testres/parser_sub2xml.xml");
         XMLParser.writeObjectToStream(parsedObject3, fileOutputStream);
         fileOutputStream.close();
     }
