@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.Utilities;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -109,7 +110,7 @@ public class DefaultHub implements Hub {
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                         } catch (ClassCastException e) {
-                            System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                            Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
                         }
                     /* Even better, the stream is already an inputstream */
@@ -120,7 +121,7 @@ public class DefaultHub implements Hub {
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                         } catch (ClassCastException e) {
-                            System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                            Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
                         }
                     }
@@ -129,7 +130,7 @@ public class DefaultHub implements Hub {
                     InputStream returningStream = Utilities.convertUnknownToInputStream(message.getMessage());
 
                     if (returningStream == null) {
-                        System.err.println("Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
+                        Log.e("Hub", "Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
                         return new InternalMessage(STATUS_OK, null);
 
 
@@ -204,7 +205,7 @@ public class DefaultHub implements Hub {
                     _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
                 }catch(ClassCastException e){
                     e.printStackTrace();
-                    System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
+                    Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                 }
             } else if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);

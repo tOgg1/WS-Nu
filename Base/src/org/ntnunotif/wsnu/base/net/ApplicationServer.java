@@ -15,6 +15,7 @@ import org.eclipse.jetty.xml.XmlConfiguration;
 import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -248,7 +249,7 @@ public class ApplicationServer{
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){
-                        System.err.println("The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
+                        Log.e("ApplicationServer", "The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
                         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                         request.setHandled(true);
                         return;

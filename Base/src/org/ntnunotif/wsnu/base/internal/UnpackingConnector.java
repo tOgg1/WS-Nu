@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -100,13 +101,13 @@ public class UnpackingConnector implements WebServiceConnector {
                             }
                             return returnMessage;
                         } catch (IllegalAccessException e) {
-                            System.err.println("The method being accessed is not public. Something must be wrong with the" +
+                            Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
                                                "generated classes.\n A @WebMethod can not have private access");
                             e.printStackTrace();
                             return null;
                         } catch (InvocationTargetException e) {
-                            System.err.println("The method being accessed are being feeded an invalid amount of " +
-                                               "parameters, or something even more obscure has occured.");
+                            Log.e("Unpacking Connector", "The method being accessed are being feeded an invalid amount of " +
+                                    "parameters, or something even more obscure has occured.");
                         }
                     }else{
                         return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);

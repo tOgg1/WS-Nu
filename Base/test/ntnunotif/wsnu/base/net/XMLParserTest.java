@@ -3,6 +3,7 @@ package ntnunotif.wsnu.base.net;
 import org.junit.*;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -33,7 +34,7 @@ public class XMLParserTest {
             soapTestStream = new FileInputStream(soapFilePlace);
             subscribeTestStream = new FileInputStream(subscribeFilePlace);
         } catch (Exception e) {
-            System.err.println("Could not read test files");
+            Log.e("XMLParser", "Could not read test files");
             e.printStackTrace();
         }
     }

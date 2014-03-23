@@ -14,6 +14,7 @@ public class Log {
 
     public static void initLogFile() throws RuntimeException {
         _logFile = new File("config/log.txt");
+        _writeToFile = true;
         try
         {
             if(!_logFile.isFile())
