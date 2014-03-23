@@ -9,7 +9,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.w3._2001._12.soap_envelope.Body;
@@ -38,7 +38,7 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSimpleServer() throws Exception {
-        InternalHub internalHub = new InternalHub();
+        DefaultHub defaultHub = new DefaultHub();
 
         // Start the server
         _server = null;
@@ -48,7 +48,7 @@ public class ApplicationServerTest extends TestCase {
             System.err.println("Applicationserver failed to instantiate");
         }
 
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
+        // This should not do anything, as the server is started through the defaultHub (and we are working with a singleton)
         _server.start(null);
 
         // Start the client
@@ -72,7 +72,7 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSendingXML() throws Exception {
-        InternalHub internalHub = new InternalHub();
+        DefaultHub defaultHub = new DefaultHub();
 
         // Start the server
         _server = null;
@@ -82,7 +82,7 @@ public class ApplicationServerTest extends TestCase {
             System.err.println("Applicationserver failed to instantiate");
         }
 
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
+        // This should not do anything, as the server is started through the defaultHub (and we are working with a singleton)
         _server.start(null);
 
         // Start the client
@@ -108,7 +108,7 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSendingSoap() throws Exception {
-        InternalHub internalHub = new InternalHub();
+        DefaultHub defaultHub = new DefaultHub();
 
         // Start the server
         _server = null;
@@ -118,7 +118,7 @@ public class ApplicationServerTest extends TestCase {
             System.err.println("Applicationserver failed to instantiate");
         }
 
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
+        // This should not do anything, as the server is started through the defaultHub (and we are working with a singleton)
         _server.start(null);
 
         // Start the client
@@ -152,7 +152,7 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSubscribe() throws Exception {
-        InternalHub internalHub = new InternalHub();
+        DefaultHub defaultHub = new DefaultHub();
 
         // Start the server
         _server = null;
@@ -162,7 +162,7 @@ public class ApplicationServerTest extends TestCase {
             System.err.println("Applicationserver failed to instantiate");
         }
 
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
+        // This should not do anything, as the server is started through the defaultHub (and we are working with a singleton)
         _server.start(null);
 
         // Start the client

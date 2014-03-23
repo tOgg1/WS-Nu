@@ -7,8 +7,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.UnpackedMessageConnector;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.DefaultHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -18,15 +18,15 @@ import java.io.InputStream;
  */
 public class SimpleSubscriptionManagerTest extends TestCase {
 
-    private InternalHub hub;
-    private UnpackedMessageConnector connector;
+    private DefaultHub hub;
+    private UnpackingConnector connector;
     private SimpleSubscriptionManager manager;
 
     public void setUp() throws Exception {
         super.setUp();
-        hub = new InternalHub();
+        hub = new DefaultHub();
         manager = new SimpleSubscriptionManager();
-        connector = new UnpackedMessageConnector(manager);
+        connector = new UnpackingConnector(manager);
 
         hub.registerService(connector);
     }

@@ -9,8 +9,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.UnpackedMessageConnector;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.DefaultHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 public class ApplicationServerWithHubTest extends TestCase {
 
     private ApplicationServer _server;
-    private InternalHub _hub;
+    private DefaultHub _hub;
 
     private NotificationConsumer _consumer;
     private ConsumerListener _listener;
-    private UnpackedMessageConnector _consumerConnector;
+    private UnpackingConnector _consumerConnector;
 
     private ArrayList<InputStream> _sendMessages;
     private ArrayList<InternalMessage> _messages;
@@ -48,7 +48,7 @@ public class ApplicationServerWithHubTest extends TestCase {
         _messages = new ArrayList<>();
 
         _server = ApplicationServer.getInstance();
-        _hub = new InternalHub();
+        _hub = new DefaultHub();
         _server.start(_hub);
 
         _consumer = new NotificationConsumer(_hub);
@@ -59,7 +59,7 @@ public class ApplicationServerWithHubTest extends TestCase {
             }
         };
         _consumer.addConsumerListener(_listener);
-        _consumerConnector = new UnpackedMessageConnector(_consumer);
+        _consumerConnector = new UnpackingConnector(_consumer);
 
         _hub.registerService(_consumerConnector);
 

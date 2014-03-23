@@ -1,5 +1,5 @@
-import org.ntnunotif.wsnu.base.internal.UnpackedMessageConnector;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
@@ -15,13 +15,13 @@ public class SimpleConsumer implements ConsumerListener {
     public static void main(String[] args) throws Exception{
 
         /* Instantiate base-objects, running the server on default ip(localhost) */
-        InternalHub hub = new InternalHub();
+        DefaultHub hub = new DefaultHub();
 
         /* Create Web Service, passing in an EndpointReference*/
         NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
 
         /* The connector between the hub/applicatonserver and the Web Service */
-        UnpackedMessageConnector connector = new UnpackedMessageConnector(consumer);
+        UnpackingConnector connector = new UnpackingConnector(consumer);
 
         /* Register Web Service with hub, making it eligible to receive messages */
         hub.registerService(connector);

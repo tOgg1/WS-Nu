@@ -10,8 +10,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 
 import javax.servlet.ServletException;
@@ -99,13 +99,13 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public void start(InternalHub internalHub) throws Exception{
+    public void start(DefaultHub defaultHub) throws Exception{
         if(_isRunning){
             return;
         }
 
         _isRunning = true;
-        _parentHub = internalHub;
+        _parentHub = defaultHub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();
