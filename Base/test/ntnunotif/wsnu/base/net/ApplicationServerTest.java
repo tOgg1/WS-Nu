@@ -121,17 +121,7 @@ public class ApplicationServerTest extends TestCase {
 
         // Send response
         FileInputStream file = new FileInputStream("Base/testres/server_test_subscribe.xml");
-        Object object = XMLParser.parse(file);
 
-        InternalMessage imes = (InternalMessage)object;
-        JAXBElement jmes = (JAXBElement)imes.getMessage();
-        Envelope env = (Envelope)jmes.getValue();
-
-        Header head = env.getHeader();
-        Body body = env.getBody();
-        System.out.println(head);
-        System.out.println(body);
-        System.out.println(object);
 
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);

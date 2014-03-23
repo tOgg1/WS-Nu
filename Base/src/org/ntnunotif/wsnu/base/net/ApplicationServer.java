@@ -76,14 +76,16 @@ public class ApplicationServer{
     /**
      * Configuration file for this server.
      */
-    private static String _configFile = "config/defaultconfig.xml";
+    private static String _configFile = "defaultconfig.xml";
 
     /**
      * As this class is a singleton no external instantiation is allowed.
      */
     private ApplicationServer() throws Exception
     {
+        System.out.println(_configFile);
         Resource resource = Resource.newSystemResource(_configFile);
+
         XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
         _server = (Server)config.configure();
         _server.setHandler(new HttpHandler());
