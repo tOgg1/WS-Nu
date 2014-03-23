@@ -11,6 +11,8 @@ public class Log {
     private static File _logFile;
     private static BufferedWriter _logWriter;
     private static boolean _writeToFile = false;
+    private static boolean _logDebug = true;
+    private static boolean _logErrors = true;
 
     public static void initLogFile() throws RuntimeException {
         _logFile = new File("config/log.txt");
@@ -35,8 +37,22 @@ public class Log {
         }
     }
 
+    public static void setWriteToFile(boolean _writeToFile) {
+        Log._writeToFile = _writeToFile;
+    }
+
+    public static void setLogErrors(boolean logErrors) {
+        Log._logErrors = _logErrors;
+    }
+
+    public static void setEnableDebug(boolean _enableDebug) {
+        Log._logDebug = _enableDebug;
+    }
+
     public static void d(String tag, String content)
     {
+        if(!_logDebug)
+            return;
         String debug = "[Debug " + tag + "]: " + content;
         System.out.println(debug);
         writeToFile(debug);
@@ -44,6 +60,8 @@ public class Log {
 
     public static void e(String tag, String content)
     {
+        if(!_logErrors)
+            return;
         String err = "[Error " + tag + "]: " + content;
         System.err.println(err);
         writeToFile(err);
@@ -79,7 +97,7 @@ public class Log {
         }
         catch(Exception e)
         {
-            // Fuck off we're done already
+            System.err.println("Logwriter closed with an exception");
         }
     }
 

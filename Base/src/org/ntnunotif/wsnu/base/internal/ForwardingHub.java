@@ -68,7 +68,7 @@ public class ForwardingHub implements Hub {
         try {
             parsedMessage = XMLParser.parse(inputStream);
         } catch (JAXBException e) {
-            //TODO: Move this handling to the parser?
+
             returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             e.printStackTrace();
             return returnMessage;
@@ -96,14 +96,14 @@ public class ForwardingHub implements Hub {
             InternalMessage message = service.acceptMessage(new InternalMessage(STATUS_OK, envelope));
 
             /* Incorrect destination */
-            if ((message._statusCode & STATUS_INVALID_DESTINATION) > 0) {
+            if ((message.statusCode & STATUS_INVALID_DESTINATION) > 0) {
                 continue;
             }
 
-            if ((message._statusCode & STATUS_OK) > 0) {
-                if ((message._statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
+            if ((message.statusCode & STATUS_OK) > 0) {
+                if ((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
                     /* This is easy, now we can convert it, and send it straight out*/
-                    if ((message._statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+                    if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                         try {
                             InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.get_message());
                             return new InternalMessage(STATUS_OK
@@ -114,7 +114,7 @@ public class ForwardingHub implements Hub {
                             e.printStackTrace();
                         }
                     /* Even better, the stream is already an inputstream */
-                    } else if ((message._statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+                    } else if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
                         try {
                             InputStream returningStream = (InputStream) message.get_message();
                             return new InternalMessage(STATUS_OK
@@ -144,26 +144,26 @@ public class ForwardingHub implements Hub {
                 } else {
                     return new InternalMessage(STATUS_OK, null);
                 }
-            } else if ((message._statusCode & STATUS_FAULT) > 0) {
+            } else if ((message.statusCode & STATUS_FAULT) > 0) {
 
                 /* There is not specified any specific fault, so we treat it as a generic fault */
-                if (message._statusCode == STATUS_FAULT) {
-                    return new InternalMessage(message._statusCode, null);
+                if (message.statusCode == STATUS_FAULT) {
+                    return new InternalMessage(message.statusCode, null);
 
 
-                } else if ((message._statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
-                    return new InternalMessage(message._statusCode, null);
+                } else if ((message.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
+                    return new InternalMessage(message.statusCode, null);
 
 
-                } else if ((message._statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
-                    return new InternalMessage(message._statusCode, null);
+                } else if ((message.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
+                    return new InternalMessage(message.statusCode, null);
 
 
-                } else if ((message._statusCode & STATUS_FAULT_UNKNOWN_METHOD) > 0) {
-                    return new InternalMessage(message._statusCode, null);
+                } else if ((message.statusCode & STATUS_FAULT_UNKNOWN_METHOD) > 0) {
+                    return new InternalMessage(message.statusCode, null);
 
                 } else {
-                    return new InternalMessage(message._statusCode, null);
+                    return new InternalMessage(message.statusCode, null);
 
                 }
             /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
@@ -198,8 +198,8 @@ public class ForwardingHub implements Hub {
     public void acceptLocalMessage(InternalMessage message, String endPoint) {
         Object messageContent = message.get_message();
 
-        if((message._statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
-            if((message._statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+        if((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
+            if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
                 try{
                     InputStream messageAsStream = (InputStream)messageContent;
                     _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
@@ -207,7 +207,7 @@ public class ForwardingHub implements Hub {
                     e.printStackTrace();
                     Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                 }
-            } else if((message._statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+            } else if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
                     _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
             }

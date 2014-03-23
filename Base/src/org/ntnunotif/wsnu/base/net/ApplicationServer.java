@@ -239,13 +239,13 @@ public class ApplicationServer{
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(input);
 
                 /* Handle possible errors */
-                if((returnMessage._statusCode & InternalMessage.STATUS_FAULT) > 0){
+                if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                     request.setHandled(true);
                     return;
                 //TODO: A bit unecessary perhaps? Redo into two layers?
-                }else if(((InternalMessage.STATUS_OK & returnMessage._statusCode) > 0) &&
-                          (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage._statusCode) > 0){
+                }else if(((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0) &&
+                          (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.get_message() == null){
@@ -282,10 +282,10 @@ public class ApplicationServer{
                     outputStream.flush();
                     request.setHandled(true);
                 /* Everything is fine, and nothing is expected */
-                }else if((InternalMessage.STATUS_OK & returnMessage._statusCode) > 0){
+                }else if((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
                     httpServletResponse.setStatus(HttpStatus.OK_200);
                     request.setHandled(true);
-                }else if((InternalMessage.STATUS_INVALID_DESTINATION & returnMessage._statusCode) > 0){
+                }else if((InternalMessage.STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
                     httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                     request.setHandled(true);
                 }else{

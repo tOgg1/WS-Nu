@@ -18,18 +18,18 @@ public class InternalMessage {
     public static final int STATUS_INVALID_DESTINATION = 0x100;
     public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
 
-    public int _statusCode;
+    public int statusCode;
     private Object _message;
     private NamespaceContext _context;
     private EndpointReference _endpointReference;
 
     public InternalMessage(int statusCode, Object message) {
-        this._statusCode = statusCode;
+        this.statusCode = statusCode;
         this._message = message;
     }
 
     public InternalMessage(int statusCode, Object message, EndpointReference endpointReference){
-        this._statusCode = statusCode;
+        this.statusCode = statusCode;
         this._message = message;
         this._endpointReference = endpointReference;
     }
@@ -44,10 +44,6 @@ public class InternalMessage {
 
     public void set_message(Object message) {
         this._message = message;
-    }
-
-    public void set_statusCode(int statusCode) {
-        this._statusCode = statusCode;
     }
 
     public Object get_message() {

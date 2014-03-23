@@ -47,7 +47,7 @@ public class UnpackingConnectorTest extends TestCase{
         stackTester = false;
         InternalMessage sendMessage = new InternalMessage(InternalMessage.STATUS_OK, messages.get(0));
         InternalMessage message = consumerConnector.acceptMessage(sendMessage);
-        assertTrue((message._statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) == 0);
+        assertTrue((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) == 0);
         assertTrue(stackTester);
     }
 

@@ -1,6 +1,8 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.util.EndpointParam;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
@@ -54,6 +56,11 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
 
     @Override
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
+
+        if(!((internalMessage.statusCode & STATUS_ENDPOINTREF_IS_SET) > 0)){
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
+        }
+
          /* The message */
         Object potentialEnvelope = internalMessage.get_message();
 
@@ -82,18 +89,69 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
                         Method method = _allowedMethods.get(xmlRootElement.name());
                         try {
-                            /* Run method on the Web Service */
-                            InternalMessage returnMessage;
-                            Object method_returnedData = method.invoke(_webService, message);
+
+                            if(method.getParameterTypes().length > 2){
+                                Log.e("UnpackingReferenceConnector", "Method error");
+                                throw new InvalidWebServiceException("Web service at" + _webService + " has a WebMethod " +
+                                                                     "expecting more than 2 arguments, which is not supported by this Connector." +
+                                                                     "Consider using ");
+                            /* We are here looking for a parameter with the annotation EndpointParam */
+                            }else if(method.getParameterTypes().length > 1){
+                                Annotation[][] paramAnnotations = method.getParameterAnnotations();
+
+                                /* Is the endpointparam first or last?*/
+                                int indexOfEndPointParam = -1;
+
+                                /* For each parameter */
+                                for (Annotation[] paramAnnotation : paramAnnotations) {
+                                    ++indexOfEndPointParam;
+
+                                    /* For each annotation */
+                                    for (Annotation annotation1 : paramAnnotation) {
+                                        if(annotation1 instanceof EndpointParam){
+
+                                            /* Run method on the Web Service */
+                                            InternalMessage returnMessage;
+                                            Object method_returnedData;
+
+                                            if(indexOfEndPointParam == 0){
+                                               method_returnedData = method.invoke(_webService, internalMessage.getEndpointReference(), message);
+                                            }else{
+                                                method_returnedData = method.invoke(_webService, message, internalMessage.getEndpointReference());
+                                            }
+
+                                            /* If is the case, nothing is being returned */
+                                            if(method.getReturnType().equals(Void.TYPE)){
+                                                returnMessage = new InternalMessage(STATUS_OK, null);
+                                            }else{
+                                                returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                                                        method_returnedData);
+                                            }
+                                            return returnMessage;
+
+                                        }
+                                    }
+                                }
+                                throw new InvalidWebServiceException("Web service at " + _webService + " has a WebMethod " +
+                                                                     "with two methods, but neither of them has an EndpointParam annotation. " +
+                                                                     "This is not supported by this Connector");
+                            }
+                            else{
+                                /* Run method on the Web Service */
+                                InternalMessage returnMessage;
+                                Object method_returnedData = method.invoke(_webService, message);
 
                             /* If is the case, nothing is being returned */
-                            if(method.getReturnType().equals(Void.TYPE)){
-                                returnMessage = new InternalMessage(STATUS_OK, null);
-                            }else{
-                                returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
-                                        method_returnedData);
+                                if(method.getReturnType().equals(Void.TYPE)){
+                                    returnMessage = new InternalMessage(STATUS_OK, null);
+                                }else{
+                                    returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                                            method_returnedData);
+                                }
+                                return returnMessage;
                             }
-                            return returnMessage;
+
+
                         } catch (IllegalAccessException e) {
                             Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
                                     "generated classes.\n A @WebMethod can not have private access");
