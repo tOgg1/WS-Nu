@@ -51,16 +51,16 @@ public class XMLParserTest {
     public void testNotificationParsing() throws Exception {
         Object parsedObj = XMLParser.parse(notifyTestStream);
         Assert.assertNotNull("Parser returned null object", parsedObj);
-        Assert.assertEquals("Parser returned wrong object type", Notify.class, ((InternalMessage) parsedObj).getMessage().getClass());
+        Assert.assertEquals("Parser returned wrong object type", Notify.class, ((InternalMessage) parsedObj).get_message().getClass());
         // This is dependent of content of file:
-        Notify message = (Notify) ((InternalMessage)parsedObj).getMessage();
+        Notify message = (Notify) ((InternalMessage)parsedObj).get_message();
         Assert.assertEquals("Any elements of file were too many", 0, message.getAny().size());
         Assert.assertEquals("Wrong number of NotificationMessages detected", 1, message.getNotificationMessage().size());
     }
 
     @Test
     public void testSoapParsing() throws Exception {
-        Object parsedObject = XMLParser.parse(soapTestStream).getMessage();
+        Object parsedObject = XMLParser.parse(soapTestStream).get_message();
         Assert.assertNotNull("Parsed object was null", parsedObject);
         JAXBElement element = (JAXBElement) parsedObject;
         System.out.println(element.getDeclaredType());
@@ -71,9 +71,9 @@ public class XMLParserTest {
 
     @Test
     public void testToXmlParse() throws Exception {
-        Object parsedObject1 = XMLParser.parse(notifyTestStream).getMessage();
-        Object parsedObject2 = XMLParser.parse(soapTestStream).getMessage();
-        Object parsedObject3 = XMLParser.parse(subscribeTestStream).getMessage();
+        Object parsedObject1 = XMLParser.parse(notifyTestStream).get_message();
+        Object parsedObject2 = XMLParser.parse(soapTestStream).get_message();
+        Object parsedObject3 = XMLParser.parse(subscribeTestStream).get_message();
         // The following code is a consequence of questions of how things are parsed, and meant as a demonstration only.
         try {
             if (parsedObject3 instanceof JAXBElement) {

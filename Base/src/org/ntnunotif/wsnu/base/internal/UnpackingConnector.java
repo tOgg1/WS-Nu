@@ -61,7 +61,7 @@ public class UnpackingConnector implements WebServiceConnector {
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         /* The message */
-        Object potentialEnvelope = internalMessage.getMessage();
+        Object potentialEnvelope = internalMessage.get_message();
 
         if(!(potentialEnvelope instanceof Envelope)){
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);

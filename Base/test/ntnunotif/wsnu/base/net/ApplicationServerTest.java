@@ -19,7 +19,6 @@ import org.w3._2001._12.soap_envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * Created by tormod on 3/6/14.
@@ -89,7 +88,7 @@ public class ApplicationServerTest extends TestCase {
         client.start();
 
         Object object = XMLParser.parse(new FileInputStream("Base/testres/server_test_soap.xml"));
-        Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).getMessage()).getValue();
+        Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).get_message()).getValue();
         Header head = env.getHeader();
         Body body = env.getBody();
         System.out.println(head);

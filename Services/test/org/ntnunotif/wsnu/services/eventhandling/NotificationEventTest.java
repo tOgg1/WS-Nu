@@ -25,7 +25,7 @@ public class NotificationEventTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         _consumer = new NotificationConsumer(new DefaultHub());
-        _notification = (Notify)XMLParser.parse(new FileInputStream("Services/res/server_test_notify.xml")).getMessage();
+        _notification = (Notify)XMLParser.parse(new FileInputStream("Services/res/server_test_notify.xml")).get_message();
         _event = new NotificationEvent(_notification);
         _listener = new ConsumerListener() {
             @Override
