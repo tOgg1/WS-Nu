@@ -1,14 +1,15 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
-import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Connector that takes soap-envelopes and sends them forward. A connected web service MUST implement the WebService

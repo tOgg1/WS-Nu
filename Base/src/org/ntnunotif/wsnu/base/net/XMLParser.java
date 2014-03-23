@@ -1,6 +1,6 @@
 package org.ntnunotif.wsnu.base.net;
 
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 
 import javax.xml.bind.*;
 import javax.xml.stream.StreamFilter;

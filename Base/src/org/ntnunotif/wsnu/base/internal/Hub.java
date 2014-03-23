@@ -1,5 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+
 import java.io.InputStream;
 
 /**

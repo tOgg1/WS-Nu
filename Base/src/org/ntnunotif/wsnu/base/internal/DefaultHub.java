@@ -2,10 +2,9 @@ package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Utilities;
-import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
-import org.w3._2001._12.soap_envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -13,9 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * The default Hub-implementation by WS-Nu. Implements the basic functionality of the hub-interface.
@@ -110,7 +108,6 @@ public class DefaultHub implements Hub {
                             return new InternalMessage(STATUS_OK
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
-                            break;
                         } catch (ClassCastException e) {
                             System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
@@ -122,7 +119,6 @@ public class DefaultHub implements Hub {
                             return new InternalMessage(STATUS_OK
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
-                            break;
                         } catch (ClassCastException e) {
                             System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
@@ -135,13 +131,13 @@ public class DefaultHub implements Hub {
                     if (returningStream == null) {
                         System.err.println("Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
                         return new InternalMessage(STATUS_OK, null);
-                        break;
+
 
                     } else {
                         return new InternalMessage(STATUS_OK
                                 | STATUS_HAS_RETURNING_MESSAGE
                                 | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
-                        break;
+
                     }
                 /* Everything is fine, and no message is to be returned */
                 } else {
@@ -152,27 +148,27 @@ public class DefaultHub implements Hub {
                 /* There is not specified any specific fault, so we treat it as a generic fault */
                 if (message.statusCode == STATUS_FAULT) {
                     return new InternalMessage(message.statusCode, null);
-                    break;
+
 
                 } else if ((message.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
                     return new InternalMessage(message.statusCode, null);
-                    break;
+
 
                 } else if ((message.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
                     return new InternalMessage(message.statusCode, null);
-                    break;
+
 
                 } else if ((message.statusCode & STATUS_FAULT_UNKNOWN_METHOD) > 0) {
                     return new InternalMessage(message.statusCode, null);
-                    break;
+
                 } else {
                     return new InternalMessage(message.statusCode, null);
-                    break;
+
                 }
             /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
             } else {
                 return new InternalMessage(STATUS_FAULT, null);
-                break;
+
             }
         }
         return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);

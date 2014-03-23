@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.base.internal;
+package org.ntnunotif.wsnu.base.util;
 
 /**
  * Created by tormod on 23.03.14.

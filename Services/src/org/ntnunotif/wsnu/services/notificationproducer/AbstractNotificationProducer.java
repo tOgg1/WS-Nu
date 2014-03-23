@@ -1,19 +1,13 @@
 package org.ntnunotif.wsnu.services.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.general.WebService;
-import org.ntnunotif.wsnu.services.general.WebServiceException;
 import org.oasis_open.docs.wsn.b_2.*;
-import org.oasis_open.docs.wsn.bw_2.*;
-import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
 import java.io.InputStream;
 
-import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Created by tormod on 3/11/14.

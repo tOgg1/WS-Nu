@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -11,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Connector that takes a soap-envelope, unpacks it's body, and sends it forward.

@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.base.internal;
+package org.ntnunotif.wsnu.base.util;
 
 import javax.xml.namespace.NamespaceContext;
 

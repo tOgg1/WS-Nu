@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 
 /**
  * @author Tormod Haugland

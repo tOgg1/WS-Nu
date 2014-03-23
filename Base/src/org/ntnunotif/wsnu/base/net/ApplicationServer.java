@@ -12,7 +12,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

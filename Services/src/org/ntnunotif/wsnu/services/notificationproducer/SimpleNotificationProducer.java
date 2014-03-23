@@ -7,13 +7,19 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
+import org.w3._2001._12.soap_envelope.Header;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
+import java.util.List;
 
 /**
+ * Simple Notification Producer, stores subscriptions in a HashMap,
+ * and does not use a subscriptionmanger for subscriptionmanagement
+ * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
 public class SimpleNotificationProducer extends AbstractNotificationProducer{
@@ -44,7 +50,15 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer{
 
     @Override
     @WebMethod(operationName = "acceptSoapMessage")
-    public void acceptSoapMessage(Envelope envelope) {
-        
+    public synchronized void acceptSoapMessage(Envelope envelope) {
+        Header header = envelope.getHeader();
+        Body body = envelope.getBody();
+
+        List<Object> headercontent = header.getAny();
+        List<Object> bodyContent = body.getAny();
+
+        //TODO: Handle bodyContent
+
+
     }
 }

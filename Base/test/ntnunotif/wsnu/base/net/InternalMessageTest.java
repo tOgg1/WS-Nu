@@ -2,9 +2,9 @@ package ntnunotif.wsnu.base.net;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 
-import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Created by tormod on 3/15/14.
