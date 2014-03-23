@@ -214,9 +214,20 @@ public class InternalHub implements Hub {
         Object messageContent = message.getMessage();
 
         if((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
-            if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
-                InputStream messageAsStream = Utilities.convertUnknownToInputStream(messageContent);
+            if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+                try{
+                    InputStream messageAsStream = (InputStream)messageContent;
+                    _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
+                }catch(ClassCastException e){
+                    e.printStackTrace();
+                    System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
+                }
+            } else if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+                    InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
+                    _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
             }
+
+
         }
     }
 

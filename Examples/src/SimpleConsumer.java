@@ -13,14 +13,13 @@ import java.util.List;
  */
 public class SimpleConsumer implements ConsumerListener {
 
-    @WebMethod
     public static void main(String[] args) throws Exception{
 
         /* Instantiate base-objects, running the server on default ip(localhost) */
         InternalHub hub = new InternalHub();
 
         /* Create Web Service, passing in an EndpointReference*/
-        NotificationConsumer consumer = new NotificationConsumer("http://tormodhaugland.com");
+        NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
 
         /* The connector between the hub/applicatonserver and the Web Service */
         GenericConnector connector = new GenericConnector(consumer);
