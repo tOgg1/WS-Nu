@@ -83,7 +83,6 @@ public class UnpackingConnector implements WebServiceConnector {
                 /* Look for the annotation @XmlRootElement */
                 if(annotation instanceof XmlRootElement){
                     XmlRootElement xmlRootElement = (XmlRootElement)annotation;
-                    System.out.println(xmlRootElement.name());
                     /* Check if this connector's web service has a matching method */
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
                         Method method = _allowedMethods.get(xmlRootElement.name());
@@ -94,10 +93,8 @@ public class UnpackingConnector implements WebServiceConnector {
 
                             /* If is the case, nothing is being returned */
                             if(method.getReturnType().equals(Void.TYPE)){
-                                System.out.println("Heeeey!");;
                                 returnMessage = new InternalMessage(STATUS_OK, null);
                             }else{
-                                System.out.println("Hey!");
                                 returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
                                                                     method_returnedData);
                             }
@@ -112,8 +109,6 @@ public class UnpackingConnector implements WebServiceConnector {
                                                "parameters, or something even more obscure has occured.");
                         }
                     }else{
-                        System.out.println("Invalid Dest :/");
-
                         return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                     }
                 }
