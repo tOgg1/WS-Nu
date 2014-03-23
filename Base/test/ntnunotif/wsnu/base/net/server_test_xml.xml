@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<Mail protocol="SMTP" server="smtp.gmail.com">
-    <To>tormod.haugland@gmail.com</To>
-    <title>Its closing time...</title>
-    <content>You should probably go home from P15 now, its almost 9 O'clock</content>
-</Mail>
