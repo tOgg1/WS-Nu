@@ -10,6 +10,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.xml.XmlConfiguration;
 import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
@@ -72,12 +74,23 @@ public class ApplicationServer{
     private static boolean _hasBeenInvoked = false;
 
     /**
+     * Configuration file for this server.
+     */
+    private static String _configFile = "config/defaultconfig.xml";
+
+    /**
      * As this class is a singleton no external instantiation is allowed.
      */
     private ApplicationServer() throws Exception
     {
-        _server = new Server(8080);
+        Resource resource = Resource.newSystemResource(_configFile);
+        XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+        _server = (Server)config.configure();
         _server.setHandler(new HttpHandler());
+    }
+
+    public static void setServerConfiguration(String pathToConfigFile) throws Exception{
+
     }
 
     /**
@@ -93,7 +106,6 @@ public class ApplicationServer{
         }else{
             return _singleton;
         }
-
     }
 
     /**
@@ -138,6 +150,7 @@ public class ApplicationServer{
         try {
             _server.stop();
             _serverThread.join();
+            _isRunning = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
