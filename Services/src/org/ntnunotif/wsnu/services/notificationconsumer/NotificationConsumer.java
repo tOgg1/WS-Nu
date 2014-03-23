@@ -1,5 +1,6 @@
-package org.ntnunotif.wsnu.services.NotificationConsumer;
+package org.ntnunotif.wsnu.services.notificationconsumer;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
@@ -23,6 +24,11 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
     private ArrayList<ConsumerListener> _listeners;
 
     /**
+    * Reference to the hub this consumer is connected to
+    */
+    private Hub _hub;
+
+    /**
      * The EndpointReference of this NotificatonConsumer. This does not have to,
      * but can, be the same as the url/ip of the application server of the connected hub.
      */
@@ -32,12 +38,13 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
     /**
      * Default constructor, remove? Should not passing an endpointReference be allowed?
      */
-    public NotificationConsumer() {
+    public NotificationConsumer(Hub hub) {
+        _hub = hub;
         _listeners = new ArrayList<>();
         _endpointReference = "";
     }
 
-    public NotificationConsumer(String endpointReference){
+    public NotificationConsumer(Hub hub, String endpointReference){
         _listeners = new ArrayList<>();
         _endpointReference = endpointReference;
     }

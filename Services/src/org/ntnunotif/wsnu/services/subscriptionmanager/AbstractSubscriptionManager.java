@@ -1,15 +1,7 @@
-package org.ntnunotif.wsnu.services.SubscriptionManager;
+package org.ntnunotif.wsnu.services.subscriptionmanager;
 
-import org.oasis_open.docs.wsn.b_2.Renew;
-import org.oasis_open.docs.wsn.b_2.RenewResponse;
-import org.oasis_open.docs.wsn.b_2.Unsubscribe;
-import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.SubscriptionManager;
-import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
-import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
-import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
-import javax.jws.WebParam;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,7 +25,7 @@ public abstract class AbstractSubscriptionManager implements SubscriptionManager
     private final ScheduledExecutorService _scheduler = Executors.newScheduledThreadPool(1);
 
     /**
-     * Reference to the scheduled task
+     * Reference to the scheduled task.
      */
     private ScheduledFuture<?> _future;
 

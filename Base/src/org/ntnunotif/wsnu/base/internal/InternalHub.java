@@ -7,6 +7,7 @@ import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
 
+import javax.rmi.CORBA.Util;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
@@ -15,6 +16,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
 
 /**
  * The default Hub-implementation by WS-Nu. Implements the basic functionality of the hub-interface.
@@ -77,8 +80,8 @@ public class InternalHub implements Hub {
             parsedMessage = XMLParser.parse(inputStream);
         } catch (JAXBException e) {
             //TODO: Move this handling to the parser?
-            returnMessage = new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR
-                    | InternalMessage.STATUS_FAULT, null);
+            returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR
+                    | STATUS_FAULT, null);
             e.printStackTrace();
             return returnMessage;
         }
@@ -100,7 +103,7 @@ public class InternalHub implements Hub {
 
         /* If this exception is thrown, the message received can not be soap */
         } catch (ClassCastException e) {
-            return new InternalMessage(InternalMessage.STATUS_FAULT_INVALID_PAYLOAD, null);
+            return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
         /* For all messages */
@@ -112,31 +115,31 @@ public class InternalHub implements Hub {
                 InternalMessage message = service.acceptMessage(outMessage);
 
                 /* Incorrect destination */
-                if ((message.statusCode & InternalMessage.STATUS_INVALID_DESTINATION) > 0) {
+                if ((message.statusCode & STATUS_INVALID_DESTINATION) > 0) {
                     continue;
                 }
 
-                if ((message.statusCode & InternalMessage.STATUS_OK) > 0) {
-                    if ((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0) {
+                if ((message.statusCode & STATUS_OK) > 0) {
+                    if ((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
                         /* This is easy, now we can convert it, and send it straight out*/
-                        if ((message.statusCode & InternalMessage.STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+                        if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                             try {
                                 InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.getMessage());
-                                returnMessage = new InternalMessage(InternalMessage.STATUS_OK
-                                        | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                                        | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                                returnMessage = new InternalMessage(STATUS_OK
+                                        | STATUS_HAS_RETURNING_MESSAGE
+                                        | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                                 break;
                             } catch (ClassCastException e) {
                                 System.err.println("Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                                 e.printStackTrace();
                             }
                         /* Even better, the stream is already an inputstream */
-                        } else if ((message.statusCode & InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+                        } else if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
                             try {
                                 InputStream returningStream = (InputStream) message.getMessage();
-                                returnMessage = new InternalMessage(InternalMessage.STATUS_OK
-                                        | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                                        | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                                returnMessage = new InternalMessage(STATUS_OK
+                                        | STATUS_HAS_RETURNING_MESSAGE
+                                        | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                                 break;
                             } catch (ClassCastException e) {
                                 System.err.println("Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
@@ -149,35 +152,35 @@ public class InternalHub implements Hub {
 
                         if (returningStream == null) {
                             System.err.println("Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
-                            returnMessage = new InternalMessage(InternalMessage.STATUS_OK, null);
+                            returnMessage = new InternalMessage(STATUS_OK, null);
                             break;
 
                         } else {
-                            returnMessage = new InternalMessage(InternalMessage.STATUS_OK
-                                    | InternalMessage.STATUS_HAS_RETURNING_MESSAGE
-                                    | InternalMessage.STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                            returnMessage = new InternalMessage(STATUS_OK
+                                    | STATUS_HAS_RETURNING_MESSAGE
+                                    | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
                             break;
                         }
                     /* Everything is fine, and no message is to be returned */
                     } else {
-                        returnMessage = new InternalMessage(InternalMessage.STATUS_OK, null);
+                        returnMessage = new InternalMessage(STATUS_OK, null);
                     }
-                } else if ((message.statusCode & InternalMessage.STATUS_FAULT) > 0) {
+                } else if ((message.statusCode & STATUS_FAULT) > 0) {
 
                     /* There is not specified any specific fault, so we treat it as a generic fault */
-                    if (message.statusCode == InternalMessage.STATUS_FAULT) {
+                    if (message.statusCode == STATUS_FAULT) {
                         returnMessage = new InternalMessage(message.statusCode, null);
                         break;
 
-                    } else if ((message.statusCode & InternalMessage.STATUS_FAULT_INTERNAL_ERROR) > 0) {
+                    } else if ((message.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
                         returnMessage = new InternalMessage(message.statusCode, null);
                         break;
 
-                    } else if ((message.statusCode & InternalMessage.STATUS_FAULT_INVALID_PAYLOAD) > 0) {
+                    } else if ((message.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
                         returnMessage = new InternalMessage(message.statusCode, null);
                         break;
 
-                    } else if ((message.statusCode & InternalMessage.STATUS_FAULT_UNKNOWN_METHOD) > 0) {
+                    } else if ((message.statusCode & STATUS_FAULT_UNKNOWN_METHOD) > 0) {
                         returnMessage = new InternalMessage(message.statusCode, null);
                         break;
                     } else {
@@ -186,29 +189,34 @@ public class InternalHub implements Hub {
                     }
                 /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
                 } else {
-                    returnMessage = new InternalMessage(InternalMessage.STATUS_FAULT, null);
+                    returnMessage = new InternalMessage(STATUS_FAULT, null);
                     break;
                 }
             }
             if (returnMessage == null) {
-                returnMessage = new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
+                returnMessage = new InternalMessage(STATUS_INVALID_DESTINATION, null);
             }
             return returnMessage;
         }
         if (returnMessage == null) {
-            returnMessage = new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
+            returnMessage = new InternalMessage(STATUS_INVALID_DESTINATION, null);
         }
         return returnMessage;
     }
 
+    /**
+     * Function to accept a message from a local service, and forward it out into the internet.
+     * @param message The message to be sent out
+     * @param endPoint The endpoint to send to
+     */
     @Override
-    public void acceptLocalMessage(Object object, String endPoint) {
-        ByteArrayOutputStream generatedMessage = new ByteArrayOutputStream();
-        try {
-            XMLParser.writeObjectToStream(object, generatedMessage);
-        } catch (JAXBException e) {
-            System.err.println("Error parsing object from web service, is the service sending a valid WSN-object for parsing?");
-            e.printStackTrace();
+    public void acceptLocalMessage(InternalMessage message, String endPoint) {
+        Object messageContent = message.getMessage();
+
+        if((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
+            if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+                InputStream messageAsStream = Utilities.convertUnknownToInputStream(messageContent);
+            }
         }
     }
 

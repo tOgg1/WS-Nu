@@ -1,16 +1,14 @@
 package integration;
 
-import com.sun.swing.internal.plaf.synth.resources.synth_sv;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.GenericConnector;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
-import org.ntnunotif.wsnu.services.NotificationConsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import javax.jws.WebMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
