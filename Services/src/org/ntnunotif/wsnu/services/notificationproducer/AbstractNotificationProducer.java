@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.general.WebService;
+import org.ntnunotif.wsnu.services.interfaces.NotificationProducer;
 import org.oasis_open.docs.wsn.b_2.*;
 
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 /**
  * Created by tormod on 3/11/14.
  */
-public abstract class AbstractNotificationProducer implements org.oasis_open.docs.wsn.bw_2.NotificationProducer, WebService {
+public abstract class AbstractNotificationProducer implements NotificationProducer, WebService {
 
     private final Hub _hub;
 

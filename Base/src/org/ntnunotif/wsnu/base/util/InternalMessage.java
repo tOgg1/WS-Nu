@@ -21,32 +21,33 @@ public class InternalMessage {
     public int statusCode;
     private Object _message;
     private NamespaceContext _context;
-    private EndpointReference _endpointReference;
+    @EndpointReference
+    private String _endpointReference;
 
     public InternalMessage(int statusCode, Object message) {
         this.statusCode = statusCode;
         this._message = message;
     }
 
-    public InternalMessage(int statusCode, Object message, EndpointReference endpointReference){
+    public InternalMessage(int statusCode, Object message, String endpointReference){
         this.statusCode = statusCode;
         this._message = message;
         this._endpointReference = endpointReference;
     }
 
-    public void setEndpointReference(EndpointReference endpointReference) {
+    public void setEndpointReference(String endpointReference) {
         this._endpointReference = endpointReference;
     }
 
-    public EndpointReference getEndpointReference() {
+    public String getEndpointReference() {
         return _endpointReference;
     }
 
-    public void set_message(Object message) {
+    public void setMessage(Object message) {
         this._message = message;
     }
 
-    public Object get_message() {
+    public Object getMessage() {
         return _message;
     }
 

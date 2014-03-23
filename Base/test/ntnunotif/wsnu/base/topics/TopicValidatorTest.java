@@ -64,32 +64,32 @@ public class TopicValidatorTest {
         try {
             fis = new FileInputStream(gcmXPathFalsePath);
             xPathFalMsg = XMLParser.parse(fis);
-            GetCurrentMessage msg = (GetCurrentMessage)xPathFalMsg.get_message();
+            GetCurrentMessage msg = (GetCurrentMessage)xPathFalMsg.getMessage();
             xPathFalse = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmXPathMulPath);
             xPathMulMsg = XMLParser.parse(fis);
-            msg = (GetCurrentMessage)xPathMulMsg.get_message();
+            msg = (GetCurrentMessage)xPathMulMsg.getMessage();
             xPathMultipleHits = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmXPathSinPath);
             xPathSinMsg = XMLParser.parse(fis);
-            msg = (GetCurrentMessage)xPathSinMsg.get_message();
+            msg = (GetCurrentMessage)xPathSinMsg.getMessage();
             xPathSingleHit = msg.getTopic();
             fis.close();
             fis = new FileInputStream(gcmIllegalDialectPath);
             illExprDiaMsg = XMLParser.parse(fis);
-            msg = (GetCurrentMessage)illExprDiaMsg.get_message();
+            msg = (GetCurrentMessage)illExprDiaMsg.getMessage();
             illegalExpressionDialect = msg.getTopic();
             fis.close();
             fis = new FileInputStream(topicNamespacePath);
             topNSMsg = XMLParser.parse(fis);
-            JAXBElement<TopicNamespaceType> ns = (JAXBElement)topNSMsg.get_message();
+            JAXBElement<TopicNamespaceType> ns = (JAXBElement)topNSMsg.getMessage();
             topicNamespace = ns.getValue();
             fis.close();
             fis = new FileInputStream(topicSetPath);
             topSetMsg = XMLParser.parse(fis);
-            JAXBElement<TopicSetType> ts = (JAXBElement)topSetMsg.get_message();
+            JAXBElement<TopicSetType> ts = (JAXBElement)topSetMsg.getMessage();
             topicSet = ts.getValue();
             fis.close();
         } catch (Exception e) {

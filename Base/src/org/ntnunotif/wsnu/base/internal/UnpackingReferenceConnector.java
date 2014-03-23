@@ -40,11 +40,13 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
         for(Method method : methods){
             Annotation[] annotations = method.getAnnotations();
 
+            Log.d("UnpackingReferenceConnector", "Method: " + method.getName());
+
             /* Check that the method is a @WebMethod, if not, continue*/
             for(Annotation annotation : annotations){
-                System.out.println(annotation.getClass());
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
+                    Log.d("UnpackingReferenceConnector", "Allowedmethod added: " + webMethod.operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;
                 }else{
@@ -58,13 +60,15 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         if(!((internalMessage.statusCode & STATUS_ENDPOINTREF_IS_SET) > 0)){
+            Log.d("UnpackingReferenceConnector", "EndpointRef not set");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
         }
 
          /* The message */
-        Object potentialEnvelope = internalMessage.get_message();
+        Object potentialEnvelope = internalMessage.getMessage();
 
         if(!(potentialEnvelope instanceof Envelope)){
+            Log.d("UnpackingReferenceConnector", "Content not envelope");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
@@ -85,6 +89,7 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                 /* Look for the annotation @XmlRootElement */
                 if(annotation instanceof XmlRootElement){
                     XmlRootElement xmlRootElement = (XmlRootElement)annotation;
+                    Log.d("UnpackingReferenceConnector", "Name of annotation: " + xmlRootElement.name());
                     /* Check if this connector's web service has a matching method */
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
                         Method method = _allowedMethods.get(xmlRootElement.name());
@@ -162,12 +167,14 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                                     "parameters, or something even more obscure has occured.");
                         }
                     }else{
+                        Log.d("UnpackingReferenceConnector", "Invalid destination");
                         return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                     }
                 }
             }
 
         }
+        Log.d("UnpackingReferenceConnector", "Unknown method");
         return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 

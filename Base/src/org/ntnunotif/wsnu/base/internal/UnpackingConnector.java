@@ -18,6 +18,8 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 /**
  * Connector that takes a soap-envelope, unpacks it's body, and sends it forward.
  * This does function DOES not bother with checking the soap-headers for any information.
+ * This should ideally be used with a web service whose methods only take the parsed-objects as parameters,
+ * and nothing more.
  * @author Tormod Haugland
  * Created by tormod on 3/11/14.
  */
@@ -61,7 +63,7 @@ public class UnpackingConnector implements WebServiceConnector {
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         /* The message */
-        Object potentialEnvelope = internalMessage.get_message();
+        Object potentialEnvelope = internalMessage.getMessage();
 
         if(!(potentialEnvelope instanceof Envelope)){
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
@@ -90,16 +92,33 @@ public class UnpackingConnector implements WebServiceConnector {
                         try {
                             /* Run method on the Web Service */
                             InternalMessage returnMessage;
-                            Object method_returnedData = method.invoke(_webService, message);
+
+                            Object method_returnedData;
+
+                            int paramCount = method.getParameterTypes().length;
+
+                            /* Spit this error-message out, however try and send the message regardless*/
+                            if(paramCount != 1){
+                                Log.e("UnpackingConnector", "The parameter count of the web service" + _webService +
+                                      "attached to this Unpacking connector, " + this + "has a method which takes " +
+                                      "more than one parameter");
+
+                                Object[] args = new Object[paramCount];
+                                args[0] = message;
+                                method_returnedData = method.invoke(_webService, args);
+                            }else {
+                                method_returnedData = method.invoke(_webService, message);
+                            }
 
                             /* If is the case, nothing is being returned */
-                            if(method.getReturnType().equals(Void.TYPE)){
+                            if (method.getReturnType().equals(Void.TYPE)) {
                                 returnMessage = new InternalMessage(STATUS_OK, null);
-                            }else{
-                                returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
-                                                                    method_returnedData);
+                            } else {
+                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_RETURNING_MESSAGE,
+                                        method_returnedData);
                             }
                             return returnMessage;
+
                         } catch (IllegalAccessException e) {
                             Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
                                                "generated classes.\n A @WebMethod can not have private access");

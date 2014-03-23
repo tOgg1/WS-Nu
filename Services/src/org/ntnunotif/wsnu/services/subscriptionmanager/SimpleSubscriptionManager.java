@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.subscriptionmanager;
 
+import org.ntnunotif.wsnu.base.util.EndpointParam;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
@@ -54,7 +55,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
                 /* The subscription is expired */
                 if(entry.getValue().longValue() > timeNow){
-
                     if(_autoRenew){
                         entry.setValue(entry.getValue().longValue() + renewTime);
                     }else{
@@ -69,22 +69,18 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     @WebMethod(operationName = "Unsubscribe")
     public UnsubscribeResponse unsubscribe(@WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe",
                                                      targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                                                     Unsubscribe unsubscribeRequest)
+                                           Unsubscribe unsubscribeRequest, @EndpointParam String endpointReference)
                                            throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-        List<Object> any = unsubscribeRequest.getAny();
-
-        for (Object o : any) {
-            System.out.println(o);
-            System.out.println(o.getClass());
-        }
-        return new UnsubscribeResponse();
+        System.out.println(unsubscribeRequest);
+        System.out.println(endpointReference);
+        return null;
     }
 
     @Override
     @WebMethod(operationName = "Renew")
     public RenewResponse renew(@WebParam(partName = "RenewRequest", name = "Renew",
                                          targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                                         Renew renewRequest)
+                               Renew renewRequest, @EndpointParam String endpointReference)
                                throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
         return null;
     }

@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.subscriptionmanager;
 
-import org.oasis_open.docs.wsn.bw_2.SubscriptionManager;
+
+import org.ntnunotif.wsnu.services.interfaces.SubscriptionManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.util.EndpointParam;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -35,9 +36,15 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer{
     }
 
     @Override
-    @WebResult(name = "SubscribeResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "SubscribeResponse")
-    @WebMethod(operationName = "Subscribe")
-    public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest) throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
+    public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
+                                                 targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+                                       Subscribe subscribeRequest, @EndpointParam String endPoint)
+                                       throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault,
+                                              TopicExpressionDialectUnknownFault, ResourceUnknownFault,
+                                              InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault,
+                                              InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
+                                              SubscribeCreationFailedFault, TopicNotSupportedFault,
+                                              InvalidMessageContentExpressionFault {
         return null;
     }
 

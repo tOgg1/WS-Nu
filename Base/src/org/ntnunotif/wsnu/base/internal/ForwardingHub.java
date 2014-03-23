@@ -60,13 +60,16 @@ public class ForwardingHub implements Hub {
     @Override
     //TODO: Rethink the design of this method. Can everything be done sequentially? First STATUS_OK/FAILED handling and so on
     //TODO: Support multiple messages
-    public InternalMessage acceptNetMessage(InputStream inputStream) {
-        InternalMessage returnMessage = null;
+    public InternalMessage acceptNetMessage(InternalMessage internalMessage) {
+        InternalMessage returnMessage;
+
+        InputStream stream = (InputStream)internalMessage.getMessage();
 
         /* Decrypt message */
         InternalMessage parsedMessage;
         try {
-            parsedMessage = XMLParser.parse(inputStream);
+            parsedMessage = XMLParser.parse(stream);
+            parsedMessage.setEndpointReference(internalMessage.getEndpointReference());
         } catch (JAXBException e) {
 
             returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
@@ -77,8 +80,8 @@ public class ForwardingHub implements Hub {
         ArrayList<InternalMessage> outMessages = new ArrayList<>();
         Envelope envelope;
         try {
-            System.out.println(parsedMessage.get_message());
-            envelope = (Envelope)((JAXBElement)parsedMessage.get_message()).getValue();
+            System.out.println(parsedMessage.getMessage());
+            envelope = (Envelope)((JAXBElement)parsedMessage.getMessage()).getValue();
 
         /* If this exception is thrown, the message received can not be soap */
         } catch (ClassCastException e) {
@@ -93,7 +96,9 @@ public class ForwardingHub implements Hub {
         for (WebServiceConnector service : _services) {
 
             /* Send the message forward */
-            InternalMessage message = service.acceptMessage(new InternalMessage(STATUS_OK, envelope));
+            InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
+            outMessage.setEndpointReference(parsedMessage.getEndpointReference());
+            InternalMessage message = service.acceptMessage(outMessage);
 
             /* Incorrect destination */
             if ((message.statusCode & STATUS_INVALID_DESTINATION) > 0) {
@@ -105,7 +110,7 @@ public class ForwardingHub implements Hub {
                     /* This is easy, now we can convert it, and send it straight out*/
                     if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                         try {
-                            InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.get_message());
+                            InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.getMessage());
                             return new InternalMessage(STATUS_OK
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
@@ -116,7 +121,7 @@ public class ForwardingHub implements Hub {
                     /* Even better, the stream is already an inputstream */
                     } else if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
                         try {
-                            InputStream returningStream = (InputStream) message.get_message();
+                            InputStream returningStream = (InputStream) message.getMessage();
                             return new InternalMessage(STATUS_OK
                                     | STATUS_HAS_RETURNING_MESSAGE
                                     | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
@@ -127,7 +132,7 @@ public class ForwardingHub implements Hub {
                     }
 
                     /* This is worse, now we have to find out what the payload is, and convert it to a stream*/
-                    InputStream returningStream = Utilities.convertUnknownToInputStream(message.get_message());
+                    InputStream returningStream = Utilities.convertUnknownToInputStream(message.getMessage());
 
                     if (returningStream == null) {
                         Log.e("Hub", "Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
@@ -196,7 +201,7 @@ public class ForwardingHub implements Hub {
      */
     @Override
     public void acceptLocalMessage(InternalMessage message, String endPoint) {
-        Object messageContent = message.get_message();
+        Object messageContent = message.getMessage();
 
         if((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
             if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {

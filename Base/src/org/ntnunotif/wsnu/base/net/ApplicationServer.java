@@ -168,7 +168,7 @@ public class ApplicationServer{
      */
     public Object[] sendMessage(InternalMessage message, String recipient){
         //TODO: Distinguish between different faults?
-        //TODO: Handle outputstreams in message.get_message() here? It is already handled in hub, but someone might call this function directly.
+        //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
         org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
         request.method(HttpMethod.POST);
@@ -176,7 +176,7 @@ public class ApplicationServer{
 
         //TODO: Handle exceptions
         try {
-            request.content(new InputStreamContentProvider((InputStream)message.get_message()), "application/soap+xml;charset/utf-8");
+            request.content(new InputStreamContentProvider((InputStream)message.getMessage()), "application/soap+xml;charset/utf-8");
             ContentResponse response = request.send();
             return new Object[]{response.getStatus(), new ByteArrayInputStream(response.getContent())};
         } catch(ClassCastException e){
@@ -236,7 +236,9 @@ public class ApplicationServer{
 
                 /* Send the message to the hub */
                 // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
-                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(input);
+                InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
+                outMessage.setEndpointReference(request.getRemoteHost());
+                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
 
                 /* Handle possible errors */
                 if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){
@@ -248,7 +250,7 @@ public class ApplicationServer{
                           (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
-                    if(returnMessage.get_message() == null){
+                    if(returnMessage.getMessage() == null){
                         Log.e("ApplicationServer", "The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
                         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                         request.setHandled(true);
@@ -257,7 +259,7 @@ public class ApplicationServer{
 
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
-                    InputStream inputStream = (InputStream)returnMessage.get_message();
+                    InputStream inputStream = (InputStream)returnMessage.getMessage();
                     OutputStream outputStream = httpServletResponse.getOutputStream();
 
                     /* google.commons helper function*/
@@ -272,7 +274,7 @@ public class ApplicationServer{
                 }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
-                    InputStream inputStream = (InputStream)returnMessage.get_message();
+                    InputStream inputStream = (InputStream)returnMessage.getMessage();
                     OutputStream outputStream = httpServletResponse.getOutputStream();
 
                     /* google.commons helper function*/

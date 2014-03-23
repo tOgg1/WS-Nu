@@ -88,7 +88,7 @@ public class ApplicationServerTest extends TestCase {
         client.start();
 
         Object object = XMLParser.parse(new FileInputStream("Base/testres/server_test_soap.xml"));
-        Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).get_message()).getValue();
+        Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).getMessage()).getValue();
         Header head = env.getHeader();
         Body body = env.getBody();
         System.out.println(head);

@@ -47,13 +47,13 @@ public class SoapForwardConnector implements WebServiceConnector {
 
     @Override
     public InternalMessage acceptMessage(InternalMessage message) {
-        Object messageContent = message.get_message();
+        Object messageContent = message.getMessage();
 
         if(!(messageContent instanceof Envelope)){
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
-        Envelope soapEnvelope = (Envelope)message.get_message();
+        Envelope soapEnvelope = (Envelope)message.getMessage();
 
         try {
             Object method_returnedData = _soapMethod.invoke(_webService, soapEnvelope);
