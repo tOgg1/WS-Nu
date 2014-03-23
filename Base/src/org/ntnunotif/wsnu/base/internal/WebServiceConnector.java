@@ -7,7 +7,7 @@ import java.util.HashMap;
  * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
-public interface WebServiceConnection {
+public interface WebServiceConnector {
 
     /**
      * Accept a message from a hub. This function forwards the message to its connected Web Service.
@@ -24,7 +24,7 @@ public interface WebServiceConnection {
 
     /**
      * Return the functionality this Web Service offers.
-     * @return The methods allowed by the Web Service
+     * @return Return the allowed functionality
      */
-    public HashMap<String, Method> getServiceFunctionality();
+    public Object getServiceFunctionality();
 }

@@ -1,11 +1,10 @@
-import org.ntnunotif.wsnu.base.internal.GenericConnector;
+import org.ntnunotif.wsnu.base.internal.UnpackedMessageConnector;
 import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import javax.jws.WebMethod;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public class SimpleConsumer implements ConsumerListener {
         NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
 
         /* The connector between the hub/applicatonserver and the Web Service */
-        GenericConnector connector = new GenericConnector(consumer);
+        UnpackedMessageConnector connector = new UnpackedMessageConnector(consumer);
 
         /* Register Web Service with hub, making it eligible to receive messages */
         hub.registerService(connector);

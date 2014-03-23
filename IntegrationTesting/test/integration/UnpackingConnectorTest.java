@@ -2,7 +2,7 @@ package integration;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.GenericConnector;
+import org.ntnunotif.wsnu.base.internal.UnpackedMessageConnector;
 import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
@@ -17,9 +17,9 @@ import java.util.HashMap;
 /**
  * Created by tormod on 3/13/14.
  */
-public class GenericConnectorTest extends TestCase{
+public class UnpackingConnectorTest extends TestCase{
 
-    private GenericConnector consumerConnector;
+    private UnpackedMessageConnector consumerConnector;
     private NotificationConsumer consumer;
     private ArrayList<Object> messages;
 
@@ -28,7 +28,7 @@ public class GenericConnectorTest extends TestCase{
     public void setUp() throws Exception {
         super.setUp();
         consumer = new NotificationConsumer(new InternalHub());
-        consumerConnector = new GenericConnector(consumer);
+        consumerConnector = new UnpackedMessageConnector(consumer);
         messages = new ArrayList<Object>();
         messages.add(new Notify());
     }

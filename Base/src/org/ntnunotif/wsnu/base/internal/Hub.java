@@ -1,10 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import org.ntnunotif.wsnu.base.net.XMLParser;
-
-import javax.xml.bind.JAXBException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Interface for a hub. Implementations of this interface should be able to receive net-messages, and local messages (from connected web services)
@@ -26,20 +22,20 @@ public interface Hub {
 
     /**
      * Register's a service for usage with this hub object.
-     * @param webServiceConnection
+     * @param webServiceConnector
      */
-    public void registerService(WebServiceConnection webServiceConnection);
+    public void registerService(WebServiceConnector webServiceConnector);
 
     /**
      * Removes a registered service for usage with this hub object.
-     * @param webServiceConnection
+     * @param webServiceConnector
      */
-    public void removeService(WebServiceConnection webServiceConnection);
+    public void removeService(WebServiceConnector webServiceConnector);
 
     /**
-     * Checks if the webServiceConnection is registered with the hub
-     * @param webServiceConnection
+     * Checks if the webServiceConnector is registered with the hub
+     * @param webServiceConnector
      * @return
      */
-    public boolean isServiceRegistered(WebServiceConnection webServiceConnection);
+    public boolean isServiceRegistered(WebServiceConnector webServiceConnector);
 }

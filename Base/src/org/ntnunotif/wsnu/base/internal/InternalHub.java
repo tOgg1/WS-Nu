@@ -7,10 +7,8 @@ import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
 
-import javax.rmi.CORBA.Util;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class InternalHub implements Hub {
     /**
      * List of internal web-service connections.
      */
-    private ArrayList<WebServiceConnection> _services;
+    private ArrayList<WebServiceConnector> _services;
 
     /**
      * Application-server object
@@ -40,29 +38,20 @@ public class InternalHub implements Hub {
      * Default constructor
      */
     public InternalHub() throws Exception {
-        this._services = new ArrayList<WebServiceConnection>();
+        this._services = new ArrayList<WebServiceConnector>();
         this._server = ApplicationServer.getInstance();
         this._server.start(this);
     }
 
-    public InternalHub(ApplicationServer server) throws Exception{
-        this._services = new ArrayList<WebServiceConnection>();
-        this._server = server;
-        this._server.start(this);
-    }
-
     /**
-     * Stop the hub and its delegates.
+     * Constructor with already existing server
+     * @param server
      * @throws Exception
      */
-    public void stop() throws Exception {
-
-        // Enforce garbage collection
-        _server.stop();
-        _server = null;
-
-        _services.clear();
-        _services = null;
+    public InternalHub(ApplicationServer server) throws Exception{
+        this._services = new ArrayList<WebServiceConnector>();
+        this._server = server;
+        this._server.start(this);
     }
 
     /**
@@ -80,8 +69,7 @@ public class InternalHub implements Hub {
             parsedMessage = XMLParser.parse(inputStream);
         } catch (JAXBException e) {
             //TODO: Move this handling to the parser?
-            returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR
-                    | STATUS_FAULT, null);
+            returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             e.printStackTrace();
             return returnMessage;
         }
@@ -100,7 +88,6 @@ public class InternalHub implements Hub {
                 outMessage.setNamespaceContext(parsedMessage.getNamespaceContext());
                 outMessages.add(outMessage);
             }
-
         /* If this exception is thrown, the message received can not be soap */
         } catch (ClassCastException e) {
             return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD, null);
@@ -109,7 +96,7 @@ public class InternalHub implements Hub {
         /* For all messages */
         for (InternalMessage outMessage : outMessages) {
             /* Try sending the message to everyone */
-            for (WebServiceConnection service : _services) {
+            for (WebServiceConnector service : _services) {
 
                 /* Send the message forward */
                 InternalMessage message = service.acceptMessage(outMessage);
@@ -205,6 +192,20 @@ public class InternalHub implements Hub {
     }
 
     /**
+     * Stop the hub and its delegates.
+     * @throws Exception
+     */
+    public void stop() throws Exception {
+
+        // Enforce garbage collection
+        _server.stop();
+        _server = null;
+
+        _services.clear();
+        _services = null;
+    }
+
+    /**
      * Function to accept a message from a local service, and forward it out into the internet.
      * @param message The message to be sent out
      * @param endPoint The endpoint to send to
@@ -235,19 +236,19 @@ public class InternalHub implements Hub {
      * Extra method for adding several Web Services with an args parameter.
      * @param args
      */
-    public void registerServices(WebServiceConnection... args){
-        for(WebServiceConnection webServiceConnection : args){
-            this.registerService(webServiceConnection);
+    public void registerServices(WebServiceConnector... args){
+        for(WebServiceConnector webServiceConnector : args){
+            this.registerService(webServiceConnector);
         }
     }
 
     /**
      * Extra method for adding several Web Services with a collection
-     * @param webServiceConnections
+     * @param webServiceConnectors
      */
-    public void registerServices(Collection<WebServiceConnection> webServiceConnections){
-        for(WebServiceConnection webServiceConnection : webServiceConnections){
-            this.registerService(webServiceConnection);
+    public void registerServices(Collection<WebServiceConnector> webServiceConnectors){
+        for(WebServiceConnector webServiceConnector : webServiceConnectors){
+            this.registerService(webServiceConnector);
         }
     }
 
@@ -255,34 +256,34 @@ public class InternalHub implements Hub {
      * Extra method for removing several Web Services with an args parameter.
      * @param args
      */
-    public void removeServices(WebServiceConnection... args){
-        for(WebServiceConnection webServiceConnection : args){
-            this.removeService(webServiceConnection);
+    public void removeServices(WebServiceConnector... args){
+        for(WebServiceConnector webServiceConnector : args){
+            this.removeService(webServiceConnector);
         }
     }
 
     /**
      * Extra method for removing several Web Services with a collection.
-     * @param webServiceConnections
+     * @param webServiceConnectors
      */
-    public void removeServices(Collection<WebServiceConnection> webServiceConnections){
-        for(WebServiceConnection webServiceConnection : webServiceConnections){
-            this.removeService(webServiceConnection);
+    public void removeServices(Collection<WebServiceConnector> webServiceConnectors){
+        for(WebServiceConnector webServiceConnector : webServiceConnectors){
+            this.removeService(webServiceConnector);
         }
     }
 
     @Override
-    public void registerService(WebServiceConnection webServiceConnection) {
-        this._services.add(webServiceConnection);
+    public void registerService(WebServiceConnector webServiceConnector) {
+        this._services.add(webServiceConnector);
     }
 
     @Override
-    public void removeService(WebServiceConnection webServiceConnection) {
-        this._services.remove(webServiceConnection);
+    public void removeService(WebServiceConnector webServiceConnector) {
+        this._services.remove(webServiceConnector);
     }
 
     @Override
-    public boolean isServiceRegistered(WebServiceConnection webServiceConnection) {
-        return this._services.contains(webServiceConnection);
+    public boolean isServiceRegistered(WebServiceConnector webServiceConnector) {
+        return this._services.contains(webServiceConnector);
     }
 }

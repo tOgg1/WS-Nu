@@ -1,8 +1,5 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
-
 import javax.jws.WebMethod;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
@@ -13,9 +10,11 @@ import java.util.HashMap;
 import static org.ntnunotif.wsnu.base.internal.InternalMessage.*;
 
 /**
+ * Connector that looks for the direct WebMethod of the connected Web Service when accepting messages.
+ * @author Tormod Haugland
  * Created by tormod on 3/11/14.
  */
-public class GenericConnector implements WebServiceConnection{
+public class UnpackedMessageConnector implements WebServiceConnector {
 
     private Object _webService;
     private Class _webServiceClass;
@@ -24,7 +23,7 @@ public class GenericConnector implements WebServiceConnection{
     /**
      * Default and only constructor, takes a webService as parameter. Finds all allowed methods.
      */
-    public GenericConnector(Object webService) {
+    public UnpackedMessageConnector(Object webService) {
         this._webService = webService;
         this._webServiceClass = this._webService.getClass();
         this._allowedMethods = new HashMap<>();

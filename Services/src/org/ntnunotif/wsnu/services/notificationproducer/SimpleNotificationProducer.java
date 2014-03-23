@@ -7,6 +7,7 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -41,4 +42,9 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer{
         return null;
     }
 
+    @Override
+    @WebMethod(operationName = "acceptSoapMessage")
+    public void acceptSoapMessage(Envelope envelope) {
+        
+    }
 }
