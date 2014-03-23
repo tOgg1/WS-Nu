@@ -16,6 +16,7 @@ public class InternalMessage {
     public static final int STATUS_FAULT_INVALID_PAYLOAD = 0x40;
     public static final int STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM = 0x80;
     public static final int STATUS_INVALID_DESTINATION = 0x100;
+    public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
 
     public int _statusCode;
     private Object _message;
@@ -33,11 +34,11 @@ public class InternalMessage {
         this._endpointReference = endpointReference;
     }
 
-    public void set_endpointReference(EndpointReference _endpointReference) {
-        this._endpointReference = _endpointReference;
+    public void setEndpointReference(EndpointReference endpointReference) {
+        this._endpointReference = endpointReference;
     }
 
-    public EndpointReference get_endpointReference() {
+    public EndpointReference getEndpointReference() {
         return _endpointReference;
     }
 

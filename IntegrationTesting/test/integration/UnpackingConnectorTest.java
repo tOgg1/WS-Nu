@@ -2,7 +2,7 @@ package integration;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.DefaultHub;
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
@@ -27,7 +27,7 @@ public class UnpackingConnectorTest extends TestCase{
 
     public void setUp() throws Exception {
         super.setUp();
-        consumer = new NotificationConsumer(new DefaultHub());
+        consumer = new NotificationConsumer(new ForwardingHub());
         consumerConnector = new UnpackingConnector(consumer);
         messages = new ArrayList<Object>();
         messages.add(new Notify());

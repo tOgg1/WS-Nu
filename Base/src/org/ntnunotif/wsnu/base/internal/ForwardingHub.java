@@ -22,7 +22,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
-public class DefaultHub implements Hub {
+public class ForwardingHub implements Hub {
 
     /**
      * List of internal web-service connections.
@@ -37,7 +37,7 @@ public class DefaultHub implements Hub {
     /**
      * Default constructor
      */
-    public DefaultHub() throws Exception {
+    public ForwardingHub() throws Exception {
         this._services = new ArrayList<WebServiceConnector>();
         this._server = ApplicationServer.getInstance();
         this._server.start(this);
@@ -48,7 +48,7 @@ public class DefaultHub implements Hub {
      * @param server
      * @throws Exception
      */
-    public DefaultHub(ApplicationServer server) throws Exception{
+    public ForwardingHub(ApplicationServer server) throws Exception{
         this._services = new ArrayList<WebServiceConnector>();
         this._server = server;
         this._server.start(this);

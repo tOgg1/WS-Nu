@@ -1,5 +1,5 @@
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.internal.DefaultHub;
 import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
@@ -15,7 +15,7 @@ public class SimpleConsumer implements ConsumerListener {
     public static void main(String[] args) throws Exception{
 
         /* Instantiate base-objects, running the server on default ip(localhost) */
-        DefaultHub hub = new DefaultHub();
+        ForwardingHub hub = new ForwardingHub();
 
         /* Create Web Service, passing in an EndpointReference*/
         NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
