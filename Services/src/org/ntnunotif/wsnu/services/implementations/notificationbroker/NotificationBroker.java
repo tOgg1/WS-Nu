@@ -28,27 +28,31 @@ public class NotificationBroker implements org.ntnunotif.wsnu.services.general.N
     }
 
     @Override
-    public RegisterPublisherResponse registerPublisher(@WebParam(partName = "RegisterPublisherRequest", name = "RegisterPublisher",
-                                                                 targetNamespace = "http://docs.oasis-open.org/wsn/br-2")
-                                                       RegisterPublisher registerPublisherRequest, RequestInformation requestInformation)
-                                                       throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault,
-                                                              ResourceUnknownFault, PublisherRegistrationRejectedFault,
-                                                              UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
+    public RegisterPublisherResponse registerPublisher(
+            @WebParam(partName = "RegisterPublisherRequest", name = "RegisterPublisher", targetNamespace = "http://docs.oasis-open.org/wsn/br-2")
+            RegisterPublisher registerPublisherRequest, RequestInformation requestInformation)
+    throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
+           UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
         return null;
     }
 
     @Override
-    public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage",
-                                                                 targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                                                       GetCurrentMessage getCurrentMessageRequest)
-                                                       throws InvalidTopicExpressionFault, NoCurrentMessageOnTopicFault,
-                                                       TopicExpressionDialectUnknownFault, ResourceUnknownFault,
-                                                       MultipleTopicsSpecifiedFault, TopicNotSupportedFault {
+    public GetCurrentMessageResponse getCurrentMessage(
+            @WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+            GetCurrentMessage getCurrentMessageRequest)
+   throws InvalidTopicExpressionFault, NoCurrentMessageOnTopicFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault,
+          MultipleTopicsSpecifiedFault, TopicNotSupportedFault {
         return null;
     }
 
     @Override
-    public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest, RequestInformation requestInformation) throws InvalidTopicExpressionFault, InvalidProducerPropertiesExpressionFault, TopicExpressionDialectUnknownFault, UnsupportedPolicyRequestFault, InvalidFilterFault, ResourceUnknownFault, NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, SubscribeCreationFailedFault, UnacceptableInitialTerminationTimeFault, InvalidMessageContentExpressionFault, TopicNotSupportedFault {
+    public SubscribeResponse subscribe(
+            @WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+            Subscribe subscribeRequest, RequestInformation requestInformation)
+    throws InvalidTopicExpressionFault, InvalidProducerPropertiesExpressionFault, TopicExpressionDialectUnknownFault,
+           UnsupportedPolicyRequestFault, InvalidFilterFault, ResourceUnknownFault, NotifyMessageNotSupportedFault,
+           UnrecognizedPolicyRequestFault, SubscribeCreationFailedFault, UnacceptableInitialTerminationTimeFault,
+           InvalidMessageContentExpressionFault, TopicNotSupportedFault {
         return null;
     }
 }

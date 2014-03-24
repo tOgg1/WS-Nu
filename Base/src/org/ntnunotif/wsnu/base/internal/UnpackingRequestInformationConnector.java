@@ -1,6 +1,5 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import org.ntnunotif.wsnu.base.util.EndpointParam;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -8,6 +7,7 @@ import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -99,30 +99,30 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                                 Log.e("UnpackingRequestInformationConnector", "Method error");
                                 throw new InvalidWebServiceException("Web service at" + _webService + " has a WebMethod " +
                                                                      "expecting more than 2 arguments, which is not supported by this Connector." +
-                                                                     "Consider using ");
-                            /* We are here looking for a parameter with the annotation EndpointParam */
+                                                                     "Consider using another connector");
+                            /* We are here looking for where the WebParam is */
                             }else if(method.getParameterTypes().length > 1){
                                 Annotation[][] paramAnnotations = method.getParameterAnnotations();
 
                                 /* Is the endpointparam first or last?*/
-                                int indexOfEndPointParam = -1;
+                                int indexOfWebParam = -1;
 
                                 /* For each parameter */
                                 for (Annotation[] paramAnnotation : paramAnnotations) {
-                                    ++indexOfEndPointParam;
+                                    ++indexOfWebParam;
 
                                     /* For each annotation */
                                     for (Annotation annotation1 : paramAnnotation) {
-                                        if(annotation1 instanceof EndpointParam){
+                                        if(annotation1 instanceof WebParam){
 
                                             /* Run method on the Web Service */
                                             InternalMessage returnMessage;
                                             Object method_returnedData;
 
-                                            if(indexOfEndPointParam == 0){
-                                               method_returnedData = method.invoke(_webService, internalMessage.getRequestInformation(), message);
-                                            }else{
+                                            if(indexOfWebParam == 0){
                                                 method_returnedData = method.invoke(_webService, message, internalMessage.getRequestInformation());
+                                            }else{
+                                                method_returnedData = method.invoke(_webService, internalMessage.getRequestInformation(), message);
                                             }
 
                                             /* If is the case, nothing is being returned */
@@ -133,7 +133,6 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                                                         method_returnedData);
                                             }
                                             return returnMessage;
-
                                         }
                                     }
                                 }
@@ -146,7 +145,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                                 InternalMessage returnMessage;
                                 Object method_returnedData = method.invoke(_webService, message);
 
-                            /* If is the case, nothing is being returned */
+                                /* If is the case, nothing is being returned */
                                 if(method.getReturnType().equals(Void.TYPE)){
                                     returnMessage = new InternalMessage(STATUS_OK, null);
                                 }else{
@@ -155,27 +154,25 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                                 }
                                 return returnMessage;
                             }
-
-
                         } catch (IllegalAccessException e) {
                             Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
                                     "generated classes.\n A @WebMethod can not have private access");
                             e.printStackTrace();
-                            return null;
+                            return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
                         } catch (InvocationTargetException e) {
                             Log.e("Unpacking Connector", "The method being accessed are being feeded an invalid amount of " +
                                     "parameters, or something even more obscure has occured.");
                         }
                     }else{
                         Log.d("UnpackingRequestInformationConnector", "Invalid destination");
-                        return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
+                        return new InternalMessage(STATUS_INVALID_DESTINATION, null);
                     }
                 }
             }
 
         }
         Log.d("UnpackingRequestInformationConnector", "Unknown method");
-        return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
+        return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 
     @Override

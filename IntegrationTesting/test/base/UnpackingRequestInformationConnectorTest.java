@@ -49,7 +49,6 @@ public class UnpackingRequestInformationConnectorTest extends TestCase {
         InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK|InternalMessage.STATUS_ENDPOINTREF_IS_SET, env);
         message.getRequestInformation().setEndpointReference("tormodhaugland.com");
         connector.acceptMessage(message);
-
     }
 
     @Test
@@ -60,7 +59,7 @@ public class UnpackingRequestInformationConnectorTest extends TestCase {
         client.setFollowRedirects(false);
         client.start();
 
-        Request request = client.newRequest("http://localhost:8080");
+        Request request = client.newRequest("http://localhost:8080?subscription=909aryg9a8223n8a89j23f");
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("IntegrationTesting/res/server_test_unsubscribe.xml")));
 

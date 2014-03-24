@@ -164,7 +164,6 @@ public class ApplicationServer{
      * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
      * and sends this response back up the system.
      * @param message
-     * @param recipient
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
     public Object[] sendMessage(InternalMessage message){
@@ -172,8 +171,6 @@ public class ApplicationServer{
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
         RequestInformation requestInformation = message.getRequestInformation();
-
-
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
@@ -272,6 +269,7 @@ public class ApplicationServer{
                     httpServletResponse.setStatus(HttpStatus.OK_200);
                     outputStream.flush();
                     request.setHandled(true);
+
                 /* Something went wrong, and an error-message is being returned
                  * This is only here for theoretical reasons. Calling something like this should make you
                  * rethink your Web Service's architecture */

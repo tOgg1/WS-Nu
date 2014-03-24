@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.general;
 
 import org.eclipse.jetty.client.api.Request;
 import org.ntnunotif.wsnu.base.util.EndpointParam;
+import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
@@ -25,13 +26,13 @@ public interface SubscriptionManager {
     @WebMethod(operationName = "Unsubscribe")
     public org.oasis_open.docs.wsn.b_2.UnsubscribeResponse unsubscribe(
             @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-            org.oasis_open.docs.wsn.b_2.Unsubscribe unsubscribeRequest, RequestInformation requestInformation
+            org.oasis_open.docs.wsn.b_2.Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation
     ) throws org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault, UnableToDestroySubscriptionFault;
 
     @WebResult(name = "RenewResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "RenewResponse")
     @WebMethod(operationName = "Renew")
     public org.oasis_open.docs.wsn.b_2.RenewResponse renew(
             @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-            org.oasis_open.docs.wsn.b_2.Renew renewRequest, RequestInformation requestInformation
+            org.oasis_open.docs.wsn.b_2.Renew renewRequest, @Information RequestInformation requestInformation
     ) throws org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault, UnacceptableTerminationTimeFault;
 }
