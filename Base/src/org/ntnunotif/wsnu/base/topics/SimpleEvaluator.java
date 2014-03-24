@@ -44,6 +44,10 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        if (!dialectURI.equals(topicExpressionType.getDialect()))
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
+
         QName topic;
         try {
             topic = evaluateTopicExpressionToQName(topicExpressionType, namespaceContext).get(0);
@@ -86,7 +90,12 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
 
     @Override
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
-            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
+            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
+            TopicExpressionDialectUnknownFault {
+
+        if (!dialectURI.equals(topicExpressionType.getDialect()))
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
+
         String expression = TopicUtils.extractExpression(topicExpressionType);
         // The topic expression should now be trimmed. Check for whitespace occurrence
         for (int i = 0; i < expression.length(); i++) {

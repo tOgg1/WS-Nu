@@ -39,6 +39,11 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        if (!dialectURI.equals(topicExpressionType.getDialect()))
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en",
+                    "Concrete evaluator can evaluate Concrete dialect!");
+
         List<QName> topic;
         try {
             topic = evaluateTopicExpressionToQName(topicExpressionType, namespaceContext);
@@ -47,7 +52,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
             multipleTopicsSpecifiedFault.printStackTrace();
             return null;
         }
-        for (Object o: topicSetType.getAny()) {
+        for (Object o : topicSetType.getAny()) {
             int topicNumber = 0;
             // get root name, and post increment topicNumber
             QName curName = topic.get(topicNumber++);
@@ -58,7 +63,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
 
             // An element that can be a topic is a node. Only proceed if it is
             if (o instanceof Node) {
-                Node node = (Node)o;
+                Node node = (Node) o;
                 String nodeNs = node.getNamespaceURI();
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
 
@@ -108,7 +113,13 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
 
     @Override
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
-            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
+            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
+            TopicExpressionDialectUnknownFault {
+
+        if (!dialectURI.equals(topicExpressionType.getDialect()))
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en",
+                    "Concrete evaluator can evaluate Concrete dialect!");
+
         String expression = TopicUtils.extractExpression(topicExpressionType);
         for (int i = 0; i < expression.length(); i++) {
             if (Character.isWhitespace(expression.charAt(i)))
@@ -119,7 +130,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
         List<QName> retVal = new ArrayList<>();
         // Split expression in its individual path parts
         String[] pathed = expression.split("/");
-        for (String str: pathed) {
+        for (String str : pathed) {
             String[] name = str.split(":");
             if (name.length == 0 || name.length > 2)
                 TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a " +

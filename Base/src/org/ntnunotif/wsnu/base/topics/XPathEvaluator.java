@@ -47,69 +47,14 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        if (!topicExpressionType.getDialect().equals(dialectURI)) {
-            TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
-            faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-            BaseFaultType.Description description = new BaseFaultType.Description();
-            description.setLang("en");
-            description.setValue("Could not evaluate dialect! Given dialect was " + topicExpressionType.getDialect() +
-                    " but only " + dialectURI + " is allowed!");
-            faultType.getDescription().add(description);
-            throw new TopicExpressionDialectUnknownFault(description.getValue(), faultType);
-        }
+
+        if (!dialectURI.equals(topicExpressionType.getDialect()))
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "XPath evaluator can evaluate XPath dialect!");
 
         // Find expression string
         String expression = TopicUtils.extractExpression(topicExpressionType);
 
-        // Build XPath environment
-        XPathFactory xPathFactory = XPathFactory.newInstance();
-        XPath xPath = xPathFactory.newXPath();
-
-        // This should make expression solution more correct
-        xPath.setNamespaceContext(namespaceContext);
-        XPathExpression xPathExpression;
-        try {
-            xPathExpression = xPath.compile(expression);
-        } catch (XPathExpressionException e) {
-            InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-            faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-            BaseFaultType.Description description = new BaseFaultType.Description();
-            description.setLang("en");
-            description.setValue("Topic expression claimed to be an XPath expression, but was not!");
-            faultType.getDescription().add(description);
-            throw new InvalidTopicExpressionFault(description.getValue(), faultType);
-        }
-
-
-        // For every object in topicSet, try to evaluate it against expression and store result.
-        int returnCount = 0;
-        TopicSetType returnSet = new TopicSetType();
-        for (Object o: topicSetType.getAny()) {
-            try {
-                NodeList nodeList = (NodeList) xPathExpression.evaluate(o, XPathConstants.NODESET);
-                // If result contained topics, add them to return topic set.
-                returnCount += nodeList.getLength();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    Node node = nodeList.item(i);
-                    // Ensure that it is actual topics we have selected
-                    if (TopicUtils.isTopic(node))
-                        returnSet.getAny().add(node);
-                }
-            } catch (XPathExpressionException e) {
-                InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-                faultType.setTimestamp(new XMLGregorianCalendarImpl(
-                        new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-                BaseFaultType.Description description = new BaseFaultType.Description();
-                description.setLang("en");
-                description.setValue("Some part of expression failed to evaluate, this can not be a legal " +
-                        "XPath expression!");
-                faultType.getDescription().add(description);
-                throw new InvalidTopicExpressionFault(description.getValue(), faultType);
-            }
-        }
-        if (returnCount == 0)
-            return null;
-        return returnSet;
+        return getXpathIntersection(expression, topicSetType, namespaceContext);
     }
 
     @Override
@@ -121,7 +66,55 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
-        throw new UnsupportedOperationException("The XPath evaluator is unable to evaluate " +
-                "an expression without context");
+        String expression = TopicUtils.extractExpression(topicExpressionType);
+
+        return FullEvaluator.evaluateFullTopicExpressionToQNameList(expression, context);
+    }
+
+    public static TopicSetType getXpathIntersection(String expression, TopicSetType setType, NamespaceContext context)
+            throws InvalidTopicExpressionFault {
+
+        // Build XPath environment
+        XPathFactory xPathFactory = XPathFactory.newInstance();
+        XPath xPath = xPathFactory.newXPath();
+        // Set up correct context
+        xPath.setNamespaceContext(context);
+        XPathExpression xPathExpression;
+
+
+        try {
+            xPathExpression = xPath.compile(expression);
+        } catch (XPathExpressionException e) {
+            TopicUtils.throwInvalidTopicExpressionFault("en", "Topic expression did not follow correct XPath syntax");
+            // Dead code:
+            return null;
+        }
+
+        // For every object in topicSet, try to evaluate it against expression and store result.
+        int returnCount = 0;
+        TopicSetType returnSet = new TopicSetType();
+        for (Object o: setType.getAny()) {
+
+            try {
+                // Evaluate expression
+                NodeList nodeList = (NodeList) xPathExpression.evaluate(o, XPathConstants.NODESET);
+
+                // If result contained topics, add them to return topic set.
+                returnCount += nodeList.getLength();
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+
+                    // Ensure that it is actual topics we have selected
+                    if (TopicUtils.isTopic(node))
+                        returnSet.getAny().add(node);
+                }
+            } catch (XPathExpressionException e) {
+                TopicUtils.throwInvalidTopicExpressionFault("en", "Some part of expression failed evaluation. " +
+                        "This can not be a legal XPath expression");
+            }
+        }
+        if (returnCount == 0)
+            return null;
+        return returnSet;
     }
 }

@@ -2,8 +2,10 @@ package org.ntnunotif.wsnu.base.topics;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
+import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.w3c.dom.*;
@@ -300,28 +302,15 @@ public class TopicUtils {
         for (Object o : topicExpressionType.getContent()) {
             if (o instanceof String) {
                 if (expression != null) {
-                    InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-                    faultType.setTimestamp(new XMLGregorianCalendarImpl(
-                            new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-                    BaseFaultType.Description description = new BaseFaultType.Description();
-                    description.setLang("en");
-                    description.setValue("The given content of the expression was not a simple expression!");
-                    faultType.getDescription().add(description);
-                    throw new InvalidTopicExpressionFault(description.getValue(), faultType);
+                    throwInvalidTopicExpressionFault("en", "The given expression was not a simple expression!");
                 }
                 expression = (String) o;
             }
         }
         if (expression == null) {
-            InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-            faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-            BaseFaultType.Description description = new BaseFaultType.Description();
-            description.setLang("en");
-            description.setValue("No expression was given, and thus can not be evaluated!");
-            faultType.getDescription().add(description);
-            throw new InvalidTopicExpressionFault(description.getValue(), faultType);
+            throwInvalidTopicExpressionFault("en", "No expression was given, and thus can not be evaluated!");
         }
-        return expression.trim();
+        return expression == null ? null : expression.trim();
     }
 
     public static void throwInvalidTopicExpressionFault(String lang, String desc) throws InvalidTopicExpressionFault {
@@ -332,5 +321,16 @@ public class TopicUtils {
         description.setValue(desc);
         faultType.getDescription().add(description);
         throw new InvalidTopicExpressionFault(desc, faultType);
+    }
+
+    public static void throwTopicExpressionDialectUnknownFault(String lang, String desc)
+            throws TopicExpressionDialectUnknownFault {
+        TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
+        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        BaseFaultType.Description description = new BaseFaultType.Description();
+        description.setLang(lang);
+        description.setValue(desc);
+        faultType.getDescription().add(description);
+        throw new TopicExpressionDialectUnknownFault("desc", faultType);
     }
 }

@@ -85,13 +85,17 @@ public interface TopicExpressionEvaluatorInterface {
      *
      * @param topicExpressionType The <code>TopicExpressionType</code> to evaluate
      * @return the <code>QName</code> of the Topic.
-     * @throws UnsupportedOperationException If this evaluator is unable to identify topics on expression only. Try
-     *                                       {@link org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface#getIntersection(org.oasis_open.docs.wsn.b_2.TopicExpressionType, org.oasis_open.docs.wsn.t_1.TopicSetType, javax.xml.namespace.NamespaceContext)}
-     *                                       instead.
-     * @throws InvalidTopicExpressionFault   If the content of the <code>TopicExpressionType</code> did not match the
-     *                                       dialect specified.
-     * @throws MultipleTopicsSpecifiedFault  If more than one topic was identified by expression.
+     * @throws UnsupportedOperationException                                   If this evaluator is unable to identify topics on expression only. Try
+     *                                                                         {@link org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface#getIntersection(org.oasis_open.docs.wsn.b_2.TopicExpressionType, org.oasis_open.docs.wsn.t_1.TopicSetType, javax.xml.namespace.NamespaceContext)}
+     *                                                                         instead.
+     * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
+     *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
+     *                                                                         was unknown
+     * @throws InvalidTopicExpressionFault                                     If the content of the <code>TopicExpressionType</code> did not match the
+     *                                                                         dialect specified.
+     * @throws MultipleTopicsSpecifiedFault                                    If more than one topic was identified by expression.
      */
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
-            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault;
+            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
+            TopicExpressionDialectUnknownFault;
 }
