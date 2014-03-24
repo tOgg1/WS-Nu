@@ -10,9 +10,13 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.xml.XmlConfiguration;
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -72,12 +76,24 @@ public class ApplicationServer{
     private static boolean _hasBeenInvoked = false;
 
     /**
+     * Configuration file for this server.
+     */
+    private static String _configFile = "defaultconfig.xml";
+
+    /**
      * As this class is a singleton no external instantiation is allowed.
      */
     private ApplicationServer() throws Exception
     {
-        _server = new Server(8080);
+        Resource resource = Resource.newSystemResource(_configFile);
+
+        XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+        _server = (Server)config.configure();
         _server.setHandler(new HttpHandler());
+    }
+
+    public static void setServerConfiguration(String pathToConfigFile) throws Exception{
+
     }
 
     /**
@@ -99,13 +115,13 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public void start(InternalHub internalHub) throws Exception{
+    public void start(ForwardingHub forwardingHub) throws Exception{
         if(_isRunning){
             return;
         }
 
         _isRunning = true;
-        _parentHub = internalHub;
+        _parentHub = forwardingHub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();
@@ -137,6 +153,7 @@ public class ApplicationServer{
         try {
             _server.stop();
             _serverThread.join();
+            _isRunning = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,14 +163,14 @@ public class ApplicationServer{
      * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
      * and sends this response back up the system.
      * @param message
-     * @param recipient
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
-    public Object[] sendMessage(InternalMessage message, String recipient){
+    public Object[] sendMessage(InternalMessage message){
         //TODO: Distinguish between different faults?
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
-        org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
+        RequestInformation requestInformation = message.getRequestInformation();
+        org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
 
@@ -218,8 +235,11 @@ public class ApplicationServer{
                 InputStream input = httpServletRequest.getInputStream();
 
                 /* Send the message to the hub */
-                // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
-                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(input);
+                InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
+                outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
+                outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
+                outMessage.getRequestInformation().setParameters(request.getParameterMap());
+                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
 
                 /* Handle possible errors */
                 if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){
@@ -228,11 +248,11 @@ public class ApplicationServer{
                     return;
                 //TODO: A bit unecessary perhaps? Redo into two layers?
                 }else if(((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0) &&
-                          (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage.statusCode) > 0){
+                          (InternalMessage.STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){
-                        System.err.println("The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
+                        Log.e("ApplicationServer", "The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
                         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                         request.setHandled(true);
                         return;
@@ -249,10 +269,11 @@ public class ApplicationServer{
                     httpServletResponse.setStatus(HttpStatus.OK_200);
                     outputStream.flush();
                     request.setHandled(true);
+
                 /* Something went wrong, and an error-message is being returned
                  * This is only here for theoretical reasons. Calling something like this should make you
                  * rethink your Web Service's architecture */
-                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
+                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_MESSAGE) > 0){
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
                     InputStream inputStream = (InputStream)returnMessage.getMessage();
@@ -282,5 +303,9 @@ public class ApplicationServer{
                 request.setHandled(true);
             }
         }
+    }
+
+    public static String getURI(){
+        return _server.getURI().getHost().toString();
     }
 }

@@ -1,6 +1,6 @@
 package org.ntnunotif.wsnu.base.net;
 
-import org.ntnunotif.wsnu.base.internal.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 
 import javax.xml.bind.*;
 import javax.xml.stream.StreamFilter;
@@ -160,7 +160,7 @@ public class XMLParser {
             throw new JAXBException("Could not create XMLStream to read from");
         }
         InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
-        msg.setNamespaceContext(filter.getNamespaceContext());
+        msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
         return msg;
     }
 

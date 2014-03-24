@@ -1,10 +1,12 @@
-package org.ntnunotif.wsnu.services.notificationconsumer;
+package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
  * Created by tormod on 3/11/14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
-public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer {
+public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
 
     /**
      * All listeners to this SimpleConsumer.
@@ -39,12 +41,14 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
      * Default constructor, remove? Should not passing an endpointReference be allowed?
      */
     public NotificationConsumer(Hub hub) {
+        super(hub);
         _hub = hub;
         _listeners = new ArrayList<>();
         _endpointReference = "";
     }
 
     public NotificationConsumer(Hub hub, String endpointReference){
+        super(hub);
         _listeners = new ArrayList<>();
         _endpointReference = endpointReference;
     }
@@ -65,5 +69,16 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
 
     public void removeConsumerListener(ConsumerListener listener){
         _listeners.remove(listener);
+    }
+
+    @Override
+    @WebMethod(operationName = "acceptSoapMessage")
+    public void acceptSoapMessage(Envelope envelope) {
+
+    }
+
+    @Override
+    public Hub quickBuild() {
+        return null;
     }
 }

@@ -1,11 +1,10 @@
-import org.ntnunotif.wsnu.base.internal.GenericConnector;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
-import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import javax.jws.WebMethod;
 import java.util.List;
 
 /**
@@ -14,15 +13,14 @@ import java.util.List;
 public class SimpleConsumer implements ConsumerListener {
 
     public static void main(String[] args) throws Exception{
-
         /* Instantiate base-objects, running the server on default ip(localhost) */
-        InternalHub hub = new InternalHub();
+        ForwardingHub hub = new ForwardingHub();
 
         /* Create Web Service, passing in an EndpointReference*/
         NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
 
         /* The connector between the hub/applicatonserver and the Web Service */
-        GenericConnector connector = new GenericConnector(consumer);
+        UnpackingConnector connector = new UnpackingConnector(consumer);
 
         /* Register Web Service with hub, making it eligible to receive messages */
         hub.registerService(connector);
@@ -41,6 +39,7 @@ public class SimpleConsumer implements ConsumerListener {
         /* This is a SimpleConsumer, so we just take an event, display its contents, and leave */
 
         Notify notification = event.getRaw();
+
         List<Object> everything = notification.getAny();
 
         for (Object o : everything) {

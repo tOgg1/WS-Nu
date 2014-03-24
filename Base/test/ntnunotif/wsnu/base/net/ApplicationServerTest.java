@@ -9,15 +9,16 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.InternalHub;
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
 
+import javax.xml.bind.JAXBElement;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * Created by tormod on 3/6/14.
@@ -26,30 +27,13 @@ public class ApplicationServerTest extends TestCase {
 
     private ApplicationServer _server;
 
-    @Test
-    public void testInstantiation() throws IOException {
-        try{
-            _server = ApplicationServer.getInstance();
-            _server.start(null);
-        } catch (Exception e) {
-            System.err.println("Applicationserver failed to instantiate");
-        }
+    public void setUp() throws Exception {
+        _server = ApplicationServer.getInstance();
+        _server.start(new ForwardingHub());
     }
 
     @Test
     public void testSimpleServer() throws Exception {
-        InternalHub internalHub = new InternalHub();
-
-        // Start the server
-        _server = null;
-        try{
-            _server = ApplicationServer.getInstance();
-        } catch (Exception e) {
-            System.err.println("Applicationserver failed to instantiate");
-        }
-
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
-        _server.start(null);
 
         // Start the client
         SslContextFactory sslFactory = new SslContextFactory();
@@ -63,27 +47,14 @@ public class ApplicationServerTest extends TestCase {
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_html_content.html")),
+        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_html_content.html")),
                                                                            "text/html;charset/utf-8");
         ContentResponse response = request.send();
         assertEquals(500, response.getStatus());
-        _server.stop();
     }
 
     @Test
     public void testSendingXML() throws Exception {
-        InternalHub internalHub = new InternalHub();
-
-        // Start the server
-        _server = null;
-        try{
-            _server = ApplicationServer.getInstance();
-        } catch (Exception e) {
-            System.err.println("Applicationserver failed to instantiate");
-        }
-
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
-        _server.start(null);
 
         // Start the client
         SslContextFactory sslFactory = new SslContextFactory();
@@ -97,29 +68,17 @@ public class ApplicationServerTest extends TestCase {
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_xml.xml")),
+        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_xml.xml")),
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
         //TODO: This should be changed to some error status, as the server should not be able to process plain xml
-        assertEquals(200, response.getStatus());
-        _server.stop();
+        assertEquals(500, response.getStatus());
     }
 
     @Test
     public void testSendingSoap() throws Exception {
-        InternalHub internalHub = new InternalHub();
-
-        // Start the server
-        _server = null;
-        try{
-            _server = ApplicationServer.getInstance();
-        } catch (Exception e) {
-            System.err.println("Applicationserver failed to instantiate");
-        }
-
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
-        _server.start(null);
+        ForwardingHub forwardingHub = new ForwardingHub();
 
         // Start the client
         SslContextFactory sslFactory = new SslContextFactory();
@@ -128,8 +87,8 @@ public class ApplicationServerTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
-        Object object = XMLParser.parse(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml"));
-        Envelope env = (Envelope)object;
+        Object object = XMLParser.parse(new FileInputStream("Base/testres/server_test_soap.xml"));
+        Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).getMessage()).getValue();
         Header head = env.getHeader();
         Body body = env.getBody();
         System.out.println(head);
@@ -138,7 +97,7 @@ public class ApplicationServerTest extends TestCase {
         // Send response
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_soap.xml")),
+        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_soap.xml")),
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
@@ -147,23 +106,10 @@ public class ApplicationServerTest extends TestCase {
         //TODO: This should contain some WS error
         response.getContentAsString();
 
-        _server.stop();
     }
 
     @Test
     public void testSubscribe() throws Exception {
-        InternalHub internalHub = new InternalHub();
-
-        // Start the server
-        _server = null;
-        try{
-            _server = ApplicationServer.getInstance();
-        } catch (Exception e) {
-            System.err.println("Applicationserver failed to instantiate");
-        }
-
-        // This should not do anything, as the server is started through the internalHub (and we are working with a singleton)
-        _server.start(null);
 
         // Start the client
         SslContextFactory sslFactory = new SslContextFactory();
@@ -173,14 +119,8 @@ public class ApplicationServerTest extends TestCase {
         client.start();
 
         // Send response
-        FileInputStream file = new FileInputStream("Base/test/ntnunotif/wsnu/base/net/server_test_subscribe.xml");
-        Object object = XMLParser.parse(file);
-        Envelope env = (Envelope)object;
-        Header head = env.getHeader();
-        Body body = env.getBody();
-        System.out.println(head);
-        System.out.println(body);
-        System.out.println(object);
+        FileInputStream file = new FileInputStream("Base/testres/server_test_subscribe.xml");
+
 
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
@@ -194,7 +134,10 @@ public class ApplicationServerTest extends TestCase {
 
         //TODO: This should contain some WS error, unless we can process the ws:notify in server_test_soap.
         System.out.println(response.getContentAsString());
+    }
 
+    public void tearDown() throws Exception {
+        super.tearDown();
         _server.stop();
     }
 }
