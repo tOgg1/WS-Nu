@@ -5,4 +5,5 @@ package org.ntnunotif.wsnu.base.util;
  */
 public @interface Information {
     String type() default "RequestInformation";
+
 }

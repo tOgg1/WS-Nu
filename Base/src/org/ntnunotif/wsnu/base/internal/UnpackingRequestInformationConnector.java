@@ -1,8 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
-import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.*;
+import org.omg.PortableInterceptor.RequestInfo;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -67,6 +66,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
          /* The message */
         Object potentialEnvelope = internalMessage.getMessage();
 
+
         if(!(potentialEnvelope instanceof Envelope)){
             Log.d("UnpackingRequestInformationConnector", "Content not envelope");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
@@ -77,6 +77,8 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
         Body body = ((Envelope) potentialEnvelope).getBody();
 
         List<Object> messages = body.getAny();
+
+        RequestInformation requestInformation = internalMessage.getRequestInformation();
 
         for(Object message : messages){
 
@@ -90,78 +92,90 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                 if(annotation instanceof XmlRootElement){
                     XmlRootElement xmlRootElement = (XmlRootElement)annotation;
                     Log.d("UnpackingRequestInformationConnector", "Name of annotation: " + xmlRootElement.name());
+
                     /* Check if this connector's web service has a matching method */
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
                         Method method = _allowedMethods.get(xmlRootElement.name());
                         try {
+                            int length = method.getParameterTypes().length;
 
-                            if(method.getParameterTypes().length > 2){
-                                Log.e("UnpackingRequestInformationConnector", "Method error");
-                                throw new InvalidWebServiceException("Web service at" + _webService + " has a WebMethod " +
-                                                                     "expecting more than 2 arguments, which is not supported by this Connector." +
-                                                                     "Consider using another connector");
-                            /* We are here looking for where the WebParam is */
-                            }else if(method.getParameterTypes().length > 1){
-                                Annotation[][] paramAnnotations = method.getParameterAnnotations();
+                            if (length > 2) {
+                                Log.e("UnpackingRequestInformationConnector", "Web service at" + _webService + " has a WebMethod " +
+                                        "expecting more than 2 arguments. Consider using another connector");
+                            }
 
-                                /* Is the endpointparam first or last?*/
-                                int indexOfWebParam = -1;
+                            Object[] args = new Object[method.getParameterTypes().length];
 
-                                /* For each parameter */
-                                for (Annotation[] paramAnnotation : paramAnnotations) {
-                                    ++indexOfWebParam;
+                            int webParamIndex = -1, informationIndex = -1;
+                            int index = -1;
 
-                                    /* For each annotation */
-                                    for (Annotation annotation1 : paramAnnotation) {
-                                        if(annotation1 instanceof WebParam){
+                            //TODO: Do a more correct search for the correct methods, i.e. take into account that there can be more than one WebParam etc.
 
-                                            /* Run method on the Web Service */
-                                            InternalMessage returnMessage;
-                                            Object method_returnedData;
-
-                                            if(indexOfWebParam == 0){
-                                                method_returnedData = method.invoke(_webService, message, internalMessage.getRequestInformation());
-                                            }else{
-                                                method_returnedData = method.invoke(_webService, internalMessage.getRequestInformation(), message);
-                                            }
-
-                                            /* If is the case, nothing is being returned */
-                                            if(method.getReturnType().equals(Void.TYPE)){
-                                                returnMessage = new InternalMessage(STATUS_OK, null);
-                                            }else{
-                                                returnMessage = new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
-                                                        method_returnedData);
-                                            }
-                                            return returnMessage;
-                                        }
+                            /* Look for the correct methods through the means of annotation-checking */
+                            for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
+                                ++index;
+                                for (Annotation paramAnnotation : paramAnnotations) {
+                                    if (paramAnnotation instanceof WebParam) {
+                                        webParamIndex = index;
+                                    } else if (paramAnnotation instanceof Information) {
+                                        informationIndex = index;
                                     }
                                 }
-                                throw new InvalidWebServiceException("Web service at " + _webService + " has a WebMethod " +
-                                                                     "with two methods, but neither of them has an EndpointParam annotation. " +
-                                                                     "This is not supported by this Connector");
                             }
-                            else{
-                                /* Run method on the Web Service */
-                                InternalMessage returnMessage;
-                                Object method_returnedData = method.invoke(_webService, message);
 
-                                /* If is the case, nothing is being returned */
-                                if(method.getReturnType().equals(Void.TYPE)){
-                                    returnMessage = new InternalMessage(STATUS_OK, null);
-                                }else{
-                                    returnMessage = new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
-                                            method_returnedData);
+                            /* Try and find the web parameter index if the annotation was not found */
+                            if (webParamIndex == -1) {
+                                index = -1;
+                                for (Class<?> paramType : method.getParameterTypes()) {
+                                    ++index;
+                                    if (message.getClass() == paramType.getClass()) {
+                                        webParamIndex = index;
+                                        break;
+                                    }
                                 }
-                                return returnMessage;
                             }
-                        } catch (IllegalAccessException e) {
-                            Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
-                                    "generated classes.\n A @WebMethod can not have private access");
-                            e.printStackTrace();
-                            return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
-                        } catch (InvocationTargetException e) {
-                            Log.e("Unpacking Connector", "The method being accessed are being feeded an invalid amount of " +
-                                    "parameters, or something even more obscure has occured.");
+
+                            /* Try and find the information paramter index if the annotation was not found */
+                            if (informationIndex == -1) {
+                                index = -1;
+                                for (Class<?> paramType : method.getParameterTypes()) {
+                                    ++index;
+                                    if (paramType == RequestInformation.class) {
+                                        informationIndex = index;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            /* If we still can't find the correct parameter, something is wrong */
+                            if (webParamIndex == -1) {
+                                Log.e("UnpackingRequestInformationConnector", "Invalid Web Service error");
+                                throw new InvalidWebServiceException("The index of the web parameter is not found. " +
+                                        "If the methodname which is to receive" + message.toString() +
+                                        "is different from this object's name, please use a MappedUnpackingConnector");
+                            }
+
+                            /* If the information index is STILL not found, try and send it to the index after*/
+                            if (informationIndex == -1) {
+                                informationIndex = webParamIndex + 1;
+                            }
+
+                            InternalMessage returnMessage;
+
+                            args[webParamIndex] = message;
+                            args[informationIndex] = requestInformation;
+
+                            Object returnedData = method.invoke(_webService, args);
+
+                            /* If is the case, nothing is being returned */
+                            if (method.getReturnType().equals(Void.TYPE)) {
+                                returnMessage = new InternalMessage(STATUS_OK, null);
+                            } else {
+                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE,
+                                        returnedData);
+                            }
+                        }catch(Exception e){
+                            //TODO: Add error handling
                         }
                     }else{
                         Log.d("UnpackingRequestInformationConnector", "Invalid destination");
