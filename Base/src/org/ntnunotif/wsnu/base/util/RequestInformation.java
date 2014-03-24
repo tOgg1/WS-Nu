@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.util;
 
 import javax.xml.namespace.NamespaceContext;
+import java.util.Map;
 
 /**
  * Class containing meta-information about a request. Primarily used in an InternalMessage
@@ -14,14 +15,25 @@ public class RequestInformation {
     private String _endpointReference;
     private String _requestURL;
 
+    private Map<String, String[]> _parameters;
+
     public RequestInformation() {
 
     }
 
-    public RequestInformation(NamespaceContext _context, String _endpointReference, String _requestURL) {
+    public RequestInformation(NamespaceContext _context, String _endpointReference, String _requestURL, Map<String, String[]> parameters) {
         this._namespaceContext = _context;
         this._endpointReference = _endpointReference;
         this._requestURL = _requestURL;
+        this._parameters = parameters;
+    }
+
+    public Map<String, String[]> getParameters() {
+        return _parameters;
+    }
+
+    public void setParameters(Map<String, String[]> _parameters) {
+        this._parameters = _parameters;
     }
 
     public NamespaceContext getNamespaceContext() {

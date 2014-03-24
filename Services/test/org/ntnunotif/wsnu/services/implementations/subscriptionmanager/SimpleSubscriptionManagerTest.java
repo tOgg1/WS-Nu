@@ -44,7 +44,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         client.setFollowRedirects(false);
         client.start();
 
-        Request request = client.newRequest("http://localhost:8080");
+        Request request = client.newRequest("http://localhost:8080/");
+        System.out.println(request.getParams().toString());
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(stream));
 

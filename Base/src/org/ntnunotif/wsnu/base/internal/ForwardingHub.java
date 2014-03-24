@@ -80,7 +80,6 @@ public class ForwardingHub implements Hub {
 
         Envelope envelope;
         try {
-            System.out.println(parsedMessage.getMessage());
             envelope = (Envelope)((JAXBElement)parsedMessage.getMessage()).getValue();
 
         /* If this exception is thrown, the message received can not be soap */
@@ -186,7 +185,7 @@ public class ForwardingHub implements Hub {
      */
     public void stop() throws Exception {
 
-        // Enforce garbage collection
+        /* Enforce garbage collection */
         _server.stop();
         _server = null;
 

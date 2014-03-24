@@ -85,7 +85,6 @@ public class ApplicationServer{
      */
     private ApplicationServer() throws Exception
     {
-        System.out.println(_configFile);
         Resource resource = Resource.newSystemResource(_configFile);
 
         XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
@@ -236,9 +235,10 @@ public class ApplicationServer{
                 InputStream input = httpServletRequest.getInputStream();
 
                 /* Send the message to the hub */
-                // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
                 InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
                 outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
+                outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
+                System.out.println(request.getRequestURI());
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
 
                 /* Handle possible errors */

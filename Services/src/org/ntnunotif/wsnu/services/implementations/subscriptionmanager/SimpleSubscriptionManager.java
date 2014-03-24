@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
@@ -74,7 +75,10 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
            Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-        return null;
+        Log.d("SimpleSubscriptionManager", "RequestInformation:\nEndpointReference:  " + requestInformation.getEndpointReference()
+                                            + "\nNamespaceContext: " + requestInformation.getNamespaceContext()
+                                            + "\nQuery: " + requestInformation.getRequestURL());
+        return new UnsubscribeResponse();
     }
 
     @Override
@@ -84,6 +88,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
         Renew renewRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
-        return null;
+        return new RenewResponse();
     }
 }

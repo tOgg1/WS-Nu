@@ -39,13 +39,10 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
         for(Method method : methods){
             Annotation[] annotations = method.getAnnotations();
 
-            Log.d("UnpackingRequestInformationConnector", "Method: " + method.getName());
-
-            /* Check that the method is a @WebMethod, if not, continue*/
+            /* Check that the method is a WebMethod, if not, continue*/
             for(Annotation annotation : annotations){
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
-                    Log.d("UnpackingRequestInformationConnector", "Allowedmethod added: " + webMethod.operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;
                 }else{
