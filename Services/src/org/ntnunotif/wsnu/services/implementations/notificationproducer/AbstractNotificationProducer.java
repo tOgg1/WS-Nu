@@ -69,7 +69,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
 
     public String generateSubscriptionURL(String key){
         String baseURI = _hub.getInetAdress();
-        return baseURI + "/?subscription=";
+        return baseURI + "/?subscription=" + key;
     }
 
     public abstract boolean keyExists(String key);
@@ -82,7 +82,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public void sendNotification(Notify notify, String endPoint){
         InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
         outMessage.getRequestInformation().setEndpointReference(endPoint);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
+        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, notify));
     }
 
     /**

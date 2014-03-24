@@ -92,6 +92,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
 
                     /* Check if this connector's web service has a matching method */
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
+                        Log.d("Hello", "Hello");
                         Method method = _allowedMethods.get(xmlRootElement.name());
                         try {
                             int length = method.getParameterTypes().length;
@@ -173,6 +174,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                             }
                             return returnMessage;
                         }catch(Exception e){
+                            Log.d("Some error occured", "LLOL");
                             //TODO: Add error handling
                         }
                     }else{

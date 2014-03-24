@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractSubscriptionManager extends WebService implements SubscriptionManager, Runnable{
 
-
     /**
      * The scheduleinterval
      */

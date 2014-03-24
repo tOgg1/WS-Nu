@@ -8,6 +8,7 @@ import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
 import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
+
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
@@ -44,7 +45,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
     @Override
     public boolean keyExists(String key) {
-        return false;
+        return _subscriptions.containsKey(key);
     }
 
     @Override
@@ -76,6 +77,14 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         }
     }
 
+    /**
+     * SimpleSubscriptionManagers implementation of unsubscribe.
+     * @param unsubscribeRequest
+     * @param requestInformation
+     * @return
+     * @throws ResourceUnknownFault
+     * @throws UnableToDestroySubscriptionFault
+     */
     @Override
     @WebResult(name = "UnsubscribeResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "UnsubscribeResponse")
     @WebMethod(operationName = "Unsubscribe")
@@ -83,18 +92,30 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
            Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-        Log.d("SimpleSubscriptionManager", "RequestInformation:\nEndpointReference:  " + requestInformation.getEndpointReference()
-                                            + "\nNamespaceContext: " + requestInformation.getNamespaceContext()
-                                            + "\nQuery: " + requestInformation.getRequestURL());
 
+        /* Find the subscription tag */
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
-            System.out.println("Key:" +  entry.getKey());
-            for(String s : entry.getValue()){
-                System.out.print("Value: " + s);
+            if(!entry.getKey().equals("subscription")){
+                continue;
             }
+
+            /* If there is not one value, something is wrong*/
+            if(entry.getValue().length != 1){
+                throw new ResourceUnknownFault();
+            }
+
+            String subRef = entry.getValue()[0];
+
+            /* The subscriptions is not recognized */
+            if(!_subscriptions.containsKey(subRef)){
+                throw new ResourceUnknownFault();
+            }
+
+            _subscriptions.remove(subRef);
+            return new UnsubscribeResponse();
         }
 
-        return new UnsubscribeResponse();
+        throw new UnableToDestroySubscriptionFault();
     }
 
     @Override
@@ -104,10 +125,18 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
         Renew renewRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
+        /* Find the subscription tag */
+        for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
+            if (!entry.getKey().equals("subscription")) {
+                continue;
+            }
+        }
+
         return new RenewResponse();
     }
 
     @Override
+    @WebMethod(operationName = "acceptSoapMessage")
     public void acceptSoapMessage(@WebParam Envelope envelope) {
 
     }
