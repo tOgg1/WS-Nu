@@ -25,8 +25,7 @@ public class ServiceUtilities {
         }else if(isXsdDatetime(time)){
             try{
                 return extractXsdDatetime(time);
-            /* This should never happen*/
-            }catch(IllegalArgumentException e){
+            }catch(RuntimeException e){
                 throw new UnacceptableTerminationTimeFault();
             }
         }else{
@@ -37,7 +36,6 @@ public class ServiceUtilities {
     }
 
     public static long extractXsdDuration(String time){
-
         Pattern years, months, days, hours, minutes, seconds;
         years = Pattern.compile("[0-9]+Y");
         months = Pattern.compile("[0-9]+M");
@@ -63,6 +61,11 @@ public class ServiceUtilities {
         matcher = days.matcher(times[0]);
         if(matcher.find()){
             currentTimeStamp += 24*30.5*3600*1000*Long.parseLong(matcher.group().replace("D", ""));
+        }
+
+        if(times.length != 2) {
+            System.out.println("Lets go back home");
+            return currentTimeStamp;
         }
 
         matcher = hours.matcher(times[1]);

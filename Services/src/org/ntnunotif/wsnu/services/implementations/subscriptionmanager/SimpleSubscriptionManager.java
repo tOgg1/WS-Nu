@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
@@ -151,7 +152,16 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                 throw new ResourceUnknownFault();
             }
 
+            String subRef = entry.getValue()[0];
+
             System.out.println(renewRequest.getTerminationTime());
+            long time = ServiceUtilities.interpretTerminationTime(renewRequest.getTerminationTime());
+            if(time < System.currentTimeMillis()) {
+                throw new UnacceptableTerminationTimeFault();
+            }
+
+            _subscriptions.put(subRef, time);
+            return new RenewResponse();
         }
 
         throw new ResourceUnknownFault();
