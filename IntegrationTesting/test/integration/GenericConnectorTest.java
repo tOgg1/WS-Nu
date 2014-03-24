@@ -1,16 +1,15 @@
 package integration;
 
-import com.sun.swing.internal.plaf.synth.resources.synth_sv;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.GenericConnector;
+import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
-import org.ntnunotif.wsnu.services.NotificationConsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import javax.jws.WebMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class GenericConnectorTest extends TestCase{
 
     public void setUp() throws Exception {
         super.setUp();
-        consumer = new NotificationConsumer();
+        consumer = new NotificationConsumer(new InternalHub());
         consumerConnector = new GenericConnector(consumer);
         messages = new ArrayList<Object>();
         messages.add(new Notify());

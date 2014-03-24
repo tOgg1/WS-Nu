@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.services.SubscriptionManager;
+package org.ntnunotif.wsnu.services.subscriptionmanager;
 
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
@@ -10,7 +10,6 @@ import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public SimpleSubscriptionManager() {
     }
 
-
     public void setRenew(boolean autoRenew){
         _autoRenew = autoRenew;
     }
@@ -51,13 +49,17 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public void update() {
         long timeNow = System.currentTimeMillis();
 
-        for(Map.Entry<String, Long> entry : _subscriptionTimes.entrySet()){
+        synchronized (_subscriptionTimes){
+            for(Map.Entry<String, Long> entry : _subscriptionTimes.entrySet()){
 
-            /* The subscription is expired */
-            if(entry.getValue().longValue() > timeNow){
+                /* The subscription is expired */
+                if(entry.getValue().longValue() > timeNow){
 
-                if(_autoRenew){
-
+                    if(_autoRenew){
+                        entry.setValue(entry.getValue().longValue() + renewTime);
+                    }else{
+                        _subscriptionTimes.remove(entry.getKey());
+                    }
                 }
             }
         }

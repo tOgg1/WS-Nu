@@ -29,7 +29,7 @@ public class TestExternalWebService extends TestCase{
 
         Request request = client.newRequest("http://hawk.sexy:8080");
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("IntegrationTesting/res/")));
+        request.content(new InputStreamContentProvider(new FileInputStream("IntegrationTesting/res/server_test_notify.xml")));
 
         ContentResponse response = request.send();
         System.out.println(response.getStatus());

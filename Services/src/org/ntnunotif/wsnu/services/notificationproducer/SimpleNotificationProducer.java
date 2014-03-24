@@ -1,6 +1,6 @@
-package org.ntnunotif.wsnu.services.NotificationProducer;
+package org.ntnunotif.wsnu.services.notificationproducer;
 
-import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -11,18 +11,20 @@ import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
-import java.util.ArrayList;
 
 /**
- * Created by tormod on 3/11/14.
+ * Created by tormod on 23.03.14.
  */
-public class NotificationProducer implements org.oasis_open.docs.wsn.bw_2.NotificationProducer {
+public class SimpleNotificationProducer extends AbstractNotificationProducer{
 
-    private ArrayList<String> _subscribers;
-    private SubscriptionManager _subscriptionManager;
 
-    public NotificationProducer() {
-        _subscribers = new ArrayList<String>();
+    /**
+     * Default and only constructor. This does not have to called if the hub is set
+     *
+     * @param hub
+     */
+    public SimpleNotificationProducer(Hub hub) {
+        super(hub);
     }
 
     @Override
@@ -38,4 +40,5 @@ public class NotificationProducer implements org.oasis_open.docs.wsn.bw_2.Notifi
     public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") GetCurrentMessage getCurrentMessageRequest) throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
         return null;
     }
+
 }

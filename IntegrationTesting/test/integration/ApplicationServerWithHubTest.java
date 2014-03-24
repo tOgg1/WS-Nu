@@ -14,7 +14,7 @@ import org.ntnunotif.wsnu.base.internal.InternalHub;
 import org.ntnunotif.wsnu.base.internal.InternalMessage;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.services.NotificationConsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 
@@ -51,7 +51,7 @@ public class ApplicationServerWithHubTest extends TestCase {
         _hub = new InternalHub();
         _server.start(_hub);
 
-        _consumer = new NotificationConsumer();
+        _consumer = new NotificationConsumer(_hub);
         _listener = new ConsumerListener() {
             @Override
             public void notify(NotificationEvent event) {

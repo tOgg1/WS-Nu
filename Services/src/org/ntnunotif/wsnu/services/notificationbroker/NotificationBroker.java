@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.services.NotificationBroker;
+package org.ntnunotif.wsnu.services.notificationbroker;
 
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
