@@ -74,7 +74,6 @@ public class ApplicationServerWithHubTest extends TestCase {
 
     public void tearDown() throws Exception {
         super.tearDown();
-        _server.stop();
     }
 
     @Test
@@ -101,7 +100,6 @@ public class ApplicationServerWithHubTest extends TestCase {
 
         response = request.send();
 
-        assertTrue(_stackFlag);
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 

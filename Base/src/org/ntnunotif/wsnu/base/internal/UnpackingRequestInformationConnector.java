@@ -174,6 +174,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
                                 returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE,
                                         returnedData);
                             }
+                            return returnMessage;
                         }catch(Exception e){
                             //TODO: Add error handling
                         }

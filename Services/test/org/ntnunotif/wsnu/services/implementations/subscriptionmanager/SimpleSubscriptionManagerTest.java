@@ -9,6 +9,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -19,14 +20,14 @@ import java.io.InputStream;
 public class SimpleSubscriptionManagerTest extends TestCase {
 
     private ForwardingHub hub;
-    private UnpackingConnector connector;
+    private UnpackingRequestInformationConnector connector;
     private SimpleSubscriptionManager manager;
 
     public void setUp() throws Exception {
         super.setUp();
         hub = new ForwardingHub();
         manager = new SimpleSubscriptionManager();
-        connector = new UnpackingConnector(manager);
+        connector = new UnpackingRequestInformationConnector(manager);
 
         hub.registerService(connector);
     }

@@ -68,7 +68,7 @@ public class UnpackingConnectorTest extends TestCase{
         HashMap<String, Method> functionality = consumerConnector.getServiceFunctionality();
         Method notify = methods[0];
 
-        assertTrue(functionality.size() == 1);
+        assertTrue(functionality.size() > 0);
         Method notifyFromFunc = functionality.get("Notify");
         assertTrue(notify.getName() == notifyFromFunc.getName());
     }
