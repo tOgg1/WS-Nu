@@ -286,9 +286,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         if (c >= 'a' && c <= 'z')
             return true;
         // underscore
-        if (c == '_')
-            return true;
-        return false;
+        return c == '_';
     }
 
     private static boolean isNC(char c) {
@@ -296,9 +294,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         if (c == '-' || c == '.')
             return true;
         // Number
-        if (c >= '0' && c <= '9')
-            return true;
-        return isNCStart(c);
+        return c >= '0' && c <= '9' || isNCStart(c);
     }
 
     private enum CheckState {
