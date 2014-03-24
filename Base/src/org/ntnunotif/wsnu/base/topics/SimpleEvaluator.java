@@ -41,7 +41,8 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
+    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
+                                        NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         QName topic;
         try {
@@ -90,29 +91,34 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
         // The topic expression should now be trimmed. Check for whitespace occurrence
         for (int i = 0; i < expression.length(); i++) {
             if (Character.isWhitespace(expression.charAt(i)))
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; it contained whitespace where disallowed");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                        "it contained whitespace where disallowed");
         }
         // Split expression in prefix and local part
         String[] splitExpression = expression.split(":");
         if (splitExpression.length == 0 || splitExpression.length > 2) {
             // Check if local part contains "/", which si disallowed
             if (splitExpression[1].split("/").length != 1)
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; multiple QName prefixes detected.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                        "multiple QName prefixes detected.");
         }
         if (splitExpression.length == 2) {
             // Check if local part contains "/", which si disallowed
             if (splitExpression[1].contains("/"))
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; local part wsa a path expression.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                        "local part wsa a path expression.");
             String ns = context.getNamespaceURI(splitExpression[0]);
             if (ns == null) {
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; namespace prefix not recognized");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                        "namespace prefix not recognized");
             }
             List<QName> list = new ArrayList<>();
             list.add(new QName(ns, splitExpression[1], splitExpression[0]));
             return list;
         } else {
             if (splitExpression[0].contains("/"))
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; local part wsa a path expression.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                        "local part wsa a path expression.");
             List<QName> list = new ArrayList<>();
             list.add(new QName(splitExpression[0]));
             return list;

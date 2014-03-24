@@ -44,7 +44,8 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType, NamespaceContext namespaceContext)
+    public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
+                                        NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         if (!topicExpressionType.getDialect().equals(dialectURI)) {
             TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
@@ -96,10 +97,12 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
                 }
             } catch (XPathExpressionException e) {
                 InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-                faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+                faultType.setTimestamp(new XMLGregorianCalendarImpl(
+                        new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
                 BaseFaultType.Description description = new BaseFaultType.Description();
                 description.setLang("en");
-                description.setValue("Some part of expression failed to evaluate, this can not be a legal XPath expression!");
+                description.setValue("Some part of expression failed to evaluate, this can not be a legal " +
+                        "XPath expression!");
                 faultType.getDescription().add(description);
                 throw new InvalidTopicExpressionFault(description.getValue(), faultType);
             }

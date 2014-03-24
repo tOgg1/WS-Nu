@@ -86,7 +86,8 @@ public class TopicValidator {
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
      *                                                                         was inconsistent with actual expression.
      */
-    public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet, NamespaceContext namespaceContext)
+    public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet,
+                                               NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
         // Delegating work
         String dialect = expression.getDialect();
@@ -141,7 +142,8 @@ public class TopicValidator {
      * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect was unknown by this validator
      */
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
-            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault, TopicExpressionDialectUnknownFault {
+            throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
+            TopicExpressionDialectUnknownFault {
         // Delegating work
         String dialect = topicExpressionType.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);

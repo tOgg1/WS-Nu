@@ -216,7 +216,7 @@ public class TopicUtils {
         }
     }
 
-    private static Node findElementWithNameAndNamespace(Node root, String name, String namespace) {
+    public static Node findElementWithNameAndNamespace(Node root, String name, String namespace) {
         NodeList nodeList = root.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             // see if child is element, and if so, has local name equal to string given
@@ -301,7 +301,8 @@ public class TopicUtils {
             if (o instanceof String) {
                 if (expression != null) {
                     InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-                    faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+                    faultType.setTimestamp(new XMLGregorianCalendarImpl(
+                            new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
                     BaseFaultType.Description description = new BaseFaultType.Description();
                     description.setLang("en");
                     description.setValue("The given content of the expression was not a simple expression!");
