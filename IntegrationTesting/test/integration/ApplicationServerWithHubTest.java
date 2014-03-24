@@ -47,9 +47,7 @@ public class ApplicationServerWithHubTest extends TestCase {
         _sendMessages = new ArrayList<>();
         _messages = new ArrayList<>();
 
-        _server = ApplicationServer.getInstance();
         _hub = new ForwardingHub();
-        _server.start(_hub);
 
         _consumer = new NotificationConsumer(_hub);
         _listener = new ConsumerListener() {

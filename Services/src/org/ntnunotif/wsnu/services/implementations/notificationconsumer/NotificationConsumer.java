@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -55,7 +56,9 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Notify notify) {
         NotificationEvent event  = new NotificationEvent(notify);
 
+
         for(ConsumerListener listener : _listeners){
+            Log.d("Notify", "Yooyoyoyo535gergyo");
             listener.notify(event);
         }
     }

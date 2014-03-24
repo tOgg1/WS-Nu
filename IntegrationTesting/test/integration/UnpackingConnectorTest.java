@@ -9,6 +9,8 @@ import org.ntnunotif.wsnu.services.implementations.notificationconsumer.Notifica
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.w3._2001._12.soap_envelope.Body;
+import org.w3._2001._12.soap_envelope.Envelope;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,7 +32,11 @@ public class UnpackingConnectorTest extends TestCase{
         consumer = new NotificationConsumer(new ForwardingHub());
         consumerConnector = new UnpackingConnector(consumer);
         messages = new ArrayList<Object>();
-        messages.add(new Notify());
+        Envelope env = new Envelope();
+        Body body = new Body();
+        body.getAny().add(new Notify());
+        env.setBody(body);
+        messages.add(env);
     }
 
     @Test
@@ -38,8 +44,7 @@ public class UnpackingConnectorTest extends TestCase{
         ConsumerListener listen = new ConsumerListener() {
             @Override
             public void notify(NotificationEvent event) {
-                System.out.println(event.getRaw());
-                assertTrue(messages.contains(event.getRaw()));
+                assertTrue(event.getRaw() != null);
                 stackTester = true;
             }
         };

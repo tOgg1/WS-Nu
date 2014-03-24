@@ -48,6 +48,7 @@ public class UnpackingConnector implements WebServiceConnector {
                 System.out.println(annotation.getClass());
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
+                    Log.d("UnpackingConnector", "Allowedmethod: " + ((WebMethod) annotation).operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;
                 }else{
@@ -65,7 +66,9 @@ public class UnpackingConnector implements WebServiceConnector {
         /* The message */
         Object potentialEnvelope = internalMessage.getMessage();
 
+
         if(!(potentialEnvelope instanceof Envelope)){
+            Log.e("UnpackingConnector", "Someone try to send something else than a Soap-Envelope.");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
@@ -74,6 +77,8 @@ public class UnpackingConnector implements WebServiceConnector {
         Body body = ((Envelope) potentialEnvelope).getBody();
 
         List<Object> messages = body.getAny();
+
+        Log.d("UnpackingConnector", "Sending message to web service at " + _webService.toString());
 
         for(Object message : messages){
 
@@ -100,8 +105,8 @@ public class UnpackingConnector implements WebServiceConnector {
                             /* Spit this error-message out, however try and send the message regardless*/
                             if(paramCount != 1){
                                 Log.e("UnpackingConnector", "The parameter count of the web service" + _webService +
-                                      "attached to this Unpacking connector, " + this + "has a method which takes " +
-                                      "more than one parameter");
+                                        "attached to this Unpacking connector, " + this + "has a method which takes " +
+                                        "more than one parameter");
 
                                 Object[] args = new Object[paramCount];
                                 args[0] = message;
@@ -121,7 +126,7 @@ public class UnpackingConnector implements WebServiceConnector {
 
                         } catch (IllegalAccessException e) {
                             Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
-                                               "generated classes.\n A @WebMethod can not have private access");
+                                    "generated classes.\n A @WebMethod can not have private access");
                             e.printStackTrace();
                             return null;
                         } catch (InvocationTargetException e) {

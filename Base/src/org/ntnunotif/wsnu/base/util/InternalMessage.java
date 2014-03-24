@@ -27,6 +27,7 @@ public class InternalMessage {
     public InternalMessage(int statusCode, Object message){
         this.statusCode = statusCode;
         this._message = message;
+        _requestInformation = new RequestInformation();
     }
 
     public InternalMessage(int statusCode, Object message, RequestInformation requestInformation){
