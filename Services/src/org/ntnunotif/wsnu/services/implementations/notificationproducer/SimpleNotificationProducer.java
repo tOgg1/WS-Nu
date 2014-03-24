@@ -69,7 +69,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
     @Override
     @WebMethod(operationName = "acceptSoapMessage")
-    public synchronized void acceptSoapMessage(Envelope envelope) {
+    public synchronized Object acceptSoapMessage(Envelope envelope) {
         Header header = envelope.getHeader();
         Body body = envelope.getBody();
 
@@ -78,7 +78,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
         //TODO: Handle bodyContent
 
-
+        return null;
     }
 
     @Override

@@ -44,8 +44,8 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public void acceptSoapMessage(@WebParam Envelope envelope) {
-
+            public Object acceptSoapMessage(@WebParam Envelope envelope) {
+                return null;
             }
 
             @Override

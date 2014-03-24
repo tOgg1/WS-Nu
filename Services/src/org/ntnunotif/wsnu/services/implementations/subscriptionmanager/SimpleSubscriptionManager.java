@@ -14,6 +14,7 @@ import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -99,9 +100,16 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                 continue;
             }
 
-            /* If there is not one value, something is wrong*/
-            if(entry.getValue().length != 1){
+            /* If there is not one value, something is wrong, but try the first one*/
+            if(entry.getValue().length > 1){
+                String subRef = entry.getValue()[0];
+                if(!_subscriptions.containsKey(subRef)){
+                    _subscriptions.remove(subRef);
+                    return new UnsubscribeResponse();
+                }
                 throw new ResourceUnknownFault();
+            } else if(entry.getValue().length == 0){
+                throw new UnableToDestroySubscriptionFault();
             }
 
             String subRef = entry.getValue()[0];
@@ -130,15 +138,29 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             if (!entry.getKey().equals("subscription")) {
                 continue;
             }
+
+            /* The is not one value, something is wrong, but try the first one */
+            if(entry.getValue().length >= 1){
+                String subRef = entry.getValue()[0];
+
+                if(!_subscriptions.containsKey(subRef)){
+                    throw new ResourceUnknownFault();
+                }
+                /* We just continue down here as the time-fetching operations are rather large */
+            }else if(entry.getValue().length == 0){
+                throw new ResourceUnknownFault();
+            }
+
+            System.out.println(renewRequest.getTerminationTime());
         }
 
-        return new RenewResponse();
+        throw new ResourceUnknownFault();
     }
 
     @Override
     @WebMethod(operationName = "acceptSoapMessage")
-    public void acceptSoapMessage(@WebParam Envelope envelope) {
-
+    public Object acceptSoapMessage(@WebParam Envelope envelope) {
+        return null;
     }
 
     @Override

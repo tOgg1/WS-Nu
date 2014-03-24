@@ -93,7 +93,11 @@ public class ApplicationServer{
     }
 
     public static void setServerConfiguration(String pathToConfigFile) throws Exception{
+        File f = new File(pathToConfigFile);
 
+        if(!f.isFile())
+            throw new IllegalArgumentException("Path pointed is not a file");
+        _configFile = pathToConfigFile;
     }
 
     /**
@@ -306,6 +310,6 @@ public class ApplicationServer{
     }
 
     public static String getURI(){
-        return _server.getURI().getHost().toString();
+        return _server.getURI().getHost()+":"+_server.getURI().getPort();
     }
 }

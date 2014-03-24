@@ -36,7 +36,7 @@ public abstract class WebService {
     }
 
     @WebMethod(operationName="acceptSoapMessage")
-    public abstract void acceptSoapMessage(@WebParam Envelope envelope);
+    public abstract Object acceptSoapMessage(@WebParam Envelope envelope);
 
     public abstract Hub quickBuild();
 

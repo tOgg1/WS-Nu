@@ -73,8 +73,8 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
 
     @Override
     @WebMethod(operationName = "acceptSoapMessage")
-    public void acceptSoapMessage(Envelope envelope) {
-
+    public Object acceptSoapMessage(Envelope envelope) {
+        return null;
     }
 
     @Override
