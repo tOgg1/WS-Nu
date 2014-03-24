@@ -26,7 +26,7 @@ public class SimpleSubscriptionManagerTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         hub = new ForwardingHub();
-        manager = new SimpleSubscriptionManager();
+        manager = new SimpleSubscriptionManager(hub);
         connector = new UnpackingRequestInformationConnector(manager);
 
         hub.registerService(connector);
@@ -44,14 +44,13 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         client.setFollowRedirects(false);
         client.start();
 
-        Request request = client.newRequest("http://localhost:8080/");
-        System.out.println(request.getParams().toString());
+        Request request = client.newRequest("http://localhost:8080/subscriptionLol?value=5");
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(stream));
 
         ContentResponse response = request.send();
-        System.out.println(response.getStatus());
         String responseContent = response.getContentAsString();
-        System.out.println(responseContent);
+        assertEquals(200, response.getStatus());
+        assertNotNull(responseContent);
     }
 }

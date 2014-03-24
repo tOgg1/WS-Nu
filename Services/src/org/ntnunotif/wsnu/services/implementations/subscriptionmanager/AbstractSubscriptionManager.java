@@ -1,8 +1,13 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 
+import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.services.general.SubscriptionManager;
+import org.ntnunotif.wsnu.services.general.WebService;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -13,7 +18,8 @@ import java.util.concurrent.TimeUnit;
  * The storage of subscribers and termination times is implementation specific and should be handled in implementing classes.
  * @author Tormod Haugland
  */
-public abstract class AbstractSubscriptionManager implements SubscriptionManager, Runnable{
+public abstract class AbstractSubscriptionManager extends WebService implements SubscriptionManager, Runnable{
+
 
     /**
      * The scheduleinterval
@@ -29,6 +35,14 @@ public abstract class AbstractSubscriptionManager implements SubscriptionManager
      * Reference to the scheduled task.
      */
     private ScheduledFuture<?> _future;
+
+    /**
+     * Default constructor
+     * @param hub
+     */
+    protected AbstractSubscriptionManager(Hub hub) {
+        super(hub);
+    }
 
     /**
      * Sets the interval of scheduling.
@@ -47,9 +61,11 @@ public abstract class AbstractSubscriptionManager implements SubscriptionManager
         _future = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
     }
 
+    public abstract boolean keyExists(String key);
+
     /**
      * Adds a subscriber. This function has overlapping functionality with the SubscriptionManager interface shell.
-     * However, this function is assumed to be callable internally as well as from the WebMethod unsubscribe/renew.
+     * However, this function is assumed to be callable internally (particularly from a Producer).
      * @param endpointReference
      */
     public abstract void addSubscriber(String endpointReference, long subscriptionEnd);

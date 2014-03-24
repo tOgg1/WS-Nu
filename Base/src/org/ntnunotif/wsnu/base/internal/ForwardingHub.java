@@ -271,4 +271,9 @@ public class ForwardingHub implements Hub {
     public boolean isServiceRegistered(WebServiceConnector webServiceConnector) {
         return this._services.contains(webServiceConnector);
     }
+
+    @Override
+    public String getInetAdress() {
+        return ApplicationServer.getURI();
+    }
 }

@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Simple Notification Producer, stores subscriptions in a HashMap,
- * and does not use a subscriptionmanger for subscriptionmanagement
+ * and does not use a subscriptionmanger for subscriptionmanagement.
  *
  * @author Tormod Haugland
  *         Created by tormod on 23.03.14.
@@ -35,6 +35,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      */
     public SimpleNotificationProducer(Hub hub) {
         super(hub);
+    }
+
+    @Override
+    public boolean keyExists(String key) {
+        return false;
     }
 
 
@@ -74,5 +79,10 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         //TODO: Handle bodyContent
 
 
+    }
+
+    @Override
+    public Hub quickBuild() {
+        return null;
     }
 }

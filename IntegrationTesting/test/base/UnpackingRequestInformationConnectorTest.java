@@ -17,6 +17,8 @@ import org.w3._2001._12.soap_envelope.Envelope;
 
 import java.io.FileInputStream;
 
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
+
 /**
  * Created by tormod on 23.03.14.
  */
@@ -30,7 +32,7 @@ public class UnpackingRequestInformationConnectorTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         hub = new ForwardingHub();
-        manager = new SimpleSubscriptionManager();
+        manager = new SimpleSubscriptionManager(hub);
         connector = new UnpackingRequestInformationConnector(manager);
     }
 
@@ -46,7 +48,7 @@ public class UnpackingRequestInformationConnectorTest extends TestCase {
         Body body = new Body();
         body.getAny().add(request);
         env.setBody(body);
-        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK|InternalMessage.STATUS_ENDPOINTREF_IS_SET, env);
+        InternalMessage message = new InternalMessage(STATUS_OK| STATUS_ENDPOINTREF_IS_SET, env);
         message.getRequestInformation().setEndpointReference("tormodhaugland.com");
         connector.acceptMessage(message);
     }

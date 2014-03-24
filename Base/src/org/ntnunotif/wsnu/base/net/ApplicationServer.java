@@ -238,7 +238,7 @@ public class ApplicationServer{
                 InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
                 outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
                 outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
-                System.out.println(request.getRequestURI());
+                outMessage.getRequestInformation().setParameters(request.getParameterMap());
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
 
                 /* Handle possible errors */
@@ -303,5 +303,9 @@ public class ApplicationServer{
                 request.setHandled(true);
             }
         }
+    }
+
+    public static String getURI(){
+        return _server.getURI().getHost().toString();
     }
 }

@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -10,6 +11,7 @@ import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -31,12 +33,18 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
      */
     private final long renewTime = 86400;
 
-    public SimpleSubscriptionManager() {
+    public SimpleSubscriptionManager(Hub hub) {
+        super(hub);
         _subscriptions = new HashMap<String, Long>();
     }
 
     public void setAutoRenew(boolean autoRenew){
         _autoRenew = autoRenew;
+    }
+
+    @Override
+    public boolean keyExists(String key) {
+        return false;
     }
 
     @Override
@@ -78,6 +86,14 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         Log.d("SimpleSubscriptionManager", "RequestInformation:\nEndpointReference:  " + requestInformation.getEndpointReference()
                                             + "\nNamespaceContext: " + requestInformation.getNamespaceContext()
                                             + "\nQuery: " + requestInformation.getRequestURL());
+
+        for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
+            System.out.println("Key:" +  entry.getKey());
+            for(String s : entry.getValue()){
+                System.out.print("Value: " + s);
+            }
+        }
+
         return new UnsubscribeResponse();
     }
 
@@ -89,5 +105,15 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         Renew renewRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
         return new RenewResponse();
+    }
+
+    @Override
+    public void acceptSoapMessage(@WebParam Envelope envelope) {
+
+    }
+
+    @Override
+    public Hub quickBuild() {
+        return null;
     }
 }

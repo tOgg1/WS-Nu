@@ -23,6 +23,12 @@ public interface Hub {
     public void acceptLocalMessage(InternalMessage message);
 
     /**
+     * Get the address this server is currently running on.
+     * @return
+     */
+    public String getInetAdress();
+
+    /**
      * Register's a service for usage with this hub object.
      * @param webServiceConnector
      */

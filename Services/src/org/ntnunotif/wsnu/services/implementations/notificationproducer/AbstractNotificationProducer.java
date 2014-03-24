@@ -8,23 +8,71 @@ import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.oasis_open.docs.wsn.b_2.*;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Created by tormod on 3/11/14.
  */
-public abstract class AbstractNotificationProducer implements NotificationProducer, WebService {
+public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer {
 
-    private final Hub _hub;
 
     /**
      * Default and only constructor. This does not have to called if the hub is set
      * @param hub
      */
     public AbstractNotificationProducer(Hub hub) {
-        _hub = hub;
+        super(hub);
     }
+
+    /**
+     * Generates a SHA-1 encryption key
+     * @return
+     * @throws java.security.NoSuchAlgorithmException
+     */
+    public String generateSubscriptionKey() throws NoSuchAlgorithmException {
+        Long time = System.nanoTime();
+        String string = time.toString();
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        String hash = "";
+
+        boolean first = false;
+
+        while(keyExists(hash) || !first){
+            first = true;
+            byte[] bytes = digest.digest(string.getBytes());
+            StringBuilder sb = new StringBuilder();
+
+            for (int i=0; i < bytes.length; i++) {
+
+                sb.append( Integer.toString( ( bytes[i] & 0xff ) + 0x100, 16).substring( 1 ));
+            }
+            hash = sb.toString();
+        }
+        return hash;
+    }
+
+    public String generateNewSubscriptionURL(){
+        String newHash = null;
+        try {
+            newHash = generateSubscriptionKey();
+        /* We don't have SHA-1 available */
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+        String baseAddress = _hub.getInetAdress();
+
+        return baseAddress + "/?subscription=" + newHash;
+    }
+
+    public String generateSubscriptionURL(String key){
+        String baseURI = _hub.getInetAdress();
+        return baseURI + "/?subscription=";
+    }
+
+    public abstract boolean keyExists(String key);
 
     /**
      * Sends a notification the the endpoint.

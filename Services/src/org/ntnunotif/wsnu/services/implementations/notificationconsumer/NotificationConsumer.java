@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Created by tormod on 3/11/14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
-public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer, org.ntnunotif.wsnu.services.general.WebService{
+public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
 
     /**
      * All listeners to this SimpleConsumer.
@@ -41,12 +41,14 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
      * Default constructor, remove? Should not passing an endpointReference be allowed?
      */
     public NotificationConsumer(Hub hub) {
+        super(hub);
         _hub = hub;
         _listeners = new ArrayList<>();
         _endpointReference = "";
     }
 
     public NotificationConsumer(Hub hub, String endpointReference){
+        super(hub);
         _listeners = new ArrayList<>();
         _endpointReference = endpointReference;
     }
@@ -73,5 +75,10 @@ public class NotificationConsumer implements org.oasis_open.docs.wsn.bw_2.Notifi
     @WebMethod(operationName = "acceptSoapMessage")
     public void acceptSoapMessage(Envelope envelope) {
 
+    }
+
+    @Override
+    public Hub quickBuild() {
+        return null;
     }
 }
