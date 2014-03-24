@@ -13,7 +13,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Connector that takes soap-envelopes and sends them forward. A connected web service MUST implement the WebService
- * interface defined in the services/ package. Or implement another method that has the annotation @WebMethod(operationName = "acceptSoapMessage()"
+ * interface defined in the services/ package. Or implement another method that has the annotation @WebMethod(operationName = "acceptSoapMessage())"
  * If the connected Web Service has more than one such method, the first found will be selected. If you need two invocations, you should implement a new version of WebServiceConnector
  * Created by tormod on 23.03.14.
  */
@@ -64,7 +64,7 @@ public class SoapForwardConnector implements WebServiceConnector {
                 return new InternalMessage(STATUS_OK, null);
             }else{
                 System.out.println("Hey!");
-                return new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                return new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
                         method_returnedData);
             }
         } catch (IllegalAccessException e) {

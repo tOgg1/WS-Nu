@@ -107,7 +107,7 @@ public class TopicValidatorTest {
 
     @Test
     public void disassembleNamespaceContext() {
-        NamespaceContext nsc = xPathMulMsg.getNamespaceContext();
+        NamespaceContext nsc = xPathMulMsg.getRequestInformation().getNamespaceContext();
         System.out.println("\n\nNamespace Context:\n\n" + nsc + "\n");
     }
 
@@ -151,13 +151,13 @@ public class TopicValidatorTest {
 
     @Test
     public void testGetIntersectionNull() throws Exception{
-        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(xPathFalse, topicSet, xPathFalMsg.getNamespaceContext()));
+        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(xPathFalse, topicSet, xPathFalMsg.getRequestInformation().getNamespaceContext()));
     }
 
     @Test
     public void testGetIntersectionOne() throws Exception{
         // Do calculation
-        TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getRequestInformation().getNamespaceContext());
         // Convert to more easily readable format
         List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
@@ -175,7 +175,7 @@ public class TopicValidatorTest {
     @Test
     public void testGetIntersectionTwo() throws Exception{
         // Do calculation
-        TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getRequestInformation().getNamespaceContext());
         // Convert to more easily readable format
         List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
         Assert.assertNotNull("TopicValidator returned null!", ret);
@@ -200,7 +200,7 @@ public class TopicValidatorTest {
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)
     public void testIllegalExpressionDialectIntersection() throws Exception {
-        TopicValidator.getIntersection(illegalExpressionDialect, topicSet, illExprDiaMsg.getNamespaceContext());
+        TopicValidator.getIntersection(illegalExpressionDialect, topicSet, illExprDiaMsg.getRequestInformation().getNamespaceContext());
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)

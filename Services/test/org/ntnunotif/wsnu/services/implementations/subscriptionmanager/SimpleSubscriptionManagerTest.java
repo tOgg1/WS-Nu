@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.services.subscriptionmanager;
+package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 import junit.framework.TestCase;
 import org.eclipse.jetty.client.HttpClient;

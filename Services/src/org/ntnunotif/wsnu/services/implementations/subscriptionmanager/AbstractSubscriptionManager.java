@@ -1,7 +1,7 @@
-package org.ntnunotif.wsnu.services.subscriptionmanager;
+package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 
-import org.ntnunotif.wsnu.services.interfaces.SubscriptionManager;
+import org.ntnunotif.wsnu.services.general.SubscriptionManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.services.notificationconsumer;
+package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.EndpointReference;

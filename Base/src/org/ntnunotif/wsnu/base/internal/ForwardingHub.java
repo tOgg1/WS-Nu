@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.base.util.Utilities;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -62,6 +63,7 @@ public class ForwardingHub implements Hub {
     //TODO: Support multiple messages
     public InternalMessage acceptNetMessage(InternalMessage internalMessage) {
         InternalMessage returnMessage;
+        RequestInformation requestInformation = internalMessage.getRequestInformation();
 
         InputStream stream = (InputStream)internalMessage.getMessage();
 
@@ -69,15 +71,13 @@ public class ForwardingHub implements Hub {
         InternalMessage parsedMessage;
         try {
             parsedMessage = XMLParser.parse(stream);
-            parsedMessage.setEndpointReference(internalMessage.getEndpointReference());
+            requestInformation.setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
         } catch (JAXBException e) {
-
             returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             e.printStackTrace();
             return returnMessage;
         }
 
-        ArrayList<InternalMessage> outMessages = new ArrayList<>();
         Envelope envelope;
         try {
             System.out.println(parsedMessage.getMessage());
@@ -97,7 +97,7 @@ public class ForwardingHub implements Hub {
 
             /* Send the message forward */
             InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
-            outMessage.setEndpointReference(parsedMessage.getEndpointReference());
+            outMessage.setRequestInformation(requestInformation);
             InternalMessage message = service.acceptMessage(outMessage);
 
             /* Incorrect destination */
@@ -106,25 +106,25 @@ public class ForwardingHub implements Hub {
             }
 
             if ((message.statusCode & STATUS_OK) > 0) {
-                if ((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
+                if ((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
                     /* This is easy, now we can convert it, and send it straight out*/
-                    if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+                    if ((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                         try {
                             InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.getMessage());
                             return new InternalMessage(STATUS_OK
-                                    | STATUS_HAS_RETURNING_MESSAGE
-                                    | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                                    | STATUS_HAS_MESSAGE
+                                    | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
                         } catch (ClassCastException e) {
                             Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
                         }
                     /* Even better, the stream is already an inputstream */
-                    } else if ((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+                    } else if ((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
                         try {
                             InputStream returningStream = (InputStream) message.getMessage();
                             return new InternalMessage(STATUS_OK
-                                    | STATUS_HAS_RETURNING_MESSAGE
-                                    | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                                    | STATUS_HAS_MESSAGE
+                                    | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
                         } catch (ClassCastException e) {
                             Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
                             e.printStackTrace();
@@ -141,8 +141,8 @@ public class ForwardingHub implements Hub {
 
                     } else {
                         return new InternalMessage(STATUS_OK
-                                | STATUS_HAS_RETURNING_MESSAGE
-                                | STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, returningStream);
+                                | STATUS_HAS_MESSAGE
+                                | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
 
                     }
                 /* Everything is fine, and no message is to be returned */
@@ -203,18 +203,18 @@ public class ForwardingHub implements Hub {
     public void acceptLocalMessage(InternalMessage message, String endPoint) {
         Object messageContent = message.getMessage();
 
-        if((message.statusCode & STATUS_HAS_RETURNING_MESSAGE) > 0) {
-            if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM) > 0) {
+        if((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
+            if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
                 try{
                     InputStream messageAsStream = (InputStream)messageContent;
-                    _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
+                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message), endPoint);
                 }catch(ClassCastException e){
                     e.printStackTrace();
                     Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                 }
-            } else if((message.statusCode & STATUS_RETURNING_MESSAGE_IS_OUTPUTSTREAM) > 0) {
+            } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
-                    _server.sendMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, message), endPoint);
+                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message), endPoint);
             }
 
 

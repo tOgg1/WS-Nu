@@ -237,7 +237,7 @@ public class ApplicationServer{
                 /* Send the message to the hub */
                 // TODO: Handle the possiblity of returnMessage.message() not yielding inputStream?
                 InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
-                outMessage.setEndpointReference(request.getRemoteHost());
+                outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
 
                 /* Handle possible errors */
@@ -247,7 +247,7 @@ public class ApplicationServer{
                     return;
                 //TODO: A bit unecessary perhaps? Redo into two layers?
                 }else if(((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0) &&
-                          (InternalMessage.STATUS_HAS_RETURNING_MESSAGE & returnMessage.statusCode) > 0){
+                          (InternalMessage.STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){
@@ -271,7 +271,7 @@ public class ApplicationServer{
                 /* Something went wrong, and an error-message is being returned
                  * This is only here for theoretical reasons. Calling something like this should make you
                  * rethink your Web Service's architecture */
-                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) > 0){
+                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_MESSAGE) > 0){
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
                     InputStream inputStream = (InputStream)returnMessage.getMessage();

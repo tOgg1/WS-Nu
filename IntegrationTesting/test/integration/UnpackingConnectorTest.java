@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.services.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -47,7 +47,7 @@ public class UnpackingConnectorTest extends TestCase{
         stackTester = false;
         InternalMessage sendMessage = new InternalMessage(InternalMessage.STATUS_OK, messages.get(0));
         InternalMessage message = consumerConnector.acceptMessage(sendMessage);
-        assertTrue((message.statusCode & InternalMessage.STATUS_HAS_RETURNING_MESSAGE) == 0);
+        assertTrue((message.statusCode & InternalMessage.STATUS_HAS_MESSAGE) == 0);
         assertTrue(stackTester);
     }
 

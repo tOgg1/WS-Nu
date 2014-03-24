@@ -114,7 +114,7 @@ public class UnpackingConnector implements WebServiceConnector {
                             if (method.getReturnType().equals(Void.TYPE)) {
                                 returnMessage = new InternalMessage(STATUS_OK, null);
                             } else {
-                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_RETURNING_MESSAGE,
+                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE,
                                         method_returnedData);
                             }
                             return returnMessage;

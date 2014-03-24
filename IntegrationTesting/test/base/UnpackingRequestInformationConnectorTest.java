@@ -8,11 +8,9 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingReferenceConnector;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.services.notificationproducer.SimpleNotificationProducer;
-import org.ntnunotif.wsnu.services.subscriptionmanager.SimpleSubscriptionManager;
+import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimpleSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
@@ -22,10 +20,10 @@ import java.io.FileInputStream;
 /**
  * Created by tormod on 23.03.14.
  */
-public class UnpackingReferenceConnectorTest extends TestCase {
+public class UnpackingRequestInformationConnectorTest extends TestCase {
 
     ForwardingHub hub;
-    UnpackingReferenceConnector connector;
+    UnpackingRequestInformationConnector connector;
     SimpleSubscriptionManager manager;
     Unsubscribe request;
 
@@ -33,7 +31,7 @@ public class UnpackingReferenceConnectorTest extends TestCase {
         super.setUp();
         hub = new ForwardingHub();
         manager = new SimpleSubscriptionManager();
-        connector = new UnpackingReferenceConnector(manager);
+        connector = new UnpackingRequestInformationConnector(manager);
     }
 
     public void tearDown() throws Exception {
@@ -49,7 +47,7 @@ public class UnpackingReferenceConnectorTest extends TestCase {
         body.getAny().add(request);
         env.setBody(body);
         InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK|InternalMessage.STATUS_ENDPOINTREF_IS_SET, env);
-        message.setEndpointReference("tormodhaugland.com");
+        message.getRequestInformation().setEndpointReference("tormodhaugland.com");
         connector.acceptMessage(message);
 
     }

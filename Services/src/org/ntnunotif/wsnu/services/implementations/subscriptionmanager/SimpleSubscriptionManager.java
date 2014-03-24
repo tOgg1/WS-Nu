@@ -1,6 +1,7 @@
-package org.ntnunotif.wsnu.services.subscriptionmanager;
+package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 import org.ntnunotif.wsnu.base.util.EndpointParam;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
@@ -12,7 +13,6 @@ import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,21 +66,17 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     }
 
     @Override
-    @WebMethod(operationName = "Unsubscribe")
     public UnsubscribeResponse unsubscribe(@WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe",
                                                      targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                                           Unsubscribe unsubscribeRequest, @EndpointParam String endpointReference)
+                                           Unsubscribe unsubscribeRequest, RequestInformation requestInformation)
                                            throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-        System.out.println(unsubscribeRequest);
-        System.out.println(endpointReference);
         return null;
     }
 
     @Override
-    @WebMethod(operationName = "Renew")
     public RenewResponse renew(@WebParam(partName = "RenewRequest", name = "Renew",
                                          targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                               Renew renewRequest, @EndpointParam String endpointReference)
+                               Renew renewRequest, RequestInformation requestInformation)
                                throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
         return null;
     }

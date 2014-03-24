@@ -19,17 +19,17 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Connector that does the same as UnpackingConnector, but also sends, if possible, the
- * EndpointReference of the connection sending the message.
+ * RequestInformation wrapped in the internalmessage sending the message.
  * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
-public class UnpackingReferenceConnector implements WebServiceConnector {
+public class UnpackingRequestInformationConnector implements WebServiceConnector {
 
     private Object _webService;
     private Class _webServiceClass;
     private HashMap<String, Method> _allowedMethods;
 
-    public UnpackingReferenceConnector(Object webService) {
+    public UnpackingRequestInformationConnector(Object webService) {
         this._webService = webService;
         this._webServiceClass = this._webService.getClass();
         this._allowedMethods = new HashMap<>();
@@ -40,13 +40,13 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
         for(Method method : methods){
             Annotation[] annotations = method.getAnnotations();
 
-            Log.d("UnpackingReferenceConnector", "Method: " + method.getName());
+            Log.d("UnpackingRequestInformationConnector", "Method: " + method.getName());
 
             /* Check that the method is a @WebMethod, if not, continue*/
             for(Annotation annotation : annotations){
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
-                    Log.d("UnpackingReferenceConnector", "Allowedmethod added: " + webMethod.operationName());
+                    Log.d("UnpackingRequestInformationConnector", "Allowedmethod added: " + webMethod.operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;
                 }else{
@@ -60,7 +60,7 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
     public InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         if(!((internalMessage.statusCode & STATUS_ENDPOINTREF_IS_SET) > 0)){
-            Log.d("UnpackingReferenceConnector", "EndpointRef not set");
+            Log.d("UnpackingRequestInformationConnector", "EndpointRef not set");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
         }
 
@@ -68,7 +68,7 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
         Object potentialEnvelope = internalMessage.getMessage();
 
         if(!(potentialEnvelope instanceof Envelope)){
-            Log.d("UnpackingReferenceConnector", "Content not envelope");
+            Log.d("UnpackingRequestInformationConnector", "Content not envelope");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         }
 
@@ -89,14 +89,14 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                 /* Look for the annotation @XmlRootElement */
                 if(annotation instanceof XmlRootElement){
                     XmlRootElement xmlRootElement = (XmlRootElement)annotation;
-                    Log.d("UnpackingReferenceConnector", "Name of annotation: " + xmlRootElement.name());
+                    Log.d("UnpackingRequestInformationConnector", "Name of annotation: " + xmlRootElement.name());
                     /* Check if this connector's web service has a matching method */
                     if(_allowedMethods.containsKey(xmlRootElement.name())){
                         Method method = _allowedMethods.get(xmlRootElement.name());
                         try {
 
                             if(method.getParameterTypes().length > 2){
-                                Log.e("UnpackingReferenceConnector", "Method error");
+                                Log.e("UnpackingRequestInformationConnector", "Method error");
                                 throw new InvalidWebServiceException("Web service at" + _webService + " has a WebMethod " +
                                                                      "expecting more than 2 arguments, which is not supported by this Connector." +
                                                                      "Consider using ");
@@ -120,16 +120,16 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                                             Object method_returnedData;
 
                                             if(indexOfEndPointParam == 0){
-                                               method_returnedData = method.invoke(_webService, internalMessage.getEndpointReference(), message);
+                                               method_returnedData = method.invoke(_webService, internalMessage.getRequestInformation(), message);
                                             }else{
-                                                method_returnedData = method.invoke(_webService, message, internalMessage.getEndpointReference());
+                                                method_returnedData = method.invoke(_webService, message, internalMessage.getRequestInformation());
                                             }
 
                                             /* If is the case, nothing is being returned */
                                             if(method.getReturnType().equals(Void.TYPE)){
                                                 returnMessage = new InternalMessage(STATUS_OK, null);
                                             }else{
-                                                returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                                                returnMessage = new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
                                                         method_returnedData);
                                             }
                                             return returnMessage;
@@ -150,7 +150,7 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                                 if(method.getReturnType().equals(Void.TYPE)){
                                     returnMessage = new InternalMessage(STATUS_OK, null);
                                 }else{
-                                    returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE,
+                                    returnMessage = new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
                                             method_returnedData);
                                 }
                                 return returnMessage;
@@ -167,14 +167,14 @@ public class UnpackingReferenceConnector implements WebServiceConnector {
                                     "parameters, or something even more obscure has occured.");
                         }
                     }else{
-                        Log.d("UnpackingReferenceConnector", "Invalid destination");
+                        Log.d("UnpackingRequestInformationConnector", "Invalid destination");
                         return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                     }
                 }
             }
 
         }
-        Log.d("UnpackingReferenceConnector", "Unknown method");
+        Log.d("UnpackingRequestInformationConnector", "Unknown method");
         return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 

@@ -1,9 +1,9 @@
-package org.ntnunotif.wsnu.services.notificationproducer;
+package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.general.WebService;
-import org.ntnunotif.wsnu.services.interfaces.NotificationProducer;
+import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.oasis_open.docs.wsn.b_2.*;
 
 import java.io.InputStream;
@@ -32,7 +32,7 @@ public abstract class AbstractNotificationProducer implements NotificationProduc
      */
     public void sendNotification(Notify notify, String endPoint)
     {
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, notify), endPoint);
+        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify), endPoint);
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class AbstractNotificationProducer implements NotificationProduc
      */
     public void sendNotification(String notify, String endPoint)
     {
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE, notify), endPoint);
+        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify), endPoint);
     }
 
     /**
@@ -52,6 +52,6 @@ public abstract class AbstractNotificationProducer implements NotificationProduc
      */
     public void sendNotification(InputStream notify, String endPoint)
     {
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK|STATUS_HAS_RETURNING_MESSAGE|STATUS_RETURNING_MESSAGE_IS_INPUTSTREAM, notify), endPoint);
+        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE | STATUS_MESSAGE_IS_INPUTSTREAM, notify), endPoint);
     }
 }
