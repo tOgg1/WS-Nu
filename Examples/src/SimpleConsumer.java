@@ -13,7 +13,6 @@ import java.util.List;
 public class SimpleConsumer implements ConsumerListener {
 
     public static void main(String[] args) throws Exception{
-
         /* Instantiate base-objects, running the server on default ip(localhost) */
         ForwardingHub hub = new ForwardingHub();
 
@@ -40,6 +39,7 @@ public class SimpleConsumer implements ConsumerListener {
         /* This is a SimpleConsumer, so we just take an event, display its contents, and leave */
 
         Notify notification = event.getRaw();
+
         List<Object> everything = notification.getAny();
 
         for (Object o : everything) {

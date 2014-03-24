@@ -20,7 +20,7 @@ public interface Hub {
     /**
      * Function to accept a message from a local service, and forward it out into the internet.
      */
-    public void acceptLocalMessage(InternalMessage message, String endPoint);
+    public void acceptLocalMessage(InternalMessage message);
 
     /**
      * Register's a service for usage with this hub object.

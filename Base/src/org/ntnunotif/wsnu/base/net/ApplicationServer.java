@@ -16,6 +16,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -166,11 +167,14 @@ public class ApplicationServer{
      * @param recipient
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
-    public Object[] sendMessage(InternalMessage message, String recipient){
+    public Object[] sendMessage(InternalMessage message){
         //TODO: Distinguish between different faults?
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
-        org.eclipse.jetty.client.api.Request request = _client.newRequest(recipient);
+        RequestInformation requestInformation = message.getRequestInformation();
+
+
+        org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
 

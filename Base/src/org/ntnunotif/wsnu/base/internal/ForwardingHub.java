@@ -197,27 +197,24 @@ public class ForwardingHub implements Hub {
     /**
      * Function to accept a message from a local service, and forward it out into the internet.
      * @param message The message to be sent out
-     * @param endPoint The endpoint to send to
      */
     @Override
-    public void acceptLocalMessage(InternalMessage message, String endPoint) {
+    public void acceptLocalMessage(InternalMessage message) {
         Object messageContent = message.getMessage();
 
         if((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
             if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
                 try{
                     InputStream messageAsStream = (InputStream)messageContent;
-                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message), endPoint);
+                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message));
                 }catch(ClassCastException e){
                     e.printStackTrace();
                     Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                 }
             } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
-                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message), endPoint);
+                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message));
             }
-
-
         }
     }
 
