@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -8,6 +9,8 @@ import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.oasis_open.docs.wsn.b_2.*;
 
+import javax.xml.bind.JAXBException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -20,19 +23,21 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  */
 public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer {
 
-
     /**
-     * Default and only constructor. This does not have to called if the hub is set
+     * Constructor taking a hub as a parameter.
      * @param hub
      */
     protected AbstractNotificationProducer(Hub hub) {
         super(hub);
     }
 
+    /**
+     * Default constructor.
+     */
     protected AbstractNotificationProducer() {}
 
     /**
-     * Generates a SHA-1 encryption key
+     * Generates a SHA-1 encryption key, or a NTSH key if SHA-1 is not found on the system
      * @return
      * @throws java.security.NoSuchAlgorithmException
      */
@@ -68,66 +73,31 @@ public abstract class AbstractNotificationProducer extends WebService implements
     /**
      * Sends a notification the the endpoint.
      * @param notify
-     * @param endPoint Endpoint of the recipient. Can be formatted as an IPv4, IPv6 or URL adress.
      */
-    public void sendNotification(Notify notify, String endPoint){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
-        outMessage.getRequestInformation().setEndpointReference(endPoint);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, notify));
+    public void sendNotification(Notify notify){
+        List<String> recipients = getRecipients(notify);
+        for(String endPoint : recipients){
+            InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
+            outMessage.getRequestInformation().setEndpointReference(endPoint);
+            _hub.acceptLocalMessage(outMessage);
+        }
     }
 
     /**
-     * Sends a notification the the endpoint.
+     * Attempts to send a notification taken as a string.
      * @param notify
-     * @param endPoint Endpoint of the recipient. Can be formatted as an IPv4, IPv6 or URL adress.
      */
-    public void sendNotification(String notify, String endPoint){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
-        outMessage.getRequestInformation().setEndpointReference(endPoint);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
+    public void sendNotification(String notify) throws JAXBException {
+        InputStream iStream = new ByteArrayInputStream(notify.getBytes());
+        this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
     }
 
     /**
-     * Sends a notification the the endpoint.
-     * @param notify
-     * @param endPoint Endpoint of the recipient. Can be formatted as an IPv4, IPv6 or URL adress.
+     * Attempts to send a notification taken as an inputstream.
+     * @param iStream
+     * @throws JAXBException
      */
-    public void sendNotification(InputStream notify, String endPoint){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET|STATUS_MESSAGE_IS_INPUTSTREAM, notify);
-        outMessage.getRequestInformation().setEndpointReference(endPoint);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
-    }
-
-    /**
-     * Sends a notification the the endpoint.
-     * @param notify
-     * @param requestInformation Relevant requestInformation. EndpointReference contained in this object MUST be set.
-     */
-    public void sendNotification(Notify notify, RequestInformation requestInformation){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
-        outMessage.setRequestInformation(requestInformation);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
-    }
-
-    /**
-     * Sends a notification the the endpoint.
-     * @param notify
-     * @param requestInformation Relevant requestInformation. EndpointReference contained in this object MUST be set.
-     */
-    public void sendNotification(String notify, RequestInformation requestInformation){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
-        outMessage.setRequestInformation(requestInformation);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
-    }
-
-    /**
-     * Sends a notification the the endpoint.
-     * @param notify
-     * @param requestInformation Relevant requestInformation. EndpointReference contained in this object MUST be set.
-     */
-    public void sendNotification(InputStream notify, RequestInformation requestInformation){
-        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET|STATUS_MESSAGE_IS_INPUTSTREAM, notify);
-        outMessage.setRequestInformation(requestInformation);
-        _hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
+    public void sendNotification(InputStream iStream) throws JAXBException {
+        this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
     }
 }

@@ -6,16 +6,14 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
-import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
-import org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse;
-import org.oasis_open.docs.wsn.b_2.Subscribe;
-import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
+import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebParam;
+import java.util.List;
 
 /**
  * Created by tormod on 24.03.14.
@@ -33,6 +31,11 @@ public class AbstractNotificationProducerTest extends TestCase {
             @Override
             public boolean keyExists(String key) {
                 return false;
+            }
+
+            @Override
+            public List<String> getRecipients(Notify notify) {
+                return null;
             }
 
             @Override

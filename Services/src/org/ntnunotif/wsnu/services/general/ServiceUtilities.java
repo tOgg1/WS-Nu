@@ -112,8 +112,7 @@ public class ServiceUtilities {
     }
 
     public static String generateSHA1Key(String input) throws NoSuchAlgorithmException{
-        MessageDigest digest = null;
-        digest = MessageDigest.getInstance("SHA-1");
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
         String hash = "";
 
@@ -130,9 +129,5 @@ public class ServiceUtilities {
 
     public static String generateNTSHKey(String input){
         return NothingToSeeHere.t(input);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(generateNTSHKey("loleorg"));
     }
 }

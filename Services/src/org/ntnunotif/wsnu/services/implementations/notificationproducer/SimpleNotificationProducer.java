@@ -26,6 +26,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Service;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,10 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         return false;
     }
 
-
+    @Override
+    public List<String> getRecipients(Notify notify) {
+        return new ArrayList(_subscriptions.values());
+    }
 
     @Override
     @WebMethod(operationName = "Subscribe")
