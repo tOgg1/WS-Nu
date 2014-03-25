@@ -15,7 +15,7 @@ public class SimpleProducerWithMappingConnector {
     private Hub hub;
 
     public SimpleProducerWithMappingConnector() {
-
+        
         producer = new SimpleNotificationProducer();
 
         /* Establish method relations (see SimpleNotificationProducer) */

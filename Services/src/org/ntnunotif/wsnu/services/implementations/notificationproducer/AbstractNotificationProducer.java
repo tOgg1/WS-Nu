@@ -34,10 +34,15 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @return
      * @throws java.security.NoSuchAlgorithmException
      */
-    public String generateSubscriptionKey() throws NoSuchAlgorithmException {
+    public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            return
+        }
         String hash = "";
 
         boolean first = false;

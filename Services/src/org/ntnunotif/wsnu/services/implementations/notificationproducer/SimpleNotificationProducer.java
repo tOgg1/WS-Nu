@@ -6,6 +6,7 @@ import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointParam;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
@@ -18,8 +19,13 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.ws.Service;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +40,7 @@ import java.util.List;
 public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
     private HashMap<String, String> _subscriptions;
+    private HashMap<String, Long> _terminationTimes;
 
     /**
      * Constructor taking a hub as the reference
@@ -54,6 +61,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
 
+
     @Override
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
                                                  targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe
@@ -63,9 +71,48 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                  InvalidTopicExpressionFault, UnsupportedPolicyRequestFault,
                                                  InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
                                                  SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
-        String consumerEndpoint = subscribeRequest.getConsumerReference().toString();
-        FilterType filter = subscribeRequest.getFilter();
-        return null;
+            String consumerEndpoint = subscribeRequest.getConsumerReference().toString();
+
+            FilterType filter = subscribeRequest.getFilter();
+
+            long terminationTime = 0;
+            if(subscribeRequest.getInitialTerminationTime() != null){
+                try {
+                    terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().toString());
+
+                    if(terminationTime < System.currentTimeMillis()){
+                        throw new UnacceptableInitialTerminationTimeFault();
+                    }
+
+                } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
+                    throw new UnacceptableInitialTerminationTimeFault();
+                }
+            }else{
+                /* Set it to terminate in one day */
+                terminationTime = System.currentTimeMillis() + 86400*1000;
+            }
+
+        /* Generate the response */
+        SubscribeResponse response = new SubscribeResponse();
+
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTimeInMillis(terminationTime);
+
+        try {
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+            response.setTerminationTime(calendar);
+        } catch (DatatypeConfigurationException e) {
+            throw new UnacceptableInitialTerminationTimeFault();
+        }
+
+
+        String newSubscriptionKey = generateSubscriptionKey();
+        String subscriptionEndpoint =
+
+        /* Set up the subscription */
+        _subscriptions.put()
+
+        return response;
     }
 
     @Override
