@@ -17,7 +17,7 @@ public class SimpleConsumer implements ConsumerListener {
         ForwardingHub hub = new ForwardingHub();
 
         /* Create Web Service, passing in an EndpointReference*/
-        NotificationConsumer consumer = new NotificationConsumer(hub, "http://tormodhaugland.com");
+        NotificationConsumer consumer = new NotificationConsumer(hub);
 
         /* The connector between the hub/applicatonserver and the Web Service */
         UnpackingConnector connector = new UnpackingConnector(consumer);

@@ -183,7 +183,7 @@ public class ForwardingHub implements Hub {
      * Stop the hub and its delegates.
      * @throws Exception
      */
-    public void stop() throws Exception {
+    public void stop(){
 
         /* Enforce garbage collection */
         _server.stop();

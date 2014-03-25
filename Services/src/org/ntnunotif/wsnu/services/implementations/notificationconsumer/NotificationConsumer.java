@@ -92,20 +92,5 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         }catch(Exception e){
             throw new RuntimeException("Could not quickBuild consumer: " + e.getMessage());
         }
-
-    }
-
-    @Override
-    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
-        try {
-            ForwardingHub hub = new ForwardingHub();
-            Constructor constructor = connectorClass.getConstructor();
-            WebServiceConnector connector = (WebServiceConnector)constructor.newInstance(this, args);
-            hub.registerService(connector);
-            this._hub = hub;
-            return hub;
-        }catch (Exception e){
-            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
-        }
     }
 }

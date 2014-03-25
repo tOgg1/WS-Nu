@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.general;
 
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
@@ -8,6 +9,8 @@ import org.w3._2001._12.soap_envelope.Envelope;
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * The parent of all web services implemented in this module. The main functionality of this class is storing an endpointReference,
@@ -51,6 +54,58 @@ public abstract class WebService {
     public abstract Object acceptSoapMessage(@WebParam Envelope envelope);
 
     public abstract Hub quickBuild();
-    public abstract Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException;
 
+    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
+        ForwardingHub hub = null;
+        try {
+            hub = new ForwardingHub();
+        } catch (Exception e) {
+            hub.stop();
+        }
+
+        try {
+
+            Constructor[] constructors = connectorClass.getConstructors();
+            Constructor relevantConstructor = null;
+
+            outer:
+            for (Constructor constructor : constructors) {
+                Class<?>[] types = constructor.getParameterTypes();
+                if (types.length != args.length + 1) {
+                    continue;
+                }
+
+                for (int i = 0; i < args.length; i++) {
+                    System.out.println(types[i + 1] + " | |  " + args[i].getClass());
+                    System.out.println(!types[i + 1].isAssignableFrom(args[i].getClass()));
+                    if (!types[i + 1].isAssignableFrom(args[i].getClass())) {
+                        continue outer;
+                    }
+                    System.out.println("Hello");
+                }
+                relevantConstructor = constructor;
+                break;
+            }
+
+            Object[] newArgs = new Object[args.length + 1];
+            newArgs[0] = this;
+
+            for (int i = 0; i < args.length; i++) {
+                newArgs[i + 1] = args[i];
+            }
+
+            WebServiceConnector connector = (WebServiceConnector) relevantConstructor.newInstance(newArgs);
+            hub.registerService(connector);
+            this._hub = hub;
+            return hub;
+        }catch(InvocationTargetException e){
+            Throwable t = e.getCause();
+            t.printStackTrace();
+            hub.stop();
+            throw new RuntimeException("Unable to quickbuild: " + t.getMessage());
+        }catch (Exception e){
+            hub.stop();
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
+    }
 }

@@ -8,6 +8,7 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
@@ -23,16 +24,17 @@ import java.nio.channels.FileLockInterruptionException;
 
 public class SimpleSubscriptionManagerTest extends TestCase {
 
-    private ForwardingHub hub;
+    private Hub hub;
     private UnpackingRequestInformationConnector connector;
     private SimpleSubscriptionManager manager;
     private SimpleNotificationProducer producer;
 
     public void setUp() throws Exception {
         super.setUp();
-        hub = new ForwardingHub();
+        producer = new SimpleNotificationProducer();
+        hub = producer.quickBuild();
+
         manager = new SimpleSubscriptionManager(hub);
-        producer = new SimpleNotificationProducer(hub);
         connector = new UnpackingRequestInformationConnector(manager);
 
         hub.registerService(connector);

@@ -19,6 +19,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -105,21 +106,6 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             return hub;
 
         } catch (Exception e) {
-            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
-        try {
-            ForwardingHub hub = new ForwardingHub();
-
-            Constructor constructor = connectorClass.getConstructor();
-            WebServiceConnector connector = (WebServiceConnector)constructor.newInstance(this, args);
-            hub.registerService(connector);
-            this._hub = hub;
-            return hub;
-        }catch (Exception e){
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
         }
     }
