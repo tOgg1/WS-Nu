@@ -13,7 +13,7 @@ import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- * Extension of the default NotificationBroker interface to include endpointReference methodarguments
+ * Extension of the default NotificationBroker interface to include _endpointReference methodarguments
  * Created by tormod on 23.03.14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "NotificationBroker")

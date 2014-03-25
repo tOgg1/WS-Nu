@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 
 import java.io.InputStream;
+import java.util.Collection;
 
 /**
  * Interface for a hub. Implementations of this interface should be able to receive net-messages, and local messages (from connected web services)
@@ -46,4 +47,6 @@ public interface Hub {
      * @return
      */
     public boolean isServiceRegistered(ServiceConnection webServiceConnector);
+
+    public Collection<ServiceConnection> getServices();
 }

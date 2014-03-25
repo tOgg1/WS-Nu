@@ -13,11 +13,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * The parent of all web services implemented in this module. The main functionality of this class is storing an endpointReference,
+ * The parent of all web services implemented in this module. The main functionality of this class is storing an _endpointReference,
  * holding a reference to the hub (must be supplemented in any implementation class' constructor) as well as some utility methods.
  * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
+@javax.jws.WebService
 public abstract class WebService {
 
     /**
@@ -25,7 +26,9 @@ public abstract class WebService {
      */
     protected Hub _hub;
 
-    protected WebService(){};
+    protected WebService(){
+
+    }
 
     protected WebService(Hub _hub) {
         this._hub = _hub;

@@ -1,18 +1,18 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import org.ntnunotif.wsnu.base.util.EndpointReference;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
-import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.*;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.jws.WebService;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
+ * The generic WebServiceConnector used by default by WS-Nu. Implements basic @WebService annotation checking for passed-in objects.
+ * Also generates automatic endpointReferences if t
  * @author Tormod Haugland
- * Created by tormod on 3/3/14.
+*          Created by tormod on 3/3/14.
  */
 public abstract class WebServiceConnector implements ServiceConnection{
 
@@ -20,9 +20,9 @@ public abstract class WebServiceConnector implements ServiceConnection{
      * EndpointReference of this web service connection
      */
     @EndpointReference(type="uri")
-    public String endpointReference;
+    public String _endpointReference;
 
-    public static int webServiceCount = 0;
+    public static int _webServiceCount = 0;
 
     protected WebServiceConnector(final Object webService){
         Annotation[] annotations = webService.getClass().getAnnotations();
@@ -39,7 +39,8 @@ public abstract class WebServiceConnector implements ServiceConnection{
         }
 
         /* look for endpointReference */
-        Field[] fields = webService.getClass().getFields();
+        List<Field> fields = (List<Field>)Utilities.getFieldsUpTo(webService.getClass(), null);
+
         Annotation[] fieldAnnotations;
 
         for (Field field : fields) {
@@ -52,7 +53,8 @@ public abstract class WebServiceConnector implements ServiceConnection{
             for(Annotation annotation : fieldAnnotations){
                 if(annotation instanceof EndpointReference){
                     try {
-                        endpointReference = (String)field.get(webService);
+                        field.setAccessible(true);
+                        _endpointReference = (String)field.get(webService);
                         referenceIsSet = true;
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -65,7 +67,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
         if(!referenceIsSet){
             Log.w("WebServiceConnector", "EndpointReference is not set in the Web Service " + webService + ". Please considering adding" +
                     "a String-field with the annotation @EndpointReference in your Web Service");
-            endpointReference = webService.getClass().getSimpleName() + NothingToSeeHere.t(""+webServiceCount);
+            _endpointReference = webService.getClass().getSimpleName() + NothingToSeeHere.t("000"+ _webServiceCount);
         }
     }
 }

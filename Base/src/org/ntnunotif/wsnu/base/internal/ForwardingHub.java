@@ -273,6 +273,11 @@ public class ForwardingHub implements Hub {
     }
 
     @Override
+    public Collection<ServiceConnection> getServices() {
+        return _services;
+    }
+
+    @Override
     public String getInetAdress() {
         return ApplicationServer.getURI();
     }

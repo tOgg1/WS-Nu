@@ -1,13 +1,17 @@
 package org.ntnunotif.wsnu.base.util;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
+import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * Utility function for the Base module.
@@ -80,5 +84,27 @@ public class Utilities {
             return new ByteArrayInputStream(bytes);
         }
         return null;
+    }
+
+    /**
+     * Function to get ALL fiels up the class hierarcy.
+     * Credit: John B @ stackoverflow: http://stackoverflow.com/questions/16966629/what-is-the-difference-between-getfields-getdeclaredfields-in-java-reflection
+     * @param startClass
+     * @param exclusiveParent
+     * @return
+     */
+    public static Iterable<Field> getFieldsUpTo(Class<?> startClass,
+                                                @Nullable Class<?> exclusiveParent) {
+
+        List<Field> currentClassFields = Lists.newArrayList(startClass.getDeclaredFields());
+        Class<?> parentClass = startClass.getSuperclass();
+
+        if (parentClass != null && (exclusiveParent == null || !(parentClass.equals(exclusiveParent)))) {
+            List<Field> parentClassFields =
+                    (List<Field>) getFieldsUpTo(parentClass, exclusiveParent);
+            currentClassFields.addAll(parentClassFields);
+        }
+
+        return currentClassFields;
     }
 }
