@@ -44,11 +44,15 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
-        String hash;
+        String hash = "";
         try{
             hash = ServiceUtilities.generateSHA1Key(string);
+            while(keyExists(hash))
+                hash = ServiceUtilities.generateSHA1Key(string);
         }catch(NoSuchAlgorithmException e){
             hash = ServiceUtilities.generateNTSHKey(string);
+            while(keyExists(hash))
+                hash = ServiceUtilities.generateNTSHKey(string);
         }
         return hash;
     }

@@ -17,14 +17,16 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * If the connected Web Service has more than one such method, the first found will be selected. If you need two invocations, you should implement a new version of WebServiceConnector
  * Created by tormod on 23.03.14.
  */
-public class SoapForwardConnector implements WebServiceConnector {
+public class SoapForwardConnector extends WebServiceConnector {
 
-    private Object _webService;
-    private Class _webServiceClass;
-    private Method _soapMethod;
+    private final Object _webService;
+    private final Class _webServiceClass;
+    private final Method _soapMethod;
 
-    public SoapForwardConnector(Object webService) {
+    public SoapForwardConnector(final Object webService) {
+        super(webService);
         _webServiceClass = webService.getClass();
+        _webService = webService;
 
         Method[] methods = webService.getClass().getMethods();
 
@@ -46,7 +48,7 @@ public class SoapForwardConnector implements WebServiceConnector {
     }
 
     @Override
-    public InternalMessage acceptMessage(InternalMessage message) {
+    public final InternalMessage acceptMessage(InternalMessage message) {
         Object messageContent = message.getMessage();
 
         if(!(messageContent instanceof Envelope)){
@@ -75,12 +77,12 @@ public class SoapForwardConnector implements WebServiceConnector {
     }
 
     @Override
-    public Class getServiceType() {
+    public final Class getServiceType() {
         return _webServiceClass;
     }
 
     @Override
-    public Method getServiceFunctionality() {
+    public final Method getServiceFunctionality() {
         return _soapMethod;
     }
 }

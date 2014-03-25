@@ -23,7 +23,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 3/11/14.
  */
-public class UnpackingConnector implements WebServiceConnector {
+public class UnpackingConnector extends WebServiceConnector {
 
     private Object _webService;
     private Class _webServiceClass;
@@ -33,6 +33,7 @@ public class UnpackingConnector implements WebServiceConnector {
      * Default and only constructor, takes a webService as parameter. Finds all allowed methods.
      */
     public UnpackingConnector(Object webService) {
+        super(webService);
         this._webService = webService;
         this._webServiceClass = this._webService.getClass();
         this._allowedMethods = new HashMap<>();
@@ -61,7 +62,7 @@ public class UnpackingConnector implements WebServiceConnector {
     //TODO: ContextHandling
     @Override
     //TODO: Support multiple messages
-    public InternalMessage acceptMessage(InternalMessage internalMessage) {
+    public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         /* The message */
         Object potentialEnvelope = internalMessage.getMessage();

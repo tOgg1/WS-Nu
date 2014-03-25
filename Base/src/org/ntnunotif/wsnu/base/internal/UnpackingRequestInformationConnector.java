@@ -22,13 +22,14 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
-public class UnpackingRequestInformationConnector implements WebServiceConnector {
+public class UnpackingRequestInformationConnector extends WebServiceConnector {
 
     private Object _webService;
     private Class _webServiceClass;
     private HashMap<String, Method> _allowedMethods;
 
     public UnpackingRequestInformationConnector(Object webService) {
+        super(webService);
         this._webService = webService;
         this._webServiceClass = this._webService.getClass();
         this._allowedMethods = new HashMap<>();
@@ -53,7 +54,7 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
     }
 
     @Override
-    public InternalMessage acceptMessage(InternalMessage internalMessage) {
+    public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         if(!((internalMessage.statusCode & STATUS_ENDPOINTREF_IS_SET) > 0)){
             Log.d("UnpackingRequestInformationConnector", "EndpointRef not set");
@@ -189,12 +190,12 @@ public class UnpackingRequestInformationConnector implements WebServiceConnector
     }
 
     @Override
-    public Class getServiceType() {
+    public final Class getServiceType() {
         return null;
     }
 
     @Override
-    public Object getServiceFunctionality() {
+    public final Object getServiceFunctionality() {
         return null;
     }
 }

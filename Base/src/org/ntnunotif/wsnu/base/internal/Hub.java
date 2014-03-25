@@ -32,18 +32,18 @@ public interface Hub {
      * Register's a service for usage with this hub object.
      * @param webServiceConnector
      */
-    public void registerService(WebServiceConnector webServiceConnector);
+    public void registerService(ServiceConnection webServiceConnector);
 
     /**
      * Removes a registered service for usage with this hub object.
      * @param webServiceConnector
      */
-    public void removeService(WebServiceConnector webServiceConnector);
+    public void removeService(ServiceConnection webServiceConnector);
 
     /**
      * Checks if the webServiceConnector is registered with the hub
      * @param webServiceConnector
      * @return
      */
-    public boolean isServiceRegistered(WebServiceConnector webServiceConnector);
+    public boolean isServiceRegistered(ServiceConnection webServiceConnector);
 }

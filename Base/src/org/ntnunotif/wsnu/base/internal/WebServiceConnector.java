@@ -1,29 +1,64 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
+import org.ntnunotif.wsnu.base.util.Log;
+
+import javax.jws.WebService;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 /**
  * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
-public interface WebServiceConnector {
+public abstract class WebServiceConnector implements ServiceConnection{
 
     /**
-     * Accept a message from a hub. This function forwards the message to its connected Web Service.
-     * @param message
-     * @return Returns the appropriate response, null if no response is expected, or the message could not be processed
+     * EndpointReference of this web service connection
      */
-    public InternalMessage acceptMessage(InternalMessage message);
+    @EndpointReference(type="uri")
+    public String endpointReference;
 
-    /**
-     * Return the type of the Web Service connected to this connection.
-     * @return The type as a class
-     */
-    public Class getServiceType();
+    public static int webServiceCount = 0;
 
-    /**
-     * Return the functionality this Web Service offers.
-     * @return Return the allowed functionality
-     */
-    public Object getServiceFunctionality();
+    protected WebServiceConnector(final Object webService){
+        Annotation[] annotations = webService.getClass().getAnnotations();
+        boolean isWebService = false, referenceIsSet = false;
+        for (Annotation annotation : annotations) {
+            if(annotation instanceof WebService){
+                isWebService = true;
+            }
+        }
+
+        if(!isWebService){
+            Log.e("WebServiceConnector", "WebService annotation not set for object" + webService);
+            throw new InvalidWebServiceException("Object passed in to WebServiceConnector does not carry the Webservice annotation");
+        }
+
+        /* look for endpointReference */
+        Field[] fields = webService.getClass().getFields();
+        Annotation[] fieldAnnotations;
+
+        for (Field field : fields) {
+
+            if(field.getType() != String.class){
+                continue;
+            }
+
+            fieldAnnotations = field.getDeclaredAnnotations();
+           for(Annotation annotation : fieldAnnotations){
+                if(annotation instanceof EndpointReference){
+                    try {
+                        endpointReference = (String)field.get(webService);
+                        referenceIsSet = true;
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+           }
+        }
+    }
 }

@@ -19,7 +19,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 /**
  * Created by tormod on 25.03.14.
  */
-public class MappingConnector implements WebServiceConnector{
+public class MappingConnector extends WebServiceConnector{
 
     private final Map<String, String> _methodMap;
     private final Object _webService;
@@ -32,19 +32,9 @@ public class MappingConnector implements WebServiceConnector{
      *                  Entry<ParameterType, MethodName>
      */
     public MappingConnector(final Object webService, final Map<String, String> methodMap) {
-        Annotation[] annotations = webService.getClass().getAnnotations();
-        boolean isWebService = false;
 
-        for (Annotation annotation : annotations) {
-            if(annotation instanceof WebService){
-                isWebService = true;
-            }
-        }
 
-        if(!isWebService){
-            throw new InvalidWebServiceException("Passed-in webservice-object does not have the @WebService annotation");
-        }
-
+        super(webService);
         ArrayList<String> methodNames = new ArrayList<>();
         _allowedMethods = new HashMap<String, Method>();
 
@@ -67,7 +57,7 @@ public class MappingConnector implements WebServiceConnector{
     }
 
     @Override
-    public InternalMessage acceptMessage(InternalMessage internalMessage) {
+    public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
          /* The message */
         Object potentialEnvelope = internalMessage.getMessage();
@@ -129,12 +119,12 @@ public class MappingConnector implements WebServiceConnector{
     }
 
     @Override
-    public Class getServiceType() {
+    public final Class getServiceType() {
         return null;
     }
 
     @Override
-    public Object getServiceFunctionality() {
+    public final Object getServiceFunctionality() {
         return null;
     }
 }

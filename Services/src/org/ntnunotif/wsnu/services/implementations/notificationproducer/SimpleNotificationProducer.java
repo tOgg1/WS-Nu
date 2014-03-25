@@ -59,7 +59,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
     @Override
     public boolean keyExists(String key) {
-        return false;
+        return _subscriptions.containsKey(key);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             FilterType filter = subscribeRequest.getFilter();
 
             if(filter != null){
-                throw new InvalidFilterFault("Filters not supported");
+                throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
             }
 
             long terminationTime = 0;

@@ -28,7 +28,7 @@ public class ForwardingHub implements Hub {
     /**
      * List of internal web-service connections.
      */
-    private ArrayList<WebServiceConnector> _services;
+    private ArrayList<ServiceConnection> _services;
 
     /**
      * Application-server object
@@ -39,7 +39,7 @@ public class ForwardingHub implements Hub {
      * Default constructor
      */
     public ForwardingHub() throws Exception {
-        this._services = new ArrayList<WebServiceConnector>();
+        this._services = new ArrayList<ServiceConnection>();
         this._server = ApplicationServer.getInstance();
         this._server.start(this);
     }
@@ -50,7 +50,7 @@ public class ForwardingHub implements Hub {
      * @throws Exception
      */
     public ForwardingHub(ApplicationServer server) throws Exception{
-        this._services = new ArrayList<WebServiceConnector>();
+        this._services = new ArrayList<ServiceConnection>();
         this._server = server;
         this._server.start(this);
     }
@@ -92,7 +92,7 @@ public class ForwardingHub implements Hub {
         }
 
         /* Try sending the message to everyone */
-        for (WebServiceConnector service : _services) {
+        for (ServiceConnection service : _services) {
 
             /* Send the message forward */
             InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
@@ -258,17 +258,17 @@ public class ForwardingHub implements Hub {
     }
 
     @Override
-    public void registerService(WebServiceConnector webServiceConnector) {
+    public void registerService(ServiceConnection webServiceConnector) {
         this._services.add(webServiceConnector);
     }
 
     @Override
-    public void removeService(WebServiceConnector webServiceConnector) {
+    public void removeService(ServiceConnection webServiceConnector) {
         this._services.remove(webServiceConnector);
     }
 
     @Override
-    public boolean isServiceRegistered(WebServiceConnector webServiceConnector) {
+    public boolean isServiceRegistered(ServiceConnection webServiceConnector) {
         return this._services.contains(webServiceConnector);
     }
 
