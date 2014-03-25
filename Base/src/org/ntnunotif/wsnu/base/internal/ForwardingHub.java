@@ -91,9 +91,11 @@ public class ForwardingHub implements Hub {
             return new InternalMessage(STATUS_FAULT, null);
         }
 
+        Log.d("Hub", "Attempting to send message");
         /* Try sending the message to everyone */
         for (ServiceConnection service : _services) {
 
+            Log.d("Hub", "Forwarding message....");
             /* Send the message forward */
             InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
             outMessage.setRequestInformation(requestInformation);
@@ -202,17 +204,25 @@ public class ForwardingHub implements Hub {
         Object messageContent = message.getMessage();
 
         if((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
+            /* Easy if it already is an inputstream */
             if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
                 try{
                     InputStream messageAsStream = (InputStream)messageContent;
-                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message));
+                    message.setMessage(messageAsStream);
+                    _server.sendMessage(message);
                 }catch(ClassCastException e){
                     e.printStackTrace();
                     Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                 }
             } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
-                    _server.sendMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, message));
+                    message.setMessage(messageAsStream);
+                    _server.sendMessage(message);
+            /* This is worse */
+            }else{
+                InputStream messageAsStream = Utilities.convertUnknownToInputStream(messageContent);
+                message.setMessage(messageAsStream);
+                _server.sendMessage(message);
             }
         }
     }

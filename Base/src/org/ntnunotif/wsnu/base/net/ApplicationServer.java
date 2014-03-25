@@ -169,7 +169,7 @@ public class ApplicationServer{
      * @param message
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
-    public Object[] sendMessage(InternalMessage message){
+    public InternalMessage sendMessage(InternalMessage message){
         //TODO: Distinguish between different faults?
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
@@ -182,18 +182,12 @@ public class ApplicationServer{
         try {
             request.content(new InputStreamContentProvider((InputStream)message.getMessage()), "application/soap+xml;charset/utf-8");
             ContentResponse response = request.send();
-            return new Object[]{response.getStatus(), new ByteArrayInputStream(response.getContent())};
-        } catch(ClassCastException e){
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            Log.d("ApplicationServer", "Sending message out into the interwebs");
+            return new InternalMessage(InternalMessage.STATUS_OK, response.getContentAsString());
+        } catch(Exception e){
+            return new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR, null);
         }
         /* Some error has occured, return error-code TODO: Handle exceptions */
-        return new Object[]{HttpStatus.INTERNAL_SERVER_ERROR_500, null};
     }
 
     /**
@@ -234,6 +228,8 @@ public class ApplicationServer{
                 }
             }
 
+            Log.d("ApplicationServer", "Accepted message");
+
             /* Get content */
             if(httpServletRequest.getContentLength() > 0){
                 InputStream input = httpServletRequest.getInputStream();
@@ -243,7 +239,9 @@ public class ApplicationServer{
                 outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
                 outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
                 outMessage.getRequestInformation().setParameters(request.getParameterMap());
+                Log.d("ApplicationServer", "Forwarding message");
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
+
 
                 /* Handle possible errors */
                 if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){

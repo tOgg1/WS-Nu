@@ -1,10 +1,12 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
+import com.sun.xml.internal.stream.buffer.XMLStreamBufferResult;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointParam;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -20,9 +22,11 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.bind.util.JAXBResult;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.Result;
 import javax.xml.ws.Service;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -50,10 +54,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      */
     public SimpleNotificationProducer(Hub hub) {
         super(hub);
+        _subscriptions = new HashMap<>();
+        _terminationTimes = new HashMap<>();
     }
 
     public SimpleNotificationProducer(){
         super();
+        _subscriptions = new HashMap<>();
+        _terminationTimes = new HashMap<>();
     }
 
 
@@ -77,8 +85,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                  InvalidTopicExpressionFault, UnsupportedPolicyRequestFault,
                                                  InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
                                                  SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
+            Log.d("SimpleNotificationProducer", "Got new subscription request");
+            Result result = new XMLStreamBufferResult();
+            subscribeRequest.getConsumerReference().writeTo(result);
+
+            System.out.println(result.toString());
 
             String consumerEndpoint = subscribeRequest.getConsumerReference().toString();
+            System.out.println(subscribeRequest.getConsumerReference().toString());
 
             if(consumerEndpoint == null){
                 throw new SubscribeCreationFailedFault("Missing EndpointReference");
@@ -93,7 +107,8 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             long terminationTime = 0;
             if(subscribeRequest.getInitialTerminationTime() != null){
                 try {
-                    terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().toString());
+                    System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
+                    terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                     if(terminationTime < System.currentTimeMillis()){
                         throw new UnacceptableInitialTerminationTimeFault();
@@ -117,6 +132,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
+            Log.d("SimpleNotificationProducer", "Subscription request generated UnacceptableIntialTerminationTimeFault");
             throw new UnacceptableInitialTerminationTimeFault();
         }
 
@@ -125,6 +141,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
         /* Set up the subscription */
         _subscriptions.put(subscriptionEndpoint, consumerEndpoint);
+        Log.d("SimpleNotificationProducer", "Added new subscription");
 
         return response;
     }
@@ -159,7 +176,6 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     public Hub quickBuild() {
         try {
             ForwardingHub hub = new ForwardingHub();
-
             /* This is the most reasonable connector for this NotificationProducer */
             UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
             hub.registerService(connector);

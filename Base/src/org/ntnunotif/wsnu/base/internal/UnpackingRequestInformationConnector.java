@@ -56,6 +56,8 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
     @Override
     public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
+        Log.d("UnpackingRequestInformationConnector", "Accepting message");
+
         if(!((internalMessage.statusCode & STATUS_ENDPOINTREF_IS_SET) > 0)){
             Log.d("UnpackingRequestInformationConnector", "EndpointRef not set");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
@@ -63,7 +65,6 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
 
          /* The message */
         Object potentialEnvelope = internalMessage.getMessage();
-
 
         if(!(potentialEnvelope instanceof Envelope)){
             Log.d("UnpackingRequestInformationConnector", "Content not envelope");
@@ -174,7 +175,9 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
                             }
                             return returnMessage;
                         }catch(Exception e){
-                            Log.d("Some error occured", "LLOL");
+                            e.printStackTrace();
+
+                            Log.d("UnpackingRequestInformationConnector", "Some exception occured: " + e.getMessage());
                             //TODO: Add error handling
                         }
                     }else{

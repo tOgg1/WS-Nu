@@ -62,7 +62,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
         newHash = generateSubscriptionKey();
         String baseAddress = _hub.getInetAdress();
 
-        return baseAddress + "/?subscription=" + newHash;
+        return getEndpointReference() + "/?subscription=" + newHash;
     }
 
     public String generateSubscriptionURL(String key){

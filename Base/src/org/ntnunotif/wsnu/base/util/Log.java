@@ -20,6 +20,9 @@ public class Log {
         _writeToFile = true;
         try
         {
+            if(!_logFile.getParentFile().exists())
+                _logFile.getParentFile().mkdirs();
+
             if(!_logFile.isFile())
                 _logFile.createNewFile();
             try
@@ -34,6 +37,7 @@ public class Log {
         }
         catch(IOException e)
         {
+            e.printStackTrace();
             throw new RuntimeException("Log file not found, or can't be accessed!");
         }
     }
