@@ -1,9 +1,11 @@
 package org.ntnunotif.wsnu.services.general;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 
@@ -18,7 +20,9 @@ public abstract class WebService {
     /**
      * Reference to the connected hub
      */
-    protected final Hub _hub;
+    protected Hub _hub;
+
+    protected WebService(){};
 
     protected WebService(Hub _hub) {
         this._hub = _hub;
@@ -35,9 +39,18 @@ public abstract class WebService {
         this.endpointReference = endpointReference;
     }
 
+    public Hub getHub() {
+        return _hub;
+    }
+
+    public void setHub(Hub _hub) {
+        this._hub = _hub;
+    }
+
     @WebMethod(operationName="acceptSoapMessage")
     public abstract Object acceptSoapMessage(@WebParam Envelope envelope);
 
     public abstract Hub quickBuild();
+    public abstract Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException;
 
 }

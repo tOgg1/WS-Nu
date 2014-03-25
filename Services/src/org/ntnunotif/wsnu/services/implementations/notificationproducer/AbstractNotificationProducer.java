@@ -23,9 +23,11 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Default and only constructor. This does not have to called if the hub is set
      * @param hub
      */
-    public AbstractNotificationProducer(Hub hub) {
+    protected AbstractNotificationProducer(Hub hub) {
         super(hub);
     }
+
+    protected AbstractNotificationProducer() {}
 
     /**
      * Generates a SHA-1 encryption key

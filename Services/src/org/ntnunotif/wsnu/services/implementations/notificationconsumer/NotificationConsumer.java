@@ -1,6 +1,9 @@
 package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
@@ -8,9 +11,11 @@ import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 /**
@@ -37,21 +42,19 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     @EndpointReference(type = "uri")
     public String _endpointReference;
 
+    public NotificationConsumer() {
+
+    }
+
     /**
-     * Default constructor, remove? Should not passing an endpointReference be allowed?
+     * Constructor that takes in hub as an argument
      */
     public NotificationConsumer(Hub hub) {
         super(hub);
         _hub = hub;
         _listeners = new ArrayList<>();
-        _endpointReference = "";
     }
 
-    public NotificationConsumer(Hub hub, String endpointReference){
-        super(hub);
-        _listeners = new ArrayList<>();
-        _endpointReference = endpointReference;
-    }
 
     @Override
     @WebMethod(operationName = "Notify")
@@ -79,6 +82,30 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
 
     @Override
     public Hub quickBuild() {
-        return null;
+        try{
+            ForwardingHub hub = new ForwardingHub();
+            /* Most reasonable and simple connector for a consumer */
+            UnpackingConnector connector = new UnpackingConnector(this);
+            hub.registerService(connector);
+            this._hub = hub;
+            return hub;
+        }catch(Exception e){
+            throw new RuntimeException("Could not quickBuild consumer: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
+        try {
+            ForwardingHub hub = new ForwardingHub();
+            Constructor constructor = connectorClass.getConstructor();
+            WebServiceConnector connector = (WebServiceConnector)constructor.newInstance(this, args);
+            hub.registerService(connector);
+            this._hub = hub;
+            return hub;
+        }catch (Exception e){
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
     }
 }

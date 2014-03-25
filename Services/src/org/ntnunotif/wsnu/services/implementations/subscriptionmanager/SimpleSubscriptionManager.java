@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -15,6 +16,7 @@ import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -154,8 +156,8 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
             String subRef = entry.getValue()[0];
 
-            System.out.println(renewRequest.getTerminationTime());
             long time = ServiceUtilities.interpretTerminationTime(renewRequest.getTerminationTime());
+
             if(time < System.currentTimeMillis()) {
                 throw new UnacceptableTerminationTimeFault();
             }
@@ -175,6 +177,11 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
     @Override
     public Hub quickBuild() {
+        return null;
+    }
+
+    @Override
+    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
         return null;
     }
 }

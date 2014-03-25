@@ -64,7 +64,6 @@ public class ServiceUtilities {
         }
 
         if(times.length != 2) {
-            System.out.println("Lets go back home");
             return currentTimeStamp;
         }
 

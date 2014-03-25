@@ -20,6 +20,7 @@ import java.nio.channels.FileLockInterruptionException;
 /**
  * Created by tormod on 3/19/14.
  */
+
 public class SimpleSubscriptionManagerTest extends TestCase {
 
     private ForwardingHub hub;

@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import junit.framework.TestCase;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
@@ -13,6 +14,7 @@ import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebParam;
 
 /**
@@ -50,6 +52,11 @@ public class AbstractNotificationProducerTest extends TestCase {
 
             @Override
             public Hub quickBuild() {
+                return null;
+            }
+
+            @Override
+            public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
                 return null;
             }
         };
