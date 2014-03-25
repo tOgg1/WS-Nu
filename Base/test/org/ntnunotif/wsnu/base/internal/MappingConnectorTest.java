@@ -23,7 +23,6 @@ public class MappingConnectorTest extends TestCase {
         public void myAwesomeWebMethod(String roflParameter){
             System.out.println("HELLO!!!!!!!!!!!");
         }
-
     }
 
     public void setUp() throws Exception {
@@ -35,7 +34,6 @@ public class MappingConnectorTest extends TestCase {
         service = new WebAwesomeService();
 
         connector = new MappingConnector(service, methodNames);
-
     }
 
     public void tearDown() throws Exception {

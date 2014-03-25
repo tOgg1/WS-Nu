@@ -1,8 +1,11 @@
 package org.ntnunotif.wsnu.services.general;
 
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
+import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,5 +109,30 @@ public class ServiceUtilities {
      */
     public static boolean isXsdDuration(String time) {
         return time.matches("^(-P|P)((([0-9]+Y)?([0-9]+M)?([0-9]+D))?)?(?:(T([0-9]+H)?([0-9]+M)?([0-9]+S)?))?");
+    }
+
+    public static String generateSHA1Key(String input) throws NoSuchAlgorithmException{
+        MessageDigest digest = null;
+        digest = MessageDigest.getInstance("SHA-1");
+
+        String hash = "";
+
+        byte[] bytes = digest.digest(input.getBytes());
+        StringBuilder sb = new StringBuilder();
+
+        for (int i=0; i < bytes.length; i++) {
+
+            sb.append( Integer.toString( ( bytes[i] & 0xff ) + 0x100, 16).substring( 1 ));
+        }
+        hash = sb.toString();
+        return hash;
+    }
+
+    public static String generateNTSHKey(String input){
+        return NothingToSeeHere.t(input);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(generateNTSHKey("loleorg"));
     }
 }

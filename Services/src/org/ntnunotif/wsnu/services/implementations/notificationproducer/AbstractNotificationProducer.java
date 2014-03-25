@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -10,6 +11,7 @@ import org.oasis_open.docs.wsn.b_2.*;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
@@ -37,38 +39,18 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            return
-        }
-        String hash = "";
-
-        boolean first = false;
-
-        while(keyExists(hash) || !first){
-            first = true;
-            byte[] bytes = digest.digest(string.getBytes());
-            StringBuilder sb = new StringBuilder();
-
-            for (int i=0; i < bytes.length; i++) {
-
-                sb.append( Integer.toString( ( bytes[i] & 0xff ) + 0x100, 16).substring( 1 ));
-            }
-            hash = sb.toString();
+        String hash;
+        try{
+            hash = ServiceUtilities.generateSHA1Key(string);
+        }catch(NoSuchAlgorithmException e){
+            hash = ServiceUtilities.generateNTSHKey(string);
         }
         return hash;
     }
 
     public String generateNewSubscriptionURL(){
         String newHash = null;
-        try {
-            newHash = generateSubscriptionKey();
-        /* We don't have SHA-1 available */
-        } catch (NoSuchAlgorithmException e) {
-
-        }
+        newHash = generateSubscriptionKey();
         String baseAddress = _hub.getInetAdress();
 
         return baseAddress + "/?subscription=" + newHash;
@@ -80,6 +62,8 @@ public abstract class AbstractNotificationProducer extends WebService implements
     }
 
     public abstract boolean keyExists(String key);
+
+    public abstract List<String> getRecipients(Notify notify);
 
     /**
      * Sends a notification the the endpoint.

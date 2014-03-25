@@ -9,6 +9,7 @@ import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
+import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
@@ -63,6 +64,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
 
     @Override
+    @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
                                                  targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe
                                                  subscribeRequest, RequestInformation requestInformation) throws
@@ -71,9 +73,18 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                  InvalidTopicExpressionFault, UnsupportedPolicyRequestFault,
                                                  InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
                                                  SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
+
             String consumerEndpoint = subscribeRequest.getConsumerReference().toString();
 
+            if(consumerEndpoint == null){
+                throw new SubscribeCreationFailedFault("Missing EndpointReference");
+            }
+
             FilterType filter = subscribeRequest.getFilter();
+
+            if(filter != null){
+                throw new InvalidFilterFault("Filters not supported");
+            }
 
             long terminationTime = 0;
             if(subscribeRequest.getInitialTerminationTime() != null){
@@ -105,12 +116,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             throw new UnacceptableInitialTerminationTimeFault();
         }
 
-
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint =
+        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
 
         /* Set up the subscription */
-        _subscriptions.put()
+        _subscriptions.put(subscriptionEndpoint, consumerEndpoint);
 
         return response;
     }
