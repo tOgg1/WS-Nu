@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.jws.WebService;
 import java.lang.annotation.Annotation;
@@ -48,7 +49,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
             }
 
             fieldAnnotations = field.getDeclaredAnnotations();
-           for(Annotation annotation : fieldAnnotations){
+            for(Annotation annotation : fieldAnnotations){
                 if(annotation instanceof EndpointReference){
                     try {
                         endpointReference = (String)field.get(webService);
@@ -58,7 +59,13 @@ public abstract class WebServiceConnector implements ServiceConnection{
                         break;
                     }
                 }
-           }
+            }
+        }
+
+        if(!referenceIsSet){
+            Log.w("WebServiceConnector", "EndpointReference is not set in the Web Service " + webService + ". Please considering adding" +
+                    "a String-field with the annotation @EndpointReference in your Web Service");
+            endpointReference = webService.getClass().getSimpleName() + NothingToSeeHere.t(""+webServiceCount);
         }
     }
 }

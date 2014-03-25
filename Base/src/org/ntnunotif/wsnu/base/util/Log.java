@@ -11,8 +11,9 @@ public class Log {
     private static File _logFile;
     private static BufferedWriter _logWriter;
     private static boolean _writeToFile = false;
-    private static boolean _logDebug = true;
+    private static boolean _logDebug = false;
     private static boolean _logErrors = true;
+    private static boolean _logWarnings = true;
 
     public static void initLogFile() throws RuntimeException {
         _logFile = new File("config/log.txt");
@@ -65,6 +66,14 @@ public class Log {
         String err = "[Error " + tag + "]: " + content;
         System.err.println(err);
         writeToFile(err);
+    }
+
+    public static void w(String tag, String content){
+        if(!_logWarnings)
+            return;
+        String warning = "[Warning " + tag + "]: " + content;
+        System.out.println(warning);
+        writeToFile(warning);
     }
 
     private static void writeToFile(String s)
