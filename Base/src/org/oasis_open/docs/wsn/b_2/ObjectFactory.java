@@ -12,7 +12,7 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the org.oasis_open.docs.wsn.b_2 package. 
+ * org.generated in the org.oasis_open.docs.wsn.b_2 package.
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 

@@ -132,7 +132,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
-            Log.d("SimpleNotificationProducer", "Subscription request generated UnacceptableIntialTerminationTimeFault");
+            Log.d("SimpleNotificationProducer", "Subscription request org.generated UnacceptableIntialTerminationTimeFault");
             throw new UnacceptableInitialTerminationTimeFault();
         }
 

@@ -1,3 +1,5 @@
+package org.ntnunotif.wsnu.examples;
+
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
@@ -7,7 +9,6 @@ import org.ntnunotif.wsnu.services.implementations.notificationconsumer.Notifica
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.rmi.Remote;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 

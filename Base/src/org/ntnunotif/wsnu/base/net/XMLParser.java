@@ -32,7 +32,8 @@ public class XMLParser {
             "org.oasis_open.docs.wsn.br_2",
             "org.oasis_open.docs.wsn.t_1",
             "org.oasis_open.docs.wsrf.bf_2",
-            "org.oasis_open.docs.wsrf.r_2"};
+            "org.oasis_open.docs.wsrf.r_2",
+            "org.ntnunotif.wsnu.examples.generated"};
 
     /**
      * classLoader is the default loader for java classes.

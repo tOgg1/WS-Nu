@@ -127,7 +127,7 @@ public class UnpackingConnector extends WebServiceConnector {
 
                         } catch (IllegalAccessException e) {
                             Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
-                                    "generated classes.\n A @WebMethod can not have private access");
+                                    "org.generated classes.\n A @WebMethod can not have private access");
                             e.printStackTrace();
                             return null;
                         } catch (InvocationTargetException e) {

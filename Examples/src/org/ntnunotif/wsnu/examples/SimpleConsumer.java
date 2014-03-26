@@ -1,3 +1,5 @@
+package org.ntnunotif.wsnu.examples;
+
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
@@ -36,7 +38,7 @@ public class SimpleConsumer implements ConsumerListener {
 
     @Override
     public void notify(NotificationEvent event) {
-        /* This is a SimpleConsumer, so we just take an event, display its contents, and leave */
+        /* This is a org.ntnunotif.wsnu.examples.SimpleConsumer, so we just take an event, display its contents, and leave */
 
         Notify notification = event.getRaw();
 

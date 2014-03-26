@@ -86,6 +86,14 @@ public class Utilities {
         return null;
     }
 
+    public static InputStream convertParseableToInputStream(Object message) throws JAXBException{
+        /* Try and parse it with the XMLParser*/
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLParser.writeObjectToStream(message, stream);
+        byte[] bytes = stream.toByteArray();
+        return new ByteArrayInputStream(bytes);
+    }
+
     /**
      * Function to get ALL fiels up the class hierarcy.
      * Credit: John B @ stackoverflow: http://stackoverflow.com/questions/16966629/what-is-the-difference-between-getfields-getdeclaredfields-in-java-reflection

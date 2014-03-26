@@ -6,7 +6,9 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.base.util.Utilities;
+import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
+import org.w3._2001._12.soap_envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -199,6 +201,7 @@ public class ForwardingHub implements Hub {
      * Function to accept a message from a local service, and forward it out into the internet.
      * @param message The message to be sent out
      */
+    //TODO: Generate meaningful soap headers
     @Override
     public void acceptLocalMessage(InternalMessage message) {
         Object messageContent = message.getMessage();
@@ -220,7 +223,15 @@ public class ForwardingHub implements Hub {
                     _server.sendMessage(message);
             /* This is worse */
             }else{
-                InputStream messageAsStream = Utilities.convertUnknownToInputStream(messageContent);
+                Log.d("ForwardingHub", "Hello");
+                Envelope envelope = new Envelope();
+                Header header = new Header();
+                Body body = new Body();
+                body.getAny().add(messageContent);
+                envelope.setBody(body);
+                envelope.setHeader(header);
+
+                InputStream messageAsStream = Utilities.convertUnknownToInputStream(envelope);
                 message.setMessage(messageAsStream);
                 _server.sendMessage(message);
             }

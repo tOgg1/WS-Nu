@@ -1,3 +1,5 @@
+package org.ntnunotif.wsnu.examples;
+
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.MappingConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
