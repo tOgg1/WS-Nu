@@ -59,6 +59,7 @@ public class XMLParser {
                 newPaths[i] = classPaths[i];
             }
             newPaths[newPaths.length - 1] = classPath;
+            classPaths = newPaths;
         }
     }
 
