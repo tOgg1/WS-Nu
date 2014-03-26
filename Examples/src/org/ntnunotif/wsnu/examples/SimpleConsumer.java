@@ -1,5 +1,7 @@
 package org.ntnunotif.wsnu.examples;
 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
@@ -34,7 +36,13 @@ public class SimpleConsumer implements ConsumerListener {
     public static void main(String[] args) throws Exception{
         Log.setEnableDebug(true);
 
-        ApplicationServer.useConfigFile = true;
+        ApplicationServer.useConfigFile = false;
+        ApplicationServer appServer = ApplicationServer.getInstance();
+        Server server = appServer.getServer();
+        ServerConnector connector = new ServerConnector(server);
+        connector.setHost("192.168.1.103");
+        connector.setPort(8080);
+        server.addConnector(connector);
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
 
@@ -91,8 +99,8 @@ public class SimpleConsumer implements ConsumerListener {
 
     @Override
     public void notify(NotificationEvent event) {
-        /* This is a org.ntnunotif.wsnu.examples.SimpleConsumer, so we just take an event, display its contents, and leave */
 
+        /* This is a org.ntnunotif.wsnu.examples.SimpleConsumer, so we just take an event, display its contents, and leave */
         Notify notification = event.getRaw();
 
         List<Object> everything = notification.getAny();

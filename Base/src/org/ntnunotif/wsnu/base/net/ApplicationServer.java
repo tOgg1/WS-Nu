@@ -131,8 +131,27 @@ public class ApplicationServer{
         this._server.addConnector(connector);
     }
 
+    /**
+     * Sets the handler of this server. Calling this function will cause the server to restart
+     * @param handler
+     */
     public void setHandler(AbstractHandler handler){
-        this._server.setHandler(handler);
+        try {
+            this._server.setHandler(handler);
+            this._server.stop();
+            this._serverThread.join();
+            this._serverThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets this server object.
+     * @return
+     */
+    public final Server getServer(){
+        return _server;
     }
 
     /**
@@ -147,6 +166,20 @@ public class ApplicationServer{
             return _singleton;
         }else{
             return _singleton;
+        }
+    }
+
+    /**
+     * Stop the http-server.
+     * @throws java.lang.Exception Throws an exception if the server is unable to stop.
+     */
+    public void stop(){
+        try {
+            _server.stop();
+            _serverThread.join();
+            _isRunning = false;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -185,20 +218,6 @@ public class ApplicationServer{
     }
 
     /**
-     * Stop the http-server.
-     * @throws java.lang.Exception Throws an exception if the server is unable to stop.
-     */
-    public void stop(){
-        try {
-            _server.stop();
-            _serverThread.join();
-            _isRunning = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Takes a message as an inputStream and sends it to a recipient over HTML. This function expects a response,
      * and sends this response back up the system.
      * @param message
@@ -210,6 +229,7 @@ public class ApplicationServer{
 
         RequestInformation requestInformation = message.getRequestInformation();
         String endpoint = requestInformation.getEndpointReference();
+
         if(endpoint == null){
             Log.e("ApplicationServer", "Endpoint reference not set");
             return new InternalMessage(STATUS_FAULT, null);
@@ -241,7 +261,6 @@ public class ApplicationServer{
          * Empty constructor
          */
         private HttpHandler(){
-
         }
 
         /**
@@ -283,7 +302,6 @@ public class ApplicationServer{
                 outMessage.getRequestInformation().setParameters(request.getParameterMap());
                 Log.d("ApplicationServer", "Forwarding message");
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
-
 
                 /* Handle possible errors */
                 if((returnMessage.statusCode & STATUS_FAULT) > 0){
@@ -350,6 +368,6 @@ public class ApplicationServer{
     }
 
     public static String getURI(){
-        return _server.getURI().getHost()+":"+_server.getURI().getPort();
+        return _server.getURI().getHost()+ ":" +_server.getURI().getPort();
     }
 }
