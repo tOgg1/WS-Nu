@@ -48,8 +48,7 @@ import java.util.List;
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
 public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
-    private HashMap<String, String> _subscriptions;
-    private HashMap<String, Long> _terminationTimes;
+    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;
 
     /**
      * Constructor taking a hub as the reference
@@ -58,13 +57,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     public SimpleNotificationProducer(Hub hub) {
         super(hub);
         _subscriptions = new HashMap<>();
-        _terminationTimes = new HashMap<>();
     }
 
     public SimpleNotificationProducer(){
         super();
         _subscriptions = new HashMap<>();
-        _terminationTimes = new HashMap<>();
     }
 
 
@@ -137,11 +134,18 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             throw new UnacceptableInitialTerminationTimeFault();
         }
 
+        /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
         String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
 
+        /* Build endpoint reference */
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address(getEndpointReference() +""+ subscriptionEndpoint);
+
+        response.setSubscriptionReference(builder.build());
+
         /* Set up the subscription */
-        _subscriptions.put(subscriptionEndpoint, endpointReference);
+        _subscriptions.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
         Log.d("SimpleNotificationProducer", "Added new subscription");
 
         return response;

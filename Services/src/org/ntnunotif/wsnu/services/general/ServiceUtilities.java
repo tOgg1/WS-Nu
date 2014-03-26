@@ -17,6 +17,16 @@ import java.util.regex.Pattern;
  */
 public class ServiceUtilities {
 
+    public static final class EndpointTerminationTuple{
+        public final String endpoint;
+        public final long termination;
+
+        public EndpointTerminationTuple(String endpoint, long termination) {
+            this.endpoint = endpoint;
+            this.termination = termination;
+        }
+    }
+
     /**
      * Get termination from a time-string
      * @param time

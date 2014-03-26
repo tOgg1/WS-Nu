@@ -3,6 +3,9 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
+import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisherResponse;
@@ -16,6 +19,11 @@ import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.ws.Service;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** Simple broker that stores publishers and subscriptions in hashmaps.
@@ -23,28 +31,64 @@ import java.util.List;
  */
 public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
+    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;
+    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers;
+
     @Override
     public boolean keyExists(String key) {
-        return false;
+        return _subscriptions.containsKey(key) || _publishers.containsKey(key);
     }
 
     @Override
     public List<String> getRecipients(Notify notify) {
-        return null;
+        return new ArrayList(_subscriptions.values());
     }
 
     @Override
     @Oneway
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Notify notify) {
+        NotificationEvent event  = new NotificationEvent(notify);
 
+        for(ConsumerListener listener : _listeners){
+            listener.notify(event);
+        }
     }
 
     @Override
     @WebResult(name = "RegisterPublisherResponse", targetNamespace = "http://docs.oasis-open.org/wsn/br-2", partName = "RegisterPublisherResponse")
     @WebMethod(operationName = "RegisterPublisher")
-    public RegisterPublisherResponse registerPublisher(@WebParam(partName = "RegisterPublisherRequest", name = "RegisterPublisher", targetNamespace = "http://docs.oasis-open.org/wsn/br-2") RegisterPublisher registerPublisherRequest, @Information RequestInformation requestInformation) throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault, UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
-        return null;
+    public RegisterPublisherResponse registerPublisher(
+            @WebParam(partName = "RegisterPublisherRequest",name = "RegisterPublisher", targetNamespace = "http://docs.oasis-open.org/wsn/br-2")
+            RegisterPublisher registerPublisherRequest, @Information RequestInformation requestInformation)
+    throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
+           UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
+        String endpointReference = null;
+        try {
+            endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
+        } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
+            throw new PublisherRegistrationFailedFault();
+        }
+
+        long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
+
+        if(terminationTime < System.currentTimeMillis()){
+            throw new UnacceptableInitialTerminationTimeFault("Invalid termination time. Can't be before current time");
+        }
+
+        String newSubscriptionKey = generateSubscriptionKey();
+        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+
+        _publishers.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
+
+        RegisterPublisherResponse response = new RegisterPublisherResponse();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address(getEndpointReference() +""+ subscriptionEndpoint);
+
+        response.setConsumerReference(builder.build());
+        //response.setPublisherRegistrationReference();
+        return response;
     }
 
     @Override
