@@ -42,6 +42,7 @@ public abstract class WebService {
     }
 
     public void setEndpointReference(String endpointReference) {
+        System.out.println(_hub);
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
     }
 

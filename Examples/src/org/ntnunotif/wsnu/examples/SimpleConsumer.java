@@ -31,6 +31,7 @@ public class SimpleConsumer implements ConsumerListener {
     private NotificationConsumer consumer;
 
     public static void main(String[] args) throws Exception{
+        Log.setEnableDebug(true);
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
 
@@ -40,6 +41,7 @@ public class SimpleConsumer implements ConsumerListener {
         Subscribe subscribe = factory.createSubscribe();
 
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        System.out.println(consumer.getEndpointReference());
         builder.address(consumer.getEndpointReference());
 
         W3CEndpointReference reference = builder.build();
@@ -54,8 +56,10 @@ public class SimpleConsumer implements ConsumerListener {
     }
 
     public SimpleConsumer() {
-        NotificationConsumer consumer = new NotificationConsumer();
+        consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
+        System.out.println(hub);
+        consumer.setEndpointReference("Hello");
         consumer.addConsumerListener(this);
         InputManager in = new InputManager();
         in.start();
@@ -76,8 +80,8 @@ public class SimpleConsumer implements ConsumerListener {
                 while((in = reader.readLine()) != null){
                     if(in.matches("^exit")){
                         System.exit(0);
-                    }else if(in.matches("^subscribe")){
-                        String address = in.replaceAll("^subscribe *", "");
+                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:]+")){
+                        String address = in.replaceAll("^subscribe", "").replaceAll(" ", "");
                         Log.d("SimpleConsumer", "Parsed endpointreference: " + address);
 
                         if(!address.matches(("^https?://"))){
@@ -85,6 +89,8 @@ public class SimpleConsumer implements ConsumerListener {
                             address = "http://" + address;
                         }
                         SimpleConsumer.this.sendSubscriptionRequest(address);
+                    }else{
+                        Log.d("SimpleConsumer", "Command not supported");
                     }
                 }
             } catch (IOException e) {

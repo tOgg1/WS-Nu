@@ -31,11 +31,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     private ArrayList<ConsumerListener> _listeners;
 
     /**
-    * Reference to the hub this consumer is connected to
-    */
-    private Hub _hub;
-
-    /**
      * The EndpointReference of this NotificatonConsumer. This does not have to,
      * but can, be the same as the url/ip of the application server of the connected hub.
      */
@@ -43,6 +38,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     public String _endpointReference;
 
     public NotificationConsumer() {
+        super();
         _listeners = new ArrayList<ConsumerListener>();
     }
 
