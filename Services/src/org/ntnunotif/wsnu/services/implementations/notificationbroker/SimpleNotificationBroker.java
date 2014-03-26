@@ -151,7 +151,6 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         long terminationTime = 0;
         if(subscribeRequest.getInitialTerminationTime() != null){
             try {
-                System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if(terminationTime < System.currentTimeMillis()){

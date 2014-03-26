@@ -224,7 +224,6 @@ public class ApplicationServer{
             Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
             request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
             ContentResponse response = request.send();
-            System.out.println("Hello");
             return new InternalMessage(STATUS_OK, response.getContentAsString());
         } catch(Exception e){
             e.printStackTrace();

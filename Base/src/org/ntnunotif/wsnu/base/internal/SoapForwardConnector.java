@@ -62,10 +62,8 @@ public class SoapForwardConnector extends WebServiceConnector {
 
             /* If is the case, nothing is being returned */
             if(_soapMethod.getReturnType().equals(Void.TYPE)){
-                System.out.println("Heeeey!");;
                 return new InternalMessage(STATUS_OK, null);
             }else{
-                System.out.println("Hey!");
                 return new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
                         method_returnedData);
             }

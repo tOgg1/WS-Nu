@@ -5,18 +5,26 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 
 /**
  * The SimpleConsumer Web Service as defined per the Oasis WS-N Base specification
@@ -68,6 +76,24 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
 
     public void removeConsumerListener(ConsumerListener listener){
         _listeners.remove(listener);
+    }
+
+    public void sendSubscriptionRequest(String address){
+        ObjectFactory factory = new ObjectFactory();
+        Subscribe subscribe = factory.createSubscribe();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        System.out.println(getEndpointReference());
+        builder.address(getEndpointReference());
+
+        W3CEndpointReference reference = builder.build();
+        subscribe.setConsumerReference(reference);
+
+        //subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
+        message.getRequestInformation().setEndpointReference(address);
+        _hub.acceptLocalMessage(message);
     }
 
     @Override

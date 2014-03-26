@@ -91,8 +91,6 @@ public class ApplicationServerTest extends TestCase {
         Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).getMessage()).getValue();
         Header head = env.getHeader();
         Body body = env.getBody();
-        System.out.println(head);
-        System.out.println(body);
 
         // Send response
         Request request = client.newRequest("http://localhost:8080/");

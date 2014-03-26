@@ -34,30 +34,17 @@ public class SimpleConsumer implements ConsumerListener {
     public static void main(String[] args) throws Exception{
         Log.setEnableDebug(true);
 
-        ApplicationServer.useConfigFile = false;
+        ApplicationServer.useConfigFile = true;
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
 
 
     public void sendSubscriptionRequest(String address){
-        ObjectFactory factory = new ObjectFactory();
-        Subscribe subscribe = factory.createSubscribe();
-
-        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        System.out.println(consumer.getEndpointReference());
-        builder.address(consumer.getEndpointReference());
-
-        W3CEndpointReference reference = builder.build();
-        subscribe.setConsumerReference(reference);
-
-        //subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
-
-        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
-        message.getRequestInformation().setEndpointReference(address);
-        hub.acceptLocalMessage(message);
+        consumer.sendSubscriptionRequest(address);
     }
 
     public SimpleConsumer() {
+
         consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
         consumer.setEndpointReference("Hello");

@@ -85,12 +85,9 @@ public abstract class WebService {
                 }
 
                 for (int i = 0; i < args.length; i++) {
-                    System.out.println(types[i + 1] + " | |  " + args[i].getClass());
-                    System.out.println(!types[i + 1].isAssignableFrom(args[i].getClass()));
                     if (!types[i + 1].isAssignableFrom(args[i].getClass())) {
                         continue outer;
                     }
-                    System.out.println("Hello");
                 }
                 relevantConstructor = constructor;
                 break;

@@ -70,9 +70,6 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
-        // Test with requestURL
-        System.out.println(requestUrl);
-
         request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_unsubscribe.xml")));
@@ -107,7 +104,6 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         String subscription = producer.generateSubscriptionKey();
         String requestUrl = producer.generateSubscriptionURL(subscription);
 
-        System.out.println(requestUrl);
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
         HttpClient client = new HttpClient();
