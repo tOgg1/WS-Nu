@@ -26,6 +26,8 @@ import java.util.List;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
+ * SimpleConmsumer example that takes a notification, unpacks it, and prints it.
+ * @author Tormod Haugland
  * Created by tormod on 3/17/14.
  */
 public class SimpleConsumer implements ConsumerListener {
@@ -39,20 +41,26 @@ public class SimpleConsumer implements ConsumerListener {
         ApplicationServer.useConfigFile = false;
         ApplicationServer appServer = ApplicationServer.getInstance();
         Server server = appServer.getServer();
+
+        /* Configure server without file and with multiple connectors */
         ServerConnector connector = new ServerConnector(server);
         connector.setHost("192.168.1.103");
         connector.setPort(8080);
         server.addConnector(connector);
+
+        ServerConnector newConnector = new ServerConnector(server);
+        newConnector.setHost("127.0.0.1");
+        newConnector.setPort(8080);
+        server.addConnector(newConnector);
+
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
-
 
     public void sendSubscriptionRequest(String address){
         consumer.sendSubscriptionRequest(address);
     }
 
     public SimpleConsumer() {
-
         consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
         consumer.setEndpointReference("Hello");
@@ -77,14 +85,16 @@ public class SimpleConsumer implements ConsumerListener {
                 while((in = reader.readLine()) != null){
                     if(in.matches("^exit")){
                         System.exit(0);
-                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:]+")){
+                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")){
                         String address = in.replaceAll("^subscribe", "").replaceAll(" ", "");
                         Log.d("SimpleConsumer", "Parsed endpointreference: " + address);
+                        System.out.println(address.replaceAll("^http://.*?", ""));
 
-                        if(!address.matches(("^https?://"))){
+                        if(!address.matches(("^https?://.*?"))){
                             Log.d("SimpleConsumer", "Inserted http://-tag");
                             address = "http://" + address;
                         }
+
                         SimpleConsumer.this.sendSubscriptionRequest(address);
                     }else{
                         Log.d("SimpleConsumer", "Command not supported");
@@ -99,7 +109,6 @@ public class SimpleConsumer implements ConsumerListener {
 
     @Override
     public void notify(NotificationEvent event) {
-
         /* This is a org.ntnunotif.wsnu.examples.SimpleConsumer, so we just take an event, display its contents, and leave */
         Notify notification = event.getRaw();
 

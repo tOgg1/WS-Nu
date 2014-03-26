@@ -176,7 +176,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
         /* Set up the subscription */
         _subscriptions.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
-        Log.d("SimpleNotificationProducer", "Added new subscription");
+        Log.d("SimpleNotificationProducer", "Added new subscription[" + newSubscriptionKey +"]: " + endpointReference);
 
         return response;
     }
