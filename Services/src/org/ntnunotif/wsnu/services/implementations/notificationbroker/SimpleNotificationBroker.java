@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
@@ -20,9 +21,14 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Service;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,6 +61,18 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         }
     }
 
+    /**
+     * Register a publisher. This implementation does not take into account topics, and will never throw TopicNotSupportededFault.
+     * @param registerPublisherRequest
+     * @param requestInformation
+     * @return
+     * @throws InvalidTopicExpressionFault
+     * @throws PublisherRegistrationFailedFault
+     * @throws ResourceUnknownFault
+     * @throws PublisherRegistrationRejectedFault
+     * @throws UnacceptableInitialTerminationTimeFault
+     * @throws TopicNotSupportedFault
+     */
     @Override
     @WebResult(name = "RegisterPublisherResponse", targetNamespace = "http://docs.oasis-open.org/wsn/br-2", partName = "RegisterPublisherResponse")
     @WebMethod(operationName = "RegisterPublisher")
@@ -91,18 +109,101 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         return response;
     }
 
+    /**
+     * The oasis wsn subscribe function. This implementation will at all times be the same as the implementation in {@link org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer}
+     * @param subscribeRequest
+     * @param requestInformation
+     * @return
+     * @throws NotifyMessageNotSupportedFault
+     * @throws UnrecognizedPolicyRequestFault
+     * @throws TopicExpressionDialectUnknownFault
+     * @throws ResourceUnknownFault
+     * @throws InvalidTopicExpressionFault
+     * @throws UnsupportedPolicyRequestFault
+     * @throws InvalidFilterFault
+     * @throws InvalidProducerPropertiesExpressionFault
+     * @throws UnacceptableInitialTerminationTimeFault
+     * @throws SubscribeCreationFailedFault
+     * @throws TopicNotSupportedFault
+     * @throws InvalidMessageContentExpressionFault
+     */
     @Override
     @WebResult(name = "SubscribeResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "SubscribeResponse")
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest, @Information RequestInformation requestInformation) throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
-        return null;
+        Log.d("SimpleNotificationProducer", "Got new subscription request");
+
+        W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
+
+        if(consumerEndpoint == null){
+            throw new SubscribeCreationFailedFault("Missing EndpointReference");
+        }
+
+        //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
+        String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+
+        FilterType filter = subscribeRequest.getFilter();
+
+        if(filter != null){
+            throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
+        }
+
+        long terminationTime = 0;
+        if(subscribeRequest.getInitialTerminationTime() != null){
+            try {
+                System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
+                terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
+
+                if(terminationTime < System.currentTimeMillis()){
+                    throw new UnacceptableInitialTerminationTimeFault();
+                }
+
+            } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
+                throw new UnacceptableInitialTerminationTimeFault();
+            }
+        }else{
+            /* Set it to terminate in one day */
+            terminationTime = System.currentTimeMillis() + 86400*1000;
+        }
+
+        /* Generate the response */
+        SubscribeResponse response = new SubscribeResponse();
+
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTimeInMillis(terminationTime);
+
+        try {
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+            response.setTerminationTime(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.d("SimpleNotificationProducer", "Subscription request org.generated UnacceptableIntialTerminationTimeFault");
+            throw new UnacceptableInitialTerminationTimeFault();
+        }
+
+        /* Generate new subscription hash */
+        String newSubscriptionKey = generateSubscriptionKey();
+        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+
+        /* Build endpoint reference */
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address(getEndpointReference() +""+ subscriptionEndpoint);
+
+        response.setSubscriptionReference(builder.build());
+
+        /* Set up the subscription */
+        _subscriptions.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
+        Log.d("SimpleNotificationProducer", "Added new subscription");
+
+        return response;
     }
 
     @Override
     @WebResult(name = "GetCurrentMessageResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "GetCurrentMessageResponse")
     @WebMethod(operationName = "GetCurrentMessage")
     public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") GetCurrentMessage getCurrentMessageRequest) throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
-        return null;
+        GetCurrentMessageResponse response = factory.createGetCurrentMessageResponse();
+        response.getAny().add(currentMessage);
+        return response;
     }
 
     @Override

@@ -59,22 +59,52 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         _subscriptions = new HashMap<>();
     }
 
+    /**
+     * Default constructor.
+     */
     public SimpleNotificationProducer(){
         super();
         _subscriptions = new HashMap<>();
     }
 
-
+    /**
+     * Returns true if the subscriptions hashmap has the key
+     * @param key
+     * @return
+     */
     @Override
     public boolean keyExists(String key) {
         return _subscriptions.containsKey(key);
     }
 
+    /**
+     *
+     * @param notify
+     * @return
+     */
     @Override
     public List<String> getRecipients(Notify notify) {
         return new ArrayList(_subscriptions.values());
     }
 
+    /**
+     *
+     * @param subscribeRequest
+     * @param requestInformation
+     * @return
+     * @throws NotifyMessageNotSupportedFault
+     * @throws UnrecognizedPolicyRequestFault
+     * @throws TopicExpressionDialectUnknownFault
+     * @throws ResourceUnknownFault
+     * @throws InvalidTopicExpressionFault
+     * @throws UnsupportedPolicyRequestFault
+     * @throws InvalidFilterFault
+     * @throws InvalidProducerPropertiesExpressionFault
+     * @throws UnacceptableInitialTerminationTimeFault
+     * @throws SubscribeCreationFailedFault
+     * @throws TopicNotSupportedFault
+     * @throws InvalidMessageContentExpressionFault
+     */
     @Override
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
