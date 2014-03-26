@@ -44,16 +44,15 @@ public class SimpleNumberProducer {
         Notify notify = new Notify();
 
         NotificationMessageHolderType type = new NotificationMessageHolderType();
-        ObjectFactory factory = new ObjectFactory();
+
         NotificationMessageHolderType.Message message = new NotificationMessageHolderType.Message();
         IntegerContent content = new IntegerContent();
         BigInteger integer = BigInteger.valueOf(data);
         content.setInteger(integer);
         message.setAny(content);
         type.setMessage(message);
-
         notify.getNotificationMessage().add(type);
-        hub.acceptLocalMessage(new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE, notify));
+
         simpleNotificationProducer.sendNotification(notify);
     }
 

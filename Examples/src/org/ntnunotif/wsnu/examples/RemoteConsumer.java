@@ -6,6 +6,8 @@ import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -26,7 +28,7 @@ public class RemoteConsumer implements ConsumerListener {
         try {
             InputStream subscribe = new FileInputStream("Examples/res/server_test_subscribe.xml");
             InternalMessage subMessage = new InternalMessage(STATUS_FAULT|STATUS_ENDPOINTREF_IS_SET|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, subscribe);
-            subMessage.getRequestInformation().setEndpointReference("http://151.236.10.120:8080/myProducer");
+            subMessage.getRequestInformation().setEndpointReference("http://151.236.10.120:8080/numberProducer");
             hub.acceptLocalMessage(subMessage);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

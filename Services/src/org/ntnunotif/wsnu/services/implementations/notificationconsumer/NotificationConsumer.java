@@ -43,7 +43,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     public String _endpointReference;
 
     public NotificationConsumer() {
-
+        _listeners = new ArrayList<ConsumerListener>();
     }
 
     /**

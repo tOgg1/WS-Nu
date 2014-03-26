@@ -21,7 +21,7 @@ public interface Hub {
     /**
      * Function to accept a message from a local service, and forward it out into the internet.
      */
-    public void acceptLocalMessage(InternalMessage message);
+    public InternalMessage acceptLocalMessage(InternalMessage message);
 
     /**
      * Get the address this server is currently running on.

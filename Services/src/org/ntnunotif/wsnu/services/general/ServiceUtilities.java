@@ -1,9 +1,12 @@
 package org.ntnunotif.wsnu.services.general;
 
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
@@ -129,5 +132,20 @@ public class ServiceUtilities {
 
     public static String generateNTSHKey(String input){
         return NothingToSeeHere.t(input);
+    }
+
+    public static String parseW3CEndpoint(String s) throws SubscribeCreationFailedFault{
+        Pattern pattern = Pattern.compile("<(wsa:)?Address>[a-z0-9A-Z.: //\n]*</(wsa:)?Address>");
+        Matcher matcher = pattern.matcher(s);
+
+        if(matcher.find()){
+            String raw = matcher.group().replaceAll("</?(wsa:)?Address>", "").replaceAll(" ", "").replaceAll("[\n]", "");
+            if(!raw.matches("^https? ://")){
+                raw = "http://" + raw;
+            }
+            return raw;
+        }else{
+            throw new SubscribeCreationFailedFault();
+        }
     }
 }

@@ -203,7 +203,7 @@ public class ForwardingHub implements Hub {
      */
     //TODO: Generate meaningful soap headers
     @Override
-    public void acceptLocalMessage(InternalMessage message) {
+    public InternalMessage acceptLocalMessage(InternalMessage message) {
         Object messageContent = message.getMessage();
 
         if((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
@@ -212,18 +212,18 @@ public class ForwardingHub implements Hub {
                 try{
                     InputStream messageAsStream = (InputStream)messageContent;
                     message.setMessage(messageAsStream);
-                    _server.sendMessage(message);
+                    return _server.sendMessage(message);
                 }catch(ClassCastException e){
                     e.printStackTrace();
                     Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
+                    return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD|STATUS_FAULT, null);
                 }
             } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
                     InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
                     message.setMessage(messageAsStream);
-                    _server.sendMessage(message);
+                return _server.sendMessage(message);
             /* This is worse */
             }else{
-                Log.d("ForwardingHub", "Hello");
                 Envelope envelope = new Envelope();
                 Header header = new Header();
                 Body body = new Body();
@@ -233,8 +233,10 @@ public class ForwardingHub implements Hub {
 
                 InputStream messageAsStream = Utilities.convertUnknownToInputStream(envelope);
                 message.setMessage(messageAsStream);
-                _server.sendMessage(message);
+                return _server.sendMessage(message);
             }
+        }else{
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         }
     }
 

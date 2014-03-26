@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import com.sun.xml.internal.stream.buffer.XMLStreamBufferResult;
+import com.sun.xml.internal.ws.wsdl.parser.W3CAddressingWSDLParserExtension;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
@@ -28,6 +29,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.Result;
 import javax.xml.ws.Service;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -86,17 +89,17 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                  InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
                                                  SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
             Log.d("SimpleNotificationProducer", "Got new subscription request");
-            Result result = new XMLStreamBufferResult();
-            subscribeRequest.getConsumerReference().writeTo(result);
 
-            System.out.println(result.toString());
-
-            String consumerEndpoint = subscribeRequest.getConsumerReference().toString();
-            System.out.println(subscribeRequest.getConsumerReference().toString());
+            W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
             if(consumerEndpoint == null){
                 throw new SubscribeCreationFailedFault("Missing EndpointReference");
             }
+
+            System.out.println(consumerEndpoint.toString());
+            //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
+            String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+
 
             FilterType filter = subscribeRequest.getFilter();
 
@@ -140,7 +143,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
 
         /* Set up the subscription */
-        _subscriptions.put(subscriptionEndpoint, consumerEndpoint);
+        _subscriptions.put(subscriptionEndpoint, endpointReference);
         Log.d("SimpleNotificationProducer", "Added new subscription");
 
         return response;

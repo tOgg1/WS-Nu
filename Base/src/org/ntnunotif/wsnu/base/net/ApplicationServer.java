@@ -27,6 +27,9 @@ import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_FAULT;
+
 /**
  * Implementation of jetty's application server. Implemented as singleton to avoid multiple instantiations which MIGHT cause port-bind exceptions.
  * @Author: Tormod Haugland
@@ -174,18 +177,26 @@ public class ApplicationServer{
         //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
         RequestInformation requestInformation = message.getRequestInformation();
+        String endpoint = requestInformation.getEndpointReference();
+        if(endpoint == null){
+            Log.e("ApplicationServer", "Endpoint reference not set");
+            return new InternalMessage(STATUS_FAULT, null);
+        }
+
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
 
         //TODO: Handle exceptions
         try {
-            request.content(new InputStreamContentProvider((InputStream)message.getMessage()), "application/soap+xml;charset/utf-8");
+            Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
+            request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
             ContentResponse response = request.send();
-            Log.d("ApplicationServer", "Sending message out into the interwebs");
-            return new InternalMessage(InternalMessage.STATUS_OK, response.getContentAsString());
+            System.out.println("Hello");
+            return new InternalMessage(STATUS_OK, response.getContentAsString());
         } catch(Exception e){
-            return new InternalMessage(InternalMessage.STATUS_FAULT_INTERNAL_ERROR, null);
+            e.printStackTrace();
+            return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
         }
         /* Some error has occured, return error-code TODO: Handle exceptions */
     }
@@ -235,7 +246,7 @@ public class ApplicationServer{
                 InputStream input = httpServletRequest.getInputStream();
 
                 /* Send the message to the hub */
-                InternalMessage outMessage = new InternalMessage(InternalMessage.STATUS_OK, input);
+                InternalMessage outMessage = new InternalMessage(STATUS_OK, input);
                 outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
                 outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
                 outMessage.getRequestInformation().setParameters(request.getParameterMap());
@@ -244,13 +255,13 @@ public class ApplicationServer{
 
 
                 /* Handle possible errors */
-                if((returnMessage.statusCode & InternalMessage.STATUS_FAULT) > 0){
+                if((returnMessage.statusCode & STATUS_FAULT) > 0){
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                     request.setHandled(true);
                     return;
                 //TODO: A bit unecessary perhaps? Redo into two layers?
-                }else if(((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0) &&
-                          (InternalMessage.STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
+                }else if(((STATUS_OK & returnMessage.statusCode) > 0) &&
+                          (STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
 
                     /* Liar liar pants on fire */
                     if(returnMessage.getMessage() == null){
@@ -275,7 +286,7 @@ public class ApplicationServer{
                 /* Something went wrong, and an error-message is being returned
                  * This is only here for theoretical reasons. Calling something like this should make you
                  * rethink your Web Service's architecture */
-                }else if((InternalMessage.STATUS_FAULT & InternalMessage.STATUS_HAS_MESSAGE) > 0){
+                }else if((STATUS_FAULT & STATUS_HAS_MESSAGE) > 0){
                     httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
                     InputStream inputStream = (InputStream)returnMessage.getMessage();
@@ -288,10 +299,10 @@ public class ApplicationServer{
                     outputStream.flush();
                     request.setHandled(true);
                 /* Everything is fine, and nothing is expected */
-                }else if((InternalMessage.STATUS_OK & returnMessage.statusCode) > 0){
+                }else if((STATUS_OK & returnMessage.statusCode) > 0){
                     httpServletResponse.setStatus(HttpStatus.OK_200);
                     request.setHandled(true);
-                }else if((InternalMessage.STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
+                }else if((STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
                     httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                     request.setHandled(true);
                 }else{
