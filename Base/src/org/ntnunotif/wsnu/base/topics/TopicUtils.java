@@ -17,10 +17,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.*;
 
 /**
- * Created by Inge on 13.03.14.
+ * Helper methods to use with topics. Should comply to OASIS standard wsn-ws_topics-1.3-spec-os.
+ *
+ * @author Inge Edward Halsaunet
+ *         Created by Inge on 13.03.14.
  */
 public class TopicUtils {
 
+    /**
+     * WS Topic Namespace, defined by OASIS
+     */
     public static final String WS_TOPIC_NAMESPACE = "http://docs.oasis-open.org/wsn/t-1";
 
     /**
@@ -29,12 +35,28 @@ public class TopicUtils {
     private TopicUtils() {
     }
 
+    /**
+     * Creates a list of list of QNames representing the topics in this {@link org.oasis_open.docs.wsn.t_1.TopicSetType}.
+     * It will ensure that all Topics has the topic attribute topic before calculating the list. Has the possibility to
+     * either calculate for only the roots within the set, or take out every topic it encounters.
+     *
+     * @param set       The set to translate
+     * @param recursive if we should take all topics descending from the roots in the returned list.
+     * @return The topics represented as lists of {@link javax.xml.namespace.QName}s.
+     */
     public static List<List<QName>> topicSetToQNameList(TopicSetType set, boolean recursive) {
         if (recursive)
             return topicSetToQNameListRecursive(set);
         return topicSetToQNameListNonRecursive(set);
     }
 
+    /**
+     * Helper method for topicSetToQNameList. Does the non-recursive translation.
+     *
+     * @param set The set to translate
+     * @return The topics represented as lists of {@link javax.xml.namespace.QName}s.
+     * @see org.ntnunotif.wsnu.base.topics.TopicUtils#topicSetToQNameList(org.oasis_open.docs.wsn.t_1.TopicSetType, boolean)
+     */
     private static List<List<QName>> topicSetToQNameListNonRecursive(TopicSetType set) {
         List<List<QName>> list = new ArrayList<>();
         for (Object o : set.getAny()) {
@@ -48,6 +70,13 @@ public class TopicUtils {
         return list;
     }
 
+    /**
+     * Helper method for topicSetToQNameList. Does the recursive translation.
+     *
+     * @param set The set to translate
+     * @return The topics represented as lists of {@link javax.xml.namespace.QName}s.
+     * @see org.ntnunotif.wsnu.base.topics.TopicUtils#topicSetToQNameList(org.oasis_open.docs.wsn.t_1.TopicSetType, boolean)
+     */
     private static List<List<QName>> topicSetToQNameListRecursive(TopicSetType set) {
         List<List<QName>> list = new ArrayList<>();
         Stack<Node> nodeStack = new Stack<>();
@@ -75,6 +104,14 @@ public class TopicUtils {
         return list;
     }
 
+    /**
+     * Translates a list of list of {@link javax.xml.namespace.QName}s to
+     * {@link org.oasis_open.docs.wsn.t_1.TopicSetType}. The leaf {@link org.w3c.dom.Node}s have the topic attribute set
+     * to true.
+     *
+     * @param names the topics represented as list of {@link javax.xml.namespace.QName}s
+     * @return the resulting {@link org.oasis_open.docs.wsn.t_1.TopicSetType}
+     */
     public static TopicSetType qNameListListToTopicSet(List<List<QName>> names) {
         TopicSetType topicSet = new TopicSetType();
         for (List<QName> qNameList : names) {
@@ -84,10 +121,11 @@ public class TopicUtils {
     }
 
     /**
-     * Converts a topicNode to a QName List.
+     * Converts a topicNode to a QName List. This method checks if the {@link org.w3c.dom.Node} has the topic attribute
+     * set to <code>true</code>.
      *
      * @param topicNode the node to convert
-     * @return List of QNames representing topic or null if node is not a topic.
+     * @return List of QNames representing topic or <code>null</code> if node is not a topic.
      */
     public static List<QName> topicNodeToQNameList(Node topicNode) {
         if (!isTopic(topicNode))
@@ -122,13 +160,24 @@ public class TopicUtils {
         return qNames;
     }
 
+    /**
+     * Takes a topic represented as a list of {@link javax.xml.namespace.QName}s and adds it to the
+     * {@link org.oasis_open.docs.wsn.t_1.TopicSetType}. It will find the correct branch in the topic tree, or it will
+     * add a new branch to the topic tree.
+     *
+     * @param topic    The topic to add
+     * @param topicSet The set to add the topic to
+     */
     public static void addTopicToTopicSet(List<QName> topic, TopicSetType topicSet) {
         Node topicNode = qNameListToTopicNode(topic);
         addTopicToTopicSet(topicNode, topicSet);
     }
 
     /**
-     * Merges the tree defined from the parent of the topic that has common path as a child in topicSet
+     * Takes a topic represented by a {@link org.w3c.dom.Node} and merges it to the set at the correct branch. It will
+     * go to the root of the given topic to discover actual root of tree. It will throw an
+     * {@link java.lang.IllegalArgumentException} if the given <code>Node</code> is not a topic. The method assumes the
+     * node given has the root TopicSet, as defined by OASIS in wsn-ws_topics-1.3-spec-os.
      *
      * @param topic    The topic that shall be added from its common root as is in or is added to topicSet
      * @param topicSet The TopicSetType to merge topic into
@@ -138,7 +187,6 @@ public class TopicUtils {
             throw new IllegalArgumentException("Tried to add a non-topic to a topic set!");
         // A stack that will contain the parent nodes of topic from top to bottom.
         Stack<Node> topicStack = new Stack<>();
-        // TODO check this assumption:
         // Add the topic itself to the stack, and go through all its parents until grandparent is not defined.
         topicStack.push(topic);
         Node current = topic.getParentNode();
@@ -161,12 +209,16 @@ public class TopicUtils {
                 Node setNode = (Node) o;
                 setNS = setNode.getNamespaceURI();
                 setName = setNode.getLocalName() == null ? setNode.getNodeName() : setNode.getLocalName();
+
+                // If both namespaces is null, check the local name
                 if ((setNS == null || setNS.equals(XMLConstants.NULL_NS_URI)) && (topNS == null || topNS.equals(XMLConstants.NULL_NS_URI))) {
                     if (setName.equals(topName)) {
                         mergeFromNode = setNode;
                         break;
                     }
                 }
+
+                // If namespaces are equal, check the local name
                 if (setNS != null && setNS.equals(topNS)) {
                     if (setName.equals(topName)) {
                         mergeFromNode = setNode;
@@ -218,6 +270,15 @@ public class TopicUtils {
         }
     }
 
+    /**
+     * Looks into a {@link org.w3c.dom.Node}, and locates the child element with the given namespace and local name.
+     * Returned <code>Node</code> is either a {@link Node#ELEMENT_NODE} or <code>null</code>.
+     *
+     * @param root      the <code>Node</code> to look into
+     * @param name      the local name or node name of the element to look for
+     * @param namespace the namespace the element should belong to, or <code>null</code> if not applicable
+     * @return The identified <code>Node</code>, or <code>null</code> if no <code>Node</code> child could be located.
+     */
     public static Node findElementWithNameAndNamespace(Node root, String name, String namespace) {
         NodeList nodeList = root.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -225,7 +286,11 @@ public class TopicUtils {
             Node child = nodeList.item(i);
             String n = child.getLocalName() == null ? child.getNodeName() : child.getLocalName();
             String ns = child.getNamespaceURI();
+
+            // Ensure this is a element
             if (child.getNodeType() == Node.ELEMENT_NODE) {
+
+                // Equal namespace and local name:
                 if (namespace == null || namespace.equals(XMLConstants.NULL_NS_URI)) {
                     if (n != null && (ns == null || ns.equals(XMLConstants.NULL_NS_URI)) && n.equals(name))
                         return child;
@@ -240,6 +305,16 @@ public class TopicUtils {
         return null;
     }
 
+    /**
+     * Translates a list of {@link javax.xml.namespace.QName}s to a {@link org.w3c.dom.Node}. The returned
+     * <code>Node</code> has topic attribute set to <code>true</code>. None of the parents of the node has any children
+     * of any type (element, attribute etc.) except the element leading to the <code>Node</code> with the topic
+     * attribute.
+     *
+     * @param nameList the list of <code>QName</code>s to translate to a topic <code>Node</code>
+     * @return The topic represented as a {@link org.w3c.dom.Node}. The parent of the returned node is assumed to be
+     * a {@link org.oasis_open.docs.wsn.t_1.TopicSetType}
+     */
     public static Node qNameListToTopicNode(List<QName> nameList) {
         if (nameList == null || nameList.size() == 0)
             return null;
@@ -273,6 +348,13 @@ public class TopicUtils {
         return null;
     }
 
+    /**
+     * Adds and sets the topic attribute on the given {@link org.w3c.dom.Node}.
+     *
+     * @param node the <code>Node</code> to give and set the topic attribute on
+     * @throws java.lang.IllegalArgumentException if the {@link org.w3c.dom.Node} is not
+     *                                            a {@link org.w3c.dom.Node#ELEMENT_NODE}
+     */
     public static void makeTopicNode(Node node) {
         if (node == null)
             return;
@@ -285,6 +367,13 @@ public class TopicUtils {
         element.setAttributeNodeNS(topicAttr);
     }
 
+    /**
+     * Checks if a given node has the topic attribute. The attribute must have namespace
+     * <code>http://docs.oasis-open.org/wsn/t-1</code>, as defined by OASIS wsn-ws_topics-1.3-spec-os.
+     *
+     * @param node the {@link org.w3c.dom.Node} to check
+     * @return <code>true</code> if topic attribute is present and true. <code>false</code> otherwise.
+     */
     public static boolean isTopic(Node node) {
         if (node == null)
             return false;
@@ -292,12 +381,20 @@ public class TopicUtils {
         if (nodeMap == null)
             return false;
         Node topicAttr = nodeMap.getNamedItemNS(WS_TOPIC_NAMESPACE, "topic");
-        if (topicAttr == null)
-            return false;
-        return topicAttr.getTextContent().equalsIgnoreCase("true");
+        return topicAttr != null && topicAttr.getTextContent().equalsIgnoreCase("true");
     }
 
-    public static String extractExpression(TopicExpressionType topicExpressionType) throws InvalidTopicExpressionFault{
+    /**
+     * Extracts the expression defined in this {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} as a
+     * {@link java.lang.String}. Will fail if there is no <code>String</code> in this topicExpression, or if the content
+     * of the topicExpression is a more complex type.
+     *
+     * @param topicExpressionType The {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} to extract expression from.
+     * @return the expression
+     * @throws InvalidTopicExpressionFault if the <code>TopicExpressionType</code> does not have any content, or if the
+     *                                     content is not a simple <code>String</code>.
+     */
+    public static String extractExpression(TopicExpressionType topicExpressionType) throws InvalidTopicExpressionFault {
         String expression = null;
         for (Object o : topicExpressionType.getContent()) {
             if (o instanceof String) {
@@ -313,6 +410,13 @@ public class TopicUtils {
         return expression == null ? null : expression.trim();
     }
 
+    /**
+     * Will build and throw an {@link org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault}.
+     *
+     * @param lang the language message has {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setLang(String)}
+     * @param desc the description, {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setValue(String)}
+     * @throws InvalidTopicExpressionFault the exception is thrown
+     */
     public static void throwInvalidTopicExpressionFault(String lang, String desc) throws InvalidTopicExpressionFault {
         InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
         faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
@@ -323,6 +427,13 @@ public class TopicUtils {
         throw new InvalidTopicExpressionFault(desc, faultType);
     }
 
+    /**
+     * Will build and throw a {@link org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault}.
+     *
+     * @param lang the language message has {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setLang(String)}
+     * @param desc the description, {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setValue(String)}
+     * @throws TopicExpressionDialectUnknownFault the exception is thrown
+     */
     public static void throwTopicExpressionDialectUnknownFault(String lang, String desc)
             throws TopicExpressionDialectUnknownFault {
         TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
