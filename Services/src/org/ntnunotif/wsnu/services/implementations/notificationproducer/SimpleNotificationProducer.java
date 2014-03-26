@@ -96,10 +96,8 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                 throw new SubscribeCreationFailedFault("Missing EndpointReference");
             }
 
-            System.out.println(consumerEndpoint.toString());
             //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
             String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
-
 
             FilterType filter = subscribeRequest.getFilter();
 
@@ -158,7 +156,9 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                        throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault,
                                                        MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault,
                                                        TopicNotSupportedFault {
-        return null;
+        GetCurrentMessageResponse response = factory.createGetCurrentMessageResponse();
+        response.getAny().add(currentMessage);
+        return response;
     }
 
     @Override

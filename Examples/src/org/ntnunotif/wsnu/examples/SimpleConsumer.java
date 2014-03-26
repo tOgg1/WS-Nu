@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.examples;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
@@ -32,6 +33,8 @@ public class SimpleConsumer implements ConsumerListener {
 
     public static void main(String[] args) throws Exception{
         Log.setEnableDebug(true);
+
+        ApplicationServer.useConfigFile = false;
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
 
@@ -47,20 +50,19 @@ public class SimpleConsumer implements ConsumerListener {
         W3CEndpointReference reference = builder.build();
         subscribe.setConsumerReference(reference);
 
-        subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
+        //subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
 
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
-
+        message.getRequestInformation().setEndpointReference(address);
         hub.acceptLocalMessage(message);
-
     }
 
     public SimpleConsumer() {
         consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
-        System.out.println(hub);
         consumer.setEndpointReference("Hello");
         consumer.addConsumerListener(this);
+
         InputManager in = new InputManager();
         in.start();
     }
@@ -98,7 +100,6 @@ public class SimpleConsumer implements ConsumerListener {
                 System.exit(0);
             }
         }
-
     }
 
     @Override

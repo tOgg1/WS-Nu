@@ -7,8 +7,10 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
@@ -84,23 +86,53 @@ public class ApplicationServer{
     private static String _configFile = "defaultconfig.xml";
 
     /**
+     * Public variable to toggle resource-loading from file
+     */
+    public static boolean useConfigFile = true;
+
+    /**
      * As this class is a singleton no external instantiation is allowed.
      */
     private ApplicationServer() throws Exception
     {
-        Resource resource = Resource.newSystemResource(_configFile);
+        if(useConfigFile){
+            Resource resource = Resource.newSystemResource(_configFile);
 
-        XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
-        _server = (Server)config.configure();
-        _server.setHandler(new HttpHandler());
+            XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+            _server = (Server)config.configure();
+            _server.setHandler(new HttpHandler());
+        }else{
+            _server = new Server();
+            _server.setHandler(new HttpHandler());
+        }
     }
 
     public static void setServerConfiguration(String pathToConfigFile) throws Exception{
         File f = new File(pathToConfigFile);
 
-        if(!f.isFile())
+        if(!f.isFile()) {
             throw new IllegalArgumentException("Path pointed is not a file");
+        }
         _configFile = pathToConfigFile;
+    }
+
+    public void addStandardConnector(String address, int port){
+        ServerConnector connector = new ServerConnector(_server);
+        connector.setHost(address);
+        if(port == 80){
+            Log.w("ApplicationServer", "You have requested to use port 80. This will not work unless you are running as root." +
+                  "Are you running as root? You shouldn't. Reroute port 80 to 8080 instead.");
+        }
+        connector.setPort(port);
+        _server.addConnector(connector);
+    }
+
+    public void addConnector(Connector connector){
+        this._server.addConnector(connector);
+    }
+
+    public void setHandler(AbstractHandler handler){
+        this._server.setHandler(handler);
     }
 
     /**

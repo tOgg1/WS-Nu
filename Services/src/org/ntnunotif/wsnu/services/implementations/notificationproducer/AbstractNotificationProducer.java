@@ -24,6 +24,8 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  */
 public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer {
 
+    protected Notify currentMessage;
+
     /**
      * Constructor taking a hub as a parameter.
      * @param hub
@@ -80,6 +82,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @param notify
      */
     public void sendNotification(Notify notify){
+        currentMessage = notify;
         List<String> recipients = getRecipients(notify);
         for(String endPoint : recipients){
             InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);

@@ -49,6 +49,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      */
     public void setScheduleInterval(long seconds){
         _scheduleInterval = seconds;
+        resetScheduler();
     }
 
     /**

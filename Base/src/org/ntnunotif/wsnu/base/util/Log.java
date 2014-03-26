@@ -54,6 +54,8 @@ public class Log {
         Log._logDebug = _enableDebug;
     }
 
+    public static void setEnableWarnings(boolean _logWarnings){Log._logWarnings = _logWarnings;}
+
     public static void d(String tag, String content)
     {
         if(!_logDebug)

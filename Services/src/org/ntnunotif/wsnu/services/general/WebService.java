@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -20,6 +21,11 @@ import java.lang.reflect.InvocationTargetException;
  */
 @javax.jws.WebService
 public abstract class WebService {
+
+    /**
+     * Factory available to all WebServices
+     */
+    public ObjectFactory factory = new ObjectFactory();
 
     /**
      * Reference to the connected hub
@@ -42,7 +48,6 @@ public abstract class WebService {
     }
 
     public void setEndpointReference(String endpointReference) {
-        System.out.println(_hub);
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
     }
 

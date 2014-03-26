@@ -135,7 +135,7 @@ public class ServiceUtilities {
     }
 
     public static String parseW3CEndpoint(String s) throws SubscribeCreationFailedFault{
-        Pattern pattern = Pattern.compile("<(wsa:)?Address>[a-z0-9A-Z.: //\n]*</(wsa:)?Address>");
+        Pattern pattern = Pattern.compile("<(wsa:)?Address>[a-z0-9A-Z.: /\n]*</(wsa:)?Address>");
         Matcher matcher = pattern.matcher(s);
 
         if(matcher.find()){
