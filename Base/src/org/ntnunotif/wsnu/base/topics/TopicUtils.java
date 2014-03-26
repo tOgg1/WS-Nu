@@ -17,10 +17,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.*;
 
 /**
- * Created by Inge on 13.03.14.
+ * Helper methods to use with topics. Should comply to OASIS standard wsn-ws_topics-1.3-spec-os.
+ *
+ * @author Inge Edward Halsaunet
+ *         Created by Inge on 13.03.14.
  */
 public class TopicUtils {
 
+    /**
+     * WS Topic Namespace, defined by OASIS
+     */
     public static final String WS_TOPIC_NAMESPACE = "http://docs.oasis-open.org/wsn/t-1";
 
     /**
@@ -375,9 +381,7 @@ public class TopicUtils {
         if (nodeMap == null)
             return false;
         Node topicAttr = nodeMap.getNamedItemNS(WS_TOPIC_NAMESPACE, "topic");
-        if (topicAttr == null)
-            return false;
-        return topicAttr.getTextContent().equalsIgnoreCase("true");
+        return topicAttr != null && topicAttr.getTextContent().equalsIgnoreCase("true");
     }
 
     /**
