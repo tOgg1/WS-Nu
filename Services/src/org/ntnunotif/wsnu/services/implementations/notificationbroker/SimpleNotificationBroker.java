@@ -1,7 +1,10 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
@@ -14,6 +17,7 @@ import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
 import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.omg.SendingContext.RunTime;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.Oneway;
@@ -206,13 +210,26 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    @WebMethod(operationName = "acceptSoapMessage")
-    public Object acceptSoapMessage(@WebParam Envelope envelope) {
+    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
         return null;
     }
 
     @Override
-    public Hub quickBuild() {
+    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
         return null;
+    }
+
+    @Override
+    public ForwardingHub quickBuild() {
+        try{
+            ForwardingHub hub = new ForwardingHub();
+            UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
+            hub.registerService(connector);
+            this.registerConnection(connector);
+            _hub = hub;
+            return hub;
+        }catch(Exception e){
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
     }
 }

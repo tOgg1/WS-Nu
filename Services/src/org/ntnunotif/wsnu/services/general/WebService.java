@@ -2,8 +2,12 @@ package org.ntnunotif.wsnu.services.general;
 
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.ServiceConnection;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -12,6 +16,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 /**
  * The parent of all web services implemented in this module. The main functionality of this class is storing an _endpointReference,
@@ -21,6 +26,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 @javax.jws.WebService
 public abstract class WebService {
+
+    private ArrayList<ServiceConnection> _connections;
 
     /**
      * Factory available to all WebServices
@@ -47,23 +54,73 @@ public abstract class WebService {
         return endpointReference;
     }
 
+    /**
+     * Sets the endpointreference of this hub. Note that this function fetches the Applicationserver's listening IP
+     * (if several IP's are listed, the applicationserver chooses which to return. If you need a specific one, please call {@link } {@link #forceEndpointReference(String)} ) and appends the endpointreference to it.
+     * Thus, if you want to give a web service the endpoint reference http://serversurl.domain/myWebService,
+     * you only have to pass in "myWebService".
+     * @param endpointReference
+     */
     public void setEndpointReference(String endpointReference) {
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
+
+        for(ServiceConnection connection : _connections){
+            connection.endpointUpdated(this.endpointReference);
+        }
     }
 
+    public void forceEndpointReference(String endpointReference){
+        this.endpointReference = endpointReference;
+        for(ServiceConnection connection : _connections){
+            connection.endpointUpdated(this.endpointReference);
+        }
+    }
+
+    protected void registerConnection(ServiceConnection connection){
+        _connections.add(connection);
+    }
+
+    protected void unregisterConnection(ServiceConnection connection){
+        _connections.remove(connection);
+    }
+
+    /**
+     * Setter for the hub. Does nothing special.
+     * @return
+     */
     public Hub getHub() {
         return _hub;
     }
 
+    /**
+     * Getter for the hub. Does nothing special.
+     * @param _hub
+     */
     public void setHub(Hub _hub) {
         this._hub = _hub;
     }
 
-    @WebMethod(operationName="acceptSoapMessage")
-    public abstract Object acceptSoapMessage(@WebParam Envelope envelope);
+    @WebMethod(operationName="AcceptSoapMessage")
+    public abstract Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation);
 
+    @WebMethod(operationName="AcceptRequest")
+    public abstract InternalMessage acceptRequest(@Information RequestInformation requestInformation);
+
+    /**
+     * Quickbuilds an implementing Web Service.
+     * @return The hub connected to the built Web Service
+     */
     public abstract Hub quickBuild();
 
+    /**
+     * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed
+     * to it's constructor. This function catches {@link java.lang.reflect.InvocationTargetException} and any other {@link java.lang.Exception}.
+     * By doing this it it stops the hub from constructing and throws an IllegalArgumentException.
+     * @param connectorClass
+     * @param args
+     * @return
+     * @throws UnsupportedDataTypeException
+     */
     public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
         ForwardingHub hub = null;
         try {
@@ -73,7 +130,6 @@ public abstract class WebService {
         }
 
         try {
-
             Constructor[] constructors = connectorClass.getConstructors();
             Constructor relevantConstructor = null;
 
@@ -102,16 +158,17 @@ public abstract class WebService {
 
             WebServiceConnector connector = (WebServiceConnector) relevantConstructor.newInstance(newArgs);
             hub.registerService(connector);
-            this._hub = hub;
+            this.registerConnection(connector);
+            _hub = hub;
             return hub;
         }catch(InvocationTargetException e){
             Throwable t = e.getCause();
             t.printStackTrace();
             hub.stop();
-            throw new RuntimeException("Unable to quickbuild: " + t.getMessage());
+            throw new IllegalArgumentException("Unable to quickbuild: " + t.getMessage());
         }catch (Exception e){
             hub.stop();
-            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+            throw new IllegalArgumentException("Unable to quickbuild: " + e.getMessage());
         }
     }
 }

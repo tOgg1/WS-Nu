@@ -17,11 +17,11 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Connector that takes a soap-envelope, unpacks it's body, and sends it forward.
- * This does function DOES not bother with checking the soap-headers for any information.
+ * This connector <b>does not</b> bother with checking the soap-headers for any information.
  * This should ideally be used with a web service whose methods only take the parsed-objects as parameters,
- * and nothing more.
+ * and nothing more. I.e. a NotificationConsumer
  * @author Tormod Haugland
- * Created by tormod on 3/11/14.
+ *         Created by tormod on 3/11/14.
  */
 public class UnpackingConnector extends WebServiceConnector {
 
@@ -59,14 +59,22 @@ public class UnpackingConnector extends WebServiceConnector {
         }
     }
 
-    //TODO: ContextHandling
+
+    /**
+     * The accept-message of UnpackingConnector. The message of the passed in {@link org.ntnunotif.wsnu.base.util.InternalMessage}
+     * is attempted unwrapped and forwarded. This is done by first unwrapping the soap-body, and fetching the object from the body.
+     * If the object-name is the same as the operationName of one of the Web Service's {@link javax.jws.WebMethod} methods,
+     * this method is called with the object.
+     * @param internalMessage
+     * @return Anything coming back. Might be an exception.
+     */
     @Override
+    //TODO: ContextHandling
     //TODO: Support multiple messages
     public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
         /* The message */
         Object potentialEnvelope = internalMessage.getMessage();
-
 
         if(!(potentialEnvelope instanceof Envelope)){
             Log.e("UnpackingConnector", "Someone try to send something else than a Soap-Envelope.");
@@ -75,7 +83,7 @@ public class UnpackingConnector extends WebServiceConnector {
 
         /* Unpack the body */
         Envelope envelope = (Envelope)potentialEnvelope;
-        Body body = ((Envelope) potentialEnvelope).getBody();
+        Body body = envelope.getBody();
 
         List<Object> messages = body.getAny();
 
@@ -131,27 +139,15 @@ public class UnpackingConnector extends WebServiceConnector {
                             e.printStackTrace();
                             return null;
                         } catch (InvocationTargetException e) {
-                            Log.e("Unpacking Connector", "The method being accessed are being feeded an invalid amount of " +
-                                    "parameters, or something even more obscure has occured.");
+                            /* Some external exception was thrown, try and wrap it into a message and send it back to the hub */
+                            //TODO:
                         }
                     }else{
                         return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
                     }
                 }
             }
-
         }
         return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
     }
-
-    @Override
-    public Class getServiceType() {
-        return _webService.getClass();
-    }
-
-    @Override
-    public HashMap<String, Method> getServiceFunctionality() {
-        return _allowedMethods;
-    }
-
 }

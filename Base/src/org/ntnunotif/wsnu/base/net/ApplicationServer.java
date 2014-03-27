@@ -100,6 +100,7 @@ public class ApplicationServer{
 
             XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
             _server = (Server)config.configure();
+
             _server.setHandler(new HttpHandler());
         }else{
             _server = new Server();
@@ -369,5 +370,10 @@ public class ApplicationServer{
 
     public static String getURI(){
         return _server.getURI().getHost()+ ":" +_server.getURI().getPort();
+    }
+
+    //TODO: lolol
+    public static ArrayList<String> getAllListeningURIs(){
+        return null;
     }
 }

@@ -4,9 +4,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.*;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -59,6 +57,16 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         _listeners = new ArrayList<>();
     }
 
+    @Override
+    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+        return null;
+    }
+
+    @Override
+    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
+        return null;
+    }
+
 
     @Override
     @WebMethod(operationName = "Notify")
@@ -97,18 +105,13 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     }
 
     @Override
-    @WebMethod(operationName = "acceptSoapMessage")
-    public Object acceptSoapMessage(Envelope envelope) {
-        return null;
-    }
-
-    @Override
     public Hub quickBuild() {
         try{
             ForwardingHub hub = new ForwardingHub();
             /* Most reasonable and simple connector for a consumer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
+            this.registerConnection(connector);
             this._hub = hub;
             return hub;
         }catch(Exception e){

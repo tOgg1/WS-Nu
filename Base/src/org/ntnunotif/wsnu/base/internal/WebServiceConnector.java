@@ -6,15 +6,18 @@ import org.trmd.ntsh.NothingToSeeHere;
 import javax.jws.WebService;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
  * The generic WebServiceConnector used by default by WS-Nu. Implements basic @WebService annotation checking for passed-in objects.
- * Also generates automatic endpointReferences if t
+ * Also generates automatic endpointReferences if no such reference exists in the web service object.
  * @author Tormod Haugland
 *          Created by tormod on 3/3/14.
  */
 public abstract class WebServiceConnector implements ServiceConnection{
+
+    final Object _webService;
 
     /**
      * EndpointReference of this web service connection
@@ -22,9 +25,21 @@ public abstract class WebServiceConnector implements ServiceConnection{
     @EndpointReference(type="uri")
     public String _endpointReference;
 
+    /**
+     * The total amount of WebServiceConnector's in existance.
+     */
     public static int _webServiceCount = 0;
 
+    private Method _requestMethod;
+
+    /**
+     * The default constructor. Looks for the {@link WebService} for the passed in WebService object and the {@link org.ntnunotif.wsnu.base.util.EndpointReference}
+     * annotation for the endpointreference. Will also look for a method to send plain requests to, by looking for the {@link javax.jws.WebMethod} annotation with operationName=AcceptRequest
+     * @param webService
+     */
     protected WebServiceConnector(final Object webService){
+        _webService = webService;
+
         Annotation[] annotations = webService.getClass().getAnnotations();
         boolean isWebService = false, referenceIsSet = false;
         for (Annotation annotation : annotations) {
@@ -38,7 +53,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
             throw new InvalidWebServiceException("Object passed in to WebServiceConnector does not carry the Webservice annotation");
         }
 
-        /* look for endpointReference */
+        /* Look for endpointReference */
         List<Field> fields = (List<Field>)Utilities.getFieldsUpTo(webService.getClass(), null);
 
         Annotation[] fieldAnnotations;
@@ -69,5 +84,36 @@ public abstract class WebServiceConnector implements ServiceConnection{
                     "a String-field with the annotation @EndpointReference in your Web Service");
             _endpointReference = webService.getClass().getSimpleName() + NothingToSeeHere.t("000"+ _webServiceCount);
         }
+
+        /* Look for requestMethod */
+
+    }
+
+    /**
+     * Set's the method that are to accept requests (i.e requests <b>without</b> content
+     * @param requestMethod
+     */
+    public void setRequestMethod(Method requestMethod) {
+        _requestMethod = requestMethod;
+    }
+
+    @Override
+    public InternalMessage acceptRequest(InternalMessage message) {
+        return null;
+    }
+
+    @Override
+    public void endpointUpdated(String newEndpointReference) {
+        this._endpointReference = newEndpointReference;
+    }
+
+    @Override
+    public String getServiceEndpoint() {
+        return this._endpointReference;
+    }
+
+    @Override
+    public Class<?> getServiceType() {
+        return _webService.getClass();
     }
 }

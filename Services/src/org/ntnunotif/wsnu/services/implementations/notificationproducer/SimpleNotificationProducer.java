@@ -6,9 +6,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.EndpointParam;
-import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.*;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -57,6 +55,23 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     public SimpleNotificationProducer(Hub hub) {
         super(hub);
         _subscriptions = new HashMap<>();
+    }
+
+    /**
+     * Takes and unpacks a soapnvelope. Can potentially throw any fault of
+     * {@link #getCurrentMessage(org.oasis_open.docs.wsn.b_2.GetCurrentMessage)} or
+     * {@link #subscribe(org.oasis_open.docs.wsn.b_2.Subscribe, org.ntnunotif.wsnu.base.util.RequestInformation)}
+     * @param envelope
+     * @return
+     */
+    @Override
+    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+        return null;
+    }
+
+    @Override
+    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
+        return null;
     }
 
     /**
@@ -160,7 +175,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
-            Log.d("SimpleNotificationProducer", "Subscription request org.generated UnacceptableIntialTerminationTimeFault");
+            Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
             throw new UnacceptableInitialTerminationTimeFault();
         }
 
@@ -181,6 +196,17 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         return response;
     }
 
+    /**
+     * Returns the message stored by {@link #AbstractNotificationProducer}.
+     * @param getCurrentMessageRequest
+     * @return
+     * @throws InvalidTopicExpressionFault
+     * @throws TopicExpressionDialectUnknownFault
+     * @throws MultipleTopicsSpecifiedFault
+     * @throws ResourceUnknownFault
+     * @throws NoCurrentMessageOnTopicFault
+     * @throws TopicNotSupportedFault
+     */
     @Override
     @WebResult(name = "GetCurrentMessageResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "GetCurrentMessageResponse")
     @WebMethod(operationName = "GetCurrentMessage")
@@ -196,29 +222,15 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
-    @WebMethod(operationName = "acceptSoapMessage")
-    public synchronized Object acceptSoapMessage(Envelope envelope) {
-        Header header = envelope.getHeader();
-        Body body = envelope.getBody();
-
-        List<Object> headercontent = header.getAny();
-        List<Object> bodyContent = body.getAny();
-
-        //TODO: Handle bodyContent
-
-        return null;
-    }
-
-    @Override
     public Hub quickBuild() {
         try {
             ForwardingHub hub = new ForwardingHub();
             /* This is the most reasonable connector for this NotificationProducer */
             UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
             hub.registerService(connector);
-            this._hub = hub;
+            this.registerConnection(connector);
+            _hub = hub;
             return hub;
-
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
         }

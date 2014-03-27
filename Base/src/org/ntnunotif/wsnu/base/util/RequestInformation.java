@@ -14,7 +14,6 @@ public class RequestInformation {
     @EndpointReference
     private String _endpointReference;
     private String _requestURL;
-
     private Map<String, String[]> _parameters;
 
     public RequestInformation() {

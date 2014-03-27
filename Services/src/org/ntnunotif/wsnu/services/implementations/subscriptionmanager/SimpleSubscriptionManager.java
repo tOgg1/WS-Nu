@@ -1,8 +1,11 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
+import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -41,6 +44,16 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public SimpleSubscriptionManager(Hub hub) {
         super(hub);
         _subscriptions = new HashMap<String, Long>();
+    }
+
+    @Override
+    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+        return null;
+    }
+
+    @Override
+    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
+        return null;
     }
 
     public void setAutoRenew(boolean autoRenew){
@@ -93,7 +106,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     @WebResult(name = "UnsubscribeResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "UnsubscribeResponse")
     @WebMethod(operationName = "Unsubscribe")
     public UnsubscribeResponse unsubscribe(
-            @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+           @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
            Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
 
@@ -129,6 +142,14 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         throw new UnableToDestroySubscriptionFault();
     }
 
+    /**
+     * SimpleSubscriptionManager's implementation of renew.
+     * @param renewRequest
+     * @param requestInformation
+     * @return
+     * @throws ResourceUnknownFault
+     * @throws UnacceptableTerminationTimeFault
+     */
     @Override
     @WebResult(name = "RenewResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "RenewResponse")
     @WebMethod(operationName = "Renew")
@@ -170,18 +191,16 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     }
 
     @Override
-    @WebMethod(operationName = "acceptSoapMessage")
-    public Object acceptSoapMessage(@WebParam Envelope envelope) {
-        return null;
-    }
-
-    @Override
-    public Hub quickBuild() {
-        return null;
-    }
-
-    @Override
-    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
-        return null;
+    public ForwardingHub quickBuild() {
+        try {
+            ForwardingHub hub = new ForwardingHub();
+            UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
+            hub.registerService(connector);
+            this.registerConnection(connector);
+            _hub = hub;
+            return hub;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
     }
 }

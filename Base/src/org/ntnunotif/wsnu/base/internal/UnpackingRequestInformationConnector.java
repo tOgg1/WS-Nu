@@ -193,12 +193,12 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
     }
 
     @Override
-    public final Class getServiceType() {
+    public InternalMessage acceptRequest(InternalMessage message) {
         return null;
     }
 
     @Override
-    public final Object getServiceFunctionality() {
+    public final Class getServiceType() {
         return null;
     }
 }
