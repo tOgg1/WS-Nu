@@ -108,7 +108,7 @@ public class ForwardingHub implements Hub {
         /* Try sending the message to everyone */
             for (ServiceConnection service : _services) {
 
-                Log.d("Hub", "Forwarding message connector");
+                Log.d("Hub", "Forwarding message to connector");
             /* Send the message forward */
                 InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
                 outMessage.setRequestInformation(requestInformation);

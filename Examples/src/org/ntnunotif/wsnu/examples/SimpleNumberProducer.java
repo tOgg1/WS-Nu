@@ -1,22 +1,18 @@
 package org.ntnunotif.wsnu.examples;
 
-import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
-import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-
-import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Created by tormod on 25.03.14.
@@ -43,7 +39,7 @@ public class SimpleNumberProducer {
      * Send some data
      * @param data
      */
-    public void sendNotification(int data){
+    public void sendNotification(long data){
         Notify notify = new Notify();
 
         NotificationMessageHolderType type = new NotificationMessageHolderType();
@@ -51,7 +47,7 @@ public class SimpleNumberProducer {
         NotificationMessageHolderType.Message message = new NotificationMessageHolderType.Message();
         IntegerContent content = new IntegerContent();
         BigInteger integer = BigInteger.valueOf(data);
-        content.setInteger(integer);
+        content.setIntegerValue(integer);
         message.setAny(content);
         type.setMessage(message);
         notify.getNotificationMessage().add(type);
@@ -86,7 +82,7 @@ public class SimpleNumberProducer {
                         System.exit(0);
                     }else if(in.matches("^notify *[0-9]+")) {
 
-                        int data = Integer.parseInt(in.replaceAll(" ", "").replaceAll("^notify", ""));
+                        long data = Long.parseLong(in.replaceAll(" ", "").replaceAll("^notify", ""));
                         SimpleNumberProducer.this.sendNotification(data);
                     }else if(in.matches("^info")){
                         System.out.println("Endpoint: " + SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
