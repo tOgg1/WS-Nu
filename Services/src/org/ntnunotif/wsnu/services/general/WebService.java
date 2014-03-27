@@ -14,9 +14,14 @@ import org.w3._2001._12.soap_envelope.Envelope;
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Map;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * The parent of all web services implemented in this module. The main functionality of this class is storing an _endpointReference,
@@ -63,6 +68,10 @@ public abstract class WebService {
      * @param endpointReference
      */
     public void setEndpointReference(String endpointReference) {
+        if(endpointReference.contains("\\")){
+            throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
+        }
+
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
         for(ServiceConnection connection : _connections){
@@ -70,6 +79,10 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * Forces the endpoint reference to the endpointreference set.
+     * @param endpointReference
+     */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
         for(ServiceConnection connection : _connections){
@@ -77,10 +90,18 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * Register a connector forwarding to this web service.
+     * @param connection
+     */
     protected void registerConnection(ServiceConnection connection){
         _connections.add(connection);
     }
 
+    /**
+     * Unregister a connector forwarding to this web service.
+     * @param connection
+     */
     protected void unregisterConnection(ServiceConnection connection){
         _connections.remove(connection);
     }
@@ -101,11 +122,38 @@ public abstract class WebService {
         this._hub = _hub;
     }
 
+    /**
+     * The abstract method that accepts a soap message.
+     * @param envelope
+     * @param requestInformation
+     * @return
+     */
     @WebMethod(operationName="AcceptSoapMessage")
     public abstract Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation);
 
+    /**
+     * The default AcceptRequest method of a WebService. This handles requests by looking for matching files, and nothing more.
+     * If specific requests, in particular with parameters, needs to be handled, this method should then be overrided.
+     * @param requestInformation
+     * @return
+     */
     @WebMethod(operationName="AcceptRequest")
-    public abstract InternalMessage acceptRequest(@Information RequestInformation requestInformation);
+    public InternalMessage acceptRequest(@Information RequestInformation requestInformation){
+        String uri = requestInformation.getRequestURL();
+        Map<String, String[]> parameters = requestInformation.getParameters();
+
+        if(!uri.matches("^"+getEndpointReference())){
+            return new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
+        }
+
+        try{
+            FileInputStream stream = new FileInputStream(uri.replaceAll("^"+getEndpointReference(), ""));
+            InternalMessage returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
+            return returnMessage;
+        }catch(FileNotFoundException e){
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
+        }
+    }
 
     /**
      * Quickbuilds an implementing Web Service.

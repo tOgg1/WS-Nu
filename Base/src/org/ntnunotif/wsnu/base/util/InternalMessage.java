@@ -20,35 +20,74 @@ public class InternalMessage {
     public static final int STATUS_INVALID_DESTINATION = 0x100;
     public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
     public static final int STATUS_FAULT_NOT_SUPPORTED = 0x400;
+    public static final int STATUS_FAULT_NOT_FOUND = 0x800;
 
+    /**
+     * The status code of the InternalMessage. Stored as a 32-bit flag.
+     */
     public int statusCode;
+
+    /**
+     * The actual message paylod
+     */
     private Object _message;
+
+    /**
+     * The requestinformation. This will in most scenarios only hold information for messages going up the stack.
+     */
     private RequestInformation _requestInformation;
 
+    /**
+     * Constructor taking a status code and message.
+     * @param statusCode
+     * @param message
+     */
     public InternalMessage(int statusCode, Object message){
         this.statusCode = statusCode;
         this._message = message;
         _requestInformation = new RequestInformation();
     }
 
+    /**
+     * Constructor taking a status code, message and requestInformation
+     * @param statusCode
+     * @param message
+     * @param requestInformation
+     */
     public InternalMessage(int statusCode, Object message, RequestInformation requestInformation){
         this.statusCode = statusCode;
         this._message = message;
         this._requestInformation = requestInformation;
     }
 
+    /**
+     * Retrieves the message of the InternalMessage.
+     * @return
+     */
     public Object getMessage() {
         return _message;
     }
 
+    /**
+     * Sets the message of the InternalMessage.
+     * @param _message
+     */
     public void setMessage(Object _message) {
         this._message = _message;
     }
 
+    /**
+     * Retrieves the request information of the InternalMessage.
+     * @return
+     */
     public RequestInformation getRequestInformation() {
         return _requestInformation;
     }
 
+    /**
+     * Sets the request information of the InternalMessage.
+     * @param _requestInformation
+     */
     public void setRequestInformation(RequestInformation _requestInformation) {
         this._requestInformation = _requestInformation;
     }
