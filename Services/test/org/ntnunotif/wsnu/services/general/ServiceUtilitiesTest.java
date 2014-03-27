@@ -68,11 +68,18 @@ public class ServiceUtilitiesTest extends TestCase {
 
     @Test
     public void testRegexThree() throws Exception{
-        String test = "http://tormodhaugland.com/myWebService/wsdl";
+        String test = "http://tormodhaugland.com/myWebService";
         String withoutDomain = test.replaceAll("^"+"http://tormodhaugland.com", "");
         System.out.println(withoutDomain);
         String withoutSlash = withoutDomain.replaceAll("^/", "");
         System.out.println(withoutSlash);
+
+        String endPoint = "/myWebService/somedocument.xml";
+        boolean matchTest = endPoint.matches("^/?" + test.replaceAll("^http://tormodhaugland.com", "") + "(.*)?");
+        String stripped = test.replaceAll("http://tormodhaugland.com", "");
+        System.out.println(stripped);
+        System.out.println(endPoint.matches("/?"+stripped+"(.*?)"));
+        System.out.println(matchTest);
     }
 
     @Test
