@@ -123,8 +123,4 @@ public class MappingConnector extends WebServiceConnector{
         return null;
     }
 
-    @Override
-    public final Object getServiceFunctionality() {
-        return null;
-    }
 }

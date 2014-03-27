@@ -61,15 +61,4 @@ public class UnpackingConnectorTest extends TestCase{
         Class someClass = consumerConnector.getServiceType();
         assertEquals(someClass, consumer.getClass());
     }
-
-    @Test
-    public void testGetServiceFunctionalityForConsumer() throws NoSuchMethodException {
-        Method[] methods = org.oasis_open.docs.wsn.bw_2.NotificationConsumer.class.getMethods();
-        HashMap<String, Method> functionality = consumerConnector.getServiceFunctionality();
-        Method notify = methods[0];
-
-        assertTrue(functionality.size() > 0);
-        Method notifyFromFunc = functionality.get("Notify");
-        assertTrue(notify.getName() == notifyFromFunc.getName());
-    }
 }

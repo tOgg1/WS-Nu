@@ -40,11 +40,12 @@ public abstract class WebService {
     protected Hub _hub;
 
     protected WebService(){
-
+        _connections = new ArrayList<>();
     }
 
     protected WebService(Hub _hub) {
         this._hub = _hub;
+        _connections = new ArrayList<>();
     }
 
     @EndpointReference

@@ -6,6 +6,7 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.base.util.Utilities;
+
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
@@ -79,7 +80,7 @@ public class ForwardingHub implements Hub {
 
             InputStream stream = (InputStream)internalMessage.getMessage();
 
-        /* Decrypt message */
+            /* Decrypt message */
             InternalMessage parsedMessage;
             try {
                 parsedMessage = XMLParser.parse(stream);
@@ -107,7 +108,7 @@ public class ForwardingHub implements Hub {
         /* Try sending the message to everyone */
             for (ServiceConnection service : _services) {
 
-                Log.d("Hub", "Forwarding message....");
+                Log.d("Hub", "Forwarding message connector");
             /* Send the message forward */
                 InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
                 outMessage.setRequestInformation(requestInformation);
@@ -168,10 +169,8 @@ public class ForwardingHub implements Hub {
                     if (message.statusCode == STATUS_FAULT) {
                         return new InternalMessage(message.statusCode, null);
 
-
                     } else if ((message.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
                         return new InternalMessage(message.statusCode, null);
-
 
                     } else if ((message.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
                         return new InternalMessage(message.statusCode, null);

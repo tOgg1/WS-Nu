@@ -21,6 +21,8 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
@@ -34,6 +36,7 @@ public class SimpleConsumer implements ConsumerListener {
 
     private Hub hub;
     private NotificationConsumer consumer;
+    private long startTime;
 
     public static void main(String[] args) throws Exception{
         Log.setEnableDebug(true);
@@ -44,14 +47,8 @@ public class SimpleConsumer implements ConsumerListener {
 
         /* Configure server without file and with multiple connectors */
         ServerConnector connector = new ServerConnector(server);
-        connector.setHost("192.168.1.103");
         connector.setPort(8080);
         server.addConnector(connector);
-
-        ServerConnector newConnector = new ServerConnector(server);
-        newConnector.setHost("127.0.0.1");
-        newConnector.setPort(8080);
-        server.addConnector(newConnector);
 
         SimpleConsumer simpleConsumer = new SimpleConsumer();
     }
@@ -65,6 +62,7 @@ public class SimpleConsumer implements ConsumerListener {
         hub = consumer.quickBuild();
         consumer.setEndpointReference("Hello");
         consumer.addConsumerListener(this);
+        startTime = System.currentTimeMillis();
 
         InputManager in = new InputManager();
         in.start();
@@ -83,8 +81,12 @@ public class SimpleConsumer implements ConsumerListener {
             String in;
             try {
                 while((in = reader.readLine()) != null){
-                    if(in.matches("^exit")){
+                    if(in.matches("^exit")) {
                         System.exit(0);
+                    }else if(in.matches("^info")){
+                        Log.d("SimpleConsumer", "INFO\n------\nUptime: " +
+                                new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
+                                + " hours");
                     }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")){
                         String address = in.replaceAll("^subscribe", "").replaceAll(" ", "");
                         Log.d("SimpleConsumer", "Parsed endpointreference: " + address);

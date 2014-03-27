@@ -297,19 +297,26 @@ public class ApplicationServer{
                 InputStream input = httpServletRequest.getInputStream();
 
                 /* Send the message to the hub */
-                InternalMessage outMessage = new InternalMessage(STATUS_OK, input);
+                InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, input);
                 outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
                 outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
                 outMessage.getRequestInformation().setParameters(request.getParameterMap());
-                Log.d("ApplicationServer", "Forwarding message");
+                Log.d("ApplicationServer", "Forwarding message to hub");
                 InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
+
+                /* Fatal error, is your hub designed correctly? */
+                if(returnMessage == null){
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    request.setHandled(true);
+                    return;
+                }
 
                 /* Handle possible errors */
                 if((returnMessage.statusCode & STATUS_FAULT) > 0){
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                     request.setHandled(true);
                     return;
-                //TODO: A bit unecessary perhaps? Redo into two layers?
+                //TODO: Rethink design
                 }else if(((STATUS_OK & returnMessage.statusCode) > 0) &&
                           (STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
 
@@ -360,7 +367,7 @@ public class ApplicationServer{
                     request.setHandled(true);
                 }
             }
-            /* No content requested, return a 204: No content */
+            /* No content requested, forward a pure request*/
             else{
                 httpServletResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 request.setHandled(true);

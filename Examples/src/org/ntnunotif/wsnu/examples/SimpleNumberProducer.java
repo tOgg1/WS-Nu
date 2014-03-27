@@ -96,7 +96,5 @@ public class SimpleNumberProducer {
                 System.exit(0);
             }
         }
-
     }
-
 }

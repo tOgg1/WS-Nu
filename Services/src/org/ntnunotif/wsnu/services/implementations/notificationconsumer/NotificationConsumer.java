@@ -102,6 +102,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
         message.getRequestInformation().setEndpointReference(address);
         _hub.acceptLocalMessage(message);
+        System.out.println(message);
     }
 
     @Override
@@ -115,6 +116,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
             this._hub = hub;
             return hub;
         }catch(Exception e){
+            e.printStackTrace();
             throw new RuntimeException("Could not quickBuild consumer: " + e.getMessage());
         }
     }

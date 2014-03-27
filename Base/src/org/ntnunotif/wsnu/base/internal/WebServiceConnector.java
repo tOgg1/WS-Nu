@@ -3,11 +3,15 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.util.*;
 import org.trmd.ntsh.NothingToSeeHere;
 
+import javax.jws.WebMethod;
 import javax.jws.WebService;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * The generic WebServiceConnector used by default by WS-Nu. Implements basic @WebService annotation checking for passed-in objects.
@@ -86,7 +90,20 @@ public abstract class WebServiceConnector implements ServiceConnection{
         }
 
         /* Look for requestMethod */
+        Method[] methods = webService.getClass().getMethods();
 
+        outer:
+        for(Method method : methods){
+            Annotation[] methodAnnotations = method.getDeclaredAnnotations();
+            for (Annotation annotation : methodAnnotations){
+                if(annotation instanceof WebMethod){
+                    if(((WebMethod)annotation).operationName().equals("AcceptRequest")){
+                        _requestMethod = method;
+                        break outer;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -99,6 +116,27 @@ public abstract class WebServiceConnector implements ServiceConnection{
 
     @Override
     public InternalMessage acceptRequest(InternalMessage message) {
+        if(_requestMethod == null){
+            Log.e("WebServiceConnector", "AcceptRequest function called on a connector not having defined the requestmethod. " +
+                    "Please call setRequestMethod with the appropriate method");
+            return new InternalMessage(STATUS_FAULT| STATUS_FAULT_NOT_SUPPORTED, null);
+        }else{
+            try {
+                _requestMethod.setAccessible(true);
+                Object returnedData = _requestMethod.invoke(_webService, message.getRequestInformation());
+
+                if(_requestMethod.getReturnType().equals(Void.TYPE)){
+                    return new InternalMessage(STATUS_OK, null);
+                }else{
+                    return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, returnedData);
+                }
+            } catch (IllegalAccessException e){
+                Log.e("WebServiceConnector", "AcceptRequest-method of the web service is inaccessible, even after setAccessible is called.");
+                return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
+            } catch (InvocationTargetException e) {
+                //TODO:
+            }
+        }
         return null;
     }
 

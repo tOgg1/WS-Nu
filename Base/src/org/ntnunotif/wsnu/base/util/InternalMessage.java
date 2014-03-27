@@ -19,6 +19,7 @@ public class InternalMessage {
     public static final int STATUS_MESSAGE_IS_INPUTSTREAM = 0x80;
     public static final int STATUS_INVALID_DESTINATION = 0x100;
     public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
+    public static final int STATUS_FAULT_NOT_SUPPORTED = 0x400;
 
     public int statusCode;
     private Object _message;

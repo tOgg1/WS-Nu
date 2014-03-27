@@ -5,6 +5,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -49,7 +50,12 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public Object acceptSoapMessage(@WebParam Envelope envelope) {
+            public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+                return null;
+            }
+
+            @Override
+            public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
                 return null;
             }
 
