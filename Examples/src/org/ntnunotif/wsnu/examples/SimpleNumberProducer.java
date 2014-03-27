@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
@@ -24,6 +25,7 @@ public class SimpleNumberProducer {
 
     private SimpleNotificationProducer simpleNotificationProducer;
     private Hub hub;
+    private long startTime;
 
     public SimpleNumberProducer() {
         this.simpleNotificationProducer = new SimpleNotificationProducer();
@@ -32,6 +34,7 @@ public class SimpleNumberProducer {
     public void start(){
         this.hub = simpleNotificationProducer.quickBuild();
         this.simpleNotificationProducer.setEndpointReference("numberProducer");
+        startTime = System.currentTimeMillis();
         InputManager in = new InputManager();
         in.start();
     }
@@ -86,7 +89,10 @@ public class SimpleNumberProducer {
                         int data = Integer.parseInt(in.replaceAll(" ", "").replaceAll("^notify", ""));
                         SimpleNumberProducer.this.sendNotification(data);
                     }else if(in.matches("^info")){
-                        System.out.println(SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
+                        System.out.println("Endpoint: " + SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
+                        System.out.println("INFO\n------\nUptime: " +
+                                new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
+                                + " hours");
                     }else{
                         System.out.println("Command not supported");
                     }

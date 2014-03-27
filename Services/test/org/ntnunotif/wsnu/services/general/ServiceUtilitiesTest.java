@@ -68,6 +68,13 @@ public class ServiceUtilitiesTest extends TestCase {
     }
 
     @Test
+    public void testRegexThree() throws Exception{
+        String test = "http://tormodhaugland.com/myWebService/wsdl";
+        String withoutDomain = test.replaceAll("^"+"http://tormodhaugland.com", "");
+        System.out.println(withoutDomain);
+    }
+
+    @Test
     public void testExtractXsdDur() throws Exception{
         String test="PT5H";
         long lol = ServiceUtilities.extractXsdDuration(test);

@@ -99,7 +99,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      */
     @Override
     public List<String> getRecipients(Notify notify) {
-        return new ArrayList(_subscriptions.values());
+        ArrayList<String> recipients = new ArrayList<>();
+        for (ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple : _subscriptions.values()) {
+            recipients.add(endpointTerminationTuple.endpoint);
+        }
+        return recipients;
     }
 
     /**

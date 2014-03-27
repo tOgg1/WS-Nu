@@ -44,18 +44,32 @@ public abstract class WebService {
      */
     protected Hub _hub;
 
+    /**
+     * Default constructor.
+     */
     protected WebService(){
         _connections = new ArrayList<>();
     }
 
+    /**
+     * Constructor taking a hub as a parameter.
+     * @param _hub
+     */
     protected WebService(Hub _hub) {
         this._hub = _hub;
         _connections = new ArrayList<>();
     }
 
+    /**
+     * The actual endpointreference of this Web Service.
+     */
     @EndpointReference
     protected String endpointReference;
 
+    /**
+     * Retrieves the endpointreference of the Web Service.
+     * @return
+     */
     public String getEndpointReference() {
         return endpointReference;
     }

@@ -83,8 +83,8 @@ public class SimpleConsumer implements ConsumerListener {
                 while((in = reader.readLine()) != null){
                     if(in.matches("^exit")) {
                         System.exit(0);
-                    }else if(in.matches("^info")){
-                        Log.d("SimpleConsumer", "INFO\n------\nUptime: " +
+                    }else if(in.matches("^inf?o?.*?")){
+                        System.out.println("INFO\n------\nUptime: " +
                                 new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
                                 + " hours");
                     }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")){
