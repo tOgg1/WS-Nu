@@ -59,7 +59,6 @@ public class UnpackingConnector extends WebServiceConnector {
         }
     }
 
-
     /**
      * The accept-message of UnpackingConnector. The message of the passed in {@link org.ntnunotif.wsnu.base.util.InternalMessage}
      * is attempted unwrapped and forwarded. This is done by first unwrapping the soap-body, and fetching the object from the body.

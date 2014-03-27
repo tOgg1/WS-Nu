@@ -116,17 +116,21 @@ public abstract class WebServiceConnector implements ServiceConnection{
 
     @Override
     public InternalMessage acceptRequest(InternalMessage message) {
+        Log.d("WebServiceConnector", "Accepted requestMessage");
         if(_requestMethod == null){
             Log.e("WebServiceConnector", "AcceptRequest function called on a connector not having defined the requestmethod. " +
                     "Please call setRequestMethod with the appropriate method");
             return new InternalMessage(STATUS_FAULT| STATUS_FAULT_NOT_SUPPORTED, null);
         }else{
             try {
+                Log.d("WebServiceConnector", "Forwarding requestMessage");
                 _requestMethod.setAccessible(true);
                 Object returnedData = _requestMethod.invoke(_webService, message.getRequestInformation());
 
-                if(_requestMethod.getReturnType().equals(Void.TYPE)){
+                if(_requestMethod.getReturnType().equals(Void.TYPE)) {
                     return new InternalMessage(STATUS_OK, null);
+                }else if(_requestMethod.getReturnType().equals(InternalMessage.class)){
+                    return (InternalMessage) returnedData;
                 }else{
                     return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, returnedData);
                 }

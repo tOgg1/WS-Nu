@@ -72,12 +72,13 @@ public class ForwardingHub implements Hub {
 
         /* We dont have any content, but perhaps a request? */
         if((internalMessage.statusCode & InternalMessage.STATUS_HAS_MESSAGE) == 0){
+            Log.d("ForwardingHub", "Attempting to send request");
             for (ServiceConnection service : _services) {
+                Log.d("ForwardingHub", "Forwarding request");
                 return service.acceptRequest(internalMessage);
             }
             return new InternalMessage(STATUS_FAULT | STATUS_INVALID_DESTINATION, null);
         }else{
-
             InputStream stream = (InputStream)internalMessage.getMessage();
 
             /* Decrypt message */
@@ -86,9 +87,8 @@ public class ForwardingHub implements Hub {
                 parsedMessage = XMLParser.parse(stream);
                 requestInformation.setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
             } catch (JAXBException e) {
-                returnMessage = new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
-                e.printStackTrace();
-                return returnMessage;
+                Log.d("ForwardingHub", "The parser faulted: " + e.getMessage());
+                return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             }
 
             Envelope envelope;
@@ -104,11 +104,11 @@ public class ForwardingHub implements Hub {
                 return new InternalMessage(STATUS_FAULT, null);
             }
 
-            Log.d("Hub", "Attempting to send message");
-        /* Try sending the message to everyone */
+            Log.d("ForwardingHub", "Attempting to send message");
+            /* Try sending the message to everyone */
             for (ServiceConnection service : _services) {
 
-                Log.d("Hub", "Forwarding message to connector");
+                Log.d("ForwardingHub", "Forwarding message to connector");
             /* Send the message forward */
                 InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
                 outMessage.setRequestInformation(requestInformation);
@@ -129,7 +129,7 @@ public class ForwardingHub implements Hub {
                                         | STATUS_HAS_MESSAGE
                                         | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
                             } catch (ClassCastException e) {
-                                Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                                Log.e("ForwardingHub", "Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
                                 e.printStackTrace();
                             }
                         /* Even better, the stream is already an inputstream */
@@ -140,7 +140,7 @@ public class ForwardingHub implements Hub {
                                         | STATUS_HAS_MESSAGE
                                         | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
                             } catch (ClassCastException e) {
-                                Log.e("Hub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
+                                Log.e("ForwardingHub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
                                 e.printStackTrace();
                             }
                         }
@@ -149,7 +149,7 @@ public class ForwardingHub implements Hub {
                         InputStream returningStream = Utilities.convertUnknownToInputStream(message.getMessage());
 
                         if (returningStream == null) {
-                            Log.e("Hub", "Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
+                            Log.e("ForwardingHub", "Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
                             return new InternalMessage(STATUS_OK, null);
 
 
@@ -165,27 +165,10 @@ public class ForwardingHub implements Hub {
                     }
                 } else if ((message.statusCode & STATUS_FAULT) > 0) {
 
-                /* There is not specified any specific fault, so we treat it as a generic fault */
-                    if (message.statusCode == STATUS_FAULT) {
-                        return new InternalMessage(message.statusCode, null);
-
-                    } else if ((message.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0) {
-                        return new InternalMessage(message.statusCode, null);
-
-                    } else if ((message.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0) {
-                        return new InternalMessage(message.statusCode, null);
-
-                    } else if ((message.statusCode & STATUS_FAULT_UNKNOWN_METHOD) > 0) {
-                        return new InternalMessage(message.statusCode, null);
-
-                    } else {
-                        return new InternalMessage(message.statusCode, null);
-
-                    }
-            /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
+                    return new InternalMessage(message.statusCode, null);
+                /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
                 } else {
                     return new InternalMessage(STATUS_FAULT, null);
-
                 }
             }
             return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
@@ -311,6 +294,6 @@ public class ForwardingHub implements Hub {
 
     @Override
     public String getInetAdress() {
-        return ApplicationServer.getURI();
+        return _server.getURI();
     }
 }

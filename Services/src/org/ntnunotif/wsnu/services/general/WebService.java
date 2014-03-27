@@ -4,10 +4,7 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.ServiceConnection;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
-import org.ntnunotif.wsnu.base.util.Information;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -67,6 +64,13 @@ public abstract class WebService {
     protected String endpointReference;
 
     /**
+     * The short version of the endpointReference. If the endpoint reference is 133.371.337.133/endpoint,
+     * this value would be endpoint
+     */
+    protected String pureEndpointReference;
+
+
+    /**
      * Retrieves the endpointreference of the Web Service.
      * @return
      */
@@ -86,6 +90,7 @@ public abstract class WebService {
             throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
         }
 
+        this.pureEndpointReference = endpointReference;
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
         for(ServiceConnection connection : _connections){
@@ -156,15 +161,17 @@ public abstract class WebService {
         String uri = requestInformation.getRequestURL();
         Map<String, String[]> parameters = requestInformation.getParameters();
 
-        if(!uri.matches("^"+getEndpointReference())){
+        if(!uri.matches("^/?"+pureEndpointReference+"(.*)?")){
+            Log.d("WebService", "URI: " + uri + " does not match this Web Service's endpointreference " + pureEndpointReference+". Discrepancy: " + uri.replaceAll("^/?"+endpointReference+".*?", ""));
             return new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
         }
 
         try{
-            FileInputStream stream = new FileInputStream(uri.replaceAll("^"+getEndpointReference(), ""));
+            FileInputStream stream = new FileInputStream(uri.replaceAll("^/", ""));
             InternalMessage returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
             return returnMessage;
         }catch(FileNotFoundException e){
+            Log.d("WebService", "File not found: " + uri.replaceAll("^/", ""));
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
         }
     }

@@ -3,7 +3,6 @@ package org.ntnunotif.wsnu.services.general;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.xml.ws.Service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +71,8 @@ public class ServiceUtilitiesTest extends TestCase {
         String test = "http://tormodhaugland.com/myWebService/wsdl";
         String withoutDomain = test.replaceAll("^"+"http://tormodhaugland.com", "");
         System.out.println(withoutDomain);
+        String withoutSlash = withoutDomain.replaceAll("^/", "");
+        System.out.println(withoutSlash);
     }
 
     @Test

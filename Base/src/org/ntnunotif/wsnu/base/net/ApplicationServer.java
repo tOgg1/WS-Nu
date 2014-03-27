@@ -7,7 +7,6 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -23,21 +22,20 @@ import org.ntnunotif.wsnu.base.util.RequestInformation;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_FAULT;
 
 /**
  * Implementation of jetty's application server. Implemented as singleton to avoid multiple instantiations which MIGHT cause port-bind exceptions.
  * @Author: Tormod Haugland
  * @Date: 06/03/2014
  */
-//TODO: Add modifiability for the server
 public class ApplicationServer{
 
     /**
@@ -48,7 +46,7 @@ public class ApplicationServer{
     /**
      * Jetty-http server instance.
      */
-    private static Server _server;
+    private Server _server;
 
     /**
      * The server's connectors.
@@ -58,17 +56,17 @@ public class ApplicationServer{
     /**
      * Jetty-http client.
      */
-    private static HttpClient _client;
+    private HttpClient _client;
 
     /**
      * Thread for the server to run on.
      */
-    private static Thread _serverThread;
+    private Thread _serverThread;
 
     /**
      * A bus object as parent. Needed to reroute requests to bus.
      */
-    private static Hub _parentHub;
+    private Hub _parentHub;
 
     /**
      * Variable to check if this server is running. Primarily used to avoid double @start calls.
@@ -90,6 +88,7 @@ public class ApplicationServer{
      */
     public static boolean useConfigFile = true;
 
+
     /**
      * As this class is a singleton no external instantiation is allowed.
      */
@@ -106,53 +105,6 @@ public class ApplicationServer{
             _server = new Server();
             _server.setHandler(new HttpHandler());
         }
-    }
-
-    public static void setServerConfiguration(String pathToConfigFile) throws Exception{
-        File f = new File(pathToConfigFile);
-
-        if(!f.isFile()) {
-            throw new IllegalArgumentException("Path pointed is not a file");
-        }
-        _configFile = pathToConfigFile;
-    }
-
-    public void addStandardConnector(String address, int port){
-        ServerConnector connector = new ServerConnector(_server);
-        connector.setHost(address);
-        if(port == 80){
-            Log.w("ApplicationServer", "You have requested to use port 80. This will not work unless you are running as root." +
-                  "Are you running as root? You shouldn't. Reroute port 80 to 8080 instead.");
-        }
-        connector.setPort(port);
-        _server.addConnector(connector);
-    }
-
-    public void addConnector(Connector connector){
-        this._server.addConnector(connector);
-    }
-
-    /**
-     * Sets the handler of this server. Calling this function will cause the server to restart
-     * @param handler
-     */
-    public void setHandler(AbstractHandler handler){
-        try {
-            this._server.setHandler(handler);
-            this._server.stop();
-            this._serverThread.join();
-            this._serverThread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Gets this server object.
-     * @return
-     */
-    public final Server getServer(){
-        return _server;
     }
 
     /**
@@ -216,6 +168,53 @@ public class ApplicationServer{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setServerConfiguration(String pathToConfigFile) throws Exception{
+        File f = new File(pathToConfigFile);
+
+        if(!f.isFile()) {
+            throw new IllegalArgumentException("Path pointed is not a file");
+        }
+        _configFile = pathToConfigFile;
+    }
+
+    public void addStandardConnector(String address, int port){
+        ServerConnector connector = new ServerConnector(_server);
+        connector.setHost(address);
+        if(port == 80){
+            Log.w("ApplicationServer", "You have requested to use port 80. This will not work unless you are running as root." +
+                    "Are you running as root? You shouldn't. Reroute port 80 to 8080 instead.");
+        }
+        connector.setPort(port);
+        _server.addConnector(connector);
+    }
+
+    public void addConnector(Connector connector){
+        this._server.addConnector(connector);
+    }
+
+    /**
+     * Sets the handler of this server. Calling this function will cause the server to restart
+     * @param handler
+     */
+    public void setHandler(AbstractHandler handler){
+        try {
+            this._server.setHandler(handler);
+            this._server.stop();
+            this._serverThread.join();
+            this._serverThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets this server object.
+     * @return
+     */
+    public final Server getServer(){
+        return _server;
     }
 
     /**
@@ -286,96 +285,93 @@ public class ApplicationServer{
                 // TODO: Here we need to handle all headers that is necessary.
                 // Temporary debugging
                 while(headers.hasMoreElements()){
-                    System.out.println(headerName + "=" + headers.nextElement());
+                    Log.d("ApplicationServer", headerName + "=" + headers.nextElement());
                 }
             }
 
             Log.d("ApplicationServer", "Accepted message");
 
-            /* Get content */
-            if(httpServletRequest.getContentLength() > 0){
+            /* Get content, if there is any */
+            InternalMessage outMessage;
+            if(httpServletRequest.getContentLength() > 0) {
                 InputStream input = httpServletRequest.getInputStream();
-
-                /* Send the message to the hub */
-                InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, input);
-                outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
-                outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
-                outMessage.getRequestInformation().setParameters(request.getParameterMap());
-                Log.d("ApplicationServer", "Forwarding message to hub");
-                InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
-
-                /* Fatal error, is your hub designed correctly? */
-                if(returnMessage == null){
-                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                    request.setHandled(true);
-                    return;
-                }
-
-                /* Handle possible errors */
-                if((returnMessage.statusCode & STATUS_FAULT) > 0){
-                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                    request.setHandled(true);
-                    return;
-                //TODO: Rethink design
-                }else if(((STATUS_OK & returnMessage.statusCode) > 0) &&
-                          (STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
-
-                    /* Liar liar pants on fire */
-                    if(returnMessage.getMessage() == null){
-                        Log.e("ApplicationServer", "The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
-                        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                        request.setHandled(true);
-                        return;
-                    }
-
-                    httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
-
-                    InputStream inputStream = (InputStream)returnMessage.getMessage();
-                    OutputStream outputStream = httpServletResponse.getOutputStream();
-
-                    /* google.commons helper function*/
-                    ByteStreams.copy(inputStream, outputStream);
-
-                    httpServletResponse.setStatus(HttpStatus.OK_200);
-                    outputStream.flush();
-                    request.setHandled(true);
-
-                /* Something went wrong, and an error-message is being returned
-                 * This is only here for theoretical reasons. Calling something like this should make you
-                 * rethink your Web Service's architecture */
-                }else if((STATUS_FAULT & STATUS_HAS_MESSAGE) > 0){
-                    httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
-
-                    InputStream inputStream = (InputStream)returnMessage.getMessage();
-                    OutputStream outputStream = httpServletResponse.getOutputStream();
-
-                    /* google.commons helper function*/
-                    ByteStreams.copy(inputStream, outputStream);
-
-                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                    outputStream.flush();
-                    request.setHandled(true);
-                /* Everything is fine, and nothing is expected */
-                }else if((STATUS_OK & returnMessage.statusCode) > 0){
-                    httpServletResponse.setStatus(HttpStatus.OK_200);
-                    request.setHandled(true);
-                }else if((STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
-                    httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
-                    request.setHandled(true);
-                }else{
-                    httpServletResponse.setStatus(HttpStatus.OK_200);
-                    request.setHandled(true);
-                }
+                outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, input);
+            }else{
+                outMessage = new InternalMessage(STATUS_OK, null);
             }
-            /* No content requested, forward a pure request*/
-            else{
-                httpServletResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+            /* Send the message to the hub */
+            outMessage.getRequestInformation().setEndpointReference(request.getRemoteHost());
+            outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
+            outMessage.getRequestInformation().setParameters(request.getParameterMap());
+            Log.d("ApplicationServer", "Forwarding message to hub");
+            InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
+
+            /* Fatal error, is your hub designed correctly? */
+            if(returnMessage == null){
+                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                request.setHandled(true);
+                return;
+            }
+
+            /* Handle possible errors */
+            if((returnMessage.statusCode & STATUS_FAULT) > 0){
+                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                request.setHandled(true);
+                return;
+            }else if(((STATUS_OK & returnMessage.statusCode) > 0) &&
+                      (STATUS_HAS_MESSAGE & returnMessage.statusCode) > 0){
+
+                /* Liar liar pants on fire */
+                if(returnMessage.getMessage() == null){
+                    Log.e("ApplicationServer", "The HAS_RETURNING_MESSAGE flag was checked, but there was no returning message");
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    request.setHandled(true);
+                    return;
+                }
+
+                httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+
+                InputStream inputStream = (InputStream)returnMessage.getMessage();
+                OutputStream outputStream = httpServletResponse.getOutputStream();
+
+                /* google.commons helper function*/
+                ByteStreams.copy(inputStream, outputStream);
+
+                httpServletResponse.setStatus(HttpStatus.OK_200);
+                outputStream.flush();
+                request.setHandled(true);
+
+            /* Something went wrong, and an error-message is being returned
+             * This is only here for theoretical reasons. Calling something like this should make you
+             * rethink your Web Service's architecture */
+            }else if((STATUS_FAULT & STATUS_HAS_MESSAGE) > 0){
+                httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+
+                InputStream inputStream = (InputStream)returnMessage.getMessage();
+                OutputStream outputStream = httpServletResponse.getOutputStream();
+
+                /* google.commons helper function*/
+                ByteStreams.copy(inputStream, outputStream);
+
+                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                outputStream.flush();
+                request.setHandled(true);
+            /* Everything is fine, and nothing is expected */
+            }else if((STATUS_OK & returnMessage.statusCode) > 0){
+                httpServletResponse.setStatus(HttpStatus.OK_200);
+                request.setHandled(true);
+            }else if((STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
+                httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
+                request.setHandled(true);
+            }else{
+                httpServletResponse.setStatus(HttpStatus.OK_200);
                 request.setHandled(true);
             }
         }
     }
 
-    public static String getURI(){
+    public String getURI(){
         return _server.getURI().getHost()+ ":" +_server.getURI().getPort();
     }
 

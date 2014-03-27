@@ -4,7 +4,6 @@ import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Information;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -17,6 +16,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -57,11 +57,6 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      */
     @Override
     public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-        return null;
-    }
-
-    @Override
-    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
         return null;
     }
 
@@ -125,40 +120,40 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                  InvalidTopicExpressionFault, UnsupportedPolicyRequestFault,
                                                  InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault,
                                                  SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
-            Log.d("SimpleNotificationProducer", "Got new subscription request");
+        Log.d("SimpleNotificationProducer", "Got new subscription request");
 
-            W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
+        W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
-            if(consumerEndpoint == null){
-                throw new SubscribeCreationFailedFault("Missing EndpointReference");
-            }
+        if(consumerEndpoint == null){
+            throw new SubscribeCreationFailedFault("Missing EndpointReference");
+        }
 
-            //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
-            String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+        //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
+        String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
 
-            FilterType filter = subscribeRequest.getFilter();
+        FilterType filter = subscribeRequest.getFilter();
 
-            if(filter != null){
-                throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
-            }
+        if(filter != null){
+            throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
+        }
 
-            long terminationTime = 0;
-            if(subscribeRequest.getInitialTerminationTime() != null){
-                try {
-                    System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
-                    terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
+        long terminationTime = 0;
+        if(subscribeRequest.getInitialTerminationTime() != null){
+            try {
+                System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
+                terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
-                    if(terminationTime < System.currentTimeMillis()){
-                        throw new UnacceptableInitialTerminationTimeFault();
-                    }
-
-                } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
+                if(terminationTime < System.currentTimeMillis()){
                     throw new UnacceptableInitialTerminationTimeFault();
                 }
-            }else{
-                /* Set it to terminate in one day */
-                terminationTime = System.currentTimeMillis() + 86400*1000;
+
+            } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
+                throw new UnacceptableInitialTerminationTimeFault();
             }
+        }else{
+            /* Set it to terminate in one day */
+            terminationTime = System.currentTimeMillis() + 86400*1000;
+        }
 
         /* Generate the response */
         SubscribeResponse response = new SubscribeResponse();

@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.util.*;
-import org.omg.PortableInterceptor.RequestInfo;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -9,7 +8,6 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -190,11 +188,6 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
         }
         Log.d("UnpackingRequestInformationConnector", "Unknown method");
         return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
-    }
-
-    @Override
-    public InternalMessage acceptRequest(InternalMessage message) {
-        return null;
     }
 
     @Override
