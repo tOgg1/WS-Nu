@@ -82,7 +82,7 @@ public class SimpleSubscriptionManagerTest{
         assertNotNull(responseContent);
     }
 
-    /*@Test
+    @Test
     public void testSubscriptionDoesntExist() throws Exception {
         String subscription = producer.generateSubscriptionKey();
         String requestUrl = producer.generateSubscriptionURL(subscription);
@@ -98,7 +98,7 @@ public class SimpleSubscriptionManagerTest{
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
         assertEquals(404, response.getStatus());
-    }*/
+    }
 
     @Test
     public void testRenew() throws Exception {
