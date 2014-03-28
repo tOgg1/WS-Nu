@@ -160,7 +160,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
                 Log.e("WebServiceConnector", "AcceptRequest-method of the web service is inaccessible, even after setAccessible is called.");
                 return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
             } catch (InvocationTargetException e) {
-                return new InternalMessage(STATUS_FAULT | STATUS_INVALID_DESTINATION, null);
+                return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_DESTINATION, null);
                 //TODO:
             }
         }

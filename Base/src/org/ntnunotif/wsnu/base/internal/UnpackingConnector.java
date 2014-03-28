@@ -142,7 +142,7 @@ public class UnpackingConnector extends WebServiceConnector {
                             //TODO:
                         }
                     }else{
-                        return new InternalMessage(InternalMessage.STATUS_INVALID_DESTINATION, null);
+                        return new InternalMessage(InternalMessage.STATUS_FAULT_INVALID_DESTINATION, null);
                     }
                 }
             }

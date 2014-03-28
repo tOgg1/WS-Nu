@@ -171,7 +171,7 @@ public abstract class WebService {
 
         if(!uri.matches("^/?"+pureEndpointReference+"(.*)?")){
             Log.d("WebService", "URI: " + uri + " does not match this Web Service's endpointreference " + pureEndpointReference+". Discrepancy: " + uri.replaceAll("^/?"+endpointReference+".*?", ""));
-            return new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
+            return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INVALID_DESTINATION, null);
         }
 
         uri = uri.replaceAll("^/", "");

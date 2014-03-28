@@ -68,7 +68,7 @@ public class ForwardingHub implements Hub {
 
         boolean foundConnection = connection != null;
         /* Initialize the value with invalid destination, in case no one accepts it*/
-        InternalMessage returnMessage = new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
+        InternalMessage returnMessage = new InternalMessage(STATUS_FAULT| STATUS_FAULT_INVALID_DESTINATION, null);
 
         /* If this is just a request-message and has no content */
         if((internalMessage.statusCode & STATUS_HAS_MESSAGE) == 0){
@@ -78,7 +78,7 @@ public class ForwardingHub implements Hub {
             }else{
                 for(ServiceConnection service : _services){
                     returnMessage = service.acceptRequest(internalMessage);
-                    if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                    if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
                     }else if((returnMessage.statusCode & STATUS_OK) > 0){
                         break;
@@ -114,7 +114,7 @@ public class ForwardingHub implements Hub {
             }else{
                 for(ServiceConnection service : _services){
                     returnMessage = service.acceptMessage(internalMessage);
-                    if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                    if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
                     }else if((returnMessage.statusCode & STATUS_OK) > 0){
                         break;

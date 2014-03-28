@@ -316,7 +316,7 @@ public class ApplicationServer{
 
             /* Handle possible errors */
             if((returnMessage.statusCode & STATUS_FAULT) > 0){
-                if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                     httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                     request.setHandled(true);
                     return;
@@ -386,10 +386,5 @@ public class ApplicationServer{
 
     public static String getURI(){
         return _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() != -1 ? _singleton._server.getURI().getPort() : 8080);
-    }
-
-    //TODO: lolol
-    public static ArrayList<String> getAllListeningURIs(){
-        return null;
     }
 }

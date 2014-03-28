@@ -14,12 +14,12 @@ public class InternalMessage {
     public static final int STATUS_FAULT_UNKNOWN_METHOD = 0x10;
     public static final int STATUS_FAULT_INTERNAL_ERROR = 0x20;
     public static final int STATUS_FAULT_INVALID_PAYLOAD = 0x40;
-    public static final int STATUS_MESSAGE_IS_INPUTSTREAM = 0x80;
-    public static final int STATUS_INVALID_DESTINATION = 0x100;
-    public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
-    public static final int STATUS_FAULT_NOT_SUPPORTED = 0x400;
-    public static final int STATUS_FAULT_NOT_FOUND = 0x800;
-    public static final int STATUS_FAULT_ACCESS_NOT_ALLOWED = 0x1000;
+    public static final int STATUS_FAULT_INVALID_DESTINATION = 0x80;
+    public static final int STATUS_FAULT_NOT_SUPPORTED = 0x100;
+    public static final int STATUS_FAULT_NOT_FOUND = 0x200;
+    public static final int STATUS_FAULT_ACCESS_NOT_ALLOWED = 0x400;
+    public static final int STATUS_MESSAGE_IS_INPUTSTREAM = 0x800;
+    public static final int STATUS_ENDPOINTREF_IS_SET = 0x1000;
 
     /**
      * The status code of the InternalMessage. Stored as a 32-bit flag.
