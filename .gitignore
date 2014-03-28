@@ -1,0 +1,8 @@
+*.iml
+*.class
+*.out
+bin/
+out/
+*.sublime*
+.idea/
+*META-INF/
