@@ -26,7 +26,7 @@ public class NotificationEventTest extends TestCase {
         super.setUp();
         _consumer = new NotificationConsumer(new ForwardingHub());
         _notification = (Notify)XMLParser.parse(new FileInputStream("Services/res/server_test_notify.xml")).getMessage();
-        _event = new NotificationEvent(_notification);
+        _event = new NotificationEvent(this, _notification);
         _listener = new ConsumerListener() {
             @Override
             public void notify(NotificationEvent event) {

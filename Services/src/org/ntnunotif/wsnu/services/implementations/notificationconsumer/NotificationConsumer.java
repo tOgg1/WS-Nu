@@ -9,6 +9,7 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -32,9 +33,10 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.ntnunotif.wsnu.services.general.NotificationConsumer{
 
     /**
-     * All listeners to this SimpleConsumer.
+     * Helper that deals with Notification events
      */
-    private ArrayList<ConsumerListener> _listeners;
+    private NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
+
 
     /**
      * The EndpointReference of this NotificatonConsumer. This does not have to,
@@ -45,7 +47,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
 
     public NotificationConsumer() {
         super();
-        _listeners = new ArrayList<ConsumerListener>();
     }
 
     /**
@@ -54,7 +55,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     public NotificationConsumer(Hub hub) {
         super(hub);
         _hub = hub;
-        _listeners = new ArrayList<>();
     }
 
     @Override
@@ -71,19 +71,15 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify, @Information RequestInformation requestInformation) {
-        NotificationEvent event  = new NotificationEvent(notify);
-
-        for(ConsumerListener listener : _listeners){
-            listener.notify(event);
-        }
+        _eventSupport.fireNotificationEvent(notify, requestInformation);
     }
 
     public void addConsumerListener(ConsumerListener listener){
-        _listeners.add(listener);
+        _eventSupport.addNotificationListener(listener);
     }
 
     public void removeConsumerListener(ConsumerListener listener){
-        _listeners.remove(listener);
+        _eventSupport.removeNotificationListener(listener);
     }
 
     public void sendSubscriptionRequest(String address){

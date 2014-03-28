@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
+import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
 import org.ntnunotif.wsnu.services.general.NotificationBroker;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
 
@@ -18,24 +19,23 @@ import java.util.ArrayList;
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public abstract class AbstractNotificationBroker extends AbstractNotificationProducer implements NotificationBroker {
 
-    protected ArrayList<ConsumerListener> _listeners;
+    protected NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
+
 
     protected AbstractNotificationBroker() {
         super();
-        _listeners = new ArrayList<>();
     }
 
     protected AbstractNotificationBroker(Hub _hub) {
         super(_hub);
-        _listeners = new ArrayList<>();
     }
 
     public void addConsumerListener(ConsumerListener listener){
-        _listeners.add(listener);
+        _eventSupport.addNotificationListener(listener);
     }
 
     public void removeConsumerListener(ConsumerListener listener){
-        _listeners.remove(listener);
+        _eventSupport.removeNotificationListener(listener);
     }
 
 }
