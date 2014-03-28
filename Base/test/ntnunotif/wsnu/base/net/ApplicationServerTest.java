@@ -99,7 +99,7 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(500, response.getStatus());
+        assertEquals(404, response.getStatus());
 
         //TODO: This should contain some WS error
         System.out.println(response.getContentAsString());
@@ -127,7 +127,7 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(500, response.getStatus());
+        assertEquals(404, response.getStatus());
 
         System.out.println(response.getContentAsString());
     }

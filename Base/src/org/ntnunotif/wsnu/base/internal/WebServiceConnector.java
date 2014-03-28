@@ -77,7 +77,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
                         _endpointReference = (String)field.get(webService);
                         if(_endpointReference == null){
                             try {
-                                _endpointReference = ApplicationServer.getURI() +"/" + webService.getClass().getSimpleName().toLowerCase() + NothingToSeeHere.t("000"+ _webServiceCount++);
+                                _endpointReference = ApplicationServer.getURI() +"/" + webService.getClass().getSimpleName().toLowerCase() +"_"+ NothingToSeeHere.t("000"+ _webServiceCount++);
                             } catch (Exception e) {
                                 Log.e("WebServiceConnector", "Fetching the application server's URI failed. This is probably" +
                                         "due to an instantiation error. Please consider instantiating the ApplicationServer before" +
@@ -102,7 +102,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
             Log.w("WebServiceConnector", "EndpointReference is not set in the Web Service " + webService + ". Please consider adding" +
                     "a String-field with the annotation @EndpointReference in your Web Service");
             try {
-                _endpointReference = ApplicationServer.getURI() +"/"+ webService.getClass().getSimpleName().toLowerCase() + NothingToSeeHere.t("000"+ _webServiceCount++);
+                _endpointReference = ApplicationServer.getURI() +"/"+ webService.getClass().getSimpleName().toLowerCase() +"_"+ NothingToSeeHere.t("000"+ _webServiceCount++);
             } catch (Exception e) {
                 Log.e("WebServiceConnector", "Fetching the application server's URI failed. This is probably" +
                         "due to an instantiation error. Please consider instantiating the ApplicationServer before" +

@@ -3,8 +3,10 @@ package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.*;
+import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -12,13 +14,11 @@ import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.Envelope;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
@@ -29,7 +29,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
  * Created by tormod on 3/11/14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
-public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
+public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.ntnunotif.wsnu.services.general.NotificationConsumer{
 
     /**
      * All listeners to this SimpleConsumer.
@@ -67,10 +67,10 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         return null;
     }
 
-
     @Override
     @WebMethod(operationName = "Notify")
-    public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Notify notify) {
+    public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+                           Notify notify, @Information RequestInformation requestInformation) {
         NotificationEvent event  = new NotificationEvent(notify);
 
         for(ConsumerListener listener : _listeners){

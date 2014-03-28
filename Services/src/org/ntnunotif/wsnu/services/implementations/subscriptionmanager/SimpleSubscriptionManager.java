@@ -65,7 +65,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
     @Override
     public void addSubscriber(String subscriptionReference, long subscriptionEnd) {
+        Log.d("SimpleSubscriptionmanager", "Adding subscription: " + subscriptionReference);
         _subscriptions.put(subscriptionReference, subscriptionEnd);
+        System.out.println(_subscriptions.size());
     }
 
     @Override
@@ -76,7 +78,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     @Override
     public void update() {
         long timeNow = System.currentTimeMillis();
-
+        Log.d("SimpleSubscriptionManager", "Updating");
         synchronized(_subscriptions){
             for(Map.Entry<String, Long> entry : _subscriptions.entrySet()){
 
@@ -107,7 +109,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
            @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
            Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-
+        System.out.println(_subscriptions.size());
         Log.d("SimpleSubscriptionManager", "Received unsubscribe request");
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
             if(!entry.getKey().equals("subscription")){
@@ -131,6 +133,12 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             /* The subscriptions is not recognized */
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimpleSubscriptionManager", "Subscription not found");
+                Log.d("SimpleSubscriptionManager", "Subscription not found");
+                Log.d("SimpleSubscriptionManager", "All subscriptions:");
+                for (String s : _subscriptions.keySet()) {
+                    Log.d("SimpleSubscriptionmanager", s);
+                }
+                Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
                 throw new ResourceUnknownFault();
             }
 
@@ -158,6 +166,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         Renew renewRequest, @Information RequestInformation requestInformation)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
 
+        System.out.println(_subscriptions.size());
         Log.d("SimpleSubscriptionManager", "Received renew request");
         /* Find the subscription tag */
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {

@@ -358,7 +358,7 @@ public class ApplicationServer{
             /* Something went wrong, and an error-message is being returned
              * This is only here for theoretical reasons. Calling something like this should make you
              * rethink your Web Service's architecture */
-            }else if((STATUS_FAULT & STATUS_HAS_MESSAGE) > 0){
+            }else if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0 && (returnMessage.statusCode & STATUS_FAULT) > 0){
                 httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
 
                 InputStream inputStream = (InputStream)returnMessage.getMessage();
@@ -384,9 +384,8 @@ public class ApplicationServer{
         }
     }
 
-
     public static String getURI(){
-        return _singleton._server.getURI().getHost()+ ":" +_singleton._server.getURI().getPort();
+        return _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() != -1 ? _singleton._server.getURI().getPort() : 8080);
     }
 
     //TODO: lolol
