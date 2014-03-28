@@ -1,18 +1,20 @@
 package org.ntnunotif.wsnu.services.general;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ *
  * Created by tormod on 24.03.14.
  */
 public class ServiceUtilities {
@@ -24,6 +26,162 @@ public class ServiceUtilities {
         public EndpointTerminationTuple(String endpoint, long termination) {
             this.endpoint = endpoint;
             this.termination = termination;
+        }
+    }
+
+    /**
+     * Class to manage content. Implements basic string-checking by checking one of three things:
+     *
+     * 1. Regex
+     * 2. Containment
+     * 3. Count
+     *
+     * Can be set to be either inclusive or exclusive.
+     */
+    public static class ContentManager{
+
+        /**
+         * The endpoint of the service using this ContentManager
+         */
+        private final String serviceEndpoint;
+
+        /**
+         * Boolean that decides whether or not content is to be included or excluded if a match is found
+         */
+        private boolean inclusive = false;
+
+        /**
+         * List of regex limitations
+         */
+        private ArrayList<String> regexLimitations;
+
+        /**
+         * List of contain limitations
+         */
+        private ArrayList<String> containLimitations;
+
+        /**
+         * Map of count limitations
+         */
+        private HashMap<String, Integer> countLimitations;
+
+        /**
+         * Constructor taking the service endpoint
+         * @param serviceEndpoint
+         */
+        public ContentManager(String serviceEndpoint) {
+            this.serviceEndpoint = serviceEndpoint;
+            regexLimitations = new ArrayList<>();
+            containLimitations = new ArrayList<>();
+            countLimitations = new HashMap<>();
+        }
+
+        /**
+         * Changes the endpoint by returning a new contentmanager, as the endpoint is final.
+         * @param endpoint
+         * @return
+         */
+        public ContentManager changeserviceEndpoint(String endpoint){
+            ContentManager manager = new ContentManager(endpoint);
+            manager.setRegexLimitations(this.regexLimitations);
+            manager.setCountLimitations(this.countLimitations);
+            manager.setContainLimitations(this.containLimitations);
+            return new ContentManager(endpoint);
+        }
+
+        /**
+         * Checks if a request is accepted by this contentmanager.
+         * @param request
+         * @return
+         */
+        public boolean accepts(String request){
+            request = request.replaceAll("^"+serviceEndpoint, "");
+
+            /* Check regex */
+            for(String contentLimitation : regexLimitations) {
+                if(request.matches(contentLimitation)){
+                    return inclusive;
+                }
+            }
+
+            /* Check contains */
+            for(String containLimitation : containLimitations) {
+                if(request.contains(containLimitation)){
+                    return inclusive;
+                }
+            }
+
+            /* Check count */
+            for (Map.Entry<String, Integer> stringIntegerEntry : countLimitations.entrySet()) {
+                if(request.split(stringIntegerEntry.getKey()).length >= stringIntegerEntry.getValue()+1){
+                    return inclusive;
+                }
+            }
+            return !inclusive;
+        }
+
+        /**
+         * Sets the content manager to be inclusive. That is, only accept requests if they match any limitation.
+         */
+        public void setInclusive(){
+            inclusive = true;
+        }
+
+        /**
+         * Sets the content manager to be exclusive. That is, only accept requests if they do not match any limitation.
+         * This is the default setting.
+         */
+        public void setExclusive(){
+            inclusive = false;
+        }
+
+        /**
+         * Adds a regex-string as a limitation
+         */
+        public void addRegex(String regex){
+            regexLimitations.add(regex);
+        }
+
+        /**
+         * Removes a regex-string as a limitation.
+         */
+        public void removeRegex(String regex){
+            regexLimitations.remove(regex);
+        }
+
+        /**
+         * Adds a phrase as a containment-limitation. I.e. if a request contains the phrase, it is matched.
+         */
+        public void addContains(String phrase){
+            containLimitations.add(phrase);
+        }
+
+        /**
+         * Removes a phrase as a containment-limitation.
+         * @param phrase
+         */
+        public void removeContains(String phrase){
+            containLimitations.remove(phrase);
+        }
+
+        /**
+         * Adds a phrase as a count limitation. I.e if a request contains the phrase more than maxCount times, it is
+         * matched.
+         */
+        public void addCountLimitation(String phrase, int maxCount){
+            countLimitations.put(phrase, maxCount);
+        }
+
+        public void setRegexLimitations(ArrayList<String> regexLimitations) {
+            this.regexLimitations = regexLimitations;
+        }
+
+        public void setContainLimitations(ArrayList<String> containLimitations) {
+            this.containLimitations = containLimitations;
+        }
+
+        public void setCountLimitations(HashMap<String, Integer> countLimitations) {
+            this.countLimitations = countLimitations;
         }
     }
 
@@ -150,7 +308,7 @@ public class ServiceUtilities {
 
         if(matcher.find()){
             String raw = matcher.group().replaceAll("</?(wsa:)?Address>", "").replaceAll(" ", "").replaceAll("[\n]", "");
-            if(!raw.matches("^https? ://")){
+            if(!raw.matches("^https?://")){
                 raw = "http://" + raw;
             }
             return raw;

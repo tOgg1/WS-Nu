@@ -29,12 +29,20 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 @javax.jws.WebService
 public abstract class WebService {
 
-    private ArrayList<ServiceConnection> _connections;
+    /**
+     * List of connectors connecting this web service to a hub.
+     */
+    protected ArrayList<ServiceConnection> _connections;
+
+    /**
+     * Contentmanagers for pure requests.
+     */
+    protected ArrayList<ServiceUtilities.ContentManager> _contentManagers;
 
     /**
      * Factory available to all WebServices
      */
-    public ObjectFactory factory = new ObjectFactory();
+    public org.oasis_open.docs.wsn.b_2.ObjectFactory factory = new ObjectFactory();
 
     /**
      * Reference to the connected hub

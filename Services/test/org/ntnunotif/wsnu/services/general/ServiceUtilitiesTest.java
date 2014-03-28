@@ -83,6 +83,25 @@ public class ServiceUtilitiesTest extends TestCase {
     }
 
     @Test
+    public void testRegexFour() throws Exception{
+        String contentLimiterOne = ".*[.]xml";
+        String contentLimiterTwo = "^tormod.*";
+
+        String testOne = "tormod.xml";
+
+        System.out.println(testOne.matches(contentLimiterOne));
+        System.out.println(testOne.matches(contentLimiterTwo));
+
+        String testTwo = "tormod.haugland.xml";
+        System.out.println(testTwo.matches(contentLimiterOne));
+        System.out.println(testTwo.matches(contentLimiterTwo));
+
+        String testThree = "haugland.xml";
+        System.out.println(testThree.matches(contentLimiterOne));
+        System.out.println(testThree.matches(contentLimiterTwo));
+    }
+
+    @Test
     public void testExtractXsdDur() throws Exception{
         String test="PT5H";
         long lol = ServiceUtilities.extractXsdDuration(test);
@@ -98,12 +117,14 @@ public class ServiceUtilitiesTest extends TestCase {
 
     }
 
+    @Test
     public void testExtractDateTime() throws Exception {
         String test = "2014-08-02T11:50:00";
         long lol = ServiceUtilities.extractXsdDatetime(test);
         System.out.println(lol);
     }
 
+    @Test
     public void testInterpretTerminationTime() throws Exception {
         String testOne = "2014-08-02T11:50:00";
         System.out.println(ServiceUtilities.interpretTerminationTime(testOne));
@@ -111,6 +132,7 @@ public class ServiceUtilitiesTest extends TestCase {
         System.out.println(ServiceUtilities.interpretTerminationTime(testTwo));
     }
 
+    @Test
     public void testParseW3cTime() throws Exception{
         String testOne="<wsa:Address>79.120.4.2</wsa:Address>";
         String extractedOne = ServiceUtilities.parseW3CEndpoint(testOne);
@@ -135,6 +157,25 @@ public class ServiceUtilitiesTest extends TestCase {
         System.out.println(extractedTwo);
         System.out.println(extractedThree);
         System.out.println(extractedFour);
+    }
+
+    public void testContentManager() throws Exception{
+        ServiceUtilities.ContentManager contentManager = new ServiceUtilities.ContentManager("151.236.234");
+
+        contentManager.addContains("porn");
+        contentManager.addRegex(".*[.]html");
+        contentManager.addCountLimitation("lol", 5);
+
+        String testOne = "thislolIslolSomeXmllolFileThatShouldlolBeReturned.xml";
+        String testTwo = "plain/html/that/should/be/removed.html";
+        String testThree= "porn.com";
+        String testFour = "lolthislolislolsomelollolroflllolsentencelol.xml";
+
+        System.out.println(contentManager.accepts(testOne));
+        System.out.println(contentManager.accepts(testTwo));
+        System.out.println(contentManager.accepts(testThree));
+        System.out.println(contentManager.accepts(testFour));
 
     }
+
 }

@@ -107,7 +107,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
     }
 
     /**
-     * Set's the method that are to accept requests (i.e requests <b>without</b> content
+     * Sets the method that are to accept requests (i.e requests <b>without</b> content )
      * @param requestMethod
      */
     public void setRequestMethod(Method requestMethod) {
