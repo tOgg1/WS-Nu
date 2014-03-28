@@ -30,14 +30,14 @@ import java.util.List;
  * Created by Inge on 06.03.14.
  */
 public class TopicValidatorTest {
-    private static final String gcmXPathMulPath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_xpath_boolean_multiple_test.xml";
-    private static final String gcmXPathSinPath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_xpath_boolean_single_test.xml";
-    private static final String gcmXPathFalsePath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_xpath_false.xml";
-    private static final String gcmIllegalDialectPath = "Base/test/ntnunotif/wsnu/base/topics/topic_gcm_illegal_dialect_test.xml";
-    private static final String topicNamespacePath = "Base/test/ntnunotif/wsnu/base/topics/topic_namespace_test.xml";
-    private static final String topicSetPath = "Base/test/ntnunotif/wsnu/base/topics/topic_set_test.xml";
-    private static final String OUTGcmXPathMulPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_multiple_test.xml";
-    private static final String OUTGcmXPathSinPath = "Base/test/ntnunotif/wsnu/base/topics/out_topic_gcm_xpath_boolean_single_test.xml";
+    private static final String gcmXPathMulPath = "Base/testres/topic_gcm_xpath_boolean_multiple_test.xml";
+    private static final String gcmXPathSinPath = "Base/testres/topic_gcm_xpath_boolean_single_test.xml";
+    private static final String gcmXPathFalsePath = "Base/testres/topic_gcm_xpath_false.xml";
+    private static final String gcmIllegalDialectPath = "Base/testres/topic_gcm_illegal_dialect_test.xml";
+    private static final String topicNamespacePath = "Base/testres/topic_namespace_test.xml";
+    private static final String topicSetPath = "Base/testres/topic_set_test.xml";
+    private static final String OUTGcmXPathMulPath = "Base/testres/out_topic_gcm_xpath_boolean_multiple_test.xml";
+    private static final String OUTGcmXPathSinPath = "Base/testres/out_topic_gcm_xpath_boolean_single_test.xml";
 
     private static TopicExpressionType xPathMultipleHits;
     private static TopicExpressionType xPathSingleHit;
