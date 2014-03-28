@@ -1,7 +1,5 @@
 package org.ntnunotif.wsnu.base.util;
 
-import javax.xml.namespace.NamespaceContext;
-
 /**
  * The primary message-object to be sent through the system
  * @author
@@ -21,6 +19,7 @@ public class InternalMessage {
     public static final int STATUS_ENDPOINTREF_IS_SET = 0x200;
     public static final int STATUS_FAULT_NOT_SUPPORTED = 0x400;
     public static final int STATUS_FAULT_NOT_FOUND = 0x800;
+    public static final int STATUS_FAULT_ACCESS_NOT_ALLOWED = 0x1000;
 
     /**
      * The status code of the InternalMessage. Stored as a 32-bit flag.

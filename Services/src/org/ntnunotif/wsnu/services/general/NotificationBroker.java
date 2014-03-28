@@ -1,7 +1,5 @@
 package org.ntnunotif.wsnu.services.general;
 
-import org.ntnunotif.wsnu.base.util.EndpointParam;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
@@ -25,7 +23,7 @@ public interface NotificationBroker {
     @WebMethod(operationName = "Notify")
     public void notify(
             @WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-            org.oasis_open.docs.wsn.b_2.Notify notify
+            org.oasis_open.docs.wsn.b_2.Notify notify, @Information RequestInformation requestInformation
     );
 
     @WebResult(name = "RegisterPublisherResponse", targetNamespace = "http://docs.oasis-open.org/wsn/br-2", partName = "RegisterPublisherResponse")

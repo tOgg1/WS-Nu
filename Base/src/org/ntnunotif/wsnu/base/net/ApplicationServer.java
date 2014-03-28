@@ -328,6 +328,9 @@ public class ApplicationServer{
                     httpServletResponse.setStatus(HttpStatus.BAD_REQUEST_400);
                     request.setHandled(true);
                     return;
+                }else if((returnMessage.statusCode & STATUS_FAULT_ACCESS_NOT_ALLOWED) > 0){
+                    httpServletResponse.setStatus(HttpStatus.FORBIDDEN_403);
+                    request.setHandled(true);
                 }
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                 request.setHandled(true);
@@ -373,9 +376,6 @@ public class ApplicationServer{
             /* Everything is fine, and nothing is expected */
             }else if((STATUS_OK & returnMessage.statusCode) > 0){
                 httpServletResponse.setStatus(HttpStatus.OK_200);
-                request.setHandled(true);
-            }else if((STATUS_INVALID_DESTINATION & returnMessage.statusCode) > 0){
-                httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                 request.setHandled(true);
             }else{
                 httpServletResponse.setStatus(HttpStatus.OK_200);

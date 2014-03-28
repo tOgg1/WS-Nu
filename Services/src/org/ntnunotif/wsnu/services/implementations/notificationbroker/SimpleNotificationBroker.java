@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
@@ -17,18 +16,15 @@ import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
 import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.omg.SendingContext.RunTime;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.ws.Service;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.ArrayList;
@@ -57,7 +53,8 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @Override
     @Oneway
     @WebMethod(operationName = "Notify")
-    public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Notify notify) {
+    public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+                           Notify notify, @Information RequestInformation requestInformation) {
         NotificationEvent event  = new NotificationEvent(notify);
 
         for(ConsumerListener listener : _listeners){

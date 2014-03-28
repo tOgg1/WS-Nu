@@ -174,6 +174,15 @@ public abstract class WebService {
             return new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
         }
 
+        uri = uri.replaceAll("^/", "");
+
+        for (ServiceUtilities.ContentManager contentManager : _contentManagers) {
+            if(!contentManager.accepts(uri)){
+                Log.d("WebService", "Webservice did not accept uri" + uri + "\n on the basis of content.");
+                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_ACCESS_NOT_ALLOWED, null);
+            }
+        }
+
         try{
             FileInputStream stream = new FileInputStream(uri.replaceAll("^/", ""));
             InternalMessage returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
@@ -248,5 +257,17 @@ public abstract class WebService {
             hub.stop();
             throw new IllegalArgumentException("Unable to quickbuild: " + e.getMessage());
         }
+    }
+
+    public void addContentManager(ServiceUtilities.ContentManager manager){
+        _contentManagers.add(manager);
+    }
+
+    public void removeContentManger(ServiceUtilities.ContentManager manager){
+        _contentManagers.remove(manager);
+    }
+
+    public void clearContentManagers(){
+        _contentManagers.clear();
     }
 }
