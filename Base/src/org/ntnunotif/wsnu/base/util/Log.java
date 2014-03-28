@@ -11,7 +11,7 @@ public class Log {
     private static File _logFile;
     private static BufferedWriter _logWriter;
     private static boolean _writeToFile = false;
-    private static boolean _logDebug = false;
+    private static boolean _logDebug = true;
     private static boolean _logErrors = true;
     private static boolean _logWarnings = true;
 

@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.*;
 import org.trmd.ntsh.NothingToSeeHere;
 
@@ -74,6 +75,20 @@ public abstract class WebServiceConnector implements ServiceConnection{
                     try {
                         field.setAccessible(true);
                         _endpointReference = (String)field.get(webService);
+                        if(_endpointReference == null){
+                            try {
+                                _endpointReference = ApplicationServer.getURI() +"/" + webService.getClass().getSimpleName().toLowerCase() +"_"+ NothingToSeeHere.t("000"+ _webServiceCount++);
+                            } catch (Exception e) {
+                                Log.e("WebServiceConnector", "Fetching the application server's URI failed. This is probably" +
+                                        "due to an instantiation error. Please consider instantiating the ApplicationServer before" +
+                                        "creating a connector");
+                                return;
+                            }
+                            Log.w("WebServiceConnector", "The endpointreference was found, but carries no information (i.e. is null). " +
+                                  "\nConsider setting the endpoint in the constructor or by other means before assigning it to a connector." +
+                                  "\nThe reference \n\t" + _endpointReference + "\nhas been randomly generated");
+                        }
+                        field.set(webService, _endpointReference);
                         referenceIsSet = true;
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -84,9 +99,16 @@ public abstract class WebServiceConnector implements ServiceConnection{
         }
 
         if(!referenceIsSet){
-            Log.w("WebServiceConnector", "EndpointReference is not set in the Web Service " + webService + ". Please considering adding" +
+            Log.w("WebServiceConnector", "EndpointReference is not set in the Web Service " + webService + ". Please consider adding" +
                     "a String-field with the annotation @EndpointReference in your Web Service");
-            _endpointReference = webService.getClass().getSimpleName() + NothingToSeeHere.t("000"+ _webServiceCount);
+            try {
+                _endpointReference = ApplicationServer.getURI() +"/"+ webService.getClass().getSimpleName().toLowerCase() +"_"+ NothingToSeeHere.t("000"+ _webServiceCount++);
+            } catch (Exception e) {
+                Log.e("WebServiceConnector", "Fetching the application server's URI failed. This is probably" +
+                        "due to an instantiation error. Please consider instantiating the ApplicationServer before" +
+                        "creating a connector");
+                return;
+            }
         }
 
         /* Look for requestMethod */
@@ -107,7 +129,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
     }
 
     /**
-     * Set's the method that are to accept requests (i.e requests <b>without</b> content
+     * Sets the method that are to accept requests (i.e requests <b>without</b> content )
      * @param requestMethod
      */
     public void setRequestMethod(Method requestMethod) {
@@ -138,10 +160,10 @@ public abstract class WebServiceConnector implements ServiceConnection{
                 Log.e("WebServiceConnector", "AcceptRequest-method of the web service is inaccessible, even after setAccessible is called.");
                 return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
             } catch (InvocationTargetException e) {
+                return new InternalMessage(STATUS_FAULT | STATUS_INVALID_DESTINATION, null);
                 //TODO:
             }
         }
-        return null;
     }
 
     @Override

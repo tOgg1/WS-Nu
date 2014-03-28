@@ -1,47 +1,48 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
-import junit.framework.TestCase;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
-import javax.swing.text.AbstractDocument;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.channels.FileLockInterruptionException;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
  * Created by tormod on 3/19/14.
  */
 
-public class SimpleSubscriptionManagerTest extends TestCase {
+public class SimpleSubscriptionManagerTest{
 
-    private Hub hub;
-    private UnpackingRequestInformationConnector connector;
-    private SimpleSubscriptionManager manager;
-    private SimpleNotificationProducer producer;
+    private static ForwardingHub hub;
+    private static UnpackingRequestInformationConnector connector;
+    private static SimpleSubscriptionManager manager;
+    private static SimpleNotificationProducer producer;
 
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass
+    public static void setUp() throws Exception {
         producer = new SimpleNotificationProducer();
         hub = producer.quickBuild();
 
         manager = new SimpleSubscriptionManager(hub);
         connector = new UnpackingRequestInformationConnector(manager);
 
+        producer.setSubscriptionManager(manager);
+
         hub.registerService(connector);
     }
 
     public void tearDown() throws Exception {
-
+        hub.stop();
     }
 
     @Test
@@ -70,6 +71,7 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
+        // Test with requestURL
         request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_unsubscribe.xml")));
@@ -80,7 +82,7 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         assertNotNull(responseContent);
     }
 
-    @Test
+    /*@Test
     public void testSubscriptionDoesntExist() throws Exception {
         String subscription = producer.generateSubscriptionKey();
         String requestUrl = producer.generateSubscriptionURL(subscription);
@@ -95,8 +97,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
-        assertEquals(500, response.getStatus());
-    }
+        assertEquals(404, response.getStatus());
+    }*/
 
     @Test
     public void testRenew() throws Exception {
@@ -106,6 +108,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
+        System.out.println(subscription);
+
         HttpClient client = new HttpClient();
         client.setFollowRedirects(false);
         client.start();
@@ -113,6 +117,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         Request request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_renew.xml")));
+
+        System.out.println(requestUrl);
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();

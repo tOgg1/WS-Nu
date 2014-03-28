@@ -4,9 +4,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.base.util.Utilities;
-
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
@@ -60,118 +58,118 @@ public class ForwardingHub implements Hub {
 
     /**
      * Takes an InternalMessage with a wrapped soap.envelope of some form, unpacks it, and sends it forward in the system.
+     * If the requested webservice (per uri) is not found, the hub will try sending the message until someone accepts it.
      * @param internalMessage
      * @return
      */
     @Override
-    //TODO: Rethink the design of this method. Can everything be done sequentially? First STATUS_OK/FAILED handling and so on
-    //TODO: Support multiple messages
     public InternalMessage acceptNetMessage(InternalMessage internalMessage) {
-        InternalMessage returnMessage;
-        RequestInformation requestInformation = internalMessage.getRequestInformation();
+        ServiceConnection connection = findRecipient(internalMessage.getRequestInformation().getRequestURL());
 
-        /* We dont have any content, but perhaps a request? */
-        if((internalMessage.statusCode & InternalMessage.STATUS_HAS_MESSAGE) == 0){
-            Log.d("ForwardingHub", "Attempting to send request");
-            for (ServiceConnection service : _services) {
-                Log.d("ForwardingHub", "Forwarding request");
-                return service.acceptRequest(internalMessage);
+        boolean foundConnection = connection != null;
+        /* Initialize the value with invalid destination, in case no one accepts it*/
+        InternalMessage returnMessage = new InternalMessage(STATUS_FAULT|STATUS_INVALID_DESTINATION, null);
+
+        /* If this is just a request-message and has no content */
+        if((internalMessage.statusCode & STATUS_HAS_MESSAGE) == 0){
+            Log.d("ForwardingHub", "Forwarding request");
+            if(foundConnection){
+                returnMessage = connection.acceptRequest(internalMessage);
+            }else{
+                for(ServiceConnection service : _services){
+                    returnMessage = service.acceptRequest(internalMessage);
+                    if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                        continue;
+                    }else if((returnMessage.statusCode & STATUS_OK) > 0){
+                        break;
+                    }else if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                        break;
+                    }
+                    break;
+                }
             }
-            return new InternalMessage(STATUS_FAULT | STATUS_INVALID_DESTINATION, null);
+        /* We have content and should deal with it */
         }else{
-            InputStream stream = (InputStream)internalMessage.getMessage();
-
-            /* Decrypt message */
+            Log.d("ForwardingHub", "Forwarding message");
             InternalMessage parsedMessage;
+            Envelope envelope;
+            /* Try to parse and cast the message to a soap-envelope */
             try {
-                parsedMessage = XMLParser.parse(stream);
-                requestInformation.setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+                parsedMessage = XMLParser.parse((InputStream) internalMessage.getMessage());
+                try {
+                    envelope = (Envelope) ((JAXBElement) parsedMessage.getMessage()).getValue();
+                }catch(ClassCastException e){
+                    return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
             } catch (JAXBException e) {
-                Log.d("ForwardingHub", "The parser faulted: " + e.getMessage());
                 return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             }
 
-            Envelope envelope;
-            try {
-                envelope = (Envelope)((JAXBElement)parsedMessage.getMessage()).getValue();
+            /* Re-use internalMessage object for optimization */
+            internalMessage.setMessage(envelope);
+            internalMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET;
 
-            /* If this exception is thrown, the message received can not be soap */
-            } catch (ClassCastException e) {
-                return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD, null);
-            }
-
-            if(envelope == null){
-                return new InternalMessage(STATUS_FAULT, null);
-            }
-
-            Log.d("ForwardingHub", "Attempting to send message");
-            /* Try sending the message to everyone */
-            for (ServiceConnection service : _services) {
-
-                Log.d("ForwardingHub", "Forwarding message to connector");
-            /* Send the message forward */
-                InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_ENDPOINTREF_IS_SET, envelope);
-                outMessage.setRequestInformation(requestInformation);
-                InternalMessage message = service.acceptMessage(outMessage);
-
-            /* Incorrect destination */
-                if ((message.statusCode & STATUS_INVALID_DESTINATION) > 0) {
-                    continue;
-                }
-
-                if ((message.statusCode & STATUS_OK) > 0) {
-                    if ((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
-                    /* This is easy, now we can convert it, and send it straight out*/
-                        if ((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
-                            try {
-                                InputStream returningStream = Utilities.convertToInputStream((OutputStream) message.getMessage());
-                                return new InternalMessage(STATUS_OK
-                                        | STATUS_HAS_MESSAGE
-                                        | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
-                            } catch (ClassCastException e) {
-                                Log.e("ForwardingHub", "Someone set the RETURNING_MESSAGE_IS_OUTPUTSTREAM flag when the message in the InternalMessage in fact was not");
-                                e.printStackTrace();
-                            }
-                        /* Even better, the stream is already an inputstream */
-                        } else if ((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
-                            try {
-                                InputStream returningStream = (InputStream) message.getMessage();
-                                return new InternalMessage(STATUS_OK
-                                        | STATUS_HAS_MESSAGE
-                                        | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
-                            } catch (ClassCastException e) {
-                                Log.e("ForwardingHub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM flag when the message in the InternalMessage in fact was not");
-                                e.printStackTrace();
-                            }
-                        }
-
-                        /* This is worse, now we have to find out what the payload is, and convert it to a stream*/
-                        InputStream returningStream = Utilities.convertUnknownToInputStream(message.getMessage());
-
-                        if (returningStream == null) {
-                            Log.e("ForwardingHub", "Someone set the HAS_RETURNING_MESSAGE flag when there was no returning mesasge.");
-                            return new InternalMessage(STATUS_OK, null);
-
-
-                        } else {
-                            return new InternalMessage(STATUS_OK
-                                    | STATUS_HAS_MESSAGE
-                                    | STATUS_MESSAGE_IS_INPUTSTREAM, returningStream);
-
-                        }
-                /* Everything is fine, and no message is to be returned */
-                    } else {
-                        return new InternalMessage(STATUS_OK, null);
+            if(foundConnection){
+                returnMessage = connection.acceptMessage(internalMessage);
+            }else{
+                for(ServiceConnection service : _services){
+                    returnMessage = service.acceptMessage(internalMessage);
+                    if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                        continue;
+                    }else if((returnMessage.statusCode & STATUS_OK) > 0){
+                        break;
+                    }else if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                        break;
                     }
-                } else if ((message.statusCode & STATUS_FAULT) > 0) {
-
-                    return new InternalMessage(message.statusCode, null);
-                /* Something weird is going on, neither OK, INVALID_DESTINATION or FAULT is flagged*/
-                } else {
-                    return new InternalMessage(STATUS_FAULT, null);
                 }
             }
-            return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
+        }
+
+        /* Everything is processed properly, and we can figure out what to return */
+        if((returnMessage.statusCode & STATUS_OK) > 0){
+            /* If we have a message we should try and convert it to an inputstream before returning
+            * Notably the ApplicationServer does accept other form of messages, but it is more logical to conert
+            * it at this point */
+            if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0){
+                Log.d("ForwardingHub", "Returning message");
+                if((returnMessage.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0){
+                    try{
+                        InputStream stream = (InputStream)returnMessage.getMessage();
+                        returnMessage.setMessage(stream);
+                    }catch(ClassCastException e){
+                        Log.e("ForwardingHub", "Casting the returnMessage to InputStream failed, even though someone set the MESSAGE_IS_INPUTSTREAM flag");
+                        return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
+                    }
+                }else if((returnMessage.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0){
+                    try{
+                        InputStream stream = Utilities.convertToInputStream((OutputStream) returnMessage.getMessage());
+                        returnMessage.setMessage(stream);
+                    }catch(ClassCastException e){
+                        Log.e("ForwardingHub", "Casting the returnMessage to OutputStream failed, even though someone set the MESSAGE_IS_OUTPUSTREAM flag");
+                        return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
+                    }
+                }else{
+
+                    InputStream stream = Utilities.convertUnknownToInputStream(returnMessage.getMessage());
+
+                    if(stream == null){
+                        Log.e("ForwardingHub", "Unable to convert returnMessage to InputStream. Consider converting the message-paylod at an earlier point");
+                        return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
+                    }
+                    returnMessage.setMessage(stream);
+                }
+                returnMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_MESSAGE_IS_INPUTSTREAM;
+                return returnMessage;
+            /* We have no message and can just return */
+            }else{
+                Log.d("ForwardingHub", "Returning nothing");
+                return returnMessage;
+            }
+        /* Something went wrong up the stack, but we're not gonna meddle with it here, return the message back to the applicationserver
+         * and let it figure out what error message to send back */
+        }else{
+            Log.d("ForwardingHub", "Something went wrong, returning error");
+            return returnMessage;
         }
     }
 
@@ -295,5 +293,21 @@ public class ForwardingHub implements Hub {
     @Override
     public String getInetAdress() {
         return _server.getURI();
+    }
+
+    /**
+     * Looks for the matching recipient to an endpoint input.
+     * @param endpoint
+     * @return
+     */
+    public ServiceConnection findRecipient(String endpoint){
+        if(endpoint == null)
+            return null;
+        for(ServiceConnection connection : _services){
+            if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
+                return connection;
+            }
+        }
+        return null;
     }
 }

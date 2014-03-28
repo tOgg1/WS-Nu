@@ -3,18 +3,16 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
-import org.ntnunotif.wsnu.services.general.NotificationProducer;
-import org.oasis_open.docs.wsn.b_2.*;
+import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
+import org.oasis_open.docs.wsn.b_2.Notify;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
@@ -25,6 +23,8 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer {
 
     protected Notify currentMessage;
+    protected AbstractSubscriptionManager manager;
+    protected boolean usesManager;
 
     /**
      * Constructor taking a hub as a parameter.
@@ -61,16 +61,15 @@ public abstract class AbstractNotificationProducer extends WebService implements
     }
 
     public String generateNewSubscriptionURL(){
-        String newHash = null;
-        newHash = generateSubscriptionKey();
-        String baseAddress = _hub.getInetAdress();
+        String newHash = generateSubscriptionKey();
 
-        return getEndpointReference() + "/?subscription=" + newHash;
+        String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
+        return endpointReference+ "/?subscription=" + newHash;
     }
 
     public String generateSubscriptionURL(String key){
-        String baseURI = _hub.getInetAdress();
-        return baseURI + "/?subscription=" + key;
+        String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
+        return endpointReference + "/?subscription=" + key;
     }
 
     public abstract boolean keyExists(String key);
@@ -107,5 +106,19 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     public void sendNotification(InputStream iStream) throws JAXBException {
         this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
+    }
+
+    public void setSubscriptionManager(AbstractSubscriptionManager manager){
+        this.manager = manager;
+        this.usesManager = true;
+    }
+
+    public void clearSubscriptionManager(){
+        this.manager = null;
+        this.usesManager = false;
+    }
+
+    public boolean usesSubscriptionManager(){
+        return this.usesManager;
     }
 }

@@ -212,7 +212,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
-    public Hub quickBuild() {
+    public ForwardingHub quickBuild() {
         try {
             ForwardingHub hub = new ForwardingHub();
             /* This is the most reasonable connector for this NotificationProducer */

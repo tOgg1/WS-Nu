@@ -172,11 +172,12 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
                                         returnedData);
                             }
                             return returnMessage;
-                        }catch(Exception e){
+                        }catch(Exception e) {
                             e.printStackTrace();
 
                             Log.d("UnpackingRequestInformationConnector", "Some exception occured: " + e.getMessage());
                             //TODO: Add error handling
+                            return new InternalMessage(STATUS_INVALID_DESTINATION, null);
                         }
                     }else{
                         Log.d("UnpackingRequestInformationConnector", "Invalid destination");
