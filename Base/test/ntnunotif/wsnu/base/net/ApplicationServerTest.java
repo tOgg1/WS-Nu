@@ -99,10 +99,10 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(200, response.getStatus());
+        assertEquals(500, response.getStatus());
 
         //TODO: This should contain some WS error
-        response.getContentAsString();
+        System.out.println(response.getContentAsString());
 
     }
 
@@ -119,7 +119,6 @@ public class ApplicationServerTest extends TestCase {
         // Send response
         FileInputStream file = new FileInputStream("Base/testres/server_test_subscribe.xml");
 
-
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
@@ -128,9 +127,8 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(200, response.getStatus());
+        assertEquals(500, response.getStatus());
 
-        //TODO: This should contain some WS error, unless we can process the ws:notify in server_test_soap.
         System.out.println(response.getContentAsString());
     }
 

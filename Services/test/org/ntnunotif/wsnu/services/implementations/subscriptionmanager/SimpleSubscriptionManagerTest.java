@@ -7,16 +7,12 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
-import javax.swing.text.AbstractDocument;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.channels.FileLockInterruptionException;
 
 /**
  * Created by tormod on 3/19/14.
@@ -70,6 +66,7 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
+        // Test with requestURL
         request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_unsubscribe.xml")));
@@ -95,7 +92,7 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
-        assertEquals(500, response.getStatus());
+        assertEquals(404, response.getStatus());
     }
 
     @Test
@@ -106,6 +103,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
+        System.out.println(subscription);
+
         HttpClient client = new HttpClient();
         client.setFollowRedirects(false);
         client.start();
@@ -113,6 +112,8 @@ public class SimpleSubscriptionManagerTest extends TestCase {
         Request request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_renew.xml")));
+
+        System.out.println(requestUrl);
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();

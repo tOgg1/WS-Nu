@@ -316,6 +316,19 @@ public class ApplicationServer{
 
             /* Handle possible errors */
             if((returnMessage.statusCode & STATUS_FAULT) > 0){
+                if((returnMessage.statusCode & STATUS_INVALID_DESTINATION) > 0){
+                    httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
+                    request.setHandled(true);
+                    return;
+                }else if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    request.setHandled(true);
+                    return;
+                }else if((returnMessage.statusCode & STATUS_FAULT_INVALID_PAYLOAD) > 0){
+                    httpServletResponse.setStatus(HttpStatus.BAD_REQUEST_400);
+                    request.setHandled(true);
+                    return;
+                }
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
                 request.setHandled(true);
                 return;
@@ -371,8 +384,9 @@ public class ApplicationServer{
         }
     }
 
-    public String getURI(){
-        return _server.getURI().getHost()+ ":" +_server.getURI().getPort();
+
+    public static String getURI(){
+        return _singleton._server.getURI().getHost()+ ":" +_singleton._server.getURI().getPort();
     }
 
     //TODO: lolol

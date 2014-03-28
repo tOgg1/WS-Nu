@@ -3,18 +3,15 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
-import org.ntnunotif.wsnu.services.general.NotificationProducer;
-import org.oasis_open.docs.wsn.b_2.*;
+import org.oasis_open.docs.wsn.b_2.Notify;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
@@ -69,8 +66,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     }
 
     public String generateSubscriptionURL(String key){
-        String baseURI = _hub.getInetAdress();
-        return baseURI + "/?subscription=" + key;
+        return getEndpointReference() + "/?subscription=" + key;
     }
 
     public abstract boolean keyExists(String key);
