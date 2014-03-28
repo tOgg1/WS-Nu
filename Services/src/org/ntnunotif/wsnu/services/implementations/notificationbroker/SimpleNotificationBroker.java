@@ -55,11 +55,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify, @Information RequestInformation requestInformation) {
-        NotificationEvent event  = new NotificationEvent(notify);
-
-        for(ConsumerListener listener : _listeners){
-            listener.notify(event);
-        }
+        _eventSupport.fireNotificationEvent(notify, requestInformation);
     }
 
     /**

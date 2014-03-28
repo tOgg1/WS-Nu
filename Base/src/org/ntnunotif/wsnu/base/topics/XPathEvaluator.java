@@ -1,8 +1,5 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
-import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -11,16 +8,13 @@ import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
 
-import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by Inge on 10.03.14.
