@@ -12,6 +12,7 @@ import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractS
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -48,6 +49,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @return
      * @throws java.security.NoSuchAlgorithmException
      */
+    @WebMethod(exclude = true)
     public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
@@ -64,6 +66,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return hash;
     }
 
+    @WebMethod(exclude = true)
     public String generateNewSubscriptionURL(){
         String newHash = generateSubscriptionKey();
 
@@ -71,6 +74,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return endpointReference+ "/?subscription=" + newHash;
     }
 
+    @WebMethod(exclude = true)
     public String generateSubscriptionURL(String key){
         String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
         return endpointReference + "/?subscription=" + key;
@@ -84,6 +88,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Sends a notification the the endpoint.
      * @param notify
      */
+    @WebMethod(exclude = true)
     public void sendNotification(Notify notify){
         currentMessage = notify;
         List<String> recipients = getRecipients(notify);
@@ -98,6 +103,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Attempts to send a notification taken as a string.
      * @param notify
      */
+    @WebMethod(exclude = true)
     public void sendNotification(String notify) throws JAXBException {
         InputStream iStream = new ByteArrayInputStream(notify.getBytes());
         this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
@@ -108,25 +114,30 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @param iStream
      * @throws JAXBException
      */
+    @WebMethod(exclude = true)
     public void sendNotification(InputStream iStream) throws JAXBException {
         this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
     }
 
+    @WebMethod(exclude = true)
     public void setSubscriptionManager(AbstractSubscriptionManager manager){
         this.manager = manager;
         this.usesManager = true;
     }
 
+    @WebMethod(exclude = true)
     public void clearSubscriptionManager(){
         this.manager = null;
         this.usesManager = false;
     }
 
+    @WebMethod(exclude = true)
     public boolean usesSubscriptionManager(){
         return this.usesManager;
     }
 
     @Override
+    @WebMethod(exclude = true)
     public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
         return null;
     }

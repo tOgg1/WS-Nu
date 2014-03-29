@@ -1,8 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -222,9 +221,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     }
 
     @Override
-    public ForwardingHub quickBuild() {
+    public SoapUnpackingHub quickBuild() {
         try {
-            ForwardingHub hub = new ForwardingHub();
+            SoapUnpackingHub hub = new SoapUnpackingHub();
             UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
             hub.registerService(connector);
             this.registerConnection(connector);

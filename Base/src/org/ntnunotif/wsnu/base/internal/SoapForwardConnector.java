@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
@@ -50,30 +51,33 @@ public class SoapForwardConnector extends WebServiceConnector {
 
     @Override
     public final InternalMessage acceptMessage(InternalMessage message) {
-        Object messageContent = message.getMessage();
+        synchronized(SoapForwardConnector.class){
 
-        if(!(messageContent instanceof Envelope)){
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        }
+            Object messageContent = message.getMessage();
 
-        Envelope soapEnvelope = (Envelope)message.getMessage();
-
-        try {
-            Object method_returnedData = _soapMethod.invoke(_webService, soapEnvelope);
-
-            /* If is the case, nothing is being returned */
-            if(_soapMethod.getReturnType().equals(Void.TYPE)){
-                return new InternalMessage(STATUS_OK, null);
-            }else{
-                return new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
-                        method_returnedData);
+            if(!(messageContent instanceof Envelope)){
+                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
             }
-        } catch (IllegalAccessException e) {
-            Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
-                    "org.generated classes.\n A @WebMethod can not have private access");
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        } catch (InvocationTargetException e) {
-            return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
+
+            Envelope soapEnvelope = (Envelope)message.getMessage();
+
+            try {
+                Object method_returnedData = _soapMethod.invoke(_webService, soapEnvelope);
+
+                /* If is the case, nothing is being returned */
+                if(_soapMethod.getReturnType().equals(Void.TYPE)){
+                    return new InternalMessage(STATUS_OK, null);
+                }else{
+                    return new InternalMessage(STATUS_OK| STATUS_HAS_MESSAGE,
+                            method_returnedData);
+                }
+            } catch (IllegalAccessException e) {
+                Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
+                        "org.generated classes.\n A @WebMethod can not have private access");
+                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+            } catch (InvocationTargetException e) {
+                return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
+            }
         }
     }
 }

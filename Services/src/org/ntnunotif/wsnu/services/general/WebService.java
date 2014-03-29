@@ -1,6 +1,6 @@
 package org.ntnunotif.wsnu.services.general;
 
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.ServiceConnection;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
@@ -26,7 +26,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
-@javax.jws.WebService
+@javax.jws.WebService(name = "GenericWebService")
 public abstract class WebService {
 
     /**
@@ -82,6 +82,7 @@ public abstract class WebService {
      * Retrieves the endpointreference of the Web Service.
      * @return
      */
+    @WebMethod(exclude = true)
     public String getEndpointReference() {
         return endpointReference;
     }
@@ -93,6 +94,7 @@ public abstract class WebService {
      * you only have to pass in "myWebService".
      * @param endpointReference
      */
+    @WebMethod(exclude = true)
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
             throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
@@ -110,6 +112,7 @@ public abstract class WebService {
      * Forces the endpoint reference to the endpointreference set.
      * @param endpointReference
      */
+    @WebMethod(exclude = true)
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
         for(ServiceConnection connection : _connections){
@@ -121,6 +124,7 @@ public abstract class WebService {
      * Register a connector forwarding to this web service.
      * @param connection
      */
+    @WebMethod(exclude = true)
     protected void registerConnection(ServiceConnection connection){
         _connections.add(connection);
     }
@@ -129,6 +133,7 @@ public abstract class WebService {
      * Unregister a connector forwarding to this web service.
      * @param connection
      */
+    @WebMethod(exclude = true)
     protected void unregisterConnection(ServiceConnection connection){
         _connections.remove(connection);
     }
@@ -137,6 +142,7 @@ public abstract class WebService {
      * Setter for the hub. Does nothing special.
      * @return
      */
+    @WebMethod(exclude = true)
     public Hub getHub() {
         return _hub;
     }
@@ -145,6 +151,7 @@ public abstract class WebService {
      * Getter for the hub. Does nothing special.
      * @param _hub
      */
+    @WebMethod(exclude = true)
     public void setHub(Hub _hub) {
         this._hub = _hub;
     }
@@ -211,9 +218,9 @@ public abstract class WebService {
      */
    @WebMethod(exclude = true)
    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
-        ForwardingHub hub = null;
+        SoapUnpackingHub hub = null;
         try {
-            hub = new ForwardingHub();
+            hub = new SoapUnpackingHub();
         } catch (Exception e) {
             hub.stop();
         }
@@ -265,6 +272,7 @@ public abstract class WebService {
      * Adds a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      * @param manager
      */
+    @WebMethod(exclude = true)
     public void addContentManager(ServiceUtilities.ContentManager manager){
         _contentManagers.add(manager);
     }
@@ -273,6 +281,7 @@ public abstract class WebService {
      * Removes a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      * @param manager
      */
+    @WebMethod(exclude = true)
     public void removeContentManger(ServiceUtilities.ContentManager manager){
         _contentManagers.remove(manager);
     }
@@ -280,7 +289,13 @@ public abstract class WebService {
     /**
      * Clears all {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}'s.
      */
+    @WebMethod(exclude = true)
     public void clearContentManagers(){
         _contentManagers.clear();
+    }
+
+    @WebMethod(exclude = true)
+    public void generateWSDLandXSDSchemas(){
+
     }
 }

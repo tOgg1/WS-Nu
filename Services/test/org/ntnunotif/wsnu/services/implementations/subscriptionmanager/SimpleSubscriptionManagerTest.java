@@ -7,8 +7,7 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
 import java.io.FileInputStream;
@@ -23,7 +22,7 @@ import static junit.framework.TestCase.assertNotNull;
 
 public class SimpleSubscriptionManagerTest{
 
-    private static ForwardingHub hub;
+    private static SoapUnpackingHub hub;
     private static UnpackingRequestInformationConnector connector;
     private static SimpleSubscriptionManager manager;
     private static SimpleNotificationProducer producer;

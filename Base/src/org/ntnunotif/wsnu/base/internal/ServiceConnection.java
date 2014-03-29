@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 
 /**
  * Created by tormod on 25.03.14.
@@ -34,6 +35,13 @@ public interface ServiceConnection {
       * Get the endpoint reference of this service.
      */
     public String getServiceEndpoint();
+
+    /**
+     * Fetches the request-information currently set in the connector.
+     * @return
+     */
+    public RequestInformation getReqeustInformation();
+
 
     /**
      * Function called when the endpointReference of the connected web service is changed.

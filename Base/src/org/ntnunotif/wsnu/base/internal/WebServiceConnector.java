@@ -35,6 +35,11 @@ public abstract class WebServiceConnector implements ServiceConnection{
      */
     public static int _webServiceCount = 0;
 
+    /**
+     *
+     */
+    private RequestInformation _requestInformation;
+
     private Method _requestMethod;
 
     /**
@@ -179,5 +184,10 @@ public abstract class WebServiceConnector implements ServiceConnection{
     @Override
     public Class<?> getServiceType() {
         return _webService.getClass();
+    }
+
+    @Override
+    public RequestInformation getReqeustInformation() {
+        return _requestInformation;
     }
 }

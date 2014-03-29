@@ -7,8 +7,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimpleSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
@@ -24,14 +23,14 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  */
 public class UnpackingRequestInformationConnectorTest extends TestCase {
 
-    ForwardingHub hub;
+    SoapUnpackingHub hub;
     UnpackingRequestInformationConnector connector;
     SimpleSubscriptionManager manager;
     Unsubscribe request;
 
     public void setUp() throws Exception {
         super.setUp();
-        hub = new ForwardingHub();
+        hub = new SoapUnpackingHub();
         manager = new SimpleSubscriptionManager(hub);
         connector = new UnpackingRequestInformationConnector(manager);
     }

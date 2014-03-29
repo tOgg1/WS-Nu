@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -38,11 +37,13 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers;
 
     @Override
+    @WebMethod(exclude = true)
     public boolean keyExists(String key) {
         return _subscriptions.containsKey(key) || _publishers.containsKey(key);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public List<String> getRecipients(Notify notify) {
         return new ArrayList(_subscriptions.values());
     }
@@ -205,9 +206,10 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    public ForwardingHub quickBuild() {
+    @WebMethod(exclude = true)
+    public SoapUnpackingHub quickBuild() {
         try{
-            ForwardingHub hub = new ForwardingHub();
+            SoapUnpackingHub hub = new SoapUnpackingHub();
             UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
             hub.registerService(connector);
             this.registerConnection(connector);

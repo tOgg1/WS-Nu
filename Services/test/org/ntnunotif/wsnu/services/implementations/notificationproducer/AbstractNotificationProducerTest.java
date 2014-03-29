@@ -1,7 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import junit.framework.TestCase;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.Information;
@@ -21,12 +21,12 @@ import java.util.List;
  */
 public class AbstractNotificationProducerTest extends TestCase {
     AbstractNotificationProducer producer;
-    ForwardingHub hub;
+    SoapUnpackingHub hub;
 
 
     public void setUp() throws Exception {
         super.setUp();
-        hub = new ForwardingHub();
+        hub = new SoapUnpackingHub();
 
         producer = new AbstractNotificationProducer(hub) {
             @Override

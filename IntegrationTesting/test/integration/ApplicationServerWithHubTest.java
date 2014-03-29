@@ -9,7 +9,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class ApplicationServerWithHubTest extends TestCase {
 
     private ApplicationServer _server;
-    private ForwardingHub _hub;
+    private SoapUnpackingHub _hub;
 
     private NotificationConsumer _consumer;
     private ConsumerListener _listener;
@@ -47,7 +47,7 @@ public class ApplicationServerWithHubTest extends TestCase {
         _sendMessages = new ArrayList<>();
         _messages = new ArrayList<>();
 
-        _hub = new ForwardingHub();
+        _hub = new SoapUnpackingHub();
 
         _consumer = new NotificationConsumer(_hub);
         _listener = new ConsumerListener() {

@@ -1,8 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -72,6 +71,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      * @return
      */
     @Override
+    @WebMethod(exclude = true)
     public boolean keyExists(String key) {
         return _subscriptions.containsKey(key);
     }
@@ -82,6 +82,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      * @return
      */
     @Override
+    @WebMethod(exclude = true)
     public List<String> getRecipients(Notify notify) {
         ArrayList<String> recipients = new ArrayList<>();
         for (ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple : _subscriptions.values()) {
@@ -210,9 +211,10 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
-    public ForwardingHub quickBuild() {
+    @WebMethod(exclude = true)
+    public SoapUnpackingHub quickBuild() {
         try {
-            ForwardingHub hub = new ForwardingHub();
+            SoapUnpackingHub hub = new SoapUnpackingHub();
             /* This is the most reasonable connector for this NotificationProducer */
             UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
             hub.registerService(connector);

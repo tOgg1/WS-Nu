@@ -3,7 +3,7 @@ package org.ntnunotif.wsnu.services.eventhandling;
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
@@ -24,7 +24,7 @@ public class NotificationEventTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        _consumer = new NotificationConsumer(new ForwardingHub());
+        _consumer = new NotificationConsumer(new SoapUnpackingHub());
         _notification = (Notify)XMLParser.parse(new FileInputStream("Services/res/server_test_notify.xml")).getMessage();
         _event = new NotificationEvent(this, _notification);
         _listener = new ConsumerListener() {

@@ -2,7 +2,7 @@ package integration;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.ForwardingHub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
@@ -12,9 +12,7 @@ import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by tormod on 3/13/14.
@@ -29,7 +27,7 @@ public class UnpackingConnectorTest extends TestCase{
 
     public void setUp() throws Exception {
         super.setUp();
-        consumer = new NotificationConsumer(new ForwardingHub());
+        consumer = new NotificationConsumer(new SoapUnpackingHub());
         consumerConnector = new UnpackingConnector(consumer);
         messages = new ArrayList<Object>();
         Envelope env = new Envelope();
