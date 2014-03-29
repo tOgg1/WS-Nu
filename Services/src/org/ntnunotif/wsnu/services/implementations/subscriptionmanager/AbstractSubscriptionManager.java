@@ -2,12 +2,9 @@ package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.net.ApplicationServer;
-import org.ntnunotif.wsnu.services.general.SubscriptionManager;
 import org.ntnunotif.wsnu.services.general.WebService;
+import org.oasis_open.docs.wsn.bw_2.SubscriptionManager;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;

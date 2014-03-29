@@ -108,8 +108,6 @@ public class UnpackingConnector extends WebServiceConnector {
 
                             Object method_returnedData;
 
-                            int paramCount = method.getParameterTypes().length;
-
                             /* Spit this error-message out, however try and send the message regardless*/
                             method_returnedData = method.invoke(_webService, message);
 
@@ -117,8 +115,7 @@ public class UnpackingConnector extends WebServiceConnector {
                             if (method.getReturnType().equals(Void.TYPE)) {
                                 returnMessage = new InternalMessage(STATUS_OK, null);
                             } else {
-                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE,
-                                        method_returnedData);
+                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, method_returnedData);
                             }
                             return returnMessage;
 

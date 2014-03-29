@@ -1,12 +1,10 @@
 package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
-import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -25,7 +23,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
  * Created by tormod on 3/11/14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
-public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.ntnunotif.wsnu.services.general.NotificationConsumer{
+public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
 
     /**
      * Helper that deals with Notification events
@@ -53,20 +51,16 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     }
 
     @Override
-    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+    public Object acceptSoapMessage(@WebParam Envelope envelope) {
         return null;
     }
 
-    @Override
-    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
-        return null;
-    }
 
     @Override
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                           Notify notify, @Information RequestInformation requestInformation) {
-        _eventSupport.fireNotificationEvent(notify, requestInformation);
+                           Notify notify) {
+        _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
     }
 
     public void addConsumerListener(ConsumerListener listener){

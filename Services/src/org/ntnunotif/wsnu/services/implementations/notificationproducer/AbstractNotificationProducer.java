@@ -2,18 +2,14 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
-import org.ntnunotif.wsnu.services.general.NotificationProducer;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.Notify;
-import org.w3._2001._12.soap_envelope.Envelope;
+import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import javax.jws.WebMethod;
-import javax.jws.WebParam;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -134,11 +130,5 @@ public abstract class AbstractNotificationProducer extends WebService implements
     @WebMethod(exclude = true)
     public boolean usesSubscriptionManager(){
         return this.usesManager;
-    }
-
-    @Override
-    @WebMethod(exclude = true)
-    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-        return null;
     }
 }

@@ -1,9 +1,9 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -94,7 +94,6 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     /**
      *
      * @param subscribeRequest
-     * @param requestInformation
      * @return
      * @throws NotifyMessageNotSupportedFault
      * @throws UnrecognizedPolicyRequestFault
@@ -113,7 +112,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
                                                  targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe
-                                                 subscribeRequest, RequestInformation requestInformation) throws
+                                                 subscribeRequest) throws
                                                  NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault,
                                                  TopicExpressionDialectUnknownFault, ResourceUnknownFault,
                                                  InvalidTopicExpressionFault, UnsupportedPolicyRequestFault,
@@ -216,7 +215,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         try {
             SoapUnpackingHub hub = new SoapUnpackingHub();
             /* This is the most reasonable connector for this NotificationProducer */
-            UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
+            UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             this.registerConnection(connector);
             _hub = hub;

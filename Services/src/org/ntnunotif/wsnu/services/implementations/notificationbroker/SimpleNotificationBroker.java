@@ -1,9 +1,8 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
-import org.ntnunotif.wsnu.base.util.Information;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
@@ -52,14 +51,13 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @Oneway
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-                           Notify notify, @Information RequestInformation requestInformation) {
-        _eventSupport.fireNotificationEvent(notify, requestInformation);
+                           Notify notify) {
+        _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
     }
 
     /**
      * Register a publisher. This implementation does not take into account topics, and will never throw TopicNotSupportededFault.
      * @param registerPublisherRequest
-     * @param requestInformation
      * @return
      * @throws InvalidTopicExpressionFault
      * @throws PublisherRegistrationFailedFault
@@ -73,7 +71,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @WebMethod(operationName = "RegisterPublisher")
     public RegisterPublisherResponse registerPublisher(
             @WebParam(partName = "RegisterPublisherRequest",name = "RegisterPublisher", targetNamespace = "http://docs.oasis-open.org/wsn/br-2")
-            RegisterPublisher registerPublisherRequest, @Information RequestInformation requestInformation)
+            RegisterPublisher registerPublisherRequest)
     throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
            UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
         String endpointReference = null;
@@ -100,14 +98,13 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         builder.address(getEndpointReference() +""+ subscriptionEndpoint);
 
         response.setConsumerReference(builder.build());
-        //response.setPublisherRegistrationReference();
+        //TODO: response.setPublisherRegistrationReference();
         return response;
     }
 
     /**
-     * The oasis wsn subscribe function. This implementation will at all times be the same as the implementation in {@link org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer}
+     * Request a subscription. This implementation will at all times be the same as the implementation in {@link org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer}
      * @param subscribeRequest
-     * @param requestInformation
      * @return
      * @throws NotifyMessageNotSupportedFault
      * @throws UnrecognizedPolicyRequestFault
@@ -125,7 +122,13 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @Override
     @WebResult(name = "SubscribeResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "SubscribeResponse")
     @WebMethod(operationName = "Subscribe")
-    public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest, @Information RequestInformation requestInformation) throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
+    public SubscribeResponse subscribe(
+            @WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+            Subscribe subscribeRequest)
+    throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault,
+           ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault,
+           InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault,
+           TopicNotSupportedFault, InvalidMessageContentExpressionFault {
         Log.d("SimpleNotificationProducer", "Got new subscription request");
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
@@ -193,15 +196,19 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @Override
     @WebResult(name = "GetCurrentMessageResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2", partName = "GetCurrentMessageResponse")
     @WebMethod(operationName = "GetCurrentMessage")
-    public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") GetCurrentMessage getCurrentMessageRequest) throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
+    public GetCurrentMessageResponse getCurrentMessage(
+            @WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
+            GetCurrentMessage getCurrentMessageRequest)
+    throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault,
+           NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
         GetCurrentMessageResponse response = factory.createGetCurrentMessageResponse();
         response.getAny().add(currentMessage);
         return response;
     }
 
     @Override
-    @WebMethod(operationName = "AcceptSoapMessage")
-    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
+    @WebMethod(exclude = true)
+    public Object acceptSoapMessage(@WebParam Envelope envelope) {
         return null;
     }
 
@@ -210,7 +217,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     public SoapUnpackingHub quickBuild() {
         try{
             SoapUnpackingHub hub = new SoapUnpackingHub();
-            UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
+            UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             this.registerConnection(connector);
             _hub = hub;

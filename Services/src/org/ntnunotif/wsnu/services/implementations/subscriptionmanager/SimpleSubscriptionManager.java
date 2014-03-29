@@ -1,9 +1,8 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.util.Information;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -14,7 +13,6 @@ import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -54,26 +52,20 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         _subscriptions = new HashMap<String, Long>();
     }
 
-    @Override
-    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-        return null;
-    }
 
-    @Override
-    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
-        return null;
-    }
-
+    @WebMethod(exclude = true)
     public void setAutoRenew(boolean autoRenew){
         _autoRenew = autoRenew;
     }
 
     @Override
+    @WebMethod(exclude = true)
     public boolean keyExists(String key) {
         return _subscriptions.containsKey(key);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void addSubscriber(String subscriptionReference, long subscriptionEnd) {
         Log.d("SimpleSubscriptionmanager", "Adding subscription: " + subscriptionReference);
         _subscriptions.put(subscriptionReference, subscriptionEnd);
@@ -81,11 +73,13 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void removeSubscriber(String subscriptionReference) {
         _subscriptions.remove(subscriptionReference);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void update() {
         long timeNow = System.currentTimeMillis();
         Log.d("SimpleSubscriptionManager", "Updating");
@@ -107,7 +101,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     /**
      * SimpleSubscriptionManagers implementation of unsubscribe.
      * @param unsubscribeRequest
-     * @param requestInformation
      * @return
      * @throws ResourceUnknownFault
      * @throws UnableToDestroySubscriptionFault
@@ -117,10 +110,11 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     @WebMethod(operationName = "Unsubscribe")
     public UnsubscribeResponse unsubscribe(
            @WebParam(partName = "UnsubscribeRequest", name = "Unsubscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-           Unsubscribe unsubscribeRequest, @Information RequestInformation requestInformation)
+           Unsubscribe unsubscribeRequest)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
-        System.out.println(_subscriptions.size());
         Log.d("SimpleSubscriptionManager", "Received unsubscribe request");
+        RequestInformation requestInformation = _connection.getReqeustInformation();
+
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
             if(!entry.getKey().equals("subscription")){
                 continue;
@@ -163,7 +157,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     /**
      * SimpleSubscriptionManager's implementation of renew.
      * @param renewRequest
-     * @param requestInformation
      * @return
      * @throws ResourceUnknownFault
      * @throws UnacceptableTerminationTimeFault
@@ -173,10 +166,13 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     @WebMethod(operationName = "Renew")
     public RenewResponse renew(
         @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
-        Renew renewRequest, @Information RequestInformation requestInformation)
+        Renew renewRequest)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
 
         System.out.println(_subscriptions.size());
+
+        RequestInformation requestInformation = _connection.getReqeustInformation();
+
         Log.d("SimpleSubscriptionManager", "Received renew request");
         /* Find the subscription tag */
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
@@ -224,7 +220,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public SoapUnpackingHub quickBuild() {
         try {
             SoapUnpackingHub hub = new SoapUnpackingHub();
-            UnpackingRequestInformationConnector connector = new UnpackingRequestInformationConnector(this);
+            UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             this.registerConnection(connector);
             _hub = hub;

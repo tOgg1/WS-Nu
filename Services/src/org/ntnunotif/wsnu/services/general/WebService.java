@@ -1,16 +1,17 @@
 package org.ntnunotif.wsnu.services.general;
 
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.ServiceConnection;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.*;
+import org.ntnunotif.wsnu.base.util.EndpointReference;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
-import javax.jws.WebParam;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
@@ -57,6 +58,11 @@ public abstract class WebService {
     }
 
     /**
+     * Reference to the connection of this Web Service.
+     */
+    protected ServiceConnection _connection;
+
+    /**
      * Constructor taking a hub as a parameter.
      * @param _hub
      */
@@ -76,7 +82,6 @@ public abstract class WebService {
      * this value would be endpoint
      */
     protected String pureEndpointReference;
-
 
     /**
      * Retrieves the endpointreference of the Web Service.
@@ -115,6 +120,8 @@ public abstract class WebService {
     @WebMethod(exclude = true)
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
+        //TODO: Try to filter out the pureEndpointReference
+        this.pureEndpointReference = endpointReference;
         for(ServiceConnection connection : _connections){
             connection.endpointUpdated(this.endpointReference);
         }
@@ -157,22 +164,14 @@ public abstract class WebService {
     }
 
     /**
-     * The abstract method that accepts a soap message.
-     * @param envelope
-     * @param requestInformation
-     * @return
-     */
-    @WebMethod(exclude=true)
-    public abstract Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation);
-
-    /**
      * The default AcceptRequest method of a WebService. This handles requests by looking for matching files, and nothing more.
      * If specific requests, in particular with parameters, needs to be handled, this method should then be overrided.
-     * @param requestInformation
      * @return
      */
     @WebMethod(exclude=true)
-    public InternalMessage acceptRequest(@Information RequestInformation requestInformation){
+    public InternalMessage acceptRequest(){
+        RequestInformation requestInformation = _connection.getReqeustInformation();
+
         String uri = requestInformation.getRequestURL();
         Map<String, String[]> parameters = requestInformation.getParameters();
 
@@ -294,6 +293,9 @@ public abstract class WebService {
         _contentManagers.clear();
     }
 
+    /**
+     * Generate WSDL/XSD schemas.
+     */
     @WebMethod(exclude = true)
     public void generateWSDLandXSDSchemas(){
 
