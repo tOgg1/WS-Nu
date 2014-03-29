@@ -4,10 +4,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.ServiceConnection;
 import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -31,11 +28,6 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 public abstract class WebService {
 
     /**
-     * List of connectors connecting this web service to a hub.
-     */
-    protected ArrayList<ServiceConnection> _connections;
-
-    /**
      * Contentmanagers for pure requests.
      */
     protected ArrayList<ServiceUtilities.ContentManager> _contentManagers;
@@ -43,7 +35,8 @@ public abstract class WebService {
     /**
      * Factory available to all WebServices
      */
-    public org.oasis_open.docs.wsn.b_2.ObjectFactory factory = new ObjectFactory();
+    //TODO: This shouldnt be here
+    public org.oasis_open.docs.wsn.b_2.ObjectFactory baseFactory = new ObjectFactory();
 
     /**
      * Reference to the connected hub
@@ -54,12 +47,12 @@ public abstract class WebService {
      * Default constructor.
      */
     protected WebService(){
-        _connections = new ArrayList<>();
     }
 
     /**
      * Reference to the connection of this Web Service.
      */
+    @Connection
     protected ServiceConnection _connection;
 
     /**
@@ -68,7 +61,6 @@ public abstract class WebService {
      */
     protected WebService(Hub _hub) {
         this._hub = _hub;
-        _connections = new ArrayList<>();
     }
 
     /**
@@ -108,9 +100,7 @@ public abstract class WebService {
         this.pureEndpointReference = endpointReference;
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
-        for(ServiceConnection connection : _connections){
-            connection.endpointUpdated(this.endpointReference);
-        }
+        _connection.endpointUpdated(this.endpointReference);
     }
 
     /**
@@ -122,27 +112,7 @@ public abstract class WebService {
         this.endpointReference = endpointReference;
         //TODO: Try to filter out the pureEndpointReference
         this.pureEndpointReference = endpointReference;
-        for(ServiceConnection connection : _connections){
-            connection.endpointUpdated(this.endpointReference);
-        }
-    }
-
-    /**
-     * Register a connector forwarding to this web service.
-     * @param connection
-     */
-    @WebMethod(exclude = true)
-    protected void registerConnection(ServiceConnection connection){
-        _connections.add(connection);
-    }
-
-    /**
-     * Unregister a connector forwarding to this web service.
-     * @param connection
-     */
-    @WebMethod(exclude = true)
-    protected void unregisterConnection(ServiceConnection connection){
-        _connections.remove(connection);
+        _connection.endpointUpdated(endpointReference);
     }
 
     /**
@@ -253,7 +223,7 @@ public abstract class WebService {
 
             WebServiceConnector connector = (WebServiceConnector) relevantConstructor.newInstance(newArgs);
             hub.registerService(connector);
-            this.registerConnection(connector);
+            _connection = connector;
             _hub = hub;
             return hub;
         }catch(InvocationTargetException e){

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns2:Envelope xmlns:ns2="http://www.w3.org/2001/12/soap-envelope" xmlns:ns3="http://www.w3.org/2005/08/addressing" xmlns:ns4="http://docs.oasis-open.org/wsn/b-2" xmlns:ns5="http://docs.oasis-open.org/wsrf/bf-2" xmlns:ns6="http://docs.oasis-open.org/wsn/t-1" xmlns:ns7="http://docs.oasis-open.org/wsn/br-2" xmlns:ns8="http://docs.oasis-open.org/wsrf/r-2" ns2:encodingStyle="http://www.w3.org/2001/12/soap-encoding"><ns2:Header><wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:soap="http://www.w3.org/2001/12/soap-envelope">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns2:Envelope xmlns:ns2="http://www.w3.org/2001/12/soap-envelope" xmlns:ns3="http://docs.oasis-open.org/wsn/b-2" xmlns:ns4="http://docs.oasis-open.org/wsrf/bf-2" xmlns:ns5="http://www.w3.org/2005/08/addressing" xmlns:ns6="http://docs.oasis-open.org/wsn/t-1" xmlns:ns7="http://docs.oasis-open.org/wsn/br-2" xmlns:ns8="http://docs.oasis-open.org/wsrf/r-2" ns2:encodingStyle="http://www.w3.org/2001/12/soap-encoding"><ns2:Header><wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:soap="http://www.w3.org/2001/12/soap-envelope">
             http://docs-oasis-open.org/wsn/bw-2/NotificationProducer/SubscribeRequest
-        </wsa:Action></ns2:Header><ns2:Body><ns4:Subscribe><ns4:ConsumerReference><ns3:Address>
+        </wsa:Action></ns2:Header><ns2:Body><ns3:Subscribe><ns3:ConsumerReference><ns5:Address>
                     http://www.example.org/SimpleConsumer
-                </ns3:Address></ns4:ConsumerReference><ns4:Filter><ns4:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
+                </ns5:Address></ns3:ConsumerReference><ns3:Filter><ns3:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
                     npex:SomeTopic
-                </ns4:TopicExpression><ns4:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+                </ns3:TopicExpression><ns3:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
                     boolean(ncex:Producer=&quot;15&quot;)
-                </ns4:MessageContent></ns4:Filter><ns4:InitialTerminationTime>
+                </ns3:MessageContent></ns3:Filter><ns3:InitialTerminationTime>
                 2005-12-25T00:00:00.00000Z
-            </ns4:InitialTerminationTime></ns4:Subscribe></ns2:Body></ns2:Envelope>
+            </ns3:InitialTerminationTime></ns3:Subscribe></ns2:Body></ns2:Envelope>

@@ -207,7 +207,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                 throw new UnacceptableTerminationTimeFault();
             }
 
-            Log.d("SimpleSubscriptionManager", "Succesfully renewed subscription");
+            Log.d("SimpleSubscriptionManager", "Successfully renewed subscription");
             _subscriptions.put(subRef, time);
             return new RenewResponse();
         }
@@ -222,7 +222,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             SoapUnpackingHub hub = new SoapUnpackingHub();
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
-            this.registerConnection(connector);
+            _connection = connector;
             _hub = hub;
             return hub;
         } catch (Exception e) {

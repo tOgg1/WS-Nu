@@ -204,7 +204,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                        throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault,
                                                        MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault,
                                                        TopicNotSupportedFault {
-        GetCurrentMessageResponse response = factory.createGetCurrentMessageResponse();
+        GetCurrentMessageResponse response = baseFactory.createGetCurrentMessageResponse();
         response.getAny().add(currentMessage);
         return response;
     }
@@ -217,7 +217,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             /* This is the most reasonable connector for this NotificationProducer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
-            this.registerConnection(connector);
+            _connection = connector;
             _hub = hub;
             return hub;
         } catch (Exception e) {

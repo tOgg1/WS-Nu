@@ -44,14 +44,14 @@ public abstract class WebServiceConnector implements ServiceConnection{
 
     /**
      * The default constructor. Looks for the {@link WebService} for the passed in WebService object and the {@link org.ntnunotif.wsnu.base.util.EndpointReference}
-     * annotation for the endpointreference. Will also look for a method to send plain requests to, by looking for the {@link javax.jws.WebMethod} annotation with operationName=AcceptRequest
+     * annotation for the endpointreference. Also looks for a field with the annotation {@link org.ntnunotif.wsnu.base.util.Connection} to set a reference to this connector. Will also look for a method to send plain requests to, by looking for the {@link javax.jws.WebMethod} annotation with operationName=AcceptRequest
      * @param webService
      */
     protected WebServiceConnector(final Object webService){
         _webService = webService;
 
         Annotation[] annotations = webService.getClass().getAnnotations();
-        boolean isWebService = false, referenceIsSet = false;
+        boolean isWebService = false, referenceIsSet = false, connectionIsSet = false;
         for (Annotation annotation : annotations) {
             if(annotation instanceof WebService){
                 isWebService = true;
@@ -69,20 +69,18 @@ public abstract class WebServiceConnector implements ServiceConnection{
         Annotation[] fieldAnnotations;
 
         for (Field field : fields) {
-
-            if(field.getType() != String.class){
-                continue;
-            }
-
             fieldAnnotations = field.getDeclaredAnnotations();
             for(Annotation annotation : fieldAnnotations){
-                if(annotation instanceof EndpointReference){
+                if(field.getClass().equals(String.class)){
+                    break;
+                }
+                if(annotation instanceof EndpointReference) {
                     try {
                         field.setAccessible(true);
-                        _endpointReference = (String)field.get(webService);
-                        if(_endpointReference == null){
+                        _endpointReference = (String) field.get(webService);
+                        if (_endpointReference == null) {
                             try {
-                                _endpointReference = ApplicationServer.getURI() +"/" + webService.getClass().getSimpleName().toLowerCase() +"_"+ NothingToSeeHere.t("000"+ _webServiceCount++);
+                                _endpointReference = ApplicationServer.getURI() + "/" + webService.getClass().getSimpleName().toLowerCase() + "_" + NothingToSeeHere.t("000" + _webServiceCount++);
                             } catch (Exception e) {
                                 Log.e("WebServiceConnector", "Fetching the application server's URI failed. This is probably" +
                                         "due to an instantiation error. Please consider instantiating the ApplicationServer before" +
@@ -90,14 +88,27 @@ public abstract class WebServiceConnector implements ServiceConnection{
                                 return;
                             }
                             Log.w("WebServiceConnector", "The endpointreference was found, but carries no information (i.e. is null). " +
-                                  "\nConsider setting the endpoint in the constructor or by other means before assigning it to a connector." +
-                                  "\nThe reference \n\t" + _endpointReference + "\nhas been randomly generated");
+                                    "\nConsider setting the endpoint in the constructor or by other means before assigning it to a connector." +
+                                    "\nThe reference \n\t" + _endpointReference + "\nhas been randomly generated");
                         }
                         field.set(webService, _endpointReference);
                         referenceIsSet = true;
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                         break;
+                    }
+                }
+            }
+
+            for(Annotation annotation : fieldAnnotations){
+                if(annotation instanceof Connection){
+                    try{
+                        field.setAccessible(true);
+                        field.set(webService, this);
+                        connectionIsSet = true;
+                    } catch (IllegalAccessException e) {
+                        Log.d("WebServiceConnector", "Setting the field with annotation Connection failed.");
+                        continue;
                     }
                 }
             }
@@ -114,6 +125,11 @@ public abstract class WebServiceConnector implements ServiceConnection{
                         "creating a connector");
                 return;
             }
+        }
+
+        if(!connectionIsSet){
+            Log.w("WebServiceConnector", "Connection is not set in the Web Service " + webService + ". Please considering adding" +
+                   "this WebService Connector" + this + " manually to the Web Service in some variable");
         }
 
         /* Look for requestMethod */
@@ -152,7 +168,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
             try {
                 Log.d("WebServiceConnector", "Forwarding requestMessage");
                 _requestMethod.setAccessible(true);
-                Object returnedData = _requestMethod.invoke(_webService, message.getRequestInformation());
+                Object returnedData = _requestMethod.invoke(_webService);
 
                 if(_requestMethod.getReturnType().equals(Void.TYPE)) {
                     return new InternalMessage(STATUS_OK, null);
@@ -166,7 +182,6 @@ public abstract class WebServiceConnector implements ServiceConnection{
                 return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
             } catch (InvocationTargetException e) {
                 return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_DESTINATION, null);
-                //TODO:
             }
         }
     }

@@ -46,9 +46,12 @@ public class UnpackingConnector extends WebServiceConnector {
 
             /* Check that the method is a @WebMethod, if not, continue*/
             for(Annotation annotation : annotations){
-                System.out.println(annotation.getClass());
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
+                    /* If the method is to be excluded as a webmethod */
+                    if(webMethod.exclude() == true){
+                        continue;
+                    }
                     Log.d("UnpackingConnector", "Allowedmethod: " + ((WebMethod) annotation).operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;

@@ -59,7 +59,7 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
         W3CEndpointReference reference = builder.build();
         subscribe.setConsumerReference(reference);
 
-        //subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
+        //subscribe.setInitialTerminationTime(baseFactory.createSubscribeInitialTerminationTime("P1Y"));
 
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
         message.getRequestInformation().setEndpointReference(address);

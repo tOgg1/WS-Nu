@@ -9,7 +9,6 @@ import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -50,11 +49,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         _hub = hub;
     }
 
-    @Override
-    public Object acceptSoapMessage(@WebParam Envelope envelope) {
-        return null;
-    }
-
 
     @Override
     @WebMethod(operationName = "Notify")
@@ -63,14 +57,17 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
     }
 
+    @WebMethod(exclude = true)
     public void addConsumerListener(ConsumerListener listener){
         _eventSupport.addNotificationListener(listener);
     }
 
+    @WebMethod(exclude = true)
     public void removeConsumerListener(ConsumerListener listener){
         _eventSupport.removeNotificationListener(listener);
     }
 
+    @WebMethod(exclude = true)
     public InternalMessage sendSubscriptionRequest(Subscribe subscriptionRequest, String address){
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscriptionRequest);
         message.getRequestInformation().setEndpointReference(address);
@@ -79,14 +76,15 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     }
 
     @Override
+    @WebMethod(exclude = true)
     public Hub quickBuild() {
         try{
             SoapUnpackingHub hub = new SoapUnpackingHub();
             /* Most reasonable and simple connector for a consumer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
-            this.registerConnection(connector);
-            this._hub = hub;
+            _connection = connector;
+            _hub = hub;
             return hub;
         }catch(Exception e){
             e.printStackTrace();

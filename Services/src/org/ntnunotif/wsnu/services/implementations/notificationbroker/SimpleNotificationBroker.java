@@ -11,7 +11,6 @@ import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
 import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
@@ -201,15 +200,9 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             GetCurrentMessage getCurrentMessageRequest)
     throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault,
            NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
-        GetCurrentMessageResponse response = factory.createGetCurrentMessageResponse();
+        GetCurrentMessageResponse response = baseFactory.createGetCurrentMessageResponse();
         response.getAny().add(currentMessage);
         return response;
-    }
-
-    @Override
-    @WebMethod(exclude = true)
-    public Object acceptSoapMessage(@WebParam Envelope envelope) {
-        return null;
     }
 
     @Override
@@ -219,7 +212,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             SoapUnpackingHub hub = new SoapUnpackingHub();
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
-            this.registerConnection(connector);
+            _connection = connector;
             _hub = hub;
             return hub;
         }catch(Exception e){

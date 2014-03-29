@@ -1,47 +1,48 @@
 package integration;
 
-import junit.framework.TestCase;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+
 /**
  * Created by tormod on 3/14/14.
  */
-public class ApplicationServerWithHubTest extends TestCase {
+public class ApplicationServerWithHubTest{
 
-    private ApplicationServer _server;
-    private SoapUnpackingHub _hub;
+    private static ApplicationServer _server;
+    private static SoapUnpackingHub _hub;
 
-    private NotificationConsumer _consumer;
-    private ConsumerListener _listener;
-    private UnpackingConnector _consumerConnector;
+    private static NotificationConsumer _consumer;
+    private static ConsumerListener _listener;
+    private static UnpackingConnector _consumerConnector;
 
-    private ArrayList<InputStream> _sendMessages;
-    private ArrayList<InternalMessage> _messages;
+    private static ArrayList<InputStream> _sendMessages;
+    private static ArrayList<InternalMessage> _messages;
 
-    private boolean _stackFlag;
+    private static boolean _stackFlag;
 
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @BeforeClass
+    public static void setUp() throws Exception {
         _stackFlag = false;
 
         _sendMessages = new ArrayList<>();
@@ -72,9 +73,6 @@ public class ApplicationServerWithHubTest extends TestCase {
         _messages.add(XMLParser.parse(sendStream_2_2));
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Test
     public void testSendingInvalidMessage() throws Exception {
@@ -91,7 +89,7 @@ public class ApplicationServerWithHubTest extends TestCase {
 
         ContentResponse response = request.send();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         // Send a notify-request, expect something
         request = client.newRequest("http://localhost:8080/");
@@ -99,8 +97,9 @@ public class ApplicationServerWithHubTest extends TestCase {
         request.content(new InputStreamContentProvider(_sendMessages.get(0)));
 
         response = request.send();
+        System.out.println(response.getContentAsString());
 
-        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -108,6 +107,7 @@ public class ApplicationServerWithHubTest extends TestCase {
         assertTrue(true);
 
     }
+
 
     @Test
     public void testReceivingNotification() throws Exception {

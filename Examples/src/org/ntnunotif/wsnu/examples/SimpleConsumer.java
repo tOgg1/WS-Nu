@@ -51,12 +51,12 @@ public class SimpleConsumer implements ConsumerListener {
 
     public void sendSubscriptionRequest(String address){
 
-        Subscribe subscriptionRequest = consumer.factory.createSubscribe();
+        Subscribe subscriptionRequest = consumer.baseFactory.createSubscribe();
 
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
         builder.address(consumer.getEndpointReference());
         subscriptionRequest.setConsumerReference(builder.build());
-        subscriptionRequest.setInitialTerminationTime(consumer.factory.createSubscribeInitialTerminationTime("P1D"));
+        subscriptionRequest.setInitialTerminationTime(consumer.baseFactory.createSubscribeInitialTerminationTime("P1D"));
 
         InternalMessage returnMessage = consumer.sendSubscriptionRequest(subscriptionRequest, address);
         System.out.println(returnMessage.getMessage().toString());

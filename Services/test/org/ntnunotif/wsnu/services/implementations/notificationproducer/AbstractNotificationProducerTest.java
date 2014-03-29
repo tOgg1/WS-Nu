@@ -1,18 +1,12 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import junit.framework.TestCase;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
-import org.ntnunotif.wsnu.base.util.Information;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.w3._2001._12.soap_envelope.Envelope;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebParam;
 import java.util.List;
 
@@ -28,7 +22,7 @@ public class AbstractNotificationProducerTest extends TestCase {
         super.setUp();
         hub = new SoapUnpackingHub();
 
-        producer = new AbstractNotificationProducer(hub) {
+        producer = new AbstractNotificationProducer() {
             @Override
             public boolean keyExists(String key) {
                 return false;
@@ -40,7 +34,7 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest, @Information RequestInformation requestInformation) throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
+            public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") Subscribe subscribeRequest) throws NotifyMessageNotSupportedFault, UnrecognizedPolicyRequestFault, TopicExpressionDialectUnknownFault, ResourceUnknownFault, InvalidTopicExpressionFault, UnsupportedPolicyRequestFault, InvalidFilterFault, InvalidProducerPropertiesExpressionFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
                 return null;
             }
 
@@ -50,22 +44,7 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-                return null;
-            }
-
-            @Override
-            public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
-                return null;
-            }
-
-            @Override
             public Hub quickBuild() {
-                return null;
-            }
-
-            @Override
-            public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
                 return null;
             }
         };
