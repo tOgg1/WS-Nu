@@ -8,6 +8,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
     }
 
     @Override
-    public final InternalMessage acceptMessage(InternalMessage internalMessage) {
+    public final InternalMessage acceptMessage(InternalMessage internalMessage){
 
         Log.d("UnpackingRequestInformationConnector", "Accepting message");
 
@@ -165,19 +166,19 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
                             Object returnedData = method.invoke(_webService, args);
 
                             /* If is the case, nothing is being returned */
-                            if (method.getReturnType().equals(Void.TYPE)) {
+                            if(method.getReturnType().equals(Void.TYPE)){
                                 returnMessage = new InternalMessage(STATUS_OK, null);
-                            } else {
+                            }else{
                                 returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE,
                                         returnedData);
                             }
                             return returnMessage;
-                        }catch(Exception e) {
-                            e.printStackTrace();
-
-                            Log.d("UnpackingRequestInformationConnector", "Some exception occured: " + e.getMessage());
-                            //TODO: Add error handling
-                            return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INVALID_DESTINATION, null);
+                        }catch(IllegalAccessException e){
+                            Log.e("UnpackingRequestInformationConnector","The method being accessed is not public. Something must be wrong with the" +
+                                    "org.generated classes.\n A @WebMethod can not have private access");
+                            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
+                        }catch(InvocationTargetException e){
+                            return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
                         }
                     }else{
                         Log.d("UnpackingRequestInformationConnector", "Invalid destination");
@@ -185,7 +186,6 @@ public class UnpackingRequestInformationConnector extends WebServiceConnector {
                     }
                 }
             }
-
         }
         Log.d("UnpackingRequestInformationConnector", "Unknown method");
         return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);

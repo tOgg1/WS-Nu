@@ -1,15 +1,18 @@
 package org.ntnunotif.wsnu.services.general;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+
 /**
  * Created by tormod on 24.03.14.
  */
-public class ServiceUtilitiesTest extends TestCase {
+public class ServiceUtilitiesTest {
 
     @Test
     public void testXsdDuration() throws Exception {
@@ -99,6 +102,39 @@ public class ServiceUtilitiesTest extends TestCase {
         String testThree = "haugland.xml";
         System.out.println(testThree.matches(contentLimiterOne));
         System.out.println(testThree.matches(contentLimiterTwo));
+    }
+
+    @Test
+    public void testRegexFive() throws Exception{
+        String faultNameOne = "FaultInfo";
+        String faultNameTwo = "getFaultInfo";
+        String faultNameThree = "fault";
+        String faultNameFour = "GiveFault";
+        String faultNameFive = "info";
+        String faultNameSix = "verylongmethodnamethatdoesinfacthaveinfoinit";
+        String faultNameSeven= "anotherverylongmetodnamebutthisdoesnothavethewordortheotherwordwhatwasitfault?initahfuck";
+        String faultNameEight = "thisdoesnotcontainanythingwelike";
+
+        String regex = ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*";
+
+        boolean matchesOne = faultNameOne.matches(regex);
+        boolean matchesTwo = faultNameTwo.matches(regex);
+        boolean matchesThree = faultNameThree.matches(regex);
+        boolean matchesFour = faultNameFour.matches(regex);
+        boolean matchesFive = faultNameFive.matches(regex);
+        boolean matchesSix = faultNameSix.matches(regex);
+        boolean matchesSeven = faultNameSeven.matches(regex);
+        boolean matchesEight = faultNameEight.matches(regex);
+
+        assertTrue(matchesOne);
+        assertTrue(matchesTwo);
+        assertTrue(matchesThree);
+        assertTrue(matchesFour);
+        assertTrue(matchesFive);
+        assertTrue(matchesSix);
+        assertTrue(matchesSeven);
+        assertFalse(matchesEight);
+
     }
 
     @Test

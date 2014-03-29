@@ -110,7 +110,7 @@ public class ForwardingHub implements Hub {
             internalMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET;
 
             if(foundConnection){
-                returnMessage = connection.acceptMessage(internalMessage);
+                    returnMessage = connection.acceptMessage(internalMessage);
             }else{
                 for(ServiceConnection service : _services){
                     returnMessage = service.acceptMessage(internalMessage);
@@ -168,6 +168,18 @@ public class ForwardingHub implements Hub {
         /* Something went wrong up the stack, but we're not gonna meddle with it here, return the message back to the applicationserver
          * and let it figure out what error message to send back */
         }else{
+            if((returnMessage.statusCode & STATUS_EXCEPTION_SHOULD_BE_HANDLED) > 0){
+                Log.d("ForwardingHub", "Exception thrown up the stack");
+                InputStream stream = Utilities.attemptToParseException((Exception) returnMessage.getMessage());
+
+                if(stream == null){
+                    Log.e("ForwardingHub.acceptNetMessage", "Error not parseable, the error can not be a wsdl-specified one.");
+                    return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
+
+                returnMessage.setMessage(stream);
+
+            }
             Log.d("ForwardingHub", "Something went wrong, returning error");
             return returnMessage;
         }

@@ -133,7 +133,6 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             throw new SubscribeCreationFailedFault("Missing EndpointReference");
         }
 
-        //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
         String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
 
         FilterType filter = subscribeRequest.getFilter();

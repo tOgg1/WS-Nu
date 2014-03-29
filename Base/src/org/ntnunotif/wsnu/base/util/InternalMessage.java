@@ -20,6 +20,7 @@ public class InternalMessage {
     public static final int STATUS_FAULT_ACCESS_NOT_ALLOWED = 0x400;
     public static final int STATUS_MESSAGE_IS_INPUTSTREAM = 0x800;
     public static final int STATUS_ENDPOINTREF_IS_SET = 0x1000;
+    public static final int STATUS_EXCEPTION_SHOULD_BE_HANDLED = 0x2000;
 
     /**
      * The status code of the InternalMessage. Stored as a 32-bit flag.

@@ -1,12 +1,14 @@
 package org.ntnunotif.wsnu.base.util;
 
 import com.google.common.collect.Lists;
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -87,18 +89,93 @@ public class Utilities {
         /* Try and parse it with the XMLParser*/
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XMLParser.writeObjectToStream(message, stream);
+        return convertToByteArrayInputStream(stream);
+    }
+
+    public static InputStream convertToByteArrayInputStream(ByteArrayOutputStream stream){
         byte[] bytes = stream.toByteArray();
         return new ByteArrayInputStream(bytes);
     }
 
     /**
-     * Function to get ALL fiels up the class hierarcy.
-     * Credit: John B @ stackoverflow: http://stackoverflow.com/questions/16966629/what-is-the-difference-between-getfields-getdeclaredfields-in-java-reflection
-     * @param startClass
-     * @param exclusiveParent
+     * Takes in a class and checks if it has the passed in method.
      * @return
      */
-    public static Iterable<Field> getFieldsUpTo(Class<?> startClass,
+    public static boolean hasMethod(Class<?> c, Method method){
+        for (Method method1 : c.getMethods()) {
+            if(method1.equals(method))
+                return true;
+        }
+        return false;
+    }
+
+
+
+
+    /**
+     * Takes in a class and checks if it has a method with the passed in name.
+     */
+    public static boolean hasMethodWithName(Class<?> c, String methodName){
+        for(Method method : c.getMethods()) {
+            if(method.getName().equals(methodName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Takes in a regex-string and checks if the passed in class as a method matching the regex.
+     */
+    public static boolean hasMethodWithRegex(Class<?> c, String regex){
+        for(Method method : c.getMethods()){
+            if(method.getName().matches(regex)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Takes in a regex-string and returns a method if the class has a method matching the regex. Will
+     * return the first method encountered. Note that the entire methodname has to match the regex. Not just parts of
+     * it.
+     * @param c
+     * @param regex
+     * @return
+     */
+    public static Method getMethodByRegex(Class<?> c, String regex){
+        for (Method method : c.getMethods()) {
+            if(method.getName().matches(regex)){
+                return method;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Takes in a methodname and returns a method if a method in the passed-in class matches the methodname.
+     * @param c The relevant class.
+     * @param methodName The methodname that is to be searched for.
+     * @return
+     */
+    public static Method getMethodByName(Class<?> c, String methodName){
+        for (Method method : c.getMethods()) {
+            if(method.getName().equals(methodName)){
+                return method;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Function to get ALL fiels up the class hierarcy.
+     * Credit: John B @ stackoverflow: http://stackoverflow.com/questions/16966629/what-is-the-difference-between-getfields-getdeclaredfields-in-java-reflection
+     * @param startClass Class to get all methods for
+     * @param exclusiveParent Any parentclass that is to be excluded from the retrieval.
+     * @return
+     */
+    public static Iterable<Field> getFieldsUpTo(@NotNull Class<?> startClass,
                                                 @Nullable Class<?> exclusiveParent) {
 
         List<Field> currentClassFields = Lists.newArrayList(startClass.getDeclaredFields());
@@ -111,5 +188,77 @@ public class Utilities {
         }
 
         return currentClassFields;
+    }
+
+    /**
+     * Attempt to parse an exception to an {@link java.io.InputStream}. Does this by first looking for the method "getFaultInfo".
+     * This is the standard method for the WS-N faults for retrieval of parseable information. If this is unsuccessful, or the method is not found,
+     * the exception object itself is attempted parsed. If not found, or the method returned unparseable data, the method looks for
+     * any method having a name containing the phrases fault or info in any order. If this yields no results or the method returned
+     * data not parseable, all methods of the class are tried. If this yields no results, the same is tried for every field of
+     * the class. If this yields no results, null is returned.
+     * @param object The exception to be parsed
+     * @return An inputstream with the parsed data, or null if no data is found.
+     */
+    //TODO: Should we throw an IllegalArgumentException here, if we get an unparseable object?
+    public static InputStream attemptToParseException(Exception object){
+        Method method;
+        ByteArrayOutputStream stream = null;
+        stream = new ByteArrayOutputStream();
+
+        try{
+            stream = new ByteArrayOutputStream();
+            XMLParser.writeObjectToStream(object, stream);
+            return convertToByteArrayInputStream(stream);
+        /* We couldn't write it directly, lets try and get some information. Primarily by looking for a method named
+        * getFaultInfo, then any other method named info, and then trying every other method */
+        }catch(JAXBException e) {
+            // Continue downwards
+        }
+
+        /* This is default for all Oasis' exceptions */
+        if(hasMethodWithName(object.getClass(), "getFaultInfo")) {
+            method = getMethodByName(object.getClass(), "getFaultInfo");
+            try {
+                XMLParser.writeObjectToStream(method.invoke(object), stream);
+                return convertToByteArrayInputStream(stream);
+            } catch (Exception f) {
+                // Continue downwards
+            }
+        }
+
+        /* Tries for a method containing either fault or info in its name */
+        if(hasMethodWithRegex(object.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*")){
+            method = getMethodByRegex(object.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*");
+            try {
+                XMLParser.writeObjectToStream(method.invoke(object), stream);
+                return convertToByteArrayInputStream(stream);
+            }catch(Exception g){
+                // Continue downwards
+            }
+        }
+
+        /* Try every method */
+        for(Method method1 : object.getClass().getMethods()) {
+            try{
+                XMLParser.writeObjectToStream(method1.invoke(object), stream);
+                return convertToByteArrayInputStream(stream);
+            }catch(Exception h){
+                continue;
+            }
+        }
+
+        /* Try every field */
+        for(Field field : getFieldsUpTo(object.getClass(), null)){
+            try {
+                field.setAccessible(true);
+                XMLParser.writeObjectToStream(field, stream);
+                return convertToByteArrayInputStream(stream);
+            } catch (JAXBException e) {
+                continue;
+            }
+        }
+
+    return null;
     }
 }

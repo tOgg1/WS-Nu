@@ -136,17 +136,16 @@ public class UnpackingConnector extends WebServiceConnector {
                             Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
                                     "org.generated classes.\n A @WebMethod can not have private access");
                             e.printStackTrace();
-                            return null;
+                            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
                         } catch (InvocationTargetException e) {
-                            /* Some external exception was thrown, try and wrap it into a message and send it back to the hub */
-                            //TODO:
+                            return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
                         }
                     }else{
-                        return new InternalMessage(InternalMessage.STATUS_FAULT_INVALID_DESTINATION, null);
+                        return new InternalMessage(STATUS_FAULT_INVALID_DESTINATION, null);
                     }
                 }
             }
         }
-        return new InternalMessage(InternalMessage.STATUS_FAULT_UNKNOWN_METHOD, null);
+        return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
     }
 }
