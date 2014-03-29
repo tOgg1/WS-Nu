@@ -88,6 +88,7 @@ public class ApplicationServer{
      */
     public static boolean useConfigFile = true;
 
+    private static AbstractHandler _handler;
 
     /**
      * As this class is a singleton no external instantiation is allowed.
@@ -100,10 +101,12 @@ public class ApplicationServer{
             XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
             _server = (Server)config.configure();
 
-            _server.setHandler(new HttpHandler());
+            _handler = new HttpHandler();
+            _server.setHandler(_handler);
         }else{
             _server = new Server();
-            _server.setHandler(new HttpHandler());
+            _handler = new HttpHandler();
+            _server.setHandler(_handler);
         }
     }
 
@@ -170,6 +173,19 @@ public class ApplicationServer{
         }
     }
 
+
+    public void restart() throws Exception{
+        _server.stop();
+        _serverThread.join();
+
+        Resource resource = Resource.newSystemResource(_configFile);
+        XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+        _server = (Server)config.configure();
+
+        _server.setHandler(new HttpHandler());
+        _serverThread.start();
+    }
+
     public static void setServerConfiguration(String pathToConfigFile) throws Exception{
         File f = new File(pathToConfigFile);
 
@@ -198,14 +214,15 @@ public class ApplicationServer{
      * Sets the handler of this server. Calling this function will cause the server to restart
      * @param handler
      */
-    public void setHandler(AbstractHandler handler){
-        try {
-            this._server.setHandler(handler);
-            this._server.stop();
-            this._serverThread.join();
-            this._serverThread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static void setHandler(AbstractHandler handler){
+        _handler = handler;
+        if(_isRunning){
+            try {
+                _singleton.restart();
+            } catch (Exception e) {
+                Log.e("ApplcationServer", "ApplicationServer crashed on restart");
+                throw new RuntimeException("Server unable to restart");
+            }
         }
     }
 
@@ -224,32 +241,47 @@ public class ApplicationServer{
      * @return An array with <code>{int status, InputStream contentRecieved}</code>
      */
     public InternalMessage sendMessage(InternalMessage message){
-        //TODO: Distinguish between different faults?
-        //TODO: Handle outputstreams in message.getMessage() here? It is already handled in hub, but someone might call this function directly.
 
         RequestInformation requestInformation = message.getRequestInformation();
         String endpoint = requestInformation.getEndpointReference();
 
+        /* If we have nowhere to send the message */
         if(endpoint == null){
             Log.e("ApplicationServer", "Endpoint reference not set");
             return new InternalMessage(STATUS_FAULT, null);
         }
 
+        /* Create the actual http-request*/
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_LENGTH, "200");
 
-        //TODO: Handle exceptions
+        /* Try to send the message */
         try {
-            Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
-            request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
-            ContentResponse response = request.send();
-            return new InternalMessage(STATUS_OK, response.getContentAsString());
+            if((message.statusCode & STATUS_HAS_MESSAGE) == 0){
+                Log.e("ApplicationServer.sendMessage", "The STATUS_HAS_MESSAGE_FLAG was found to not be set." +
+                        "Please set this flag before calling this method.");
+                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+            }else{
+                if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) == 0){
+                    Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
+                            "Please convert your message to an InputStream before calling this method.");
+                    return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                }else{
+                    Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
+                    request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
+                    ContentResponse response = request.send();
+                    return new InternalMessage(STATUS_OK, response.getContentAsString());
+                }
+            }
+        } catch(ClassCastException e){
+            Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
+                    "Please convert your message to an InputStream before calling this method.");
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         } catch(Exception e){
             e.printStackTrace();
             return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
         }
-        /* Some error has occured, return error-code TODO: Handle exceptions */
     }
 
     /**

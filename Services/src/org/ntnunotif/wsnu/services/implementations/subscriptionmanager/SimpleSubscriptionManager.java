@@ -31,7 +31,14 @@ import java.util.Map;
 @WebService
 public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
+    /**
+     * Hashmap of subscriptions
+     */
     private HashMap<String, Long> _subscriptions;
+
+    /**
+     * Variable indicating whether the subscription manager should autorenew or not.
+     */
     private boolean _autoRenew = false;
 
     /**
@@ -39,6 +46,10 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
      */
     private final long renewTime = 86400;
 
+    /**
+     * Constructor.
+     * @param hub
+     */
     public SimpleSubscriptionManager(Hub hub) {
         super(hub);
         _subscriptions = new HashMap<String, Long>();

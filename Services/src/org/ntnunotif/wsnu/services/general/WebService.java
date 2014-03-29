@@ -259,14 +259,25 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * Adds a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
+     * @param manager
+     */
     public void addContentManager(ServiceUtilities.ContentManager manager){
         _contentManagers.add(manager);
     }
 
+    /**
+     * Removes a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
+     * @param manager
+     */
     public void removeContentManger(ServiceUtilities.ContentManager manager){
         _contentManagers.remove(manager);
     }
 
+    /**
+     * Clears all {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}'s.
+     */
     public void clearContentManagers(){
         _contentManagers.clear();
     }
