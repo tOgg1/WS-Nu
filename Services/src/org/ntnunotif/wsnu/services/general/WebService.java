@@ -155,7 +155,7 @@ public abstract class WebService {
      * @param requestInformation
      * @return
      */
-    @WebMethod(operationName="AcceptSoapMessage")
+    @WebMethod(exclude=true)
     public abstract Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation);
 
     /**
@@ -164,7 +164,7 @@ public abstract class WebService {
      * @param requestInformation
      * @return
      */
-    @WebMethod(operationName="AcceptRequest")
+    @WebMethod(exclude=true)
     public InternalMessage acceptRequest(@Information RequestInformation requestInformation){
         String uri = requestInformation.getRequestURL();
         Map<String, String[]> parameters = requestInformation.getParameters();
@@ -197,6 +197,7 @@ public abstract class WebService {
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
      */
+    @WebMethod(exclude = true)
     public abstract Hub quickBuild();
 
     /**
@@ -208,7 +209,8 @@ public abstract class WebService {
      * @return
      * @throws UnsupportedDataTypeException
      */
-    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
+   @WebMethod(exclude = true)
+   public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
         ForwardingHub hub = null;
         try {
             hub = new ForwardingHub();

@@ -3,20 +3,17 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
-import org.ntnunotif.wsnu.base.util.Information;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -55,11 +52,12 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
      * @param envelope
      * @return
      */
-    @Override
+   /* @Override
+    @WebMethod
     public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
         return null;
     }
-
+*/
     /**
      * Default constructor.
      */
