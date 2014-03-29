@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
@@ -12,7 +13,9 @@ import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.b_2.Subscribe;
 
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,7 +50,16 @@ public class SimpleConsumer implements ConsumerListener {
     }
 
     public void sendSubscriptionRequest(String address){
-        consumer.sendSubscriptionRequest(address);
+
+        Subscribe subscriptionRequest = consumer.factory.createSubscribe();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address(consumer.getEndpointReference());
+        subscriptionRequest.setConsumerReference(builder.build());
+        subscriptionRequest.setInitialTerminationTime(consumer.factory.createSubscribeInitialTerminationTime("P1D"));
+
+        InternalMessage returnMessage = consumer.sendSubscriptionRequest(subscriptionRequest, address);
+        System.out.println(returnMessage.getMessage().toString());
     }
 
     public SimpleConsumer() {

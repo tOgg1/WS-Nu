@@ -2,14 +2,21 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
 import org.ntnunotif.wsnu.services.general.NotificationBroker;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.Subscribe;
 
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.ArrayList;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 
 /**
  * Created by tormod on 3/11/14.
@@ -20,7 +27,6 @@ import java.util.ArrayList;
 public abstract class AbstractNotificationBroker extends AbstractNotificationProducer implements NotificationBroker {
 
     protected NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
-
 
     protected AbstractNotificationBroker() {
         super();
@@ -37,5 +43,25 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
     public void removeConsumerListener(ConsumerListener listener){
         _eventSupport.removeNotificationListener(listener);
     }
+
+    public void sendSubscriptionRequest(String address){
+        ObjectFactory factory = new ObjectFactory();
+        Subscribe subscribe = factory.createSubscribe();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        System.out.println(getEndpointReference());
+        builder.address(getEndpointReference());
+
+        W3CEndpointReference reference = builder.build();
+        subscribe.setConsumerReference(reference);
+
+        //subscribe.setInitialTerminationTime(factory.createSubscribeInitialTerminationTime("P1Y"));
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
+        message.getRequestInformation().setEndpointReference(address);
+        _hub.acceptLocalMessage(message);
+        System.out.println(message);
+    }
+
 
 }

@@ -16,7 +16,7 @@ public class Log {
     private static boolean _logWarnings = true;
 
     public static void initLogFile() throws RuntimeException {
-        _logFile = new File("config/log.txt");
+        _logFile = new File("logs/log.txt");
         _writeToFile = true;
         try
         {
@@ -54,7 +54,9 @@ public class Log {
         Log._logDebug = _enableDebug;
     }
 
-    public static void setEnableWarnings(boolean _logWarnings){Log._logWarnings = _logWarnings;}
+    public static void setEnableWarnings(boolean _logWarnings){
+        Log._logWarnings = _logWarnings;
+    }
 
     public static void d(String tag, String content)
     {

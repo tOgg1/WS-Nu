@@ -3,11 +3,8 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 import org.ntnunotif.wsnu.base.internal.ForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingRequestInformationConnector;
 import org.ntnunotif.wsnu.base.util.Information;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
-import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
-import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
@@ -203,12 +200,8 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
+    @WebMethod(operationName = "AcceptSoapMessage")
     public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-        return null;
-    }
-
-    @Override
-    public InternalMessage acceptRequest(@Information RequestInformation requestInformation) {
         return null;
     }
 

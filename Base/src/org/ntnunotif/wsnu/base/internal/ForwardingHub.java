@@ -223,6 +223,7 @@ public class ForwardingHub implements Hub {
 
                 InputStream messageAsStream = Utilities.convertUnknownToInputStream(envelope);
                 message.setMessage(messageAsStream);
+                message.statusCode = STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM;
                 return _server.sendMessage(message);
             }
         }else{

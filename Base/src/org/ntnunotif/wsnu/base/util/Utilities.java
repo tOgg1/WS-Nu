@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.base.util;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 
@@ -9,8 +8,6 @@ import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
