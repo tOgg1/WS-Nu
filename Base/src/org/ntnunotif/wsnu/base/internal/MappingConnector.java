@@ -6,8 +6,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
-import javax.jws.WebService;
-import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,8 +109,12 @@ public class MappingConnector extends WebServiceConnector{
                     return new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, returnedData);
                 }
 
-            } catch (Exception e){
+            }catch(IllegalAccessException e){
+                Log.e("UnpackingRequestInformationConnector","The method being accessed is not public. Something must be wrong with the" +
+                        "org.generated classes.\n A @WebMethod can not have private access");
                 return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
+            }catch(InvocationTargetException e){
+                return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
             }
         }
 

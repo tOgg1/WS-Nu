@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
@@ -44,7 +45,7 @@ public class SoapForwardConnector extends WebServiceConnector {
                 }
             }
         }
-        throw new InvalidWebServiceException("[SoapForwardConnector]: Invalid webService object passed. Must implement some function having the annotation @WebMethod(operationName = \"acceptSoapMessage()");
+        throw new InvalidWebServiceException("[SoapForwardConnector]: Invalid webService object passed. Must implement some function having the annotation @WebMethod(operationName = \"acceptSoapMessage()\"");
     }
 
     @Override
@@ -68,9 +69,11 @@ public class SoapForwardConnector extends WebServiceConnector {
                         method_returnedData);
             }
         } catch (IllegalAccessException e) {
+            Log.e("Unpacking Connector", "The method being accessed is not public. Something must be wrong with the" +
+                    "org.generated classes.\n A @WebMethod can not have private access");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
         } catch (InvocationTargetException e) {
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+            return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
         }
     }
 }
