@@ -24,7 +24,7 @@ public class TopicUtilsTest {
     private static final String[] rootNSs = {"http://root_test1.com", "http://root_test2.com", "http://root_test3.com" };
     private static final String[] rootLocalNames = {"roo1", "root2" };
 
-    private static final String OUTQNameToTopicSet = "Base/test/ntnunotif/wsnu/base/topics/out_topic_utils_qnames_topic_set.xml";
+    private static final String OUTQNameToTopicSet = "Base/testres/out_topic_utils_qnames_topic_set.xml";
 
     @BeforeClass
     public static void setup() {
