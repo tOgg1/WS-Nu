@@ -4,13 +4,11 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.examples.generated.IntegerContent;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 
@@ -27,12 +25,15 @@ public class SimpleNumberProducer {
         this.simpleNotificationProducer = new SimpleNotificationProducer();
     }
 
-    public void start(){
+    public void start() throws Exception{
         this.hub = simpleNotificationProducer.quickBuild();
         this.simpleNotificationProducer.setEndpointReference("numberProducer");
         startTime = System.currentTimeMillis();
-        InputManager in = new InputManager();
-        in.start();
+        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
+        inputManager.addMethodReroute("generate", "^generate(.*)?", true, this.getClass().getMethod("handleGenerate", String.class), this);
+        inputManager.addMethodReroute("notify", "^notify *[0-9]+", true, this.getClass().getMethod("handleNotify", String.class), this);
+        inputManager.start();
     }
 
     /**
@@ -55,7 +56,7 @@ public class SimpleNumberProducer {
         simpleNotificationProducer.sendNotification(notify);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Log.initLogFile();
         Log.setEnableDebug(true);
 
@@ -65,45 +66,24 @@ public class SimpleNumberProducer {
         producer.start();
     }
 
-    private class InputManager{
+    public void handleInfo(String command){
+        System.out.println("Endpoint: " + SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
+        System.out.println("INFO\n------\nUptime: " +
+                new DecimalFormat("#.##").format((double) (System.currentTimeMillis() - startTime) / (3600 * 1000))
+                + " hours");
+    }
 
-        public InputManager(){
+    public void handleNotify(String command) {
+        long data = Long.parseLong(command.replaceAll(" ", "").replaceAll("^notify", ""));
+        SimpleNumberProducer.this.sendNotification(data);
+    }
 
-        }
-
-        public void start(){
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-            System.out.println("Inputmanager started...\n");
-            String in;
-            try {
-                while((in = reader.readLine()) != null){
-                    if(in.matches("^exit")){
-                        System.exit(0);
-                    }else if(in.matches("^notify *[0-9]+")) {
-
-                        long data = Long.parseLong(in.replaceAll(" ", "").replaceAll("^notify", ""));
-                        SimpleNumberProducer.this.sendNotification(data);
-                    }else if(in.matches("^info")) {
-                        System.out.println("Endpoint: " + SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
-                        System.out.println("INFO\n------\nUptime: " +
-                                new DecimalFormat("#.##").format((double) (System.currentTimeMillis() - startTime) / (3600 * 1000))
-                                + " hours");
-                    }else if(in.matches("^generate")){
-                        try {
-                            simpleNotificationProducer.generateWSDLandXSDSchemas();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println("Couldn't generate wsdl files: " + e.getMessage());
-                        }
-                    }else{
-                        System.out.println("Command not supported");
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(0);
-            }
+    public void handleGenerate(String command) {
+        try {
+            simpleNotificationProducer.generateWSDLandXSDSchemas();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Couldn't generate wsdl files: " + e.getMessage());
         }
     }
 }

@@ -72,14 +72,17 @@ public class SimpleConsumer implements ConsumerListener {
         consumer.setEndpointReference("Hello");
         consumer.addConsumerListener(this);
         startTime = System.currentTimeMillis();
-        ServiceUtilities.ContentManager.InputManager inputManager = new ServiceUtilities.ContentManager.InputManager();
+        /* Creates an inputManager and registers some commands it wants rerouted */
+        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+        /* Reroutes matches of ^inf?o?.*? to the function handleInfo using regex */
         inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
         inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
         inputManager.addMethodReroute("^request (.*)+", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
         inputManager.start();
     }
 
-    public void handleInfo(String command){
+    public void handleInfo(String command) {
+        System.out.println("Endpoint: " + SimpleConsumer.this.consumer.getEndpointReference());
         System.out.println("Uptime: " +
                 new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
                 + " hours");
