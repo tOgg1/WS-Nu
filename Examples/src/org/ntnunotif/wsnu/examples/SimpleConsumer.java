@@ -31,6 +31,24 @@ public class SimpleConsumer implements ConsumerListener {
     private long startTime;
     private int receivedPackages;
 
+    public SimpleConsumer() throws NoSuchMethodException {
+
+        consumer = new NotificationConsumer();
+        hub = consumer.quickBuild();
+        consumer.setEndpointReference("Hello");
+        consumer.addConsumerListener(this);
+        startTime = System.currentTimeMillis();
+
+        /* Creates an inputManager and registers some commands it wants rerouted */
+        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+
+        /* Reroutes matches of ^inf?o?.*? to the function handleInfo using regex */
+        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
+        inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
+        inputManager.addMethodReroute("request", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
+        inputManager.start();
+    }
+
     public static void main(String[] args) throws Exception{
         Log.setEnableDebug(true);
         Log.initLogFile();
@@ -64,21 +82,6 @@ public class SimpleConsumer implements ConsumerListener {
         InternalMessage message = consumer.sendRequest(raw);
         System.out.println(message.getMessage());
         System.out.println(message.getRequestInformation().toString());
-    }
-
-    public SimpleConsumer() throws NoSuchMethodException {
-        consumer = new NotificationConsumer();
-        hub = consumer.quickBuild();
-        consumer.setEndpointReference("Hello");
-        consumer.addConsumerListener(this);
-        startTime = System.currentTimeMillis();
-        /* Creates an inputManager and registers some commands it wants rerouted */
-        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
-        /* Reroutes matches of ^inf?o?.*? to the function handleInfo using regex */
-        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
-        inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
-        inputManager.addMethodReroute("^request (.*)+", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
-        inputManager.start();
     }
 
     public void handleInfo(String command) {

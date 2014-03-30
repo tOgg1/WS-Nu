@@ -28,6 +28,7 @@ public class SimpleNumberProducer {
     public void start() throws Exception{
         this.hub = simpleNotificationProducer.quickBuild();
         this.simpleNotificationProducer.setEndpointReference("numberProducer");
+        this.simpleNotificationProducer.setWsdlLocation("numberProducer/SimpleNotificationProducerService.wsdl");
         startTime = System.currentTimeMillis();
         ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
         inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);

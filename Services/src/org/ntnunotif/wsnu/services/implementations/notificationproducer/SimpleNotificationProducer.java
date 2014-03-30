@@ -45,19 +45,6 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
     /**
-     * Takes and unpacks a soapnvelope. Can potentially throw any fault of
-     * {@link #getCurrentMessage(org.oasis_open.docs.wsn.b_2.GetCurrentMessage)} or
-     * {@link #subscribe(org.oasis_open.docs.wsn.b_2.Subscribe, org.ntnunotif.wsnu.base.util.RequestInformation)}
-     * @param envelope
-     * @return
-     */
-   /* @Override
-    @WebMethod
-    public Object acceptSoapMessage(@WebParam Envelope envelope, @Information RequestInformation requestInformation) {
-        return null;
-    }
-*/
-    /**
      * Default constructor.
      */
     public SimpleNotificationProducer(){
@@ -160,7 +147,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         gregorianCalendar.setTimeInMillis(terminationTime);
 
         try {
-            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");

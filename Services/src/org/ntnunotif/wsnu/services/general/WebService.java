@@ -46,6 +46,7 @@ public abstract class WebService {
      * Default constructor.
      */
     protected WebService(){
+        _contentManagers = new ArrayList<>();
     }
 
     /**
@@ -150,15 +151,27 @@ public abstract class WebService {
         RequestInformation requestInformation = _connection.getReqeustInformation();
 
         String uri = requestInformation.getRequestURL();
+        Log.d("WebService", "Request accepted: " + uri);
         Map<String, String[]> parameters = requestInformation.getParameters();
 
         if(parameters != null){
             if(parameters.size() != 0){
                 for (String s : parameters.keySet()) {
-
+                    Log.d("WebService", "Found parameter " + s);
                     /* This is a request for the wsdl files */
                     if(s.equals("wsdl")){
-
+                        try{
+                            if(wsdlLocation == null){
+                                Log.e("WebService", "Wsdl-file does not exist, or is not set, please set it with setWsdlLocation() or run generateWsdlAndXsd()");
+                                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
+                            }
+                            FileInputStream stream = new FileInputStream(wsdlLocation);
+                            InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
+                            return message;
+                        }catch(FileNotFoundException e){
+                            Log.d("WebService", "Wsdl-file not found, please generate it with generateWsdlAndXsd()");
+                            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
+                        }
                     }
                 }
             }
@@ -388,6 +401,7 @@ public abstract class WebService {
                 System.out.println(out);
             }
 
+            Log.d("WebService", "Error output:");
             BufferedReader errorOutputReader = new BufferedReader(new InputStreamReader(procces.getErrorStream()));
 
             while((out = errorOutputReader.readLine()) != null){
@@ -404,6 +418,7 @@ public abstract class WebService {
         //TODO: Add support for more systems
     }
 
+    @WebMethod(exclude = true)
     public String getWsdlLocation() {
         return wsdlLocation;
     }
@@ -413,6 +428,7 @@ public abstract class WebService {
      * @param wsdlLocation
      * @return True if the file was found, false if not.
      */
+    @WebMethod(exclude = true)
     public boolean setWsdlLocation(String wsdlLocation) {
         File file = new File(wsdlLocation);
 

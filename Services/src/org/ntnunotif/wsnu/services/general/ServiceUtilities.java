@@ -39,12 +39,14 @@ public class ServiceUtilities {
 
         private HashMap<String, Method> _methodRerouting;
         private HashMap<String, String> _matchCommand;
+        private HashMap<String, Boolean> _methodTakesCommandString;
         private HashMap<String, Boolean> _methodUsesRegex;
         private HashMap<String, Object> _theInvokables;
 
         public InputManager() {
             _methodRerouting = new HashMap<>();
             _theInvokables = new HashMap<>();
+            _methodTakesCommandString = new HashMap<>();
             _matchCommand = new HashMap<>();
             _methodUsesRegex = new HashMap<>();
         }
@@ -60,6 +62,7 @@ public class ServiceUtilities {
         public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo, Object invokable){
             _methodRerouting.put(command, rerouteTo);
             _theInvokables.put(command, invokable);
+            _methodTakesCommandString.put(command, rerouteTo.getParameterTypes().length != 0);
             _matchCommand.put(command, matchCommand);
             _methodUsesRegex.put(command, regex);
         }
@@ -67,6 +70,7 @@ public class ServiceUtilities {
         public void removeMethodReroute(String command){
             _methodRerouting.remove(command);
             _methodUsesRegex.remove(command);
+            _methodTakesCommandString.remove(command);
             _matchCommand.remove(command);
             _theInvokables.remove(command);
         }
@@ -94,7 +98,11 @@ public class ServiceUtilities {
                 if(_methodUsesRegex.get(key)){
                     if(command.matches(_matchCommand.get(key))){
                         try {
-                            _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                            if(_methodTakesCommandString.get(key)){
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                            }else{
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key));
+                            }
                             wasInvoked = true;
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
@@ -109,7 +117,11 @@ public class ServiceUtilities {
                 }else{
                     if(command.contains(_matchCommand.get(key))){
                         try {
-                            _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                            if(_methodTakesCommandString.get(key)){
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                            }else{
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key));
+                            }
                             wasInvoked = true;
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();

@@ -76,8 +76,10 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return endpointReference + "/?subscription=" + key;
     }
 
+    @WebMethod(exclude = true)
     public abstract boolean keyExists(String key);
 
+    @WebMethod(exclude = true)
     public abstract List<String> getRecipients(Notify notify);
 
     /**

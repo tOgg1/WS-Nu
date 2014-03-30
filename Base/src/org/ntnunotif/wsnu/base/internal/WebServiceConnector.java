@@ -156,6 +156,9 @@ public abstract class WebServiceConnector implements ServiceConnection{
 
     @Override
     public InternalMessage acceptRequest(InternalMessage message) {
+
+        _requestInformation = message.getRequestInformation();
+
         Log.d("WebServiceConnector", "Accepted requestMessage");
         if(_requestMethod == null){
             Log.e("WebServiceConnector", "AcceptRequest function called on a connector not having defined the requestmethod. " +
@@ -178,6 +181,8 @@ public abstract class WebServiceConnector implements ServiceConnection{
                 Log.e("WebServiceConnector", "AcceptRequest-method of the web service is inaccessible, even after setAccessible is called.");
                 return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
             } catch (InvocationTargetException e) {
+                e.getTargetException().printStackTrace();
+                Log.e("WebServiceConnector", "Some exception happened at the remotely invoked acceptRequest method: " + e.getTargetException().getMessage());
                 return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_DESTINATION, null);
             }
         }
