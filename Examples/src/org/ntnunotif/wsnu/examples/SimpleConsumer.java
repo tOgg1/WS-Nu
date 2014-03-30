@@ -115,7 +115,8 @@ public class SimpleConsumer implements ConsumerListener {
             Log.d("SimpleConsumer", "Inserted http://-tag");
             raw = "http://"+raw;
         }
-        consumer.sendRequest(raw);
+        InternalMessage message = consumer.sendRequest(raw);
+        System.out.println(message.getMessage());
     }
 
     @Override

@@ -34,6 +34,7 @@ public class SimpleNumberProducer {
         inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
         inputManager.addMethodReroute("generate", "^generate(.*)?", true, this.getClass().getMethod("handleGenerate", String.class), this);
         inputManager.addMethodReroute("notify", "^notify *[0-9]+", true, this.getClass().getMethod("handleNotify", String.class), this);
+        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
         inputManager.start();
     }
 

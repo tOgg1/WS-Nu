@@ -197,6 +197,7 @@ public class ServiceUtilities {
                         Object[] args = new Object[_defaultArguments.get(key).size() + (_methodTakesCommandString.get(key) ? 1 : 0)];
                         if (args.length == 0) {
                             _methodRerouting.get(key).invoke(_theInvokables.get(key));
+                            wasInvoked = true;
                             continue;
                         }
 
@@ -211,6 +212,7 @@ public class ServiceUtilities {
                         }
 
                         _methodRerouting.get(key).invoke(_theInvokables.get(key), args);
+                        wasInvoked = true;
                         continue;
 
                     } catch (IllegalAccessException e) {
@@ -224,6 +226,7 @@ public class ServiceUtilities {
                     }
                 }
             }
+
             /* If the method already has invoked we won't run it as a system-command */
             if(wasInvoked){
                 return;

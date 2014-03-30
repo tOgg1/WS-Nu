@@ -174,6 +174,12 @@ public class Utilities {
         return null;
     }
 
+    /**
+     * Finds an annotation of the class aClass by looking for an annotation matching the class annotationClass
+     * @param aClass
+     * @param annotationClass
+     * @return
+     */
     public static Annotation findAnnotation(Class<?> aClass, Class<? extends Annotation> annotationClass){
         for (Annotation annotation : aClass.getAnnotations()) {
             if(annotation.annotationType().equals(annotationClass)){
