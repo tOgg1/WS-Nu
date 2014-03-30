@@ -58,67 +58,72 @@ public class MappingConnector extends WebServiceConnector{
     @Override
     public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
-         /* The message */
-        Object potentialEnvelope = internalMessage.getMessage();
+        synchronized (this){
 
-        if(!(potentialEnvelope instanceof Envelope)){
-            Log.d("UnpackingRequestInformationConnector", "Content not envelope");
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        }
+            super.acceptMessage(internalMessage);
 
-        /* Unpack the body */
-        Envelope envelope = (Envelope)potentialEnvelope;
-        Body body = ((Envelope) potentialEnvelope).getBody();
+             /* The message */
+            Object potentialEnvelope = internalMessage.getMessage();
 
-        List<Object> messages = body.getAny();
-
-        for(Object message : messages){
-            Class objectClass = message.getClass();
-
-            if(!(_methodMap.containsKey(objectClass.getSimpleName()))){
-                Log.e("MappingConnector", "Invalid message-object passed in");
+            if(!(potentialEnvelope instanceof Envelope)){
+                Log.d("UnpackingRequestInformationConnector", "Content not envelope");
                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
             }
 
-            Method method = _allowedMethods.get(_methodMap.get(objectClass.getSimpleName()));
-            Object[] args = new Object[method.getParameterTypes().length];
+            /* Unpack the body */
+            Envelope envelope = (Envelope)potentialEnvelope;
+            Body body = ((Envelope) potentialEnvelope).getBody();
 
-            /* Find the argument-index of the message. Will use the first found */
-            int index = -1;
-            for (Class<?> aClass : method.getParameterTypes()) {
-                ++index;
-                if(aClass == objectClass){
-                    break;
-                 }
-            }
+            List<Object> messages = body.getAny();
 
-            if(index == -1){
-                Log.e("MappingConnector", "Index of argument" + objectClass + " not found in method" + method.getName());
-                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-            }
+            for(Object message : messages){
+                Class objectClass = message.getClass();
 
-            args[index] = message;
-
-            try {
-                Object returnedData = method.invoke(_webService, args);
-
-                 /* If is the case, nothing is being returned */
-                if (method.getReturnType().equals(Void.TYPE)) {
-                    return new InternalMessage(STATUS_OK, null);
-                } else {
-                    return new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, returnedData);
+                if(!(_methodMap.containsKey(objectClass.getSimpleName()))){
+                    Log.e("MappingConnector", "Invalid message-object passed in");
+                    return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
 
-            }catch(IllegalAccessException e){
-                Log.e("UnpackingRequestInformationConnector","The method being accessed is not public. Something must be wrong with the" +
-                        "org.generated classes.\n A @WebMethod can not have private access");
-                return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
-            }catch(InvocationTargetException e){
-                return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
+                Method method = _allowedMethods.get(_methodMap.get(objectClass.getSimpleName()));
+                Object[] args = new Object[method.getParameterTypes().length];
+
+                /* Find the argument-index of the message. Will use the first found */
+                int index = -1;
+                for (Class<?> aClass : method.getParameterTypes()) {
+                    ++index;
+                    if(aClass == objectClass){
+                        break;
+                     }
+                }
+
+                if(index == -1){
+                    Log.e("MappingConnector", "Index of argument" + objectClass + " not found in method" + method.getName());
+                    return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
+
+                args[index] = message;
+
+                try {
+                    Object returnedData = method.invoke(_webService, args);
+
+                     /* If is the case, nothing is being returned */
+                    if (method.getReturnType().equals(Void.TYPE)) {
+                        return new InternalMessage(STATUS_OK, null);
+                    } else {
+                        return new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, returnedData);
+                    }
+
+                }catch(IllegalAccessException e){
+                    Log.e("UnpackingRequestInformationConnector","The method being accessed is not public. Something must be wrong with the" +
+                            "org.generated classes.\n A @WebMethod can not have private access");
+                    return new InternalMessage(STATUS_FAULT| STATUS_FAULT_INTERNAL_ERROR, null);
+                }catch(InvocationTargetException e){
+                    return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
+                }
             }
+            return new InternalMessage(STATUS_FAULT, null);
         }
 
-        return new InternalMessage(STATUS_FAULT, null);
     }
 
     @Override

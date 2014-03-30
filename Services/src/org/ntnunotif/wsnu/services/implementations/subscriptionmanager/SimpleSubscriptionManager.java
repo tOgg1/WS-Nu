@@ -6,12 +6,10 @@ import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
-import org.oasis_open.docs.wsn.b_2.Renew;
-import org.oasis_open.docs.wsn.b_2.RenewResponse;
-import org.oasis_open.docs.wsn.b_2.Unsubscribe;
-import org.oasis_open.docs.wsn.b_2.UnsubscribeResponse;
+import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
+import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
 import javax.jws.WebMethod;
@@ -127,9 +125,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                     _subscriptions.remove(subRef);
                     return new UnsubscribeResponse();
                 }
-                throw new ResourceUnknownFault();
+                throw new ResourceUnknownFault("Ill-formated subscription-parameter", new ResourceUnknownFaultType());
             } else if(entry.getValue().length == 0){
-                throw new UnableToDestroySubscriptionFault();
+                throw new UnableToDestroySubscriptionFault("Subscription-parameter is missing value", new UnableToDestroySubscriptionFaultType());
             }
 
             String subRef = entry.getValue()[0];
@@ -143,7 +141,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                     Log.d("SimpleSubscriptionmanager", s);
                 }
                 Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
-                throw new ResourceUnknownFault();
+                throw new ResourceUnknownFault("Subscription not found.", new ResourceUnknownFaultType());
             }
 
             Log.d("SimpleSubscriptionManager", "Removed subscription");
@@ -151,7 +149,8 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             return new UnsubscribeResponse();
         }
 
-        throw new UnableToDestroySubscriptionFault();
+        throw new UnableToDestroySubscriptionFault("The subscription was not found as any parameter in the request-uri. Please send a " +
+                "request on the form: \"http://urlofthis.domain/webservice/?subscription=subscriptionreference", new UnableToDestroySubscriptionFaultType());
     }
 
     /**

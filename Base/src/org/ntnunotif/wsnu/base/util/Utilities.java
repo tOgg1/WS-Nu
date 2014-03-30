@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.w3._2001._12.soap_envelope.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -197,62 +198,94 @@ public class Utilities {
      * any method having a name containing the phrases fault or info in any order. If this yields no results or the method returned
      * data not parseable, all methods of the class are tried. If this yields no results, the same is tried for every field of
      * the class. If this yields no results, null is returned.
-     * @param object The exception to be parsed
+     * @param exception The exception to be parsed
      * @return An inputstream with the parsed data, or null if no data is found.
      */
     //TODO: Should we throw an IllegalArgumentException here, if we get an unparseable object?
-    public static InputStream attemptToParseException(Exception object){
+    //TODO: Make the parser parse the faults...
+    public static InputStream attemptToParseException(Exception exception){
+
+        ObjectFactory soapObjectFactory = new ObjectFactory();
+
+        /* Create fault-soap message */
+        Envelope envelope = new Envelope();
+        Body body = new Body();
+        Header header = new Header();
+        Fault fault = new Fault();
+        Detail detail = new Detail();
+
+        fault.setFaultactor(exception.getMessage());
+        fault.setDetail(detail);
+        body.getAny().add(fault);
+        envelope.setBody(body);
+        envelope.setHeader(header);
+
         Method method;
         ByteArrayOutputStream stream = null;
         stream = new ByteArrayOutputStream();
+        Log.d("Utilities.attemptToParseException", "Got exception " + exception.getClass() + " to parse");
 
         try{
+            detail.getAny().add(exception);
+
             stream = new ByteArrayOutputStream();
-            XMLParser.writeObjectToStream(object, stream);
+            XMLParser.writeObjectToStream(envelope, stream);
             return convertToByteArrayInputStream(stream);
         /* We couldn't write it directly, lets try and get some information. Primarily by looking for a method named
         * getFaultInfo, then any other method named info, and then trying every other method */
         }catch(JAXBException e) {
-            // Continue downwards
+            Log.d("Utilities.attemptToParseException", "Exception could not be parsed directly: " + e.getMessage());
         }
+
+        detail.getAny().clear();
 
         /* This is default for all Oasis' exceptions */
-        if(hasMethodWithName(object.getClass(), "getFaultInfo")) {
-            method = getMethodByName(object.getClass(), "getFaultInfo");
+        if(hasMethodWithName(exception.getClass(), "getFaultInfo")) {
+            method = getMethodByName(exception.getClass(), "getFaultInfo");
             try {
-                XMLParser.writeObjectToStream(method.invoke(object), stream);
+                detail.getAny().add(method.invoke(exception));
+                XMLParser.writeObjectToStream(envelope, stream);
                 return convertToByteArrayInputStream(stream);
             } catch (Exception f) {
-                // Continue downwards
+                f.printStackTrace();
+                Log.d("Utilities.attemptToParseException", "getFaultInfo failed to parse: " + f.getMessage());
             }
         }
+
+        detail.getAny().clear();
 
         /* Tries for a method containing either fault or info in its name */
-        if(hasMethodWithRegex(object.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*")){
-            method = getMethodByRegex(object.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*");
+        if(hasMethodWithRegex(exception.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*")){
+            method = getMethodByRegex(exception.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*");
             try {
-                XMLParser.writeObjectToStream(method.invoke(object), stream);
+                detail.getAny().add(method.invoke(exception));
+                XMLParser.writeObjectToStream(envelope, stream);
                 return convertToByteArrayInputStream(stream);
             }catch(Exception g){
-                // Continue downwards
+                Log.d("Utilities.attemptToParseException", "Any fault/info function failed to prase: " + g.getMessage());
             }
         }
 
+        detail.getAny().clear();
+
         /* Try every method */
-        for(Method method1 : object.getClass().getMethods()) {
+        for(Method method1 : exception.getClass().getMethods()) {
             try{
-                XMLParser.writeObjectToStream(method1.invoke(object), stream);
+                detail.getAny().add(method1.invoke(exception));
+                XMLParser.writeObjectToStream(envelope, stream);
                 return convertToByteArrayInputStream(stream);
             }catch(Exception h){
                 continue;
             }
         }
 
+        detail.getAny().clear();
+
         /* Try every field */
-        for(Field field : getFieldsUpTo(object.getClass(), null)){
+        for(Field field : getFieldsUpTo(exception.getClass(), null)){
             try {
-                field.setAccessible(true);
-                XMLParser.writeObjectToStream(field, stream);
+                detail.getAny().add(field);
+                XMLParser.writeObjectToStream(envelope, stream);
                 return convertToByteArrayInputStream(stream);
             } catch (JAXBException e) {
                 continue;

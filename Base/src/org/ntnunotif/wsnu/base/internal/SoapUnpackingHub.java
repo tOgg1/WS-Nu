@@ -178,7 +178,7 @@ public class SoapUnpackingHub implements Hub {
                 }
 
                 returnMessage.setMessage(stream);
-
+                returnMessage.statusCode = STATUS_FAULT | STATUS_HAS_MESSAGE;
             }
             Log.d("SoapUnpackingHub", "Something went wrong, returning error");
             return returnMessage;

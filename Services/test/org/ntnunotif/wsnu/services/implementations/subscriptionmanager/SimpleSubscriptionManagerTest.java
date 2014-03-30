@@ -97,7 +97,8 @@ public class SimpleSubscriptionManagerTest{
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
-        assertEquals(404, response.getStatus());
+        System.out.println(responseContent);
+        assertEquals(500, response.getStatus());
     }
 
     @Test

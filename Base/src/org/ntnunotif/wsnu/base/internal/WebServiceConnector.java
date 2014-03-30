@@ -187,6 +187,12 @@ public abstract class WebServiceConnector implements ServiceConnection{
     }
 
     @Override
+    public InternalMessage acceptMessage(InternalMessage message) {
+        _requestInformation = message.getRequestInformation();
+        return new InternalMessage(STATUS_OK, null);
+    }
+
+    @Override
     public void endpointUpdated(String newEndpointReference) {
         this._endpointReference = newEndpointReference;
     }

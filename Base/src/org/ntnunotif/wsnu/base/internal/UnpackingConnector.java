@@ -75,67 +75,73 @@ public class UnpackingConnector extends WebServiceConnector {
     //TODO: Support multiple messages
     public final InternalMessage acceptMessage(InternalMessage internalMessage) {
 
-        /* The message */
-        Object potentialEnvelope = internalMessage.getMessage();
+        synchronized (this){
 
-        if(!(potentialEnvelope instanceof Envelope)){
-            Log.e("UnpackingConnector", "Someone try to send something else than a Soap-Envelope.");
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        }
+            super.acceptMessage(internalMessage);
 
-        /* Unpack the body */
-        Envelope envelope = (Envelope)potentialEnvelope;
-        Body body = envelope.getBody();
+            /* The message */
+            Object potentialEnvelope = internalMessage.getMessage();
 
-        List<Object> messages = body.getAny();
+            if(!(potentialEnvelope instanceof Envelope)){
+                Log.e("UnpackingConnector", "Someone try to send something else than a Soap-Envelope.");
+                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+            }
 
-        Log.d("UnpackingConnector", "Sending message to web service at " + _webService.toString());
+            /* Unpack the body */
+            Envelope envelope = (Envelope)potentialEnvelope;
+            Body body = envelope.getBody();
 
-        for(Object message : messages){
+            List<Object> messages = body.getAny();
 
-            /* The class of this message */
-            Class objectClass = message.getClass();
-            Annotation[] messageAnnotations = objectClass.getAnnotations();
+            Log.d("UnpackingConnector", "Sending message to web service at " + _webService.toString());
 
-            for(Annotation annotation : messageAnnotations){
+            for(Object message : messages){
 
-                /* Look for the annotation @XmlRootElement */
-                if(annotation instanceof XmlRootElement){
-                    XmlRootElement xmlRootElement = (XmlRootElement)annotation;
-                    /* Check if this connector's web service has a matching method */
-                    if(_allowedMethods.containsKey(xmlRootElement.name())){
-                        Method method = _allowedMethods.get(xmlRootElement.name());
-                        try {
-                            /* Run method on the Web Service */
-                            InternalMessage returnMessage;
+                /* The class of this message */
+                Class objectClass = message.getClass();
+                Annotation[] messageAnnotations = objectClass.getAnnotations();
 
-                            Object method_returnedData;
+                for(Annotation annotation : messageAnnotations){
 
-                            /* Spit this error-message out, however try and send the message regardless*/
-                            method_returnedData = method.invoke(_webService, message);
+                    /* Look for the annotation @XmlRootElement */
+                    if(annotation instanceof XmlRootElement){
+                        XmlRootElement xmlRootElement = (XmlRootElement)annotation;
+                        /* Check if this connector's web service has a matching method */
+                        if(_allowedMethods.containsKey(xmlRootElement.name())){
+                            Method method = _allowedMethods.get(xmlRootElement.name());
+                            try {
+                                /* Run method on the Web Service */
+                                InternalMessage returnMessage;
 
-                            /* If is the case, nothing is being returned */
-                            if (method.getReturnType().equals(Void.TYPE)) {
-                                returnMessage = new InternalMessage(STATUS_OK, null);
-                            } else {
-                                returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, method_returnedData);
+                                Object method_returnedData;
+
+                                /* Spit this error-message out, however try and send the message regardless*/
+                                method_returnedData = method.invoke(_webService, message);
+
+                                /* If is the case, nothing is being returned */
+                                if (method.getReturnType().equals(Void.TYPE)) {
+                                    returnMessage = new InternalMessage(STATUS_OK, null);
+                                } else {
+                                    returnMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE, method_returnedData);
+                                }
+                                return returnMessage;
+
+                            } catch (IllegalAccessException e) {
+                                Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
+                                        "org.generated classes.\n A @WebMethod can not have private access");
+                                e.printStackTrace();
+                                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
+                            } catch (InvocationTargetException e) {
+                                return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
                             }
-                            return returnMessage;
-
-                        } catch (IllegalAccessException e) {
-                            Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
-                                    "org.generated classes.\n A @WebMethod can not have private access");
-                            e.printStackTrace();
-                            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
-                        } catch (InvocationTargetException e) {
-                            return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
+                        }else{
+                            return new InternalMessage(STATUS_FAULT_INVALID_DESTINATION, null);
                         }
-                    }else{
-                        return new InternalMessage(STATUS_FAULT_INVALID_DESTINATION, null);
                     }
                 }
             }
+            return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
         }
-        return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
+
     }
 }

@@ -348,6 +348,23 @@ public class ApplicationServer{
 
             /* Handle possible errors */
             if((returnMessage.statusCode & STATUS_FAULT) > 0){
+
+                /* Have we got an error message to return? */
+                if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0){
+                    httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
+
+                    InputStream inputStream = (InputStream)returnMessage.getMessage();
+                    OutputStream outputStream = httpServletResponse.getOutputStream();
+
+                    /* google.commons helper function*/
+                    ByteStreams.copy(inputStream, outputStream);
+
+                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                    outputStream.flush();
+                    request.setHandled(true);
+                    return;
+                }
+
                 if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                     httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                     request.setHandled(true);
@@ -389,27 +406,13 @@ public class ApplicationServer{
                 httpServletResponse.setStatus(HttpStatus.OK_200);
                 outputStream.flush();
                 request.setHandled(true);
-
-            /* Something went wrong, and an error-message is being returned
-             * This is only here for theoretical reasons. Calling something like this should make you
-             * rethink your Web Service's architecture */
-            }else if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0 && (returnMessage.statusCode & STATUS_FAULT) > 0){
-                httpServletResponse.setContentType("application/soap+xml;charset=utf-8");
-
-                InputStream inputStream = (InputStream)returnMessage.getMessage();
-                OutputStream outputStream = httpServletResponse.getOutputStream();
-
-                /* google.commons helper function*/
-                ByteStreams.copy(inputStream, outputStream);
-
-                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                outputStream.flush();
-                request.setHandled(true);
             /* Everything is fine, and nothing is expected */
             }else if((STATUS_OK & returnMessage.statusCode) > 0){
                 httpServletResponse.setStatus(HttpStatus.OK_200);
                 request.setHandled(true);
             }else{
+                Log.w("ApplicationServer.handleMessage", "The message returned to the ApplcationServer was not flagged with either STATUS_OK or" +
+                      "STATUS_FAULT. Please set either of these flags at all points");
                 httpServletResponse.setStatus(HttpStatus.OK_200);
                 request.setHandled(true);
             }

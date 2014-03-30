@@ -3,7 +3,6 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
@@ -50,16 +49,18 @@ public class SoapForwardConnector extends WebServiceConnector {
     }
 
     @Override
-    public final InternalMessage acceptMessage(InternalMessage message) {
-        synchronized(SoapForwardConnector.class){
+    public final InternalMessage acceptMessage(InternalMessage internalMessage) {
+        synchronized(this){
 
-            Object messageContent = message.getMessage();
+            super.acceptMessage(internalMessage);
+
+            Object messageContent = internalMessage.getMessage();
 
             if(!(messageContent instanceof Envelope)){
                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
             }
 
-            Envelope soapEnvelope = (Envelope)message.getMessage();
+            Envelope soapEnvelope = (Envelope)internalMessage.getMessage();
 
             try {
                 Object method_returnedData = _soapMethod.invoke(_webService, soapEnvelope);
