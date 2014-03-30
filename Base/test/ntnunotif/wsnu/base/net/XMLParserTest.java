@@ -1,18 +1,22 @@
 package ntnunotif.wsnu.base.net;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
-import org.w3._2001._12.soap_envelope.Body;
-import org.w3._2001._12.soap_envelope.Envelope;
-
+import org.w3._2001._12.soap_envelope.*;
 
 import javax.xml.bind.JAXBElement;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Inge on 07.03.14.
@@ -105,5 +109,22 @@ public class XMLParserTest {
         fileOutputStream = new FileOutputStream("Base/testres/parser_sub2xml.xml");
         XMLParser.writeObjectToStream(parsedObject3, fileOutputStream);
         fileOutputStream.close();
+    }
+
+    @Test
+    public void testMarshallingFaultInEnvelope() throws Exception {
+        Envelope envelope = new Envelope();
+        Body body = new Body();
+        Header header = new Header();
+
+        envelope.setBody(body);
+        envelope.setHeader(header);
+
+        Fault fault = new Fault();
+        body.getAny().add(new ObjectFactory().createFault(fault));
+
+        FileOutputStream fileOut = new FileOutputStream("Base/testres/test_fault.xml");
+        XMLParser.writeObjectToStream(new ObjectFactory().createEnvelope(envelope), fileOut);
+
     }
 }

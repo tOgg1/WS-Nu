@@ -181,15 +181,15 @@ public class SoapUnpackingHub implements Hub {
         }else{
             if((returnMessage.statusCode & STATUS_EXCEPTION_SHOULD_BE_HANDLED) > 0){
                 Log.d("SoapUnpackingHub", "Exception thrown up the stack");
-                InputStream stream = Utilities.attemptToParseException((Exception) returnMessage.getMessage());
-
-                if(stream == null){
+                try{
+                    Utilities.attemptToParseException((Exception) returnMessage.getMessage(), streamToRequestor);
+                }catch(IllegalArgumentException e){
                     Log.e("SoapUnpackingHub.acceptNetMessage", "Error not parseable, the error can not be a wsdl-specified one.");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
+                }catch(ClassCastException e){
+                    Log.e("SoapUnpackingHub.acceptNetMessage", "The returned exception is not a subclass of Exception.");
+                    return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
-
-                returnMessage.setMessage(stream);
-                returnMessage.statusCode = STATUS_FAULT | STATUS_HAS_MESSAGE;
             }
             Log.d("SoapUnpackingHub", "Something went wrong, returning error");
             return returnMessage;

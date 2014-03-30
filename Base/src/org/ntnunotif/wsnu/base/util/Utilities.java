@@ -6,8 +6,12 @@ import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.w3._2001._12.soap_envelope.*;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import javax.xml.ws.WebFault;
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -170,6 +174,19 @@ public class Utilities {
         return null;
     }
 
+    public static Annotation findAnnotation(Class<?> aClass, Class<? extends Annotation> annotationClass){
+        for (Annotation annotation : aClass.getAnnotations()) {
+            if(annotation.annotationType().equals(annotationClass)){
+                return annotation;
+            }
+        }
+        return null;
+    }
+
+    public static Annotation findAnnotation(Object object, Class<? extends Annotation> annotationClass){
+        return findAnnotation(object.getClass(), annotationClass);
+    }
+
     /**
      * Function to get ALL fiels up the class hierarcy.
      * Credit: John B @ stackoverflow: http://stackoverflow.com/questions/16966629/what-is-the-difference-between-getfields-getdeclaredfields-in-java-reflection
@@ -192,6 +209,12 @@ public class Utilities {
         return currentClassFields;
     }
 
+    public static OutputStream attemptToParseException(Exception exception){
+        ByteArrayOutputStream streamTo = new ByteArrayOutputStream();
+        attemptToParseException(exception, streamTo);
+        return streamTo;
+    }
+
     /**
      * Attempt to parse an exception to an {@link java.io.InputStream}. Does this by first looking for the method "getFaultInfo".
      * This is the standard method for the WS-N faults for retrieval of parseable information. If this is unsuccessful, or the method is not found,
@@ -199,14 +222,35 @@ public class Utilities {
      * any method having a name containing the phrases fault or info in any order. If this yields no results or the method returned
      * data not parseable, all methods of the class are tried. If this yields no results, the same is tried for every field of
      * the class. If this yields no results, null is returned.
-     * @param exception The exception to be parsed
+     * @param exception The exception to be parsed. This exception MUST be annotated with {@link javax.xml.ws.WebFault}.
      * @return An inputstream with the parsed data, or null if no data is found.
      */
     //TODO: Should we throw an IllegalArgumentException here, if we get an unparseable object?
-    //TODO: Make the parser parse the faults...
-    public static InputStream attemptToParseException(Exception exception){
+    //TODO: Invoke proper method from an object factory
+    public static void attemptToParseException(Exception exception, OutputStream streamTo){
 
         ObjectFactory soapObjectFactory = new ObjectFactory();
+
+        WebFault webFaultAnnotation = (WebFault)findAnnotation(exception, WebFault.class);
+
+        if(webFaultAnnotation == null){
+            Log.e("Utilities.attemptToParseException", "The passed in exception[class = "+exception.getClass().getSimpleName()+"] does not carry ther WebFault annotation, please make sure all your parseable faults carries this annotation" +
+                    "with specified name and namespace");
+            throw new IllegalArgumentException("");
+        }
+
+
+        String faultName, namespaceName;
+        if(webFaultAnnotation.targetNamespace().equals("")){
+            Log.w("Utilities.attemptToParseException", "The passed in WebFault [class = "+exception.getClass().getSimpleName()+"] does not carry any namespace information, please consider setting the namespace() variable");
+        }
+
+        if(webFaultAnnotation.name().equals("")){
+            Log.w("Utilities.attemptToParseException", "The passed in WebFault [class = "+exception.getClass().getSimpleName()+"] does not carry a name, please consider setting the name() variable.");
+        }
+
+        faultName = webFaultAnnotation.name();
+        namespaceName = webFaultAnnotation.targetNamespace();
 
         /* Create fault-soap message */
         Envelope envelope = new Envelope();
@@ -217,36 +261,37 @@ public class Utilities {
 
         fault.setFaultactor(exception.getMessage());
         fault.setDetail(detail);
-        body.getAny().add(fault);
         envelope.setBody(body);
         envelope.setHeader(header);
 
         Method method;
-        ByteArrayOutputStream stream = null;
-        stream = new ByteArrayOutputStream();
         Log.d("Utilities.attemptToParseException", "Got exception " + exception.getClass() + " to parse");
 
         try{
-            detail.getAny().add(exception);
+            detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), exception.getClass(), null, exception));
 
-            stream = new ByteArrayOutputStream();
-            XMLParser.writeObjectToStream(envelope, stream);
-            return convertToByteArrayInputStream(stream);
+            body.getAny().add(new ObjectFactory().createFault(fault));
+            XMLParser.writeObjectToStream(envelope, streamTo);
+            return;
         /* We couldn't write it directly, lets try and get some information. Primarily by looking for a method named
         * getFaultInfo, then any other method named info, and then trying every other method */
         }catch(JAXBException e) {
             Log.d("Utilities.attemptToParseException", "Exception could not be parsed directly: " + e.getMessage());
         }
 
+        /* Reset the detail and the body. And create a new stream */
         detail.getAny().clear();
+        body.getAny().clear();
 
         /* This is default for all Oasis' exceptions */
         if(hasMethodWithName(exception.getClass(), "getFaultInfo")) {
             method = getMethodByName(exception.getClass(), "getFaultInfo");
             try {
-                detail.getAny().add(method.invoke(exception));
-                XMLParser.writeObjectToStream(envelope, stream);
-                return convertToByteArrayInputStream(stream);
+                Object data = method.invoke(exception);
+                detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
+                body.getAny().add(new ObjectFactory().createFault(fault));
+                XMLParser.writeObjectToStream(envelope, streamTo);
+                return;
             } catch (Exception f) {
                 f.printStackTrace();
                 Log.d("Utilities.attemptToParseException", "getFaultInfo failed to parse: " + f.getMessage());
@@ -254,45 +299,52 @@ public class Utilities {
         }
 
         detail.getAny().clear();
+        body.getAny().clear();
 
         /* Tries for a method containing either fault or info in its name */
         if(hasMethodWithRegex(exception.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*")){
             method = getMethodByRegex(exception.getClass(), ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*");
             try {
-                detail.getAny().add(method.invoke(exception));
-                XMLParser.writeObjectToStream(envelope, stream);
-                return convertToByteArrayInputStream(stream);
+                Object data = method.invoke(exception);
+                detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
+                body.getAny().add(new ObjectFactory().createFault(fault));
+                XMLParser.writeObjectToStream(envelope, streamTo);
+                return;
             }catch(Exception g){
                 Log.d("Utilities.attemptToParseException", "Any fault/info function failed to prase: " + g.getMessage());
             }
         }
 
         detail.getAny().clear();
+        body.getAny().clear();
 
         /* Try every method */
         for(Method method1 : exception.getClass().getMethods()) {
             try{
-                detail.getAny().add(method1.invoke(exception));
-                XMLParser.writeObjectToStream(envelope, stream);
-                return convertToByteArrayInputStream(stream);
+                Object data = method1.invoke(exception);
+                detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
+                body.getAny().add(new ObjectFactory().createFault(fault));
+                XMLParser.writeObjectToStream(envelope, streamTo);
+                return;
             }catch(Exception h){
                 continue;
             }
         }
 
         detail.getAny().clear();
+        body.getAny().clear();
 
         /* Try every field */
         for(Field field : getFieldsUpTo(exception.getClass(), null)){
             try {
-                detail.getAny().add(field);
-                XMLParser.writeObjectToStream(envelope, stream);
-                return convertToByteArrayInputStream(stream);
+                detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), field.getClass(), null, field));
+                body.getAny().add(new ObjectFactory().createFault(fault));
+                XMLParser.writeObjectToStream(envelope, streamTo);
+                return;
             } catch (JAXBException e) {
                 continue;
             }
         }
-
-    return null;
+        throw new IllegalArgumentException("Object passed in is not parseable");
     }
 }
