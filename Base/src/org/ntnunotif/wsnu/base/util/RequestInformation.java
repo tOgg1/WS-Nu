@@ -15,6 +15,7 @@ public class RequestInformation {
     private String _endpointReference;
     private String _requestURL;
     private Map<String, String[]> _parameters;
+    private int _httpStatus;
 
 
     public RequestInformation() {
@@ -58,5 +59,13 @@ public class RequestInformation {
 
     public void setRequestURL(String _requestURL) {
         this._requestURL = _requestURL;
+    }
+
+    public int getHttpStatus() {
+        return _httpStatus;
+    }
+
+    public void setHttpStatus(int httpStatus) {
+        this._httpStatus = httpStatus;
     }
 }

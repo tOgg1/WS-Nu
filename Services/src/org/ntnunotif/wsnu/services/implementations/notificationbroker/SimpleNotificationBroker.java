@@ -1,6 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -207,9 +207,9 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
     @Override
     @WebMethod(exclude = true)
-    public SoapUnpackingHub quickBuild() {
+    public SoapForwardingHub quickBuild() {
         try{
-            SoapUnpackingHub hub = new SoapUnpackingHub();
+            SoapForwardingHub hub = new SoapForwardingHub();
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;

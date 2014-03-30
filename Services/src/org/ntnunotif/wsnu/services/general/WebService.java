@@ -2,7 +2,7 @@ package org.ntnunotif.wsnu.services.general;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.ServiceConnection;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
@@ -75,6 +75,11 @@ public abstract class WebService {
     protected String pureEndpointReference;
 
     /**
+     * The location of this webservices wsdl-file
+     */
+    protected String wsdlLocation;
+
+    /**
      * Retrieves the endpointreference of the Web Service.
      * @return
      */
@@ -85,8 +90,9 @@ public abstract class WebService {
 
     /**
      * Sets the endpointreference of this hub. Note that this function fetches the Applicationserver's listening IP
-     * (if several IP's are listed, the applicationserver chooses which to return. If you need a specific one, please call {@link } {@link #forceEndpointReference(String)} ) and appends the endpointreference to it.
-     * Thus, if you want to give a web service the endpoint reference http://serversurl.domain/myWebService,
+     * (if several IP's are listed, the applicationserver chooses which to return. If you need a specific one, please call {@link }
+     * {@link #forceEndpointReference(String)} ) and append the endpointreference to it.
+     * Thus, if you want to give a web service the endpoint reference http://serverurl.domain/myWebService,
      * you only have to pass in "myWebService".
      * @param endpointReference
      */
@@ -139,12 +145,24 @@ public abstract class WebService {
      * If specific requests, in particular with parameters, needs to be handled, this method should then be overrided.
      * @return
      */
-    @WebMethod(exclude=true)
+    @WebMethod(exclude = true)
     public InternalMessage acceptRequest(){
         RequestInformation requestInformation = _connection.getReqeustInformation();
 
         String uri = requestInformation.getRequestURL();
         Map<String, String[]> parameters = requestInformation.getParameters();
+
+        if(parameters != null){
+            if(parameters.size() != 0){
+                for (String s : parameters.keySet()) {
+
+                    /* This is a request for the wsdl files */
+                    if(s.equals("wsdl")){
+
+                    }
+                }
+            }
+        }
 
         if(!uri.matches("^/?"+pureEndpointReference+"(.*)?")){
             Log.d("WebService", "URI: " + uri + " does not match this Web Service's endpointreference " + pureEndpointReference+". Discrepancy: " + uri.replaceAll("^/?"+endpointReference+".*?", ""));
@@ -170,6 +188,56 @@ public abstract class WebService {
         }
     }
 
+    @WebMethod(exclude = true)
+    public InternalMessage sendRequest(String address, String request){
+        return sendRequest(address + request);
+    }
+
+    @WebMethod(exclude = true)
+    public InternalMessage sendRequest(String requestUri){
+        InternalMessage outMessage = new InternalMessage(STATUS_OK, null);
+        RequestInformation info = new RequestInformation();
+        info.setEndpointReference(requestUri);
+        outMessage.setRequestInformation(info);
+        return _hub.acceptLocalMessage(outMessage);
+    }
+
+    @WebMethod(exclude = true)
+    public String fetchRemoteWsdl(String endpoint){
+        String uri = endpoint + "?wsdl";
+        InternalMessage returnMessage = sendRequest(uri);
+
+        if((returnMessage.statusCode & STATUS_HAS_MESSAGE ) == 0){
+            Log.e("WebService.fetchRemoteWsdl", "Wsdl not found");
+        }
+
+        if((returnMessage.statusCode & STATUS_FAULT) > 0){
+            if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                Log.e("WebService.fetchRemoteWsdl", "Some error occured remotely: " + returnMessage.getRequestInformation().getHttpStatus());
+            }else{
+                Log.e("WebService.fetchRemoteWsdl", "Some internal error occured" + returnMessage.statusCode);
+            }
+        }
+
+        if((returnMessage.statusCode & STATUS_OK) > 0){
+            try{
+                return (String)returnMessage.getMessage();
+            }catch(ClassCastException e){
+                try{
+                    return new String((byte[])returnMessage.getMessage());
+                }catch(ClassCastException f){
+                    Log.e("WebService.fetchRemoteWsdl", "The returnMessage was not a String, or a byte[]. Please use either of these" +
+                            "when returning data to this method.");
+                    return null;
+                }
+            }
+        }
+
+        Log.e("WebService.fetchRemoteWsdl", "Incorrect flags was set before the the InternalMessage was returned to this method." +
+                "Please set STATUS_OK | STATUS_HAS_MESSAGE | STATUS_MESSAGE_IS_INPUTSTREAM if everything went okey");
+        return null;
+    }
+
     /**
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
@@ -188,9 +256,9 @@ public abstract class WebService {
      */
     @WebMethod(exclude = true)
     public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
-        SoapUnpackingHub hub = null;
+        SoapForwardingHub hub = null;
         try {
-            hub = new SoapUnpackingHub();
+            hub = new SoapForwardingHub();
         } catch (Exception e) {
             hub.stop();
         }
@@ -267,8 +335,8 @@ public abstract class WebService {
     /**
      * Generate WSDL/XSD schemas.
      */
-   @WebMethod(exclude = true)
-   public void generateWSDLandXSDSchemas() throws Exception {
+    @WebMethod(exclude = true)
+    public void generateWSDLandXSDSchemas() throws Exception {
 
         if(endpointReference == null){
             throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");
@@ -278,12 +346,12 @@ public abstract class WebService {
         String classPath = System.getProperty("java.class.path");
 
 
-        File directory = new File(endpointReference);
+        File directory = new File(pureEndpointReference);
         if(!directory.isDirectory()){
             directory.mkdir();
         }
 
-        File file = new File(endpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
+        File file = new File(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
 
         if(file.isFile()){
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -301,22 +369,57 @@ public abstract class WebService {
             }
         }
 
+        wsdlLocation = pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl";
+
         if(os.equals("Windows")){
             //TODO:
         }
         if(os.equals("Linux")){
-            String command = "wsgen -cp " + classPath + " -d "+ endpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
+            String command = "wsgen -cp " + classPath + " -d "+ pureEndpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
             Log.d("WebService", "[Running command]: " + command);
             Process procces = Runtime.getRuntime().exec(command);
             procces.waitFor();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(procces.getInputStream()));
+
+            Log.d("WebService", "Normal output:");
+            BufferedReader normalOutputReader = new BufferedReader(new InputStreamReader(procces.getInputStream()));
             String out;
 
-            while((out = reader.readLine()) != null){
+            while((out = normalOutputReader.readLine()) != null){
                 System.out.println(out);
             }
+
+            BufferedReader errorOutputReader = new BufferedReader(new InputStreamReader(procces.getErrorStream()));
+
+            while((out = errorOutputReader.readLine()) != null){
+                System.out.println(out);
+            }
+
+            normalOutputReader.close();
+            errorOutputReader.close();
+
         }else if(os.equals("Windows")){
+
         }
+        Log.d("WebService", "Generation completed");
         //TODO: Add support for more systems
+    }
+
+    public String getWsdlLocation() {
+        return wsdlLocation;
+    }
+
+    /**
+     * Sets the location of the wsdl files associated with this Web Service.
+     * @param wsdlLocation
+     * @return True if the file was found, false if not.
+     */
+    public boolean setWsdlLocation(String wsdlLocation) {
+        File file = new File(wsdlLocation);
+
+        if(!file.isFile())
+            return false;
+
+        this.wsdlLocation = wsdlLocation;
+        return true;
     }
 }

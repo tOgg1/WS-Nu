@@ -2,7 +2,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import junit.framework.TestCase;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
@@ -15,12 +15,12 @@ import java.util.List;
  */
 public class AbstractNotificationProducerTest extends TestCase {
     AbstractNotificationProducer producer;
-    SoapUnpackingHub hub;
+    SoapForwardingHub hub;
 
 
     public void setUp() throws Exception {
         super.setUp();
-        hub = new SoapUnpackingHub();
+        hub = new SoapForwardingHub();
 
         producer = new AbstractNotificationProducer() {
             @Override

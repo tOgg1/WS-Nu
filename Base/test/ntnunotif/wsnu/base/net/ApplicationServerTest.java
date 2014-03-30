@@ -9,7 +9,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
@@ -29,7 +29,7 @@ public class ApplicationServerTest extends TestCase {
 
     public void setUp() throws Exception {
         _server = ApplicationServer.getInstance();
-        _server.start(new SoapUnpackingHub());
+        _server.start(new SoapForwardingHub());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class ApplicationServerTest extends TestCase {
 
     @Test
     public void testSendingSoap() throws Exception {
-        SoapUnpackingHub soapUnpackingHub = new SoapUnpackingHub();
+        SoapForwardingHub soapForwardingHub = new SoapForwardingHub();
 
         // Start the client
         SslContextFactory sslFactory = new SslContextFactory();

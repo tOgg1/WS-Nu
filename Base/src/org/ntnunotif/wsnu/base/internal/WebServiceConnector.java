@@ -4,7 +4,6 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.*;
 import org.trmd.ntsh.NothingToSeeHere;
 
-import javax.jws.WebMethod;
 import javax.jws.WebService;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -36,15 +35,19 @@ public abstract class WebServiceConnector implements ServiceConnection{
     public static int _webServiceCount = 0;
 
     /**
-     *
+     * The current set requestInformation used by this connector.
      */
     private RequestInformation _requestInformation;
 
+    /**
+     * The method used to pass pure requests to.
+     */
     private Method _requestMethod;
 
     /**
      * The default constructor. Looks for the {@link WebService} for the passed in WebService object and the {@link org.ntnunotif.wsnu.base.util.EndpointReference}
-     * annotation for the endpointreference. Also looks for a field with the annotation {@link org.ntnunotif.wsnu.base.util.Connection} to set a reference to this connector. Will also look for a method to send plain requests to, by looking for the {@link javax.jws.WebMethod} annotation with operationName=AcceptRequest
+     * annotation for the endpointreference. Also looks for a field with the annotation {@link org.ntnunotif.wsnu.base.util.Connection} to set a reference to this connector.
+     * Will also look for a method to send plain requests to, by looking for a method with the name "acceptRequest"
      * @param webService
      */
     protected WebServiceConnector(final Object webService){
@@ -132,19 +135,13 @@ public abstract class WebServiceConnector implements ServiceConnection{
                    "this WebService Connector" + this + " manually to the Web Service in some variable");
         }
 
-        /* Look for requestMethod */
+        /* Look for _requestMethod */
         Method[] methods = webService.getClass().getMethods();
 
         outer:
-        for(Method method : methods){
-            Annotation[] methodAnnotations = method.getDeclaredAnnotations();
-            for (Annotation annotation : methodAnnotations){
-                if(annotation instanceof WebMethod){
-                    if(((WebMethod)annotation).operationName().equals("AcceptRequest")){
-                        _requestMethod = method;
-                        break outer;
-                    }
-                }
+        for(Method method : methods) {
+            if (method.getName().equals("acceptRequest")) {
+                _requestMethod = method;
             }
         }
     }
@@ -154,7 +151,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
      * @param requestMethod
      */
     public void setRequestMethod(Method requestMethod) {
-        _requestMethod = requestMethod;
+        this._requestMethod = requestMethod;
     }
 
     @Override

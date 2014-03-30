@@ -91,4 +91,13 @@ public class InternalMessage {
     public void setRequestInformation(RequestInformation _requestInformation) {
         this._requestInformation = _requestInformation;
     }
+
+    @Override
+    public String toString() {
+        return "InternalMessage{" +
+                "statusCode=" + statusCode +
+                ", _message=" + _message +
+                ", _requestInformation=" + _requestInformation +
+                '}';
+    }
 }

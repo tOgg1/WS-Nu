@@ -1,7 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import junit.framework.TestCase;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 
 /**
  * Created by tormod on 25.03.14.
@@ -10,7 +10,7 @@ public class SimpleNotificationProducerTest extends TestCase {
 
     public void testQuickBuild() throws Exception {
         SimpleNotificationProducer prod = new SimpleNotificationProducer();
-        SoapUnpackingHub hub = prod.quickBuild();
+        SoapForwardingHub hub = prod.quickBuild();
         hub.stop();
     }
 

@@ -1,7 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
@@ -79,7 +79,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     @WebMethod(exclude = true)
     public Hub quickBuild() {
         try{
-            SoapUnpackingHub hub = new SoapUnpackingHub();
+            SoapForwardingHub hub = new SoapForwardingHub();
             /* Most reasonable and simple connector for a consumer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);

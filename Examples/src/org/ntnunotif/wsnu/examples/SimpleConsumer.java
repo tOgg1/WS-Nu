@@ -62,6 +62,12 @@ public class SimpleConsumer implements ConsumerListener {
         System.out.println(returnMessage.getMessage().toString());
     }
 
+    public void sendRequest(String raw){
+        InternalMessage message = consumer.sendRequest(raw);
+        System.out.println(message.getMessage());
+        System.out.println(message.getRequestInformation().toString());
+    }
+
     public SimpleConsumer() {
         consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
@@ -93,17 +99,28 @@ public class SimpleConsumer implements ConsumerListener {
                                 new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
                                 + " hours");
                         System.out.println("Received packages: " + receivedPackages);
-                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")){
+                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")) {
                         String address = in.replaceAll("^subscribe", "").replaceAll(" ", "");
                         Log.d("SimpleConsumer", "Parsed endpointreference: " + address);
                         System.out.println(address.replaceAll("^http://.*?", ""));
 
-                        if(!address.matches(("^https?://.*?"))){
+                        if (!address.matches("^https?://.*?")){
                             Log.d("SimpleConsumer", "Inserted http://-tag");
                             address = "http://" + address;
                         }
 
                         SimpleConsumer.this.sendSubscriptionRequest(address);
+                    }else if(in.matches("^request (.*)+")){
+                        Log.d("SimpleConsumer", "Matches request");
+                        String raw = in.replaceAll("^request", "");
+                        raw = raw.replaceFirst(" ", "");
+
+
+                        if(!raw.matches("^https?://.*?")){
+                            Log.d("SimpleConsumer", "Inserted http://-tag");
+                            raw = "http://"+raw;
+                        }
+                        consumer.sendRequest(raw);
                     }else{
                         Log.d("SimpleConsumer", "Command not supported");
                     }

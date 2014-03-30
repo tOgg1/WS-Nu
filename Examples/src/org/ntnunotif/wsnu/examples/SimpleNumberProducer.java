@@ -84,11 +84,18 @@ public class SimpleNumberProducer {
 
                         long data = Long.parseLong(in.replaceAll(" ", "").replaceAll("^notify", ""));
                         SimpleNumberProducer.this.sendNotification(data);
-                    }else if(in.matches("^info")){
+                    }else if(in.matches("^info")) {
                         System.out.println("Endpoint: " + SimpleNumberProducer.this.simpleNotificationProducer.getEndpointReference());
                         System.out.println("INFO\n------\nUptime: " +
-                                new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
+                                new DecimalFormat("#.##").format((double) (System.currentTimeMillis() - startTime) / (3600 * 1000))
                                 + " hours");
+                    }else if(in.matches("^generate")){
+                        try {
+                            simpleNotificationProducer.generateWSDLandXSDSchemas();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("Couldn't generate wsdl files: " + e.getMessage());
+                        }
                     }else{
                         System.out.println("Command not supported");
                     }

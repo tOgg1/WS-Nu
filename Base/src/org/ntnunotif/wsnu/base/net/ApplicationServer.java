@@ -13,7 +13,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.ntnunotif.wsnu.base.internal.SoapUnpackingHub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -143,13 +143,13 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public void start(SoapUnpackingHub soapUnpackingHub) throws Exception{
+    public void start(SoapForwardingHub soapForwardingHub) throws Exception{
         if(_isRunning){
             return;
         }
 
         _isRunning = true;
-        _parentHub = soapUnpackingHub;
+        _parentHub = soapForwardingHub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();
@@ -257,11 +257,12 @@ public class ApplicationServer{
         request.header(HttpHeader.CONTENT_LENGTH, "200");
 
         /* Try to send the message */
-        try {
+        try{
+            /* Raw request */
             if((message.statusCode & STATUS_HAS_MESSAGE) == 0){
-                Log.e("ApplicationServer.sendMessage", "The STATUS_HAS_MESSAGE_FLAG was found to not be set." +
-                        "Please set this flag before calling this method.");
-                return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
+                ContentResponse response = request.send();
+                return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
             }else{
                 if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) == 0){
                     Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
@@ -271,14 +272,14 @@ public class ApplicationServer{
                     Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
                     request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
                     ContentResponse response = request.send();
-                    return new InternalMessage(STATUS_OK, response.getContentAsString());
+                    return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
                 }
             }
-        } catch(ClassCastException e){
+        }catch(ClassCastException e){
             Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
                     "Please convert your message to an InputStream before calling this method.");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        } catch(Exception e){
+        }catch(Exception e){
             e.printStackTrace();
             return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
         }

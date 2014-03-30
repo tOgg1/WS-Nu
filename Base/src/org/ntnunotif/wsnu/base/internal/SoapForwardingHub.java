@@ -24,7 +24,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 3/3/14.
  */
-public class SoapUnpackingHub implements Hub {
+public class SoapForwardingHub implements Hub {
 
     /**
      * List of internal web-service connections.
@@ -39,7 +39,7 @@ public class SoapUnpackingHub implements Hub {
     /**
      * Default constructor
      */
-    public SoapUnpackingHub() throws Exception {
+    public SoapForwardingHub() throws Exception {
         this._services = new ArrayList<ServiceConnection>();
         this._server = ApplicationServer.getInstance();
         this._server.start(this);
@@ -50,7 +50,7 @@ public class SoapUnpackingHub implements Hub {
      * @param server
      * @throws Exception
      */
-    public SoapUnpackingHub(ApplicationServer server) throws Exception{
+    public SoapForwardingHub(ApplicationServer server) throws Exception{
         this._services = new ArrayList<ServiceConnection>();
         this._server = server;
         this._server.start(this);
@@ -72,7 +72,7 @@ public class SoapUnpackingHub implements Hub {
 
         /* If this is just a request-message and has no content */
         if((internalMessage.statusCode & STATUS_HAS_MESSAGE) == 0){
-            Log.d("SoapUnpackingHub", "Forwarding request");
+            Log.d("SoapForwardingHub", "Forwarding request");
             if(foundConnection){
                 returnMessage = connection.acceptRequest(internalMessage);
             }else{
@@ -90,7 +90,7 @@ public class SoapUnpackingHub implements Hub {
             }
         /* We have content and should deal with it */
         }else{
-            Log.d("SoapUnpackingHub", "Forwarding message");
+            Log.d("SoapForwardingHub", "Forwarding message");
             InternalMessage parsedMessage;
             Envelope envelope;
             /* Try to parse and cast the message to a soap-envelope */
@@ -131,13 +131,13 @@ public class SoapUnpackingHub implements Hub {
             * Notably the ApplicationServer does accept other form of messages, but it is more logical to conert
             * it at this point */
             if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0){
-                Log.d("SoapUnpackingHub", "Returning message");
+                Log.d("SoapForwardingHub", "Returning message");
                 if((returnMessage.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0){
                     try{
                         InputStream stream = (InputStream)returnMessage.getMessage();
                         returnMessage.setMessage(stream);
                     }catch(ClassCastException e){
-                        Log.e("SoapUnpackingHub", "Casting the returnMessage to InputStream failed, even though someone set the MESSAGE_IS_INPUTSTREAM flag");
+                        Log.e("SoapForwardingHub", "Casting the returnMessage to InputStream failed, even though someone set the MESSAGE_IS_INPUTSTREAM flag");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else if((returnMessage.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0){
@@ -145,7 +145,7 @@ public class SoapUnpackingHub implements Hub {
                         InputStream stream = Utilities.convertToInputStream((OutputStream) returnMessage.getMessage());
                         returnMessage.setMessage(stream);
                     }catch(ClassCastException e){
-                        Log.e("SoapUnpackingHub", "Casting the returnMessage to OutputStream failed, even though someone set the MESSAGE_IS_OUTPUSTREAM flag");
+                        Log.e("SoapForwardingHub", "Casting the returnMessage to OutputStream failed, even though someone set the MESSAGE_IS_OUTPUSTREAM flag");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else{
@@ -166,32 +166,32 @@ public class SoapUnpackingHub implements Hub {
                         returnMessage.statusCode = STATUS_OK;
                     /* This was not do-able*/
                     }catch(JAXBException e){
-                        Log.e("SoapUnpackingHub", "Unable to marshal returnMessage. Consider converting the message-paylod at an earlier point.");
+                        Log.e("SoapForwardingHub", "Unable to marshal returnMessage. Consider converting the message-paylod at an earlier point.");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }
                 return returnMessage;
             /* We have no message and can just return */
             }else{
-                Log.d("SoapUnpackingHub", "Returning nothing");
+                Log.d("SoapForwardingHub", "Returning nothing");
                 return returnMessage;
             }
         /* Something went wrong up the stack, but we're not gonna meddle with it here, return the message back to the applicationserver
          * and let it figure out what error message to send back */
         }else{
             if((returnMessage.statusCode & STATUS_EXCEPTION_SHOULD_BE_HANDLED) > 0){
-                Log.d("SoapUnpackingHub", "Exception thrown up the stack");
+                Log.d("SoapForwardingHub", "Exception thrown up the stack");
                 try{
                     Utilities.attemptToParseException((Exception) returnMessage.getMessage(), streamToRequestor);
                 }catch(IllegalArgumentException e){
-                    Log.e("SoapUnpackingHub.acceptNetMessage", "Error not parseable, the error can not be a wsdl-specified one.");
+                    Log.e("SoapForwardingHub.acceptNetMessage", "Error not parseable, the error can not be a wsdl-specified one.");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }catch(ClassCastException e){
-                    Log.e("SoapUnpackingHub.acceptNetMessage", "The returned exception is not a subclass of Exception.");
+                    Log.e("SoapForwardingHub.acceptNetMessage", "The returned exception is not a subclass of Exception.");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
             }
-            Log.d("SoapUnpackingHub", "Something went wrong, returning error");
+            Log.d("SoapForwardingHub", "Something went wrong, returning error");
             return returnMessage;
         }
     }
@@ -219,7 +219,7 @@ public class SoapUnpackingHub implements Hub {
     public InternalMessage acceptLocalMessage(InternalMessage message) {
         Object messageContent = message.getMessage();
 
-        if((message.statusCode & STATUS_HAS_MESSAGE) > 0) {
+        if((message.statusCode & STATUS_HAS_MESSAGE) > 0){
             /* Easy if it already is an inputstream */
             if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0) {
                 try{
@@ -228,7 +228,7 @@ public class SoapUnpackingHub implements Hub {
                     return _server.sendMessage(message);
                 }catch(ClassCastException e){
                     e.printStackTrace();
-                    Log.e("SoapUnpackingHub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
+                    Log.e("SoapForwardingHub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                     return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD|STATUS_FAULT, null);
                 }
             } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
@@ -249,8 +249,9 @@ public class SoapUnpackingHub implements Hub {
                 message.statusCode = STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM;
                 return _server.sendMessage(message);
             }
+        /* We have no content, must be a pure request */
         }else{
-            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+            return _server.sendMessage(message);
         }
     }
 
