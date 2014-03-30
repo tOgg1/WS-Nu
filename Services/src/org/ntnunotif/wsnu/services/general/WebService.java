@@ -9,8 +9,7 @@ import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.jws.WebMethod;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -112,6 +111,8 @@ public abstract class WebService {
         this.endpointReference = endpointReference;
         //TODO: Try to filter out the pureEndpointReference
         this.pureEndpointReference = endpointReference;
+        if(_connection == null)
+            return;
         _connection.endpointUpdated(endpointReference);
     }
 
@@ -185,8 +186,8 @@ public abstract class WebService {
      * @return
      * @throws UnsupportedDataTypeException
      */
-   @WebMethod(exclude = true)
-   public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
+    @WebMethod(exclude = true)
+    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
         SoapUnpackingHub hub = null;
         try {
             hub = new SoapUnpackingHub();
@@ -266,10 +267,56 @@ public abstract class WebService {
     /**
      * Generate WSDL/XSD schemas.
      */
-    @WebMethod(exclude = true)
-    public void generateWSDLandXSDSchemas(){
+   @WebMethod(exclude = true)
+   public void generateWSDLandXSDSchemas() throws Exception {
 
+        if(endpointReference == null){
+            throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");
+        }
+
+        String os = System.getProperty("os.name");
+        String classPath = System.getProperty("java.class.path");
+
+
+        File directory = new File(endpointReference);
+        if(!directory.isDirectory()){
+            directory.mkdir();
+        }
+
+        File file = new File(endpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
+
+        if(file.isFile()){
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            Log.d("WebService", "There already is a wsdl file generated for this Web Service, are you sure you want to make a new one? (y/n)");
+            String in;
+            while((in = reader.readLine()) != null){
+                if(in.matches("^[Yy](.*)?")){
+                    break;
+                }else if(in.matches("^[Nn](.*)?")){
+                    return;
+                }else{
+                    Log.d("WebService", "Invalid input, try again (y/n)");
+                    continue;
+                }
+            }
+        }
+
+        if(os.equals("Windows")){
+            //TODO:
+        }
+        if(os.equals("Linux")){
+            String command = "wsgen -cp " + classPath + " -d "+ endpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
+            Log.d("WebService", "[Running command]: " + command);
+            Process procces = Runtime.getRuntime().exec(command);
+            procces.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(procces.getInputStream()));
+            String out;
+
+            while((out = reader.readLine()) != null){
+                System.out.println(out);
+            }
+        }else if(os.equals("Windows")){
+        }
+        //TODO: Add support for more systems
     }
-
-
 }
