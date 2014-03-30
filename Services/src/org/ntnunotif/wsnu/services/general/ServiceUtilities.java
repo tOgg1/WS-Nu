@@ -13,9 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,11 +33,40 @@ public class ServiceUtilities {
         }
     }
 
+    public static final class Tuple<X,Y>{
+        public final X x;
+        public final Y y;
+
+        public Tuple(X x, Y y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public ArrayList<X> getFirsts(ArrayList<Tuple<X,Y>> list){
+            ArrayList<X> xList = new ArrayList<>();
+            for (Tuple<X, Y> xyTuple : list) {
+                xList.add(xyTuple.x);
+            }
+            return xList;
+        }
+
+
+        public ArrayList<Y> getSeconds(ArrayList<Tuple<X,Y>> list){
+            ArrayList<Y> yList = new ArrayList<>();
+            for (Tuple<X, Y> xyTuple : list) {
+                yList.add(xyTuple.y);
+            }
+            return yList;
+        }
+    }
+
     public static class InputManager extends Thread {
 
         private HashMap<String, Method> _methodRerouting;
         private HashMap<String, String> _matchCommand;
         private HashMap<String, Boolean> _methodTakesCommandString;
+        private HashMap<String, Integer> _commandArgPosition;
+        private HashMap<String, ArrayList<Tuple<Integer, Object>>> _defaultArguments;
         private HashMap<String, Boolean> _methodUsesRegex;
         private HashMap<String, Object> _theInvokables;
 
@@ -49,6 +76,8 @@ public class ServiceUtilities {
             _methodTakesCommandString = new HashMap<>();
             _matchCommand = new HashMap<>();
             _methodUsesRegex = new HashMap<>();
+            _commandArgPosition = new HashMap<>();
+            _defaultArguments = new HashMap<>();
         }
 
         /**
@@ -59,12 +88,76 @@ public class ServiceUtilities {
          * @param rerouteTo
          * @param invokable
          */
-        public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo, Object invokable){
+        public void addMethodReroute(String command, String matchCommand, boolean regex,
+                                     Method rerouteTo, Object invokable){
+            addMethodReroute(command, matchCommand, regex, rerouteTo, invokable, new ArrayList<Tuple<Integer, Object>>(), 0);
+        }
+
+        public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo,
+                                     Object invokable, ArrayList<Tuple<Integer, Object>> defaultArguments){
             _methodRerouting.put(command, rerouteTo);
             _theInvokables.put(command, invokable);
-            _methodTakesCommandString.put(command, rerouteTo.getParameterTypes().length != 0);
+            _defaultArguments.put(command, defaultArguments);
+            _methodTakesCommandString.put(command, rerouteTo.getParameterTypes().length != 0
+                    && defaultArguments.size() != rerouteTo.getParameterTypes().length);
+
+            if(!_methodTakesCommandString.get(command)) {
+                _commandArgPosition.put(command, -1);
+            /* We have to find the argument position */
+            }else{
+                if(defaultArguments.size() != 0){
+                    _commandArgPosition.put(command, findFirstEmptyPosition(defaultArguments.get(0).getFirsts(defaultArguments)));
+                }else{
+                    _commandArgPosition.put(command, 0);
+                }
+            }
+
             _matchCommand.put(command, matchCommand);
             _methodUsesRegex.put(command, regex);
+        }
+
+        public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo,
+                                     Object invokable, Tuple<Integer, Object>[] defaultArguments) {
+
+            ArrayList<Tuple<Integer, Object>> newDefaultArguments = new ArrayList<>();
+            for (Tuple<Integer, Object> defaultArgument : defaultArguments) {
+                newDefaultArguments.add(defaultArgument);
+            }
+
+            addMethodReroute(command, matchCommand, regex, rerouteTo, invokable, newDefaultArguments);
+
+        }
+
+        public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo,
+                                     Object invokable, Tuple<Integer, Object>[] defaultArguments, int commandArgumentPosition){
+            ArrayList<Tuple<Integer, Object>> newDefaultArguments = new ArrayList<>();
+            for (Tuple<Integer, Object> defaultArgument : defaultArguments) {
+                newDefaultArguments.add(defaultArgument);
+            }
+
+            addMethodReroute(command, matchCommand, regex, rerouteTo, invokable, newDefaultArguments, commandArgumentPosition);
+        }
+
+        public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo,
+                                     Object invokable, ArrayList<Tuple<Integer, Object>> defaultArguments, int commandArgumentPosition){
+
+            if(defaultArguments.size() != 0){
+                if(containsDuplicates(defaultArguments.get(0).getFirsts(defaultArguments))){
+                    throw new IllegalArgumentException("Passed in defaultArguments contains duplicate indices");
+                }else if(hasElementsLargerThanSize(defaultArguments.get(0).getFirsts(defaultArguments), rerouteTo.getParameterTypes().length)){
+                    throw new IllegalArgumentException("Passed in defaultArguments contains indices larger than the methods paramter count");
+                }
+            }
+
+            _methodRerouting.put(command, rerouteTo);
+            _theInvokables.put(command, invokable);
+            _defaultArguments.put(command, defaultArguments);
+            _methodTakesCommandString.put(command, rerouteTo.getParameterTypes().length != 0
+                                                   && defaultArguments.size() != rerouteTo.getParameterTypes().length);
+            _commandArgPosition.put(command, commandArgumentPosition);
+            _matchCommand.put(command, matchCommand);
+            _methodUsesRegex.put(command, regex);
+
         }
 
         public void removeMethodReroute(String command){
@@ -95,48 +188,43 @@ public class ServiceUtilities {
                 /* Check for method rerouting */
             for (Map.Entry<String, Method> stringMethodEntry : _methodRerouting.entrySet()) {
                 String key = stringMethodEntry.getKey();
-                if(_methodUsesRegex.get(key)){
-                    if(command.matches(_matchCommand.get(key))){
-                        try {
-                            if(_methodTakesCommandString.get(key)){
-                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
-                            }else{
-                                _methodRerouting.get(key).invoke(_theInvokables.get(key));
-                            }
-                            wasInvoked = true;
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                            Log.e("InputManager", "Method passed in was not allowed to be invoked, does it take more than one argument?");
-                            continue;
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                            Log.e("InputManager", "Something went wrong in the method: " + e.getTargetException().getMessage());
+
+                boolean matches = _methodUsesRegex.get(key) ? command.matches(_matchCommand.get(key)) : command.contains(_matchCommand.get(key));
+
+                /* If the command matches a preroute */
+                if (_methodUsesRegex.get(key) ? command.matches(_matchCommand.get(key)) : command.contains(_matchCommand.get(key))) {
+                    try {
+                        Object[] args = new Object[_defaultArguments.get(key).size() + (_methodTakesCommandString.get(key) ? 1 : 0)];
+                        if (args.length == 0) {
+                            _methodRerouting.get(key).invoke(_theInvokables.get(key));
                             continue;
                         }
-                    }
-                }else{
-                    if(command.contains(_matchCommand.get(key))){
-                        try {
-                            if(_methodTakesCommandString.get(key)){
-                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
-                            }else{
-                                _methodRerouting.get(key).invoke(_theInvokables.get(key));
-                            }
-                            wasInvoked = true;
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                            Log.e("InputManager", "Method passed in was not allowed to be invoked, does it take more than one argument?");
-                            continue;
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                            Log.e("InputManager", "Something went wrong in the method: " + e.getTargetException().getMessage());
-                            continue;
+
+                        if(_methodTakesCommandString.get(key)){
+                            args[_commandArgPosition.get(key)] = command;
                         }
+
+                        if (_defaultArguments.get(key).size() != 0) {
+                            for (Tuple<Integer, Object> integerObjectTuple : _defaultArguments.get(key)) {
+                                args[integerObjectTuple.x] = integerObjectTuple.y;
+                            }
+                        }
+
+                        _methodRerouting.get(key).invoke(_theInvokables.get(key), args);
+                        continue;
+
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        Log.e("InputManager", "Method passed in was not allowed to be invoked, does it take more than one argument?");
+                        continue;
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                        Log.e("InputManager", "Something went wrong in the method: " + e.getTargetException().getMessage());
+                        continue;
                     }
                 }
             }
-
-                /* If the method already has invoked we won't run it as a system-command */
+            /* If the method already has invoked we won't run it as a system-command */
             if(wasInvoked){
                 return;
             }
@@ -319,6 +407,77 @@ public class ServiceUtilities {
             this.countLimitations = countLimitations;
         }
     }
+
+    /**
+     * Finds the first integer not covered by the list. E.g. if the list is [1 2 4 7] this method will return 3.
+     * Or if the list is [1 3 5 2 4 5 8 7] the method will return 6.
+     * @param list
+     * @return The smallest integer not covered by the list, or -1 if the list covers all integers given by the length of the list.
+     */
+    public static int findFirstEmptyPosition(ArrayList<Integer> list){
+        Collections.sort(list);
+
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i) != i) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Takes a list and checks if it has duplicates in it. E.g. if the list is [2 3 2] this method will return true.
+     * But if the list is [1 2 3 4 5 7 6] it will return false. Runs in O(n log(n))
+     * @param list
+     * @return
+     */
+    public static boolean containsDuplicates(ArrayList<? extends Comparable> list){
+        Collections.sort(list);
+
+        for (int i = 1; i < list.size(); i++) {
+            if(list.get(i).equals(list.get(i-1))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Takes a list of non-comparables and checks if it has duplicates. E.g if the list is [Car.blue Car.red Car.blue] it returns true.
+     * But if the list is [Dinosaur.Tyrannosaurus Dinosaur.Brontosaurus Dinosaur.Pterodactyl] it returns false. Checks equality using the
+     * {@link #equals(Object)} function. Note that this method is O(n^2), use with care.
+     * @param list
+     * @return
+     */
+    public static boolean containsDuplicatesNonComparable(ArrayList<Object> list){
+        ArrayList<Object> oList = new ArrayList(list);
+
+        for (Object o : list) {
+            for (Object o1 : oList) {
+                if(o1.equals(o)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if any of the integer elements of the list is larger than the size-1
+     * @param list
+     * @return
+     */
+    public static boolean hasElementsLargerThanSize(ArrayList<Integer> list, int max){
+
+        for (Integer integer : list) {
+            if(integer > max){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     /**
      * Get termination from a time-string

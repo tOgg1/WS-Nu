@@ -46,6 +46,7 @@ public class SimpleConsumer implements ConsumerListener {
         inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
         inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
         inputManager.addMethodReroute("request", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
+        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
         inputManager.start();
     }
 
