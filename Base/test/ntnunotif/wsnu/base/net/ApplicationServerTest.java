@@ -101,7 +101,6 @@ public class ApplicationServerTest extends TestCase {
         ContentResponse response = request.send();
         assertEquals(404, response.getStatus());
 
-        //TODO: This should contain some WS error
         System.out.println(response.getContentAsString());
 
     }

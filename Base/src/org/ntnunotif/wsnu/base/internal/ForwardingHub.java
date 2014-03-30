@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -28,7 +29,7 @@ public class ForwardingHub implements Hub {
     }
 
     @Override
-    public InternalMessage acceptNetMessage(InternalMessage message) {
+    public InternalMessage acceptNetMessage(InternalMessage message, OutputStream streamToRequestor) {
         return null;
     }
 

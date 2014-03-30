@@ -63,7 +63,7 @@ public class SoapUnpackingHub implements Hub {
      * @return
      */
     @Override
-    public InternalMessage acceptNetMessage(InternalMessage internalMessage) {
+    public InternalMessage acceptNetMessage(InternalMessage internalMessage, OutputStream streamToRequestor) {
         ServiceConnection connection = findRecipient(internalMessage.getRequestInformation().getRequestURL());
 
         boolean foundConnection = connection != null;
@@ -110,7 +110,7 @@ public class SoapUnpackingHub implements Hub {
             internalMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET;
 
             if(foundConnection){
-                    returnMessage = connection.acceptMessage(internalMessage);
+                returnMessage = connection.acceptMessage(internalMessage);
             }else{
                 for(ServiceConnection service : _services){
                     returnMessage = service.acceptMessage(internalMessage);
@@ -149,16 +149,27 @@ public class SoapUnpackingHub implements Hub {
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else{
+                    Object messageToParse;
+                    if(!(returnMessage.getMessage() instanceof Envelope)){
+                        Envelope env = new Envelope();
+                        Body body = new Body();
+                        body.getAny().add(returnMessage.getMessage());
+                        env.setBody(body);
+                        messageToParse = env;
+                    }else{
+                        messageToParse = returnMessage.getMessage();
+                    }
 
-                    InputStream stream = Utilities.convertUnknownToInputStream(returnMessage.getMessage());
-
-                    if(stream == null){
-                        Log.e("SoapUnpackingHub", "Unable to convert returnMessage to InputStream. Consider converting the message-paylod at an earlier point");
+                    /* Try to parse the object directly into the OutputStream passed in*/
+                    try{
+                        XMLParser.writeObjectToStream(messageToParse, streamToRequestor);
+                        returnMessage.statusCode = STATUS_OK;
+                    /* This was not do-able*/
+                    }catch(JAXBException e){
+                        Log.e("SoapUnpackingHub", "Unable to marshal returnMessage. Consider converting the message-paylod at an earlier point.");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
-                    returnMessage.setMessage(stream);
                 }
-                returnMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_MESSAGE_IS_INPUTSTREAM;
                 return returnMessage;
             /* We have no message and can just return */
             }else{

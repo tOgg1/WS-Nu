@@ -79,6 +79,7 @@ public class SimpleSubscriptionManagerTest{
         response = request.send();
         responseContent = response.getContentAsString();
         assertEquals(200, response.getStatus());
+        System.out.println(responseContent);
         assertNotNull(responseContent);
     }
 
@@ -123,6 +124,7 @@ public class SimpleSubscriptionManagerTest{
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
+        System.out.println(responseContent);
         assertEquals(200, response.getStatus());
     }
 }

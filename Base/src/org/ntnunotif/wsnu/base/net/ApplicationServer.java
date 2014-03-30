@@ -337,7 +337,7 @@ public class ApplicationServer{
             outMessage.getRequestInformation().setRequestURL(request.getRequestURI());
             outMessage.getRequestInformation().setParameters(request.getParameterMap());
             Log.d("ApplicationServer", "Forwarding message to hub");
-            InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage);
+            InternalMessage returnMessage = ApplicationServer.this._parentHub.acceptNetMessage(outMessage, httpServletResponse.getOutputStream());
 
             /* Fatal error, is your hub designed correctly? */
             if(returnMessage == null){

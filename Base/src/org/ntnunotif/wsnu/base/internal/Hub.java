@@ -2,7 +2,7 @@ package org.ntnunotif.wsnu.base.internal;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 
 /**
@@ -16,7 +16,7 @@ public interface Hub {
      * Function to accept a message from the net.
      * @return Returns the message(s) that is going back
      */
-    public InternalMessage acceptNetMessage(InternalMessage message);
+    public InternalMessage acceptNetMessage(InternalMessage message, OutputStream streamToRequestor);
 
     /**
      * Function to accept a message from a local service, and forward it out into the internet.

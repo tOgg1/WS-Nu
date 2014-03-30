@@ -70,10 +70,10 @@ public class InternalMessage {
 
     /**
      * Sets the message of the InternalMessage.
-     * @param _message
+     * @param message
      */
-    public void setMessage(Object _message) {
-        this._message = _message;
+    public void setMessage(Object message) {
+        this._message = message;
     }
 
     /**
