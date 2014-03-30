@@ -10,15 +10,13 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
 
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 /**
@@ -68,68 +66,49 @@ public class SimpleConsumer implements ConsumerListener {
         System.out.println(message.getRequestInformation().toString());
     }
 
-    public SimpleConsumer() {
+    public SimpleConsumer() throws NoSuchMethodException {
         consumer = new NotificationConsumer();
         hub = consumer.quickBuild();
         consumer.setEndpointReference("Hello");
         consumer.addConsumerListener(this);
         startTime = System.currentTimeMillis();
-
-        InputManager in = new InputManager();
-        in.start();
+        ServiceUtilities.ContentManager.InputManager inputManager = new ServiceUtilities.ContentManager.InputManager();
+        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
+        inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
+        inputManager.addMethodReroute("^request (.*)+", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
+        inputManager.start();
     }
 
-    private class InputManager{
+    public void handleInfo(String command){
+        System.out.println("Uptime: " +
+                new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
+                + " hours");
+    }
 
-        public InputManager(){
+    public void handleSubscribe(String command){
+        String address = command.replaceAll("^subscribe", "").replaceAll(" ", "");
+        Log.d("SimpleConsumer", "Parsed endpointreference: " + address);
+        System.out.println(address.replaceAll("^http://.*?", ""));
 
+        if (!address.matches("^https?://.*?")){
+            Log.d("SimpleConsumer", "Inserted http://-tag");
+            address = "http://" + address;
         }
 
-        public void start(){
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        SimpleConsumer.this.sendSubscriptionRequest(address);
+    }
 
-            System.out.println("Inputmanager started...\n");
-            String in;
-            try {
-                while((in = reader.readLine()) != null){
-                    if(in.matches("^exit")) {
-                        System.exit(0);
-                    }else if(in.matches("^inf?o?.*?")){
-                        System.out.println("Uptime: " +
-                                new DecimalFormat("#.##").format((double)(System.currentTimeMillis() - startTime)/(3600*1000))
-                                + " hours");
-                        System.out.println("Received packages: " + receivedPackages);
-                    }else if(in.matches("^subscribe *[0-9a-zA-Z.:/]+")) {
-                        String address = in.replaceAll("^subscribe", "").replaceAll(" ", "");
-                        Log.d("SimpleConsumer", "Parsed endpointreference: " + address);
-                        System.out.println(address.replaceAll("^http://.*?", ""));
-
-                        if (!address.matches("^https?://.*?")){
-                            Log.d("SimpleConsumer", "Inserted http://-tag");
-                            address = "http://" + address;
-                        }
-
-                        SimpleConsumer.this.sendSubscriptionRequest(address);
-                    }else if(in.matches("^request (.*)+")){
-                        Log.d("SimpleConsumer", "Matches request");
-                        String raw = in.replaceAll("^request", "");
-                        raw = raw.replaceFirst(" ", "");
+    public void handleRequest(String command){
+        Log.d("SimpleConsumer", "Matches request");
+        String raw = command.replaceAll("^request", "");
+        raw = raw.replaceFirst(" ", "");
 
 
-                        if(!raw.matches("^https?://.*?")){
-                            Log.d("SimpleConsumer", "Inserted http://-tag");
-                            raw = "http://"+raw;
-                        }
-                        consumer.sendRequest(raw);
-                    }else{
-                        Log.d("SimpleConsumer", "Command not supported");
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(0);
-            }
+        if(!raw.matches("^https?://.*?")){
+            Log.d("SimpleConsumer", "Inserted http://-tag");
+            raw = "http://"+raw;
         }
+        consumer.sendRequest(raw);
     }
 
     @Override

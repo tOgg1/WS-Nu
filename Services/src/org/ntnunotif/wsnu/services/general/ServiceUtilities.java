@@ -1,10 +1,16 @@
 package org.ntnunotif.wsnu.services.general;
 
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -118,6 +124,123 @@ public class ServiceUtilities {
                 }
             }
             return !inclusive;
+        }
+
+        public static class InputManager extends Thread {
+
+            private HashMap<String, Method> _methodRerouting;
+            private HashMap<String, String> _matchCommand;
+            private HashMap<String, Boolean> _methodUsesRegex;
+            private HashMap<String, Object> _theInvokables;
+
+            public InputManager() {
+                _methodRerouting = new HashMap<>();
+                _theInvokables = new HashMap<>();
+                _matchCommand = new HashMap<>();
+                _methodUsesRegex = new HashMap<>();
+            }
+
+            /**
+             * Adds a method-rerouting, routing a method with unique name command, matching the input String, to method rerouteTo, invoked on invokable.
+             * @param command The unique identifier, can be virtually anything.
+             * @param matchCommand The string that is to be matched.
+             * @param regex Whether or not the matchstring above should be checked with regex or not. If not it will just be checked for contains.
+             * @param rerouteTo
+             * @param invokable
+             */
+            public void addMethodReroute(String command, String matchCommand, boolean regex, Method rerouteTo, Object invokable){
+                _methodRerouting.put(command, rerouteTo);
+                _theInvokables.put(command, invokable);
+                _matchCommand.put(command, matchCommand);
+                _methodUsesRegex.put(command, regex);
+            }
+
+            public void removeMethodReroute(String command){
+                _methodRerouting.remove(command);
+                _methodUsesRegex.remove(command);
+                _matchCommand.remove(command);
+                _theInvokables.remove(command);
+            }
+
+            @Override
+            public void run(){
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                String in;
+
+                try {
+                    while((in = reader.readLine()) != null){
+                        handleCommand(in);
+                    }
+                }catch(IOException e){
+                    Log.e("InputManager", "Something went wrong " + e.getMessage());
+                }
+            }
+
+            public void handleCommand(String command){
+                boolean wasInvoked = false;
+                /* Check for method rerouting */
+                for (Map.Entry<String, Method> stringMethodEntry : _methodRerouting.entrySet()) {
+                    String key = stringMethodEntry.getKey();
+                    if(_methodUsesRegex.get(key)){
+                        if(command.matches(_matchCommand.get(key))){
+                            try {
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                                wasInvoked = true;
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                                Log.e("InputManager", "Method passed in was not allowed to be invoked, does it take more than one argument?");
+                                continue;
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                                Log.e("InputManager", "Something went wrong in the method: " + e.getTargetException().getMessage());
+                                continue;
+                            }
+                        }
+                    }else{
+                        if(command.contains(_matchCommand.get(key))){
+                            try {
+                                _methodRerouting.get(key).invoke(_theInvokables.get(key), command);
+                                wasInvoked = true;
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                                Log.e("InputManager", "Method passed in was not allowed to be invoked, does it take more than one argument?");
+                                continue;
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                                Log.e("InputManager", "Something went wrong in the method: " + e.getTargetException().getMessage());
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                /* If the method already has invoked we won't run it as a system-command */
+                if(wasInvoked){
+                    return;
+                }
+
+                try {
+                    Process process = Runtime.getRuntime().exec(command);
+                    process.waitFor();
+
+                    BufferedReader normalOutputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String out;
+
+                    while((out = normalOutputReader.readLine()) != null){
+                        System.out.println(out);
+                    }
+
+                    BufferedReader errorOutputReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+                    while((out = errorOutputReader.readLine()) != null){
+                        System.out.println(out);
+                    }
+
+                } catch (Exception e) {
+                    Log.e("InputManager", "Something went wrong when trying to run the command: " + e.getMessage());
+                }
+            }
         }
 
         /**
