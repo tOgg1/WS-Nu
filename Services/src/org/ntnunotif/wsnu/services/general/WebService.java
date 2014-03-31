@@ -256,7 +256,7 @@ public abstract class WebService {
      * @return The hub connected to the built Web Service
      */
     @WebMethod(exclude = true)
-    public abstract Hub quickBuild();
+    public abstract SoapForwardingHub quickBuild();
 
     /**
      * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed

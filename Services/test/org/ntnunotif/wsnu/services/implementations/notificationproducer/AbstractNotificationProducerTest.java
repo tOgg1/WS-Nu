@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import junit.framework.TestCase;
-import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -44,7 +43,7 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public Hub quickBuild() {
+            public SoapForwardingHub quickBuild() {
                 return null;
             }
         };

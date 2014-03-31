@@ -228,12 +228,9 @@ public class ServiceUtilitiesTest {
         XMLParser.writeObjectToStream(notify, file1);
 
         /* Multiple messages */
-
         Notify doubleNotif = ServiceUtilities.createNotify(new Envelope[]{envelope, envelope}, "TormodHaugland.com");
 
         FileOutputStream file2 = new FileOutputStream("Services/res/TestNotifyTwo.xml");
         XMLParser.writeObjectToStream(doubleNotif, file2);
-
-
     }
 }

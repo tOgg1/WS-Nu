@@ -201,7 +201,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     public SoapForwardingHub quickBuild() {
         try {
             SoapForwardingHub hub = new SoapForwardingHub();
-            /* This is the most reasonable connector for this NotificationProducer */
+            //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;

@@ -215,7 +215,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         throw new ResourceUnknownFault();
     }
 
-    @Override
+    //@Override
     public SoapForwardingHub quickBuild() {
         try {
             SoapForwardingHub hub = new SoapForwardingHub();
