@@ -25,19 +25,6 @@ public class SimpleNumberProducer {
         this.simpleNotificationProducer = new SimpleNotificationProducer();
     }
 
-    public void start() throws Exception{
-        this.hub = simpleNotificationProducer.quickBuild();
-        this.simpleNotificationProducer.setEndpointReference("numberProducer");
-        this.simpleNotificationProducer.setWsdlLocation("numberProducer/SimpleNotificationProducerService.wsdl");
-        startTime = System.currentTimeMillis();
-        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
-        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
-        inputManager.addMethodReroute("generate", "^generate(.*)?", true, this.getClass().getMethod("handleGenerate", String.class), this);
-        inputManager.addMethodReroute("notify", "^notify *[0-9]+", true, this.getClass().getMethod("handleNotify", String.class), this);
-        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
-        inputManager.start();
-    }
-
     /**
      * Send some data
      * @param data
@@ -56,6 +43,19 @@ public class SimpleNumberProducer {
         notify.getNotificationMessage().add(type);
 
         simpleNotificationProducer.sendNotification(notify);
+    }
+
+    public void start() throws Exception{
+        this.hub = simpleNotificationProducer.quickBuild();
+        this.simpleNotificationProducer.setEndpointReference("numberProducer");
+        this.simpleNotificationProducer.setWsdlLocation("numberProducer/SimpleNotificationProducerService.wsdl");
+        startTime = System.currentTimeMillis();
+        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+        inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
+        inputManager.addMethodReroute("generate", "^generate(.*)?", true, this.getClass().getMethod("handleGenerate", String.class), this);
+        inputManager.addMethodReroute("notify", "^notify *[0-9]+", true, this.getClass().getMethod("handleNotify", String.class), this);
+        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
+        inputManager.start();
     }
 
     public static void main(String[] args) throws Exception {
