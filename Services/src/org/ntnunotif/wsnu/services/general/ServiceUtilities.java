@@ -636,8 +636,24 @@ public class ServiceUtilities {
             throw new IllegalArgumentException("MessageCount has to be larger than 0");
         }
 
-        if(messageCount != messageContent.length || messageCount != endpoint.length || messageCount != producerReference.length || messageCount != topic.length){
-            throw new IllegalArgumentException("The MessageCount passed in did not match the supplied arrays of messages/endpoints/topics etc.");
+        if(producerReference != null){
+           if(messageCount != producerReference.length){
+               throw new IllegalArgumentException("The MessageCount passed in did not match the count of producerreference");
+           }
+        }
+
+        if(topic != null){
+            if(messageCount != topic.length){
+                throw new IllegalArgumentException("The MessageCount passed in did not match the count of topics");
+            }
+        }
+
+        if(messageCount != endpoint.length){
+            throw new IllegalArgumentException("The MessageCount passed in did not match the count of endpoints");
+        }
+
+        if(messageCount != messageContent.length){
+            throw new IllegalArgumentException("The MessageCount passed in did not match the count of Messages");
         }
 
         Notify notify = new Notify();
@@ -648,7 +664,8 @@ public class ServiceUtilities {
             NotificationMessageHolderType.Message message = new NotificationMessageHolderType.Message();
 
             /* Set message */
-            message.setAny(messageContent);
+            Class messageClass = messageContent[i].getClass();
+            message.setAny(messageClass.cast(messageContent[i]));
             notificationMessage.setMessage(message);
 
             /* Create endpoint reference */
@@ -665,7 +682,6 @@ public class ServiceUtilities {
             if(topic != null){
                 notificationMessage.setTopic(topic[i]);
             }
-
 
             notificationMessages.add(notificationMessage);
         }
