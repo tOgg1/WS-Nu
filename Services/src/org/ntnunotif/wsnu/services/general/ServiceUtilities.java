@@ -36,7 +36,7 @@ public class ServiceUtilities {
     public static final class SubscriptionInfo {
         public static final SubscriptionInfo DEFAULT_FILTER_SUPPORT;
 
-        public final ImmutableMap<QName, Class> filtersIncluded;
+        private final ImmutableMap<QName, Class> filtersIncluded;
 
         /**
          * Run once on class load to initialize class correctly
