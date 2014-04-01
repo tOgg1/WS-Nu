@@ -33,6 +33,9 @@ import java.util.regex.Pattern;
  */
 public class ServiceUtilities {
 
+    /**
+     * The <code>SubscriptionInfo</code> should contain information about a subscription.
+     */
     public static final class SubscriptionInfo {
         public static final SubscriptionInfo DEFAULT_FILTER_SUPPORT;
 
