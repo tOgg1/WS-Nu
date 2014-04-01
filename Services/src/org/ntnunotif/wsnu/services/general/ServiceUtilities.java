@@ -1,10 +1,12 @@
 package org.ntnunotif.wsnu.services.general;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
+import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
@@ -12,9 +14,11 @@ import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
@@ -658,4 +662,135 @@ public class ServiceUtilities {
             throw new SubscribeCreationFailedFault();
         }
     }
+
+    public static<T> T[] createArrayOfEquals(T t, int length){
+        T ts[] = (T[]) Array.newInstance(t.getClass(), length);
+
+        for (int i = 0; i < length; i++) {
+            ts[i] = t;
+        }
+        return ts;
+    }
+
+    public static Notify createNotify(int messageCount, @NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String[] producerReference, @NotNull TopicExpressionType[] topic, @Nullable Object[] any){
+
+        if(messageCount <= 0){
+            throw new IllegalArgumentException("MessageCount has to be larger than 0");
+        }
+
+        if(producerReference != null){
+           if(messageCount != producerReference.length){
+               throw new IllegalArgumentException("The MessageCount passed in did not match the count of producerreference");
+           }
+        }
+
+        if(topic != null){
+            if(messageCount != topic.length){
+                throw new IllegalArgumentException("The MessageCount passed in did not match the count of topics");
+            }
+        }
+
+        if(messageCount != endpoint.length){
+            throw new IllegalArgumentException("The MessageCount passed in did not match the count of endpoints");
+        }
+
+        if(messageCount != messageContent.length){
+            throw new IllegalArgumentException("The MessageCount passed in did not match the count of Messages");
+        }
+
+        Notify notify = new Notify();
+
+        List<NotificationMessageHolderType> notificationMessages = notify.getNotificationMessage();
+        for (int i = 0; i < messageCount; i++) {
+            NotificationMessageHolderType notificationMessage = new NotificationMessageHolderType();
+            NotificationMessageHolderType.Message message = new NotificationMessageHolderType.Message();
+
+            /* Set message */
+            Class messageClass = messageContent[i].getClass();
+            message.setAny(messageClass.cast(messageContent[i]));
+            notificationMessage.setMessage(message);
+
+            /* Create endpoint reference */
+            W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+            builder.address(endpoint[i]);
+            notificationMessage.setSubscriptionReference(builder.build());
+
+            /* Create producer reference */
+            if(producerReference != null){
+                builder.address(producerReference[i]);
+                notificationMessage.setProducerReference(builder.build());
+            }
+
+            if(topic != null){
+                notificationMessage.setTopic(topic[i]);
+            }
+
+            notificationMessages.add(notificationMessage);
+        }
+
+        if(any != null){
+            for (Object o : any) {
+                notify.getAny().add(o);
+            }
+        }
+        return notify;
+    }
+
+    /* ===== Single message functions ==== */
+
+    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable String producerReference, @Nullable TopicExpressionType topic){
+        return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, new TopicExpressionType[]{topic}, null);
+    }
+
+    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable TopicExpressionType topic){
+        return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null,  new TopicExpressionType[]{topic}, null);
+    }
+
+    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable String producerReference){
+        return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, null, null);
+    }
+
+    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint){
+        return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null, null, null);
+    }
+
+
+
+    /* ===== Multiple message functions */
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint){
+        return createNotify(messageContent.length, messageContent, endpoint, null, null, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String producerReference[]){
+        return createNotify(messageContent.length, messageContent, endpoint, producerReference, null, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable  TopicExpressionType topic[]){
+        return createNotify(messageContent.length, messageContent, endpoint, null, topic, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
+        return createNotify(messageContent.length, messageContent, endpoint, producerReference, topic, null);
+    }
+
+
+    /* ===== Multiple message functions with single endpointreference ===== */
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint){
+        return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, null, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable String producerReference[]){
+        return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, null, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable  TopicExpressionType topic[]){
+        return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, topic, null);
+    }
+
+    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
+        return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, topic, null);
+    }
+
 }

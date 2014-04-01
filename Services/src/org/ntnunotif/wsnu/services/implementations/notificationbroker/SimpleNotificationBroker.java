@@ -205,7 +205,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         return response;
     }
 
-    @Override
+    //@Override
     @WebMethod(exclude = true)
     public SoapForwardingHub quickBuild() {
         try{

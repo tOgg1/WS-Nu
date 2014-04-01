@@ -75,9 +75,9 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         return returnMessage;
     }
 
-    @Override
+    //@Override
     @WebMethod(exclude = true)
-    public Hub quickBuild() {
+    public SoapForwardingHub quickBuild() {
         try{
             SoapForwardingHub hub = new SoapForwardingHub();
             /* Most reasonable and simple connector for a consumer */

@@ -1,13 +1,15 @@
 package org.ntnunotif.wsnu.services.general;
 
 import org.junit.Test;
+import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.oasis_open.docs.wsn.b_2.Notify;
+import org.w3._2001._12.soap_envelope.Envelope;
 
+import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 /**
  * Created by tormod on 24.03.14.
@@ -214,4 +216,21 @@ public class ServiceUtilitiesTest {
 
     }
 
+    @Test
+    public void testCreateNotify() throws Exception {
+
+        /* Lets put an envelope in the notify, LOL */
+        Envelope envelope = new Envelope();
+
+        Notify notify = ServiceUtilities.createNotify(envelope, "TormodHaugland.com");
+
+        FileOutputStream file1 = new FileOutputStream("Services/res/TestNotifyOne.xml");
+        XMLParser.writeObjectToStream(notify, file1);
+
+        /* Multiple messages */
+        Notify doubleNotif = ServiceUtilities.createNotify(new Envelope[]{envelope, envelope}, "TormodHaugland.com");
+
+        FileOutputStream file2 = new FileOutputStream("Services/res/TestNotifyTwo.xml");
+        XMLParser.writeObjectToStream(doubleNotif, file2);
+    }
 }
