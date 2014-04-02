@@ -1,8 +1,6 @@
 package org.ntnunotif.wsnu.services.general;
 
-import com.google.common.collect.ImmutableMap;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
@@ -13,7 +11,6 @@ import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,48 +29,6 @@ import java.util.regex.Pattern;
  * Created by tormod on 24.03.14.
  */
 public class ServiceUtilities {
-
-    /**
-     * The <code>SubscriptionInfo</code> should contain information about a subscription.
-     */
-    public static final class SubscriptionInfo {
-        public static final SubscriptionInfo DEFAULT_FILTER_SUPPORT;
-
-        private final ImmutableMap<QName, Class> filtersIncluded;
-
-        /**
-         * Run once on class load to initialize class correctly
-         */
-        static {
-            // Filter names
-            QName topicExpressionName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
-            QName producerPropName = new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties", "wsnt");
-            QName messageContentName = new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent", "wsnt");
-
-            // defaults source map
-            HashMap<QName, Class> defaults = new HashMap<>();
-
-            // Fill map
-            defaults.put(topicExpressionName, TopicExpressionType.class);
-            defaults.put(producerPropName, QueryExpressionType.class);
-            defaults.put(messageContentName, QueryExpressionType.class);
-
-            // Create DEFAULT_FILTER_SUPPORT
-            DEFAULT_FILTER_SUPPORT = new SubscriptionInfo(defaults);
-        }
-
-        public SubscriptionInfo(Map<QName, Class> filtersIncluded) {
-            this.filtersIncluded = ImmutableMap.copyOf(filtersIncluded);
-        }
-
-        public boolean usesFilter(QName filterName) {
-            return filtersIncluded.containsKey(filterName);
-        }
-
-        public Class getFilterClass(QName filterName) {
-            return filtersIncluded.get(filterName);
-        }
-    }
 
     public static final class EndpointTerminationTuple{
         public final String endpoint;

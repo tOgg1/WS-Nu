@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.oasis_open.docs.wsn.b_2.FilterType;
+import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
@@ -37,11 +38,15 @@ public class FilterTest {
 
     @Test
     public void testExamineFilterContent() {
-        if (filterType == null) {
-            Assert.assertTrue("Filter was null, cannot inspect", false);
-        }
+        Assert.assertNotNull("Filter was null, cannot inspect", filterType);
         for (Object o : filterType.getAny()) {
-            System.out.println(o.getClass());
+            System.out.println("New filter:");
+            if (o instanceof JAXBElement) {
+                JAXBElement je = (JAXBElement) o;
+                System.out.println("Declared type: " + je.getDeclaredType());
+                System.out.println("Scope: " + je.getScope());
+                System.out.println("Name: " + je.getName());
+            }
         }
     }
 }
