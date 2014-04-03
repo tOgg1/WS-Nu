@@ -3,6 +3,8 @@ package org.ntnunotif.wsnu.services.filterhandling;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -23,7 +25,12 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
     }
 
     @Override
-    public Notify evaluate(Notify notify, Object filter, NamespaceContext namespaceContext) {
+    public boolean isWellFormed(Object filter, NamespaceContext namespaceContext) throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        return false;
+    }
+
+    @Override
+    public Notify evaluate(Notify notify, NamespaceContext notifyContext, Object filter, NamespaceContext filterContext) {
         // Fast check if we can return directly
         if (notify == null)
             return null;

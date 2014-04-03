@@ -51,6 +51,7 @@ public interface TopicExpressionEvaluatorInterface {
      *
      * @param topicExpressionType the expression to evaluate with.
      * @param topicSetType        the TopicSet to evaluate.
+     * @param namespaceContext    the {@link javax.xml.namespace.NamespaceContext} of the expression
      * @return the set of all Topics in the queried set covered by the expression, <code>null</code> if none are covered
      * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
@@ -98,4 +99,16 @@ public interface TopicExpressionEvaluatorInterface {
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault;
+
+    /**
+     * Checks if a given {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} is well formed and allowed.
+     *
+     * @param topicExpressionType the expression to check
+     * @param namespaceContext    the {@link javax.xml.namespace.NamespaceContext} of the expression
+     * @return <code>true</code> if expression is legal. <code>false</code> or an Exception if not.
+     * @throws TopicExpressionDialectUnknownFault if this <code>TopicExpressionEvaluatorInterface</code> did not recognize the dialect
+     * @throws InvalidTopicExpressionFault        if the <code>TopicExpressionType</code> is malformed
+     */
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext)
+            throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
 }

@@ -5,6 +5,8 @@ import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -96,12 +98,21 @@ public class FilterSupport {
         evaluatorMap.put(evaluator.filterName(), evaluator);
     }
 
-    public boolean supportsFilter(QName filter) {
-        return evaluatorMap.containsKey(filter);
-    }
+    public boolean supportsFilter(QName filterName, Object filter, NamespaceContext filterContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
 
-    public Class getFilterClass(QName filterName) {
-        return evaluatorMap.get(filterName).filterClass();
+        // check if we actually have a delegate to check filter against
+        if (evaluatorMap.containsKey(filterName)) {
+            FilterEvaluator evaluator = evaluatorMap.get(filterName);
+
+            // Check if the evaluator is for the correct filter class
+            if (evaluator.filterClass().equals(filter.getClass())) {
+
+                // Delegate to the evaluator to see if the filter actually is well formed
+                return evaluator.isWellFormed(filter, filterContext);
+            }
+        }
+        return false;
     }
 
     public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo,
@@ -110,9 +121,9 @@ public class FilterSupport {
         Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
 
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
-        for (QName fName: subscriptionInfo.getFilterSet()) {
-            returnValue = evaluatorMap.get(fName).evaluate(returnValue, subscriptionInfo.usesFilter(fName),
-                    namespaceContext);
+        for (QName fName : subscriptionInfo.getFilterSet()) {
+            returnValue = evaluatorMap.get(fName).evaluate(returnValue, namespaceContext,
+                    subscriptionInfo.getFilter(fName), subscriptionInfo.namespaceContext);
         }
 
         return returnValue;

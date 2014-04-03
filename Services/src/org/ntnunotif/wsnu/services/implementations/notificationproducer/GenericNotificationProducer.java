@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
@@ -62,7 +63,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @Override
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify) {
-         sendNotification(notify, new NuNamespaceContext());
+        sendNotification(notify, new NuNamespaceContext());
     }
 
     @Override
@@ -76,7 +77,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(exclude = true)
     public void sendNotification(InputStream iStream) throws JAXBException {
         InternalMessage internalMessage = XMLParser.parse(iStream);
-        this.sendNotification((Notify)internalMessage.getMessage(),
+        this.sendNotification((Notify) internalMessage.getMessage(),
                 internalMessage.getRequestInformation().getNamespaceContext());
     }
 
@@ -139,6 +140,9 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         // Log subscribe event
         Log.d("GenericNotificationProducer", "Got new subscription request");
 
+        // Remember the namespace context
+        NamespaceContext namespaceContext = _connection.getReqeustInformation().getNamespaceContext();
+
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if (consumerEndpoint == null) {
@@ -162,29 +166,18 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                     JAXBElement filter = (JAXBElement) o;
 
                     // Filter legality checks
-                    if (filterSupport.supportsFilter(filter.getName())) {
+                    if (filterSupport.supportsFilter(filter.getName(), filter.getValue(), namespaceContext)) {
                         QName fName = filter.getName();
-                        Class fClass = filter.getDeclaredType();
 
-                        if (fClass.equals(filterSupport.getFilterClass(fName))) {
-                            Log.d("GenericNotificationProducer", "Subscription request contained filter: "
-                                    + fName);
+                        Log.d("GenericNotificationProducer", "Subscription request contained filter: "
+                                + fName);
 
-                            filtersPresent.put(fName, fClass);
-                            filtersPresent.put(fName, filter.getValue());
-
-                        } else {
-                            Log.w("GenericNotificationProducer", "Subscription attempt with incorrect filter handle: "
-                                    + fName + " Declared class: " + fClass + " Actual class: "
-                                    + filterSupport.getFilterClass(fName));
-                            throw new InvalidFilterFault("Filter was not translated correctly; evaluation failed");
-                            // TODO Incorrect filter present
-                        }
+                        filtersPresent.put(fName, filter.getValue());
                     } else {
                         Log.w("GenericNotificationProducer", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
-                        throw new InvalidFilterFault("Filter not supported for this producer");
-                        // TODO Filter NOT supported
+                        TopicUtils.throwInvalidTopicExpressionFault("en", "Filter not supported for this producer: " +
+                                filter.getName());
                     }
 
                 }
@@ -239,7 +232,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         /* Set up the subscription */
         // create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
-                _connection.getReqeustInformation().getNamespaceContext());
+                namespaceContext);
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
@@ -258,6 +251,10 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                                                                getCurrentMessageRequest) throws
             InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault,
             ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
+
+        // TODO
+        // TODO
+
 
         return null;
     }

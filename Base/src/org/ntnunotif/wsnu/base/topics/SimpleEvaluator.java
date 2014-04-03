@@ -1,7 +1,6 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -9,16 +8,13 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.w3c.dom.Node;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by Inge on 21.03.2014.
@@ -131,6 +127,27 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
             List<QName> list = new ArrayList<>();
             list.add(new QName(splitExpression[0]));
             return list;
+        }
+    }
+
+    @Override
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        if (!dialectURI.equals(topicExpressionType.getDialect())) {
+            Log.w("SimpleEvaluator[Topic]", "Was asked to check a non-simple expression");
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate simple dialect!");
+        }
+
+        Log.d("SimpleEvaluator[Topic]", "Checking for legality in TopicExpression");
+
+        try {
+            evaluateTopicExpressionToQName(topicExpressionType, namespaceContext);
+            return true;
+        } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
+            multipleTopicsSpecifiedFault.printStackTrace();
+            Log.e("SimpleEvaluator[Topic]", "A simple expression was determined to specify multiple topics, " +
+                    "which is impossible");
+            return false;
         }
     }
 }

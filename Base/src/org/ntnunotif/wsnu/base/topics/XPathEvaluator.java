@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.topics;
 
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -63,6 +64,32 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
         String expression = TopicUtils.extractExpression(topicExpressionType);
 
         return FullEvaluator.evaluateFullTopicExpressionToQNameList(expression, context);
+    }
+
+    @Override
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        if (!dialectURI.equals(topicExpressionType.getDialect())) {
+            Log.w("XPathEvaluator[Topic]", "Was asked to check a non-XPath expression");
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "XPath evaluator can evaluate XPath dialect!");
+        }
+        // Extract the expression
+        String expression = TopicUtils.extractExpression(topicExpressionType);
+        // Build XPath environment
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        // Set up correct context
+        xPath.setNamespaceContext(namespaceContext);
+        // Try to compile the expression
+
+        try {
+            xPath.compile(expression);
+            Log.d("XPathEvaluator[Topic]", "checked and accepted legal XPath expression: " + expression);
+            return true;
+        } catch (XPathExpressionException e) {
+            Log.w("XPathEvaluator[Topic]", "Was asked to check a malformed XPath expression");
+            TopicUtils.throwInvalidTopicExpressionFault("en", "Topic expression did not follow correct XPath syntax");
+            return false;
+        }
     }
 
     public static TopicSetType getXpathIntersection(String expression, TopicSetType setType, NamespaceContext context)

@@ -64,8 +64,9 @@ public class TopicValidator {
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
         // Check if we know this dialect
         if (evaluator == null) {
-            // TODO fill in exception
-            throw new TopicExpressionDialectUnknownFault();
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "The TopicExpression dialect {" + dialect +
+                    "} was unknown.");
+            return false;
         }
         return evaluator.isExpressionPermittedInNamespace(expression, namespace);
     }
@@ -76,8 +77,9 @@ public class TopicValidator {
      * {@link org.oasis_open.docs.wsn.t_1.TopicSetType}. Described in
      * [Web Services Topics 1.3 (WS-Topics) OASIS Standard, 1 October 2006, section 8.5]
      *
-     * @param expression the expression to examine
-     * @param topicSet   the TopicSet to evaluate against
+     * @param expression       the expression to examine
+     * @param topicSet         the TopicSet to evaluate against
+     * @param namespaceContext the {@link javax.xml.namespace.NamespaceContext} of the expression
      * @return The TopicSet given by the intersection. <code>null</code> if no elements are in the intersection.
      * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect of the
      *                                                                         {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}
@@ -94,8 +96,9 @@ public class TopicValidator {
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
         // Check if we know this dialect
         if (evaluator == null) {
-            // TODO fill in exception
-            throw new TopicExpressionDialectUnknownFault();
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "The TopicExpression dialect {" + dialect +
+                    "} was unknown.");
+            return null;
         }
         return evaluator.getIntersection(expression, topicSet, namespaceContext);
     }
@@ -120,8 +123,9 @@ public class TopicValidator {
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
         // Check if we know this dialect
         if (evaluator == null) {
-            // TODO fill in exception
-            throw new TopicExpressionDialectUnknownFault();
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "The TopicExpression dialect {" + dialect +
+                    "} was unknown.");
+            return false;
         }
         return evaluator.evaluateTopicWithExpression(expression, topic);
     }
@@ -149,8 +153,9 @@ public class TopicValidator {
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
         // Check if we know this dialect
         if (evaluator == null) {
-            // TODO fill in exception
-            throw new TopicExpressionDialectUnknownFault();
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "The TopicExpression dialect {" + dialect +
+                    "} was unknown.");
+            return null;
         }
         return evaluator.evaluateTopicExpressionToQName(topicExpressionType, context);
     }
@@ -165,6 +170,28 @@ public class TopicValidator {
         synchronized (TopicValidator.class) {
             topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
         }
+    }
+
+    /**
+     * Checks if the given expression is a legal expression with the validator.
+     *
+     * @param topicExpressionType the {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType} to check.
+     * @param namespaceContext    the {@link javax.xml.namespace.NamespaceContext} of this expression
+     * @throws TopicExpressionDialectUnknownFault If the dialect of the expression was not recognized.
+     * @throws InvalidTopicExpressionFault        if the content of the expression was malformed.
+     */
+    public static boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext)
+            throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        // Delegating work
+        String dialect = topicExpressionType.getDialect();
+        TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
+        // Check if we know this dialect
+        if (evaluator == null) {
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "The TopicExpression dialect {" + dialect +
+                    "} was unknown.");
+            return false;
+        }
+        return evaluator.isLegalExpression(topicExpressionType, namespaceContext);
     }
 
 }

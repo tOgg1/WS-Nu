@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.topics;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.MultipleTopicsSpecifiedFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
@@ -80,6 +81,28 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         return evaluateFullTopicExpressionToQNameList(expression, context);
     }
 
+    @Override
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        if (!dialectURI.equals(topicExpressionType.getDialect())) {
+            Log.w("FullEvaluator[Topic]", "Was asked to check a non-full expression");
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Full evaluator can evaluate full dialect!");
+        }
+
+        Log.d("FullEvaluator[Topic]", "Checking for legality in TopicExpression");
+
+        String expression = TopicUtils.extractExpression(topicExpressionType);
+
+        if (!isFullDialect(expression)) {
+            Log.w("FullEvaluator[Topic]", "A full dialect expression failed to validate: " + expression);
+            TopicUtils.throwInvalidTopicExpressionFault("en", "The TopicExpression [" + expression +
+                    "] is not a full dialect expression");
+            return false;
+        }
+        return true;
+    }
+
     private static void throwMultipleTopicsSpecifiedFault(String lang, String desc) throws MultipleTopicsSpecifiedFault {
         MultipleTopicsSpecifiedFaultType faultType = new MultipleTopicsSpecifiedFaultType();
         faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
@@ -100,7 +123,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         // Parse expression to single QName list
         BuildState state = BuildState.Start;
         String nc1 = "", nc2 = "";
-        for (int i = 0; expression!= null && i < expression.length(); i++) {
+        for (int i = 0; expression != null && i < expression.length(); i++) {
             char c = expression.charAt(i);
             switch (state) {
                 case Start:

@@ -33,7 +33,14 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
     }
 
     @Override
-    public Notify evaluate(Notify notify, Object filter, NamespaceContext namespaceContext) {
+    public boolean isWellFormed(Object filter, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        // Delegate work to TopicValidator
+        return TopicValidator.isLegalExpression((TopicExpressionType)filter, namespaceContext);
+    }
+
+    @Override
+    public Notify evaluate(Notify notify, NamespaceContext notifyContext, Object filter, NamespaceContext filterContext) {
         // Fast check if we can return directly
         if (notify == null)
             return null;
@@ -44,32 +51,36 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
             throw new IllegalArgumentException("FilterEvaluator was used with illegal filter type!");
         }
 
+        TopicExpressionType _filter = (TopicExpressionType) filter;
+
         List<NotificationMessageHolderType> holderTypeList = notify.getNotificationMessage();
 
         for (int i = 0; i < holderTypeList.size(); i++) {
             NotificationMessageHolderType message = holderTypeList.get(i);
 
             try {
-                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(message.getTopic(), namespaceContext);
+                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(message.getTopic(), notifyContext);
                 List<List<QName>> topic = new ArrayList<>();
                 topic.add(topicAsQNameList);
 
                 TopicSetType topicSetType = TopicUtils.qNameListListToTopicSet(topic);
 
+                if (TopicValidator.getIntersection(_filter, topicSetType, filterContext) == null) {
+                    holderTypeList.remove(i--);
+                }
+
                 // TODO Get expressions namespace context, and evaluate
             } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                Log.e("DefaultTopicExpressionFilterEvaluator", "Ill formed TopicExpression " + message.getTopic().getContent());
+                Log.e("DefaultTopicExpressionFilterEvaluator", "Ill formed TopicExpression either in Notify or Message");
                 throw new IllegalArgumentException("The TopicExpression in the Notify was ill formed", invalidTopicExpressionFault);
             } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
                 Log.e("DefaultTopicExpressionFilterEvaluator", "Multiple Topics identified where only one was allowed " + message.getTopic().getContent());
                 throw new IllegalArgumentException("The TopicExpression in the Notify described multiple Topics", multipleTopicsSpecifiedFault);
             } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                Log.e("DefaultTopicExpressionFilterEvaluator", "Did not recognize TopicDialect " + message.getTopic().getDialect());
+                Log.e("DefaultTopicExpressionFilterEvaluator", "Did not recognize TopicDialect in either filter or message");
                 throw new IllegalArgumentException("The dialect in the TopicExpression was unknown", topicExpressionDialectUnknownFault);
             }
-
-            //TopicSetType topicSetType = TopicUtils.qN
         }
-        return null;
+        return notify;
     }
 }
