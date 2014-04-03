@@ -53,11 +53,20 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     public List<String> getRecipients(Notify notify) {
         List<String> recipients = new ArrayList<>();
 
-        for (SubscriptionHandle sub: subscriptions.values()) {
-            if (filterSupport.evaluateNotifyToSubscription(notify, sub.subscriptionInfo)) {
-                recipients.add(sub.endpointTerminationTuple.endpoint);
+        // To remember which subscriptions to remove
+        List<String> keysToRemove = new ArrayList<>();
+
+        for (String key : subscriptions.keySet()) {
+            SubscriptionHandle subscriptionHandle = subscriptions.get(key);
+            if (subscriptionHandle.endpointTerminationTuple.termination < System.currentTimeMillis()) {
+                keysToRemove.add(key);
+            } else if (filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo)) {
+                recipients.add(subscriptionHandle.endpointTerminationTuple.endpoint);
             }
         }
+
+        for (String key : keysToRemove)
+            subscriptions.remove(key);
 
         return recipients;
     }
@@ -175,7 +184,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         // TODO create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent);
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
-        endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference,terminationTime);
+        endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
         Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
