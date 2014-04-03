@@ -1,15 +1,12 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
-import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
-import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;

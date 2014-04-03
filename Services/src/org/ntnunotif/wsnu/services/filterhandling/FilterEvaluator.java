@@ -4,7 +4,6 @@ import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
-import sun.plugin2.message.GetNameSpaceMessage;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
