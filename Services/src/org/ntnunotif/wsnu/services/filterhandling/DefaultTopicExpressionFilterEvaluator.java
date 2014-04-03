@@ -23,11 +23,11 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
     }
 
     @Override
-    public boolean evaluate(Notify notify, Object filter) {
+    public Notify evaluate(Notify notify, Object filter) {
         if (filter.getClass() != filterClass()) {
             Log.e("FilterFail", "FilterEvaluator was used with illegal filter type");
             throw new IllegalArgumentException("FilterEvaluator was used with illegal filter type!");
         }
-        return false;
+        return null;
     }
 }

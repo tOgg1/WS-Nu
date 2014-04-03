@@ -99,14 +99,13 @@ public class FilterSupport {
         return evaluatorMap.get(filterName).filterClass();
     }
 
-    public boolean evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo) {
+    public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo) {
+        Notify returnValue = notify;
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
         for (QName fName: subscriptionInfo.getFilterSet()) {
-            if (!evaluatorMap.get(fName).evaluate(notify, subscriptionInfo.getFilter(fName)))
-                return false;
+            returnValue = evaluatorMap.get(fName).evaluate(returnValue, subscriptionInfo.usesFilter(fName));
         }
 
-        // If we get here, we succeeded.
-        return true;
+        return returnValue;
     }
 }

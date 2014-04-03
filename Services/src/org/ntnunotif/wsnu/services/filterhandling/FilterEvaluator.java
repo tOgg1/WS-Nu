@@ -25,13 +25,12 @@ public interface FilterEvaluator {
     public QName filterName();
 
     /**
-     * Evaluates the {@link org.oasis_open.docs.wsn.b_2.Notify} with the filter given. Returns true if the filter should
-     * let the <code>Notify</code> pass through.
+     * Evaluates the {@link org.oasis_open.docs.wsn.b_2.Notify} with the filter given. Returns a <code>Notify</code>
+     * element containing all accepted Notifications for this evaluator.
      *
-     * @param notify the <code>Notify</code> to evaluate
+     * @param notify the <code>Notify</code> to evaluate. The argument may be <code>null</code>
      * @param filter the filter to evaluate with
-     * @return <code>true</code> if the filter should allow the <code>Notify</code> through. <code>false</code>
-     * otherwise
+     * @return a <code>Notify</code> element containing all accepted Notifications. <code>null</code> if none was found.
      */
-    public boolean evaluate(Notify notify, Object filter);
+    public Notify evaluate(Notify notify, Object filter);
 }
