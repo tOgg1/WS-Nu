@@ -141,7 +141,7 @@ public class TopicValidator {
      * @throws org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault       If more than one topic was identified by expression.
      * @throws org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault If the dialect was unknown by this validator
      */
-    public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
+    public static List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
         // Delegating work

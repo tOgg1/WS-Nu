@@ -6,6 +6,7 @@ import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class FilterSupport {
 
         private final ImmutableMap<QName, Object> filters;
 
+        public final NamespaceContext namespaceContext;
+
         /**
          * Run once on class load to initialize class correctly
          */
@@ -43,11 +46,12 @@ public class FilterSupport {
             defaults.put(messageContentName, new QueryExpressionType());
 
             // Create DEFAULT_FILTER_SUPPORT
-            DEFAULT_FILTER_SUPPORT = new SubscriptionInfo(defaults);
+            DEFAULT_FILTER_SUPPORT = new SubscriptionInfo(defaults, null);
         }
 
-        public SubscriptionInfo(Map<QName, Object> filtersIncluded) {
+        public SubscriptionInfo(Map<QName, Object> filtersIncluded, NamespaceContext namespaceContext) {
             this.filters = ImmutableMap.copyOf(filtersIncluded);
+            this.namespaceContext = namespaceContext;
         }
 
         public boolean usesFilter(QName filterName) {
@@ -100,13 +104,15 @@ public class FilterSupport {
         return evaluatorMap.get(filterName).filterClass();
     }
 
-    public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo) {
+    public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo,
+                                               NamespaceContext namespaceContext) {
         // Tries not to destroy source Notify
         Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
 
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
         for (QName fName: subscriptionInfo.getFilterSet()) {
-            returnValue = evaluatorMap.get(fName).evaluate(returnValue, subscriptionInfo.usesFilter(fName));
+            returnValue = evaluatorMap.get(fName).evaluate(returnValue, subscriptionInfo.usesFilter(fName),
+                    namespaceContext);
         }
 
         return returnValue;

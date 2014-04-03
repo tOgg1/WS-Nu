@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.filterhandling;
 
 import org.oasis_open.docs.wsn.b_2.Notify;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 
 /**
@@ -29,9 +30,10 @@ public interface FilterEvaluator {
      * element containing all accepted Notifications for this evaluator. WARNING the <code>Notify</code> argument may be
      * altered.
      *
-     * @param notify the <code>Notify</code> to evaluate. The argument may be <code>null</code>, and may be altered
-     * @param filter the filter to evaluate with
+     * @param notify           the <code>Notify</code> to evaluate. The argument may be <code>null</code>, and may be altered
+     * @param filter           the filter to evaluate with
+     * @param namespaceContext The {@link javax.xml.namespace.NamespaceContext} of the <code>Notify</code>
      * @return a <code>Notify</code> element containing all accepted Notifications. <code>null</code> if none was found.
      */
-    public Notify evaluate(Notify notify, Object filter);
+    public Notify evaluate(Notify notify, Object filter, NamespaceContext namespaceContext);
 }

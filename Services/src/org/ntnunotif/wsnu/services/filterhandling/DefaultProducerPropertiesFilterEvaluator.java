@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 
 /**
@@ -24,7 +25,12 @@ public class DefaultProducerPropertiesFilterEvaluator implements FilterEvaluator
     }
 
     @Override
-    public Notify evaluate(Notify notify, Object filter) {
+    public Notify evaluate(Notify notify, Object filter, NamespaceContext namespaceContext) {
+        // Fast check if we can return directly
+        if (notify == null)
+            return null;
+
+        // Check if filter is still correct
         if (filter.getClass() != filterClass()) {
             Log.e("FilterFail", "FilterEvaluator was used with illegal filter type");
             throw new IllegalArgumentException("FilterEvaluator was used with illegal filter type!");

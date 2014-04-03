@@ -2,6 +2,8 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
+import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
@@ -15,12 +17,16 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.*;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_ENDPOINTREF_IS_SET;
@@ -56,6 +62,26 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @Override
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify) {
+         sendNotification(notify, new NuNamespaceContext());
+    }
+
+    @Override
+    @WebMethod(exclude = true)
+    public void sendNotification(String notify) throws JAXBException {
+        InputStream iStream = new ByteArrayInputStream(notify.getBytes());
+        this.sendNotification(iStream);
+    }
+
+    @Override
+    @WebMethod(exclude = true)
+    public void sendNotification(InputStream iStream) throws JAXBException {
+        InternalMessage internalMessage = XMLParser.parse(iStream);
+        this.sendNotification((Notify)internalMessage.getMessage(),
+                internalMessage.getRequestInformation().getNamespaceContext());
+    }
+
+    @WebMethod(exclude = true)
+    public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
         currentMessage = notify;
         // To remember which subscriptions to remove
         List<String> keysToRemove = new ArrayList<>();
@@ -72,7 +98,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             } else {
 
                 // Find out which parts get accepted through filters, if any
-                Notify toSend = filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo);
+                Notify toSend = filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo,
+                        namespaceContext);
 
                 // If something was left to send, wrap it in an InternalMessage and send it
                 if (toSend != null) {
@@ -96,7 +123,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(exclude = true)
     public List<String> getRecipients(Notify notify) {
         throw new UnsupportedOperationException("The getRecipients is no longer supported in " +
-                "GenericNotificationProducer. It has been replaced by an override of sendNotification(Notify)");
+                "GenericNotificationProducer. It has been replaced by an override of sendNotification(Notify, " +
+                "NamespaceContext)");
     }
 
     @Override
@@ -209,8 +237,9 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         response.setSubscriptionReference(builder.build());
 
         /* Set up the subscription */
-        // TODO create subscription info
-        FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent);
+        // create subscription info
+        FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
+                _connection.getReqeustInformation().getNamespaceContext());
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
