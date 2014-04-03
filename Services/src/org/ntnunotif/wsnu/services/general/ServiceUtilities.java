@@ -751,4 +751,25 @@ public class ServiceUtilities {
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, topic, null);
     }
 
+    /**
+     * Creates a shallow clone of the {@link org.oasis_open.docs.wsn.b_2.Notify} given. That is, it does not clone
+     * the actual content, only the holders in the <code>Notify</code>.
+     *
+     * @param notify The <code>Notify</code> to clone
+     * @return a shallow clone of the <code>Notify</code>
+     */
+    public static Notify cloneNotifyShallow(Notify notify) {
+        Notify returnValue = new Notify();
+
+        List<NotificationMessageHolderType> returnHolders = returnValue.getNotificationMessage();
+        List<Object> returnAny = returnValue.getAny();
+        for (NotificationMessageHolderType notificationMessageHolderType : notify.getNotificationMessage())
+                returnHolders.add(notificationMessageHolderType);
+
+        for (Object any : notify.getAny())
+                returnAny.add(any);
+
+        return returnValue;
+    }
+
 }

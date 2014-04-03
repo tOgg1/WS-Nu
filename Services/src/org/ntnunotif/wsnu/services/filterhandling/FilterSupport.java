@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
 import com.google.common.collect.ImmutableMap;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -100,7 +101,9 @@ public class FilterSupport {
     }
 
     public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo) {
-        Notify returnValue = notify;
+        // Tries not to destroy source Notify
+        Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
+
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
         for (QName fName: subscriptionInfo.getFilterSet()) {
             returnValue = evaluatorMap.get(fName).evaluate(returnValue, subscriptionInfo.usesFilter(fName));
