@@ -18,10 +18,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Simple Notification Producer, stores subscriptions in a HashMap,
@@ -72,9 +69,21 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(exclude = true)
     public List<String> getRecipients(Notify notify) {
         ArrayList<String> recipients = new ArrayList<>();
-        for (ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple : _subscriptions.values()) {
-            recipients.add(endpointTerminationTuple.endpoint);
+        // A list to remember which keys are to be removed from recipients
+        List<String> removeKeyList = new ArrayList<>();
+        for (String key : _subscriptions.keySet()) {
+            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple = _subscriptions.get(key);
+            if (endpointTerminationTuple.termination < System.currentTimeMillis()) {
+                removeKeyList.add(key);
+            } else {
+                recipients.add(endpointTerminationTuple.endpoint);
+            }
         }
+
+        // Remove keys
+        for (String key: removeKeyList)
+            _subscriptions.remove(key);
+
         return recipients;
     }
 
