@@ -69,7 +69,6 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
                     holderTypeList.remove(i--);
                 }
 
-                // TODO Get expressions namespace context, and evaluate
             } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
                 Log.e("DefaultTopicExpressionFilterEvaluator", "Ill formed TopicExpression either in Notify or Message");
                 throw new IllegalArgumentException("The TopicExpression in the Notify was ill formed", invalidTopicExpressionFault);
@@ -81,6 +80,8 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
                 throw new IllegalArgumentException("The dialect in the TopicExpression was unknown", topicExpressionDialectUnknownFault);
             }
         }
-        return notify;
+
+        // If we have emptied the notify, we can return null.
+        return notify.getNotificationMessage().size() == 0 ? null : notify;
     }
 }

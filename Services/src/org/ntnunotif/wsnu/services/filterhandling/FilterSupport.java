@@ -5,6 +5,7 @@ import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 
@@ -36,7 +37,7 @@ public class FilterSupport {
         static {
             // Filter names
             QName topicExpressionName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
-            QName producerPropName = new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties", "wsnt");
+            //QName producerPropName = new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties", "wsnt");
             QName messageContentName = new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent", "wsnt");
 
             // defaults source map
@@ -44,7 +45,7 @@ public class FilterSupport {
 
             // Fill map
             defaults.put(topicExpressionName, new TopicExpressionType());
-            defaults.put(producerPropName, new QueryExpressionType());
+            //defaults.put(producerPropName, new QueryExpressionType());
             defaults.put(messageContentName, new QueryExpressionType());
 
             // Create DEFAULT_FILTER_SUPPORT
@@ -80,11 +81,11 @@ public class FilterSupport {
         FilterSupport fs = new FilterSupport();
 
         DefaultTopicExpressionFilterEvaluator topiEval = new DefaultTopicExpressionFilterEvaluator();
-        DefaultProducerPropertiesFilterEvaluator prodEval = new DefaultProducerPropertiesFilterEvaluator();
+        //DefaultProducerPropertiesFilterEvaluator prodEval = new DefaultProducerPropertiesFilterEvaluator();
         DefaultMessageContentFilterEvaluator messEval = new DefaultMessageContentFilterEvaluator();
 
         fs.setFilterEvaluator(topiEval);
-        fs.setFilterEvaluator(prodEval);
+        //fs.setFilterEvaluator(prodEval);
         fs.setFilterEvaluator(messEval);
 
         return fs;
@@ -99,7 +100,7 @@ public class FilterSupport {
     }
 
     public boolean supportsFilter(QName filterName, Object filter, NamespaceContext filterContext) throws
-            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault, InvalidMessageContentExpressionFault {
 
         // check if we actually have a delegate to check filter against
         if (evaluatorMap.containsKey(filterName)) {

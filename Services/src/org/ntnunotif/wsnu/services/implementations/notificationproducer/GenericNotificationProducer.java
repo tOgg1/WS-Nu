@@ -161,7 +161,6 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
             for (Object o : filters.getAny()) {
 
-                // TODO handle other class types, if they can exist:
                 if (o instanceof JAXBElement) {
                     JAXBElement filter = (JAXBElement) o;
 
@@ -176,8 +175,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                     } else {
                         Log.w("GenericNotificationProducer", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
-                        TopicUtils.throwInvalidTopicExpressionFault("en", "Filter not supported for this producer: " +
-                                filter.getName());
+                        ServiceUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
+                                filter.getName(), filter.getName());
                     }
 
                 }

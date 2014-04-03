@@ -43,6 +43,8 @@ public class DefaultProducerPropertiesFilterEvaluator implements FilterEvaluator
             Log.e("FilterFail", "FilterEvaluator was used with illegal filter type");
             throw new IllegalArgumentException("FilterEvaluator was used with illegal filter type!");
         }
+
+        // TODO wait with this until we have decided if we are supporting it at all
         return null;
     }
 }

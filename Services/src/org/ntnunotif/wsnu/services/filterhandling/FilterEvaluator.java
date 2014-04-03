@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import sun.plugin2.message.GetNameSpaceMessage;
@@ -34,11 +35,13 @@ public interface FilterEvaluator {
      * @param filter           the filter to check
      * @param namespaceContext the {@link javax.xml.namespace.NamespaceContext} this filter was present in
      * @return <code>true</code> if well formed. <code>false</code> or an exception otherwise
-     * @throws TopicExpressionDialectUnknownFault if the filter was a TopicExpression, and the dialect was unknown
-     * @throws InvalidTopicExpressionFault        If the filter was a TopicExpression, and the expression was malformed
+     * @throws TopicExpressionDialectUnknownFault   if the filter was a TopicExpression, and the dialect was unknown
+     * @throws InvalidTopicExpressionFault          If the filter was a TopicExpression, and the expression was malformed
+     * @throws InvalidMessageContentExpressionFault If the filter was a MessageContent, and the dialect was unknown or
+     *                                              the expression was malformed
      */
     public boolean isWellFormed(Object filter, NamespaceContext namespaceContext) throws
-            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault;
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault, InvalidMessageContentExpressionFault;
 
     /**
      * Evaluates the {@link org.oasis_open.docs.wsn.b_2.Notify} with the filter given. Returns a <code>Notify</code>
