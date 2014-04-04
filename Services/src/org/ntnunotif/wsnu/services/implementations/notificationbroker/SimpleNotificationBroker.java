@@ -200,7 +200,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             GetCurrentMessage getCurrentMessageRequest)
     throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault,
            NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
-        GetCurrentMessageResponse response = baseFactory.createGetCurrentMessageResponse();
+        GetCurrentMessageResponse response = new GetCurrentMessageResponse();
         response.getAny().add(currentMessage);
         return response;
     }

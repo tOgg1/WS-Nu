@@ -8,9 +8,10 @@ import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
+import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 
-import javax.jws.WebMethod;
 import javax.xml.bind.JAXBException;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -45,7 +46,6 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @return
      * @throws java.security.NoSuchAlgorithmException
      */
-    @WebMethod(exclude = true)
     public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
@@ -62,7 +62,6 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return hash;
     }
 
-    @WebMethod(exclude = true)
     public String generateNewSubscriptionURL(){
         String newHash = generateSubscriptionKey();
 
@@ -70,23 +69,33 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return endpointReference+ "/?subscription=" + newHash;
     }
 
-    @WebMethod(exclude = true)
     public String generateSubscriptionURL(String key){
         String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
         return endpointReference + "/?subscription=" + key;
     }
 
-    @WebMethod(exclude = true)
     public abstract boolean keyExists(String key);
 
-    @WebMethod(exclude = true)
     public abstract List<String> getRecipients(Notify notify);
+
+    public void sendNotification(Notify notify, W3CEndpointReference endpoint){
+        try {
+            this.sendNotification(notify, ServiceUtilities.parseW3CEndpoint(endpoint.toString()));
+        } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
+            throw new RuntimeException("Endpoint not parseable");
+        }
+    }
+
+    public void sendNotification(Notify notify, String endPoint){
+        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_ENDPOINTREF_IS_SET, notify);
+        outMessage.getRequestInformation().setEndpointReference(endPoint);
+        _hub.acceptLocalMessage(outMessage);
+    }
 
     /**
      * Sends a notification the the endpoint.
      * @param notify
      */
-    @WebMethod(exclude = true)
     public void sendNotification(Notify notify){
         currentMessage = notify;
         List<String> recipients = getRecipients(notify);
@@ -101,7 +110,6 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Attempts to send a notification taken as a string.
      * @param notify
      */
-    @WebMethod(exclude = true)
     public void sendNotification(String notify) throws JAXBException {
         InputStream iStream = new ByteArrayInputStream(notify.getBytes());
         this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
@@ -112,24 +120,20 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @param iStream
      * @throws JAXBException
      */
-    @WebMethod(exclude = true)
     public void sendNotification(InputStream iStream) throws JAXBException {
         this.sendNotification((Notify)XMLParser.parse(iStream).getMessage());
     }
 
-    @WebMethod(exclude = true)
     public void setSubscriptionManager(AbstractSubscriptionManager manager){
         this.manager = manager;
         this.usesManager = true;
     }
 
-    @WebMethod(exclude = true)
     public void clearSubscriptionManager(){
         this.manager = null;
         this.usesManager = false;
     }
 
-    @WebMethod(exclude = true)
     public boolean usesSubscriptionManager(){
         return this.usesManager;
     }

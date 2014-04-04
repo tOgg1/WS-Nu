@@ -8,7 +8,6 @@ import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 
 import javax.activation.UnsupportedDataTypeException;
-import javax.jws.WebMethod;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +22,6 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
  * Created by tormod on 23.03.14.
  */
-@javax.jws.WebService(name = "GenericWebService")
 public abstract class WebService {
 
     /**
@@ -32,10 +30,9 @@ public abstract class WebService {
     protected ArrayList<ServiceUtilities.ContentManager> _contentManagers;
 
     /**
-     * Factory available to all WebServices
+     *
      */
-    //TODO: This shouldnt be here
-    public org.oasis_open.docs.wsn.b_2.ObjectFactory baseFactory = new ObjectFactory();
+    public ObjectFactory baseFactory;
 
     /**
      * Reference to the connected hub
@@ -84,7 +81,6 @@ public abstract class WebService {
      * Retrieves the endpointreference of the Web Service.
      * @return
      */
-    @WebMethod(exclude = true)
     public String getEndpointReference() {
         return endpointReference;
     }
@@ -97,7 +93,6 @@ public abstract class WebService {
      * you only have to pass in "myWebService".
      * @param endpointReference
      */
-    @WebMethod(exclude = true)
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
             throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
@@ -113,7 +108,6 @@ public abstract class WebService {
      * Forces the endpoint reference to the endpointreference set.
      * @param endpointReference
      */
-    @WebMethod(exclude = true)
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
         //TODO: Try to filter out the pureEndpointReference
@@ -127,7 +121,6 @@ public abstract class WebService {
      * Setter for the hub. Does nothing special.
      * @return
      */
-    @WebMethod(exclude = true)
     public Hub getHub() {
         return _hub;
     }
@@ -136,7 +129,6 @@ public abstract class WebService {
      * Getter for the hub. Does nothing special.
      * @param _hub
      */
-    @WebMethod(exclude = true)
     public void setHub(Hub _hub) {
         this._hub = _hub;
     }
@@ -146,7 +138,6 @@ public abstract class WebService {
      * If specific requests, in particular with parameters, needs to be handled, this method should then be overrided.
      * @return
      */
-    @WebMethod(exclude = true)
     public InternalMessage acceptRequest(){
         RequestInformation requestInformation = _connection.getReqeustInformation();
 
@@ -201,12 +192,10 @@ public abstract class WebService {
         }
     }
 
-    @WebMethod(exclude = true)
     public InternalMessage sendRequest(String address, String request){
         return sendRequest(address + request);
     }
 
-    @WebMethod(exclude = true)
     public InternalMessage sendRequest(String requestUri){
         InternalMessage outMessage = new InternalMessage(STATUS_OK, null);
         RequestInformation info = new RequestInformation();
@@ -215,7 +204,6 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(outMessage);
     }
 
-    @WebMethod(exclude = true)
     public String fetchRemoteWsdl(String endpoint){
         String uri = endpoint + "?wsdl";
         InternalMessage returnMessage = sendRequest(uri);
@@ -255,7 +243,6 @@ public abstract class WebService {
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
      */
-    @WebMethod(exclude = true)
     public abstract SoapForwardingHub quickBuild();
 
     /**
@@ -267,7 +254,6 @@ public abstract class WebService {
      * @return
      * @throws UnsupportedDataTypeException
      */
-    @WebMethod(exclude = true)
     public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
         SoapForwardingHub hub = null;
         try {
@@ -323,7 +309,6 @@ public abstract class WebService {
      * Adds a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      * @param manager
      */
-    @WebMethod(exclude = true)
     public void addContentManager(ServiceUtilities.ContentManager manager){
         _contentManagers.add(manager);
     }
@@ -332,7 +317,6 @@ public abstract class WebService {
      * Removes a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      * @param manager
      */
-    @WebMethod(exclude = true)
     public void removeContentManger(ServiceUtilities.ContentManager manager){
         _contentManagers.remove(manager);
     }
@@ -340,7 +324,6 @@ public abstract class WebService {
     /**
      * Clears all {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}'s.
      */
-    @WebMethod(exclude = true)
     public void clearContentManagers(){
         _contentManagers.clear();
     }
@@ -348,7 +331,6 @@ public abstract class WebService {
     /**
      * Generate WSDL/XSD schemas.
      */
-    @WebMethod(exclude = true)
     public void generateWSDLandXSDSchemas() throws Exception {
 
         if(endpointReference == null){
@@ -358,30 +340,12 @@ public abstract class WebService {
         String os = System.getProperty("os.name");
         String classPath = System.getProperty("java.class.path");
 
-
         File directory = new File(pureEndpointReference);
         if(!directory.isDirectory()){
             directory.mkdir();
         }
 
         File file = new File(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
-
-        if(file.isFile()){
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            Log.d("WebService", "There already is a wsdl file generated for this Web Service, are you sure you want to make a new one? (y/n)");
-            String in;
-            while((in = reader.readLine()) != null){
-                if(in.matches("^[Yy](.*)?")){
-                    break;
-                }else if(in.matches("^[Nn](.*)?")){
-                    return;
-                }else{
-                    Log.d("WebService", "Invalid input, try again (y/n)");
-                    continue;
-                }
-            }
-        }
-
         wsdlLocation = pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl";
 
         if(os.equals("Windows")){
@@ -390,6 +354,7 @@ public abstract class WebService {
         if(os.equals("Linux")){
             String command = "wsgen -cp " + classPath + " -d "+ pureEndpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
             Log.d("WebService", "[Running command]: " + command);
+
             Process procces = Runtime.getRuntime().exec(command);
             procces.waitFor();
 
@@ -415,10 +380,30 @@ public abstract class WebService {
 
         }
         Log.d("WebService", "Generation completed");
-        //TODO: Add support for more systems
+
+        Log.d("WebService", "Setting endpoint-variable in wsdl-file");
+        FileInputStream newStream = new FileInputStream(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
+        StringBuilder sb = new StringBuilder();
+
+        int c;
+
+        while((c = newStream.read()) != -1){
+            sb.append((char)c);
+        }
+
+        String wsdl = sb.toString();
+        wsdl = wsdl.replaceAll("soap:address location=\"REPLACE_WITH_ACTUAL_URL\"/>", "soap:address location=\""+endpointReference+"\"/>");
+
+        System.out.println(wsdl);
+
+        byte[] bytes = wsdl.getBytes();
+
+        FileOutputStream outStream = new FileOutputStream(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
+        outStream.write(bytes);
+        outStream.close();
+        System.out.println("Hello");
     }
 
-    @WebMethod(exclude = true)
     public String getWsdlLocation() {
         return wsdlLocation;
     }
@@ -428,7 +413,6 @@ public abstract class WebService {
      * @param wsdlLocation
      * @return True if the file was found, false if not.
      */
-    @WebMethod(exclude = true)
     public boolean setWsdlLocation(String wsdlLocation) {
         File file = new File(wsdlLocation);
 
@@ -437,5 +421,13 @@ public abstract class WebService {
 
         this.wsdlLocation = wsdlLocation;
         return true;
+    }
+
+    public ServiceConnection getConnection() {
+        return _connection;
+    }
+
+    public void setConnection(ServiceConnection connection) {
+        this._connection = connection;
     }
 }

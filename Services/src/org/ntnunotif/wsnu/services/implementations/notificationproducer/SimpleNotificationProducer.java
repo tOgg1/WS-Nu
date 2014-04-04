@@ -191,7 +191,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                                                        throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault,
                                                        MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault,
                                                        TopicNotSupportedFault {
-        GetCurrentMessageResponse response = baseFactory.createGetCurrentMessageResponse();
+        GetCurrentMessageResponse response = new GetCurrentMessageResponse();
         response.getAny().add(currentMessage);
         return response;
     }
