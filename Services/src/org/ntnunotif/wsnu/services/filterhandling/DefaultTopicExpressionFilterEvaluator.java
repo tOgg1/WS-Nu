@@ -58,8 +58,16 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
         for (int i = 0; i < holderTypeList.size(); i++) {
             NotificationMessageHolderType message = holderTypeList.get(i);
 
+            TopicExpressionType topicExpression = message.getTopic();
+
+            // If message does not contain a topic, it must be removed.
+            if (topicExpression == null) {
+                holderTypeList.remove(i--);
+                continue;
+            }
+
             try {
-                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(message.getTopic(), notifyContext);
+                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(topicExpression, notifyContext);
                 List<List<QName>> topic = new ArrayList<>();
                 topic.add(topicAsQNameList);
 

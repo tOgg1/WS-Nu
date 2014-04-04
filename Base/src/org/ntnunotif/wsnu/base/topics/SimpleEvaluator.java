@@ -49,12 +49,17 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
             topic = evaluateTopicExpressionToQName(topicExpressionType, namespaceContext).get(0);
         } catch (MultipleTopicsSpecifiedFault fault) {
             // This is impossible in simple dialect
+            Log.e("SimpleEvaluator[Topic]", "A simple topic expression got evaluated to multiple topics. This " +
+                    "should be impossible");
             fault.printStackTrace();
             return null;
         }
+
         TopicSetType retVal = new TopicSetType();
         for (Object o : topicSetType.getAny()) {
+
             if (o instanceof Node) {
+
                 Node node = (Node) o;
                 String nodeNS = node.getNamespaceURI();
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
@@ -75,7 +80,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                 }
             }
         }
-        return retVal;
+        return retVal.getAny().size() == 0 ? null : retVal;
     }
 
     @Override
