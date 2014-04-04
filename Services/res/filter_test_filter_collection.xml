@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsnt:Filter xmlns:tns="http://www.w3.org/2005/08/addressing"
+             xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:wsrf-bf="http://docs.oasis-open.org/wsrf/bf-2"
+             xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+             xmlns:test="http://test.com" xmlns:test2="http://test2.com"  xmlns:test3="http://test3.com"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://docs.oasis-open.org/wsn/b-2 http://docs.oasis-open.org/wsn/b-2.xsd ">
+
+    <!-- SIMPLE TOPIC FILTERS count=3 -->
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
+        test:root1
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
+        test:root2
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
+        test:root3
+    </wsnt:TopicExpression>
+
+    <!-- CONCRETE TOPIC FILTERS count=3 -->
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete">
+        test:root1/ask
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete">
+        test:root2/test:reply
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete">
+        test:root3
+    </wsnt:TopicExpression>
+
+    <!-- FULL TOPIC FILTERS count=3 -->
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">
+        //*
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">
+        test:root1//.
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">
+        //non-existent//*
+    </wsnt:TopicExpression>
+
+    <!-- XPATH TOPIC FILTERS count=3 -->
+    <wsnt:TopicExpression Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        //*[@wstop:topic="true"]
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        test:root2//*[@wstop:topic="true"]
+    </wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        //*[@wstop:topic="false"]
+    </wsnt:TopicExpression>
+
+
+
+    <!-- PAYLOAD FILTERS count=4 -->
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        fn:true()
+    </wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        fn:false()
+    </wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        fn:boolean(test3:*)
+    </wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        fn:boolean(test3:*)
+    </wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        fn:boolean(test2:hello)
+    </wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        //*
+    </wsnt:MessageContent>
+
+    <!-- ILLEGAL / UNSUPPORTED FILTERS  count=4 -->
+    <wsnt:ProducerProperties Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">fn:true()</wsnt:ProducerProperties>
+    <wsnt:TopicExpression Dialect="http://not.accepted/dialect.html">gibberish</wsnt:TopicExpression>
+    <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
+        test:root1/ask
+    </wsnt:TopicExpression>
+    <wsnt:MessageContent Dialect="http://not.accepted/dialect.html">gibberish</wsnt:MessageContent>
+</wsnt:Filter>

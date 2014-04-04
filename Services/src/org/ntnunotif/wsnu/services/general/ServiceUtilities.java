@@ -1,15 +1,15 @@
 package org.ntnunotif.wsnu.services.general;
 
-import com.google.common.collect.ImmutableMap;
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
-import org.oasis_open.docs.wsn.b_2.Notify;
-import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.b_2.*;
+import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
+import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
@@ -32,45 +32,6 @@ import java.util.regex.Pattern;
  * Created by tormod on 24.03.14.
  */
 public class ServiceUtilities {
-
-    public static final class SubscriptionInfo {
-        public static final SubscriptionInfo DEFAULT_FILTER_SUPPORT;
-
-        private final ImmutableMap<QName, Class> filtersIncluded;
-
-        /**
-         * Run once on class load to initialize class correctly
-         */
-        static {
-            // Filter names
-            QName topicExpressionName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
-            QName producerPropName = new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties", "wsnt");
-            QName messageContentName = new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent", "wsnt");
-
-            // defaults source map
-            HashMap<QName, Class> defaults = new HashMap<>();
-
-            // Fill map
-            defaults.put(topicExpressionName, TopicExpressionType.class);
-            defaults.put(producerPropName, QueryExpressionType.class);
-            defaults.put(messageContentName, QueryExpressionType.class);
-
-            // Create DEFAULT_FILTER_SUPPORT
-            DEFAULT_FILTER_SUPPORT = new SubscriptionInfo(defaults);
-        }
-
-        public SubscriptionInfo(Map<QName, Class> filtersIncluded) {
-            this.filtersIncluded = ImmutableMap.copyOf(filtersIncluded);
-        }
-
-        public boolean usesFilter(QName filterName) {
-            return filtersIncluded.containsKey(filterName);
-        }
-
-        public Class getFilterClass(QName filterName) {
-            return filtersIncluded.get(filterName);
-        }
-    }
 
     public static final class EndpointTerminationTuple{
         public final String endpoint;
@@ -793,4 +754,82 @@ public class ServiceUtilities {
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, topic, null);
     }
 
+    /**
+     * Creates a shallow clone of the {@link org.oasis_open.docs.wsn.b_2.Notify} given. That is, it does not clone
+     * the actual content, only the holders in the <code>Notify</code>.
+     *
+     * @param notify The <code>Notify</code> to clone
+     * @return a shallow clone of the <code>Notify</code>
+     */
+    public static Notify cloneNotifyShallow(Notify notify) {
+        Notify returnValue = new Notify();
+
+        List<NotificationMessageHolderType> returnHolders = returnValue.getNotificationMessage();
+        List<Object> returnAny = returnValue.getAny();
+        for (NotificationMessageHolderType notificationMessageHolderType : notify.getNotificationMessage())
+                returnHolders.add(notificationMessageHolderType);
+
+        for (Object any : notify.getAny())
+                returnAny.add(any);
+
+        return returnValue;
+    }
+
+    /**
+     * Builds and throws an {@link org.oasis_open.docs.wsn.b_2.InvalidFilterFaultType}
+     *
+     * @param language the language of the description, as defined in {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description}
+     * @param description the description of the fault, as defined in {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description}
+     * @param filterName the name of the filter that was not understood
+     * @throws InvalidFilterFault
+     */
+    public static void throwInvalidFilterFault(String language, String description, QName filterName) throws
+            InvalidFilterFault {
+
+        InvalidFilterFaultType faultType = new InvalidFilterFaultType();
+        faultType.getUnknownFilter().add(filterName);
+        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+        throw new InvalidFilterFault(description, faultType);
+    }
+
+    public static void throwInvalidMessageContentExpressionFault(String language, String description) throws
+            InvalidMessageContentExpressionFault {
+
+        InvalidMessageContentExpressionFaultType faultType = new InvalidMessageContentExpressionFaultType();
+        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+        throw new InvalidMessageContentExpressionFault(description, faultType);
+    }
+
+    /**
+     * Attempts to extract a {@link java.lang.String} representing the content of the
+     * {@link org.oasis_open.docs.wsn.b_2.QueryExpressionType}.
+     *
+     * @param expressionType the expression to examine
+     * @return the content of the expression as a <code>String</code>.
+     * @throws java.lang.IllegalArgumentException if the expression contains no or multiple <code>String</code>s.
+     */
+    public static String extractQueryExpressionString(QueryExpressionType expressionType) {
+        String retValue = null;
+        for (Object o : expressionType.getContent()) {
+            if (o instanceof String) {
+                if (retValue!= null) {
+                    throw new IllegalArgumentException("The QueryExpressionType had too complex content");
+                } else
+                    retValue = (String)o;
+            }
+        }
+        if (retValue == null) {
+            throw new IllegalArgumentException("The QueryExpressionType did not contain any String");
+        } else {
+            return retValue;
+        }
+    }
 }

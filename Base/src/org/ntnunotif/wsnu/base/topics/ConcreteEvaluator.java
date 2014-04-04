@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.topics;
 
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -151,5 +152,25 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
             }
         }
         return retVal;
+    }
+
+    @Override
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        if (!dialectURI.equals(topicExpressionType.getDialect())) {
+            Log.w("ConcreteEvaluator[Topic]", "Was asked to check a non-concrete expression");
+            TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Concrete evaluator can evaluate concrete dialect!");
+        }
+
+        Log.d("ConcreteEvaluator[Topic]", "Checking for legality in TopicExpression");
+
+        try {
+            evaluateTopicExpressionToQName(topicExpressionType, namespaceContext);
+            return true;
+        } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
+            multipleTopicsSpecifiedFault.printStackTrace();
+            Log.e("ConcreteEvaluator[Topic]", "A concrete expression was determined to specify multiple topics, " +
+                    "which is impossible");
+            return false;
+        }
     }
 }
