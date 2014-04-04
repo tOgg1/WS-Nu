@@ -12,6 +12,7 @@ import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.io.FileInputStream;
 
 /**
@@ -19,6 +20,10 @@ import java.io.FileInputStream;
  */
 public class FilterTest {
     private static final String subscribeWithFilterLocation = "Services/res/server_test_subscribe.xml";
+
+    private static final String testNS = "http://test.com";
+    private static final String test2NS = "http://test2.com";
+    private static final String test3NS = "http://test3.com";
 
     private static InternalMessage subscribeInternalMessage;
     private static FilterType filterType;
@@ -48,5 +53,35 @@ public class FilterTest {
                 System.out.println("Name: " + je.getName());
             }
         }
+    }
+
+    @Test
+    public void testFilterSimpleTopics() {
+        // TODO
+    }
+
+    @Test
+    public void testFilterConcreteTopics() {
+        // TODO
+    }
+
+    @Test
+    public void testFilterFullTopics() {
+        // TODO
+    }
+
+    @Test
+    public void testFilterXPathTopics() {
+        // TODO
+    }
+
+    @Test
+    public void testFilterMessageContent() {
+        // TODO
+    }
+
+    @Test
+    public void testIllegalFilter() {
+        // TODO
     }
 }

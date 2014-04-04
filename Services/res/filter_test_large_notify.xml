@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsnt:Notify xmlns:tns="http://www.w3.org/2005/08/addressing" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2"
+             xmlns:wsrf-bf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1"
+             xmlns:test="http://test.com"
+             xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://docs.oasis-open.org/wsn/b-2 http://docs.oasis-open.org/wsn/b-2.xsd ">
+    <!-- PAYLOAD ONLY -->
+    <wsnt:NotificationMessage>
+        <wsnt:Message>
+            <hello>World</hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+    <!-- SIMPLE TOPIC -->
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">test:root1</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:ask="true">How are you?</question></hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">test:root2</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:reply="true">fine</question> </hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+    <!-- CONCRETE TOPIC -->
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete">test:root1/ask</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:ask="true">How are you?</question></hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete">test:root2/test:reply</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:reply="true">fine</question> </hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+    <!-- FULL TOPIC -->
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">test:root1/ask</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:ask="true">How are you?</question></hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">test:root2/test:reply</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:reply="true">fine</question> </hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+    <!-- XPATH TOPIC -->
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">test:root1/ask</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:ask="true">How are you?</question></hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">test:root2/test:reply</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World<question test:reply="true">fine</question> </hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+    <!-- PAYLOAD VARIATIONS -->
+    <wsnt:NotificationMessage>
+        <wsnt:Message>
+            <test2:hello xmlns:test2="http://test2.com">World</test2:hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Message>
+            <hello>
+                World
+                <test3:hello xmlns:test3="http://test3.com">test:World</test3:hello>
+            </hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+    <wsnt:NotificationMessage>
+        <wsnt:Message>
+            <hello final="true">World</hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+
+</wsnt:Notify>
