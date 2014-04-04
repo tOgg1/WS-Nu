@@ -105,7 +105,7 @@ public interface TopicExpressionEvaluatorInterface {
      *
      * @param topicExpressionType the expression to check
      * @param namespaceContext    the {@link javax.xml.namespace.NamespaceContext} of the expression
-     * @return <code>true</code> if expression is legal. <code>false</code> or an Exception if not.
+     * @return <code>true</code> if legal, throws an {@link java.lang.Exception} otherwise
      * @throws TopicExpressionDialectUnknownFault if this <code>TopicExpressionEvaluatorInterface</code> did not recognize the dialect
      * @throws InvalidTopicExpressionFault        if the <code>TopicExpressionType</code> is malformed
      */

@@ -128,7 +128,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
         } else {
             if (splitExpression[0].contains("/"))
                 TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
-                        "local part wsa a path expression.");
+                        "local part was a path expression.");
             List<QName> list = new ArrayList<>();
             list.add(new QName(splitExpression[0]));
             return list;

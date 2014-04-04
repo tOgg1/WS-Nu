@@ -10,6 +10,7 @@ import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
@@ -156,6 +157,22 @@ public class TopicValidatorTest {
     }
 
     // TODO Very few test cases are covered. Should cover more!
+
+    @Test
+    public void testSimpleLegalCase() throws Exception{
+        NamespaceContext namespaceContext = simpleLegalMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)simpleLegalMsg.getMessage()).getTopic();
+
+        Assert.assertTrue("Simple legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
+    }
+
+    @Test(expected = InvalidFilterFault.class)
+    public void testSimpleIllegalCase() throws Exception{
+        NamespaceContext namespaceContext = simpleIllegalMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)simpleIllegalMsg.getMessage()).getTopic();
+
+        TopicValidator.isLegalExpression(topicExpression, namespaceContext);
+    }
 
     @Test
     public void disassembleNamespaceContext() {
