@@ -11,6 +11,8 @@ import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
@@ -166,12 +168,91 @@ public class TopicValidatorTest {
         Assert.assertTrue("Simple legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
     }
 
-    @Test(expected = InvalidFilterFault.class)
+    @Test(expected = InvalidTopicExpressionFault.class)
     public void testSimpleIllegalCase() throws Exception{
         NamespaceContext namespaceContext = simpleIllegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)simpleIllegalMsg.getMessage()).getTopic();
 
         TopicValidator.isLegalExpression(topicExpression, namespaceContext);
+    }
+
+    @Test
+    public void testConcreteLegalCase() throws Exception{
+        NamespaceContext namespaceContext = concreteLegalMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)concreteLegalMsg.getMessage()).getTopic();
+
+        Assert.assertTrue("Concrete legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
+    }
+
+    @Test(expected = InvalidTopicExpressionFault.class)
+    public void testConcreteIllegalCase() throws Exception{
+        NamespaceContext namespaceContext = concreteIllegalMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)concreteIllegalMsg.getMessage()).getTopic();
+
+        TopicValidator.isLegalExpression(topicExpression, namespaceContext);
+    }
+
+    @Test
+     public void testFullLegalSingleCase() throws Exception{
+        NamespaceContext namespaceContext = fullLegalSingleMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)fullLegalSingleMsg.getMessage()).getTopic();
+
+        Assert.assertTrue("Full, single legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
+    }
+
+    @Test
+    public void testFullLegalMultipleCase() throws Exception{
+        NamespaceContext namespaceContext = fullLegalMultipleMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)fullLegalMultipleMsg.getMessage()).getTopic();
+
+        Assert.assertTrue("full, multiple legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
+    }
+
+    @Test(expected = InvalidTopicExpressionFault.class)
+    public void testFullIllegalCase() throws Exception{
+        NamespaceContext namespaceContext = fullIllegalMsg.getRequestInformation().getNamespaceContext();
+        TopicExpressionType topicExpression = ((GetCurrentMessage)fullIllegalMsg.getMessage()).getTopic();
+
+        TopicValidator.isLegalExpression(topicExpression, namespaceContext);
+    }
+
+    @Test
+    public void testExpressionsToQNameList() throws Exception {
+
+        // Simple
+        List<QName> qNameList = TopicValidator.evaluateTopicExpressionToQName(
+                ((GetCurrentMessage)simpleLegalMsg.getMessage()).getTopic(),
+                simpleLegalMsg.getRequestInformation().getNamespaceContext()
+        );
+
+        Assert.assertNotNull("Simple was evaluated to null", qNameList);
+        Assert.assertEquals("Simple was wrong length", 1, qNameList.size());
+
+        // Concrete
+        qNameList = TopicValidator.evaluateTopicExpressionToQName(
+                ((GetCurrentMessage)concreteLegalMsg.getMessage()).getTopic(),
+                concreteLegalMsg.getRequestInformation().getNamespaceContext()
+        );
+
+        Assert.assertNotNull("Concrete was evaluated to null", qNameList);
+        Assert.assertEquals("Concrete was wrong length", 2, qNameList.size());
+
+        // full
+        qNameList = TopicValidator.evaluateTopicExpressionToQName(
+                ((GetCurrentMessage)fullLegalSingleMsg.getMessage()).getTopic(),
+                fullLegalSingleMsg.getRequestInformation().getNamespaceContext()
+        );
+
+        Assert.assertNotNull("Full was evaluated to null", qNameList);
+        Assert.assertEquals("Full was wrong length", 2, qNameList.size());
+    }
+
+    @Test(expected = MultipleTopicsSpecifiedFault.class)
+    public void testExpressionsMultipleFull() throws Exception{
+        TopicValidator.evaluateTopicExpressionToQName(
+                ((GetCurrentMessage)fullLegalMultipleMsg.getMessage()).getTopic(),
+                fullLegalMultipleMsg.getRequestInformation().getNamespaceContext()
+        );
     }
 
     @Test
