@@ -120,14 +120,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if(consumerEndpoint == null){
-            throw new SubscribeCreationFailedFault("Missing EndpointReference");
+            ServiceUtilities.throwSubscribeCreationFailedFault("Missing endpointreference");
         }
 
         String endpointReference = null;
         try {
             endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference not found.");
+            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference malformatted or missing.");
         }
 
         FilterType filter = subscribeRequest.getFilter();

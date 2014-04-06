@@ -29,9 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
 
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_ENDPOINTREF_IS_SET;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  * Created by Inge on 31.03.2014.
@@ -127,6 +125,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                 "NamespaceContext)");
     }
 
+
     @Override
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
@@ -145,11 +144,16 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if (consumerEndpoint == null) {
-            throw new SubscribeCreationFailedFault("Missing EndpointReference");
+            ServiceUtilities.throwSubscribeCreationFailedFault("Missing endpointreference");
         }
 
         //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
-        String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+        String endpointReference = null;
+        try {
+            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
+        } catch (IllegalAccessException e) {
+            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference malformated or missing.");
+        }
 
         FilterType filters = subscribeRequest.getFilter();
 
