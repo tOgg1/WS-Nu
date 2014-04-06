@@ -9,6 +9,9 @@ import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
+import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
@@ -236,11 +239,100 @@ public class FilterTest {
 
     @Test
     public void testFilterMessageContent() {
-        // TODO
+        // Create necessary elements, do an evaluation and check if result is correct
+
+        // Filters 13-16 are message content filters
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(12);
+        JAXBElement filter2 = (JAXBElement)allFilters.getAny().get(13);
+        JAXBElement filter3 = (JAXBElement)allFilters.getAny().get(14);
+        JAXBElement filter4 = (JAXBElement)allFilters.getAny().get(15);
+
+        // Create Maps that can build their Subscription info
+        Map<QName, Object> filterMap1 = new HashMap<>();
+        Map<QName, Object> filterMap2 = new HashMap<>();
+        Map<QName, Object> filterMap3 = new HashMap<>();
+        Map<QName, Object> filterMap4 = new HashMap<>();
+        filterMap1.put(filter1.getName(), filter1.getValue());
+        filterMap2.put(filter2.getName(), filter2.getValue());
+        filterMap3.put(filter3.getName(), filter3.getValue());
+        filterMap3.put(filter4.getName(), filter4.getValue());
+
+        // Build SubscriptionInfo
+        FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo2 = new FilterSupport.SubscriptionInfo(filterMap2, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo3 = new FilterSupport.SubscriptionInfo(filterMap3, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo4 = new FilterSupport.SubscriptionInfo(filterMap4, filterContext);
+
+        // Do evaluation
+        Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
+        Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
+        Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+        Notify notify4 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+
+        // Filter 2 should be evaluated to null
+        Assert.assertNull("Filter 2 was not null", notify2);
+        // The rest should not be null
+        Assert.assertNotNull("Filter 1 was null", notify1);
+        Assert.assertNotNull("Filter 3 was null", notify3);
+        Assert.assertNotNull("Filter 4 was null", notify4);
+
+        // Filter 1 should select all
+        Assert.assertEquals("Filter 1 selected wrong number of messages", 12, notify1.getNotificationMessage().size());
+        // Filter 3 should select 1
+        Assert.assertEquals("Filter 3 selected wrong number of messages", 1, notify3.getNotificationMessage().size());
+        // Filter 4 should select 1
+        Assert.assertEquals("Filter 4 selected wrong number of messages", 1, notify4.getNotificationMessage().size());
     }
 
     @Test
-    public void testIllegalFilter() {
-        // TODO
+     public void testIllegalFilter1() throws Exception{
+        // Filters 17 is unsupported
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(16);
+
+        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        Assert.assertFalse("Claimed to support ProducerProperties filter", supported);
+    }
+
+    @Test(expected = TopicExpressionDialectUnknownFault.class)
+    public void testIllegalFilter2() throws Exception {
+        // Filters 18 is topic filter with unknown dialect
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(17);
+
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+    }
+    @Test(expected = InvalidTopicExpressionFault.class)
+    public void testIllegalFilter3() throws Exception {
+        // Filters 19 is topic filter with expression that do not fit dialect
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(18);
+
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+    }
+    @Test(expected = InvalidMessageContentExpressionFault.class)
+    public void testIllegalFilter4() throws Exception {
+        // Filters 20 is message filter unknown dialect
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(19);
+
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+    }
+    @Test
+    public void testIllegalFilter5() throws Exception {
+        // Filters 21 is message filter not boolean
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(20);
+
+        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        Assert.assertTrue("The filter should be supported, but never evaluate to true", supported);
+
+        // Check result of computations:
+
+        Map<QName, Object> filterMap1 = new HashMap<>();
+        filterMap1.put(filter1.getName(), filter1.getValue());
+
+        // Build SubscriptionInfo
+        FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
+
+        // Do evaluation
+        Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
+
+        Assert.assertNull("No messages should be accepted", notify1);
     }
 }

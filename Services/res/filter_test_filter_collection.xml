@@ -54,29 +54,26 @@
 
     <!-- PAYLOAD FILTERS count=4 -->
     <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        fn:true()
+        "a"="a"
     </wsnt:MessageContent>
     <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        fn:false()
+        "b"="a"
     </wsnt:MessageContent>
     <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        fn:boolean(test3:*)
+        (count(//test3:*)>0)
     </wsnt:MessageContent>
     <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        fn:boolean(test3:*)
-    </wsnt:MessageContent>
-    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        fn:boolean(test2:hello)
-    </wsnt:MessageContent>
-    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        //*
+        (count(//test2:hello)!=0)
     </wsnt:MessageContent>
 
-    <!-- ILLEGAL / UNSUPPORTED FILTERS  count=4 -->
+    <!-- ILLEGAL / UNSUPPORTED FILTERS  count=5 -->
     <wsnt:ProducerProperties Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">fn:true()</wsnt:ProducerProperties>
     <wsnt:TopicExpression Dialect="http://not.accepted/dialect.html">gibberish</wsnt:TopicExpression>
     <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">
         test:root1/ask
     </wsnt:TopicExpression>
     <wsnt:MessageContent Dialect="http://not.accepted/dialect.html">gibberish</wsnt:MessageContent>
+    <wsnt:MessageContent Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
+        gibberish
+    </wsnt:MessageContent>
 </wsnt:Filter>
