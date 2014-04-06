@@ -477,4 +477,17 @@ public class TopicUtils {
         // Number
         return c >= '0' && c <= '9' || isNCStartChar(c);
     }
+
+    public static String topicToString(List<QName> topic) {
+        if (topic == null || topic.size() == 0)
+            return null;
+
+        String returnString = topic.get(0).toString();
+
+        for (int i = 1; i < topic.size(); i++) {
+            returnString += "/" + topic.get(i).toString();
+        }
+
+        return returnString;
+    }
 }

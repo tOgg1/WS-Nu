@@ -938,4 +938,14 @@ public class ServiceUtilities {
             return retValue;
         }
     }
+
+    public static void throwNoCurrentMessageOnTopicFault(String language, String description) throws NoCurrentMessageOnTopicFault {
+        NoCurrentMessageOnTopicFaultType faultType = new NoCurrentMessageOnTopicFaultType();
+        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+        throw new NoCurrentMessageOnTopicFault(description, faultType);
+    }
 }

@@ -2,6 +2,8 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.topics.TopicUtils;
+import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -29,15 +31,11 @@ import java.util.*;
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
 public class GenericNotificationProducer extends AbstractNotificationProducer {
 
+    private final Map<String, NotificationMessageHolderType>  latestMessages = new HashMap<>();
+
     private final FilterSupport filterSupport;
 
-    private Map<String, SubscriptionHandle> subscriptions;
-
-    /**
-     * Common code for ALL constructors
-     */ {
-        subscriptions = new HashMap<>();
-    }
+    private Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
     public GenericNotificationProducer() {
         filterSupport = FilterSupport.createDefaultFilterSupport();
@@ -50,6 +48,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
+    @WebMethod(exclude = true)
     protected Collection<String> getAllRecipients() {
         // Something to remember which ones should be filtered out
         ArrayList<String> removeKeyList = new ArrayList<>();
@@ -71,12 +70,46 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
+    @WebMethod(exclude = true)
     protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
         // Find current recipient to Notify
         SubscriptionHandle subscriptionHandle = subscriptions.get(recipient);
 
         // Delegate filtering to filter support
         return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContext);
+    }
+
+    @Override
+    @WebMethod(exclude = true)
+    public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
+        // Take out the latest messages
+        for (NotificationMessageHolderType messageHolderType: notify.getNotificationMessage()) {
+            TopicExpressionType topic = messageHolderType.getTopic();
+
+            // If it is connected to a topic, remember it
+            if (topic != null) {
+
+                try {
+
+                    List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
+                    String topicName = TopicUtils.topicToString(topicQNames);
+                    latestMessages.put(topicName, messageHolderType);
+
+                } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
+                    Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression");
+                    invalidTopicExpressionFault.printStackTrace();
+                } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
+                    Log.w("GenericNotificationProducer", "Tried to send a message with multiple topics");
+                    multipleTopicsSpecifiedFault.printStackTrace();
+                } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
+                    Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression dialect");
+                    topicExpressionDialectUnknownFault.printStackTrace();
+                }
+            }
+        }
+
+        // Super type can do the rest
+        super.sendNotification(notify, namespaceContext);
     }
 
 
@@ -206,11 +239,25 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault,
             ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
 
-        // TODO
-        // TODO
+        // Find out which topic there was asked for (Exceptions automatically thrown)
+        TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getReqeustInformation().getNamespaceContext());
+        String topicName = TopicUtils.topicToString(topicQNames);
 
+        // Find latest message on this topic
+        NotificationMessageHolderType holderType = latestMessages.get(topicName);
 
-        return null;
+        if (holderType == null) {
+            Log.d("GenericNotificationProducer", "Was asked for current message on a topic that was not sent");
+            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
+            return null;
+
+        } else {
+            GetCurrentMessageResponse response = new GetCurrentMessageResponse();
+            // TODO check out if this should be the content of the response
+            response.getAny().add(holderType.getMessage());
+            return response;
+        }
     }
 
     @Override
