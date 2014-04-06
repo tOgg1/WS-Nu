@@ -444,4 +444,37 @@ public class TopicUtils {
         faultType.getDescription().add(description);
         throw new TopicExpressionDialectUnknownFault("desc", faultType);
     }
+
+    public static boolean isNCName(String ncName) {
+        if (ncName == null || ncName.length() == 0)
+            return false;
+
+        if (!isNCStartChar(ncName.charAt(0)))
+            return false;
+
+        for (int i = 1; i < ncName.length(); i++) {
+            if (!isNCChar(ncName.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean isNCStartChar(char c) {
+        // Upper case
+        if (c >= 'A' && c <= 'Z')
+            return true;
+        // lower case
+        if (c >= 'a' && c <= 'z')
+            return true;
+        // underscore
+        return c == '_';
+    }
+
+    public static boolean isNCChar(char c) {
+        // hyphen and punctuation
+        if (c == '-' || c == '.')
+            return true;
+        // Number
+        return c >= '0' && c <= '9' || isNCStartChar(c);
+    }
 }

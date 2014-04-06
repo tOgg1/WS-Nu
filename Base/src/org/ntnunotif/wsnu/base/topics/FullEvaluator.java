@@ -127,7 +127,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
             char c = expression.charAt(i);
             switch (state) {
                 case Start:
-                    if (isNCStart(c)) {
+                    if (TopicUtils.isNCStartChar(c)) {
                         nc1 = "" + c;
                         state = BuildState.NC1;
                     } else {
@@ -135,7 +135,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                     }
                     break;
                 case NC1:
-                    if (isNC(c)) {
+                    if (TopicUtils.isNCChar(c)) {
                         nc1 += c;
                     } else if (c == '/') {
                         state = BuildState.Start;
@@ -147,7 +147,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                     }
                     break;
                 case NC2Start:
-                    if (isNCStart(c)) {
+                    if (TopicUtils.isNCStartChar(c)) {
                         nc2 = "" + c;
                         state = BuildState.NC2;
                     } else {
@@ -155,7 +155,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                     }
                     break;
                 case NC2:
-                    if (isNC(c)) {
+                    if (TopicUtils.isNCChar(c)) {
                         nc2 += c;
                     } else if (c == '/') {
                         String ns = context.getNamespaceURI(nc1);
@@ -170,7 +170,25 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                     }
                     break;
             }
-            //
+        }
+
+        // Parsing done. See if we are in legal state, and build the latest QName if so
+        switch (state) {
+            case NC1:
+                // Only local part of QName
+                qNames.add(new QName(nc1));
+                break;
+            case NC2:
+                // Both prefix and local part, solve prefix and continue.
+                String ns = context.getNamespaceURI(nc1);
+                if (ns == null) {
+                    TopicUtils.throwInvalidTopicExpressionFault("en",
+                            "Prefix could not be resolved to a namespace");
+                }
+                qNames.add(new QName(ns, nc2));
+                break;
+            default:
+                TopicUtils.throwInvalidTopicExpressionFault("en", "Could not identify QNames from given expression");
         }
         if (state == BuildState.Start || state == BuildState.NC2Start)
             TopicUtils.throwInvalidTopicExpressionFault("en", "Could not identify QNames from given expression");
@@ -190,7 +208,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.ChildReady;
                     else if (c == '/')
                         state = CheckState.RootPostPre1;
-                    else if (isNCStart(c))
+                    else if (TopicUtils.isNCStartChar(c))
                         state = CheckState.RootNC1;
                     else
                         return false;
@@ -200,7 +218,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.RootPostPre1;
                     else if (c == '*')
                         state = CheckState.ChildReady;
-                    else if (isNCStart(c))
+                    else if (TopicUtils.isNCStartChar(c))
                         state = CheckState.RootNC2;
                     else
                         return false;
@@ -214,7 +232,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                 case RootPostPre2:
                     if (c == '*')
                         state = CheckState.ChildReady;
-                    else if (isNCStart(c))
+                    else if (TopicUtils.isNCStartChar(c))
                         state = CheckState.RootNC2;
                     else
                         return false;
@@ -226,7 +244,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.RootStart;
                     else if (c == '/')
                         state = CheckState.ChildStart;
-                    else if (!isNC(c))
+                    else if (!TopicUtils.isNCChar(c))
                         return false;
                     break;
                 case RootNC2:
@@ -234,7 +252,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.RootStart;
                     else if (c == '/')
                         state = CheckState.ChildStart;
-                    else if (!isNC(c))
+                    else if (!TopicUtils.isNCChar(c))
                         return false;
                     break;
                 case ChildReady:
@@ -250,7 +268,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.ChildStart2;
                     else if (c == '*' || c == '.')
                         state = CheckState.ChildReady;
-                    else if (isNCStart(c))
+                    else if (TopicUtils.isNCStartChar(c))
                         state = CheckState.ChildNC1;
                     else
                         return false;
@@ -258,7 +276,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                 case ChildStart2:
                     if (c == '*' || c == '.')
                         state = CheckState.ChildReady;
-                    else if (isNCStart(c))
+                    else if (TopicUtils.isNCStartChar(c))
                         state = CheckState.ChildNC1;
                     else
                         return false;
@@ -270,11 +288,11 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.ChildStart;
                     else if (c == ':')
                         state = CheckState.ChildPre;
-                    else if (!isNC(c))
+                    else if (!TopicUtils.isNCChar(c))
                         return false;
                     break;
                 case ChildPre:
-                    if (isNCStart(c))
+                    if (TopicUtils.isNCStartChar(c))
                         state = CheckState.ChildNC2;
                     else
                         return false;
@@ -284,7 +302,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         state = CheckState.ChildStart;
                     else if (c == '|')
                         state = CheckState.RootStart;
-                    else if (!isNC(c))
+                    else if (!TopicUtils.isNCChar(c))
                         return false;
                     break;
             }
@@ -301,24 +319,6 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         }
     }
 
-    private static boolean isNCStart(char c) {
-        // Upper case
-        if (c >= 'A' && c <= 'Z')
-            return true;
-        // lower case
-        if (c >= 'a' && c <= 'z')
-            return true;
-        // underscore
-        return c == '_';
-    }
-
-    private static boolean isNC(char c) {
-        // hyphen and punctuation
-        if (c == '-' || c == '.')
-            return true;
-        // Number
-        return c >= '0' && c <= '9' || isNCStart(c);
-    }
 
     private enum CheckState {
         RootStart, RootPrefixed, RootPostPre1, RootPostPre2, RootNC1, RootNC2, ChildReady, ChildStart, ChildStart2,

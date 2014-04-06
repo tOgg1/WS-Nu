@@ -137,12 +137,29 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
                 TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a " +
                         "ConcreteExpressionDialect; multiple prefixes in a QName was discovered");
             if (name.length == 1) {
-                // The QName only has local part
+
+                // The QName only has local part, check if it a legal NCName
+                if (!TopicUtils.isNCName(name[0])) {
+                    Log.w("ConcreteEvaluator[Topic]", "A concrete expression contained a character sequence that " +
+                            "were not a NCName: " + name[0]);
+                    TopicUtils.throwInvalidTopicExpressionFault("en", "The topic contained a illegal NCName " +
+                            "identifier: " + name[0]);
+                }
+
                 retVal.add(new QName(name[0]));
             } else {
                 // The QName is a prefix and a local part
                 String prefix = name[0];
                 String localName = name[1];
+
+                // Check both for NCName legality
+                if (!TopicUtils.isNCName(prefix) || !TopicUtils.isNCName(localName)) {
+                    Log.w("ConcreteEvaluator[Topic]", "A concrete expression contained a character sequence that " +
+                            "were not a NCName: " + prefix + ":" + localName);
+                    TopicUtils.throwInvalidTopicExpressionFault("en", "The topic contained a illegal NCName " +
+                            "identifier: " + prefix + ":" + localName);
+                }
+
                 String ns = context.getNamespaceURI(prefix);
                 if (ns == null || ns.equals(XMLConstants.NULL_NS_URI)) {
                     TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a " +
