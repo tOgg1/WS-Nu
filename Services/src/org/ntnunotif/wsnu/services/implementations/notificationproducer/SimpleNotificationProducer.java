@@ -16,6 +16,7 @@ import javax.jws.WebService;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.*;
@@ -122,13 +123,17 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             throw new SubscribeCreationFailedFault("Missing EndpointReference");
         }
 
-        //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
-        String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+        String endpointReference = null;
+        try {
+            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
+        } catch (IllegalAccessException e) {
+            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference not found.");
+        }
 
         FilterType filter = subscribeRequest.getFilter();
 
         if(filter != null){
-            throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
+            ServiceUtilities.throwInvalidFilterFault("NULL", "Filters not supported by this producer", new QName("null", "null"));
         }
 
         long terminationTime = 0;
@@ -138,11 +143,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if(terminationTime < System.currentTimeMillis()){
-                    throw new UnacceptableInitialTerminationTimeFault();
+                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                throw new UnacceptableInitialTerminationTimeFault();
+                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Malformated termination time");
             }
         }else{
             /* Set it to terminate in one day */
@@ -159,8 +164,8 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
-            Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            throw new UnacceptableInitialTerminationTimeFault();
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Internal error: The date was not convertable to a gregorian calendar-instance. If the problem persists," +
+                                                                          "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
 
         /* Generate new subscription hash */

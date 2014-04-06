@@ -1,24 +1,27 @@
 package org.ntnunotif.wsnu.services.general;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-import org.ntnunotif.wsnu.base.util.Log;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.*;
-import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
-import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
-import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
-import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
+import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
+import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
+import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
+import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
+import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
@@ -609,6 +612,11 @@ public class ServiceUtilities {
         return NothingToSeeHere.t(input);
     }
 
+    /**
+     * This method is deprecated, please use {@link #getAddress(javax.xml.ws.wsaddressing.W3CEndpointReference)}
+     *  instead.
+     */
+    @Deprecated
     public static String parseW3CEndpoint(String s) throws SubscribeCreationFailedFault{
         Pattern pattern = Pattern.compile("<(wsa:)?Address>[a-z0-9A-Z.: /\n]*</(wsa:)?Address>");
         Matcher matcher = pattern.matcher(s);
@@ -622,6 +630,44 @@ public class ServiceUtilities {
         }else{
             throw new SubscribeCreationFailedFault();
         }
+    }
+
+    public static String getAddress(W3CEndpointReference endpoint) throws IllegalAccessException {
+        Field field;
+        try {
+            field = endpoint.getClass().getDeclaredField("address");
+            field.setAccessible(true);
+            Object fieldData = field.get(endpoint);
+
+            System.out.println(fieldData.getClass().getName());
+
+        } catch (NoSuchFieldException e) {
+            for (Field sfield : endpoint.getClass().getDeclaredFields()) {
+                if(sfield.getName().matches("(.*)?[aA][dD][dD]?[rR]([eE][sS][sS])?") && sfield.getType().equals(String.class)){
+                    field = sfield;
+                    break;
+                }
+            }
+            System.out.println("lol");
+            return "";
+        }
+        field.setAccessible(true);
+        final Object fieldInst = field.get(endpoint);
+
+        System.out.println("hello");
+        for (Field field1 : fieldInst.getClass().getDeclaredFields()) {
+            System.out.println(field1.getName());
+        }
+
+        try {
+            Field uri = fieldInst.getClass().getDeclaredField("uri");
+            uri.setAccessible(true);
+            return (String)uri.get(fieldInst);
+        } catch (NoSuchFieldException e) {
+            
+            return "";
+        }
+
     }
 
     public static<T> T[] createArrayOfEquals(T t, int length){
@@ -770,10 +816,70 @@ public class ServiceUtilities {
                 returnHolders.add(notificationMessageHolderType);
 
         for (Object any : notify.getAny())
-                returnAny.add(any);
+            returnAny.add(any);
 
         return returnValue;
     }
+
+    public static void throwUnacceptableInitialTerminationTimeFault(String description) throws UnacceptableInitialTerminationTimeFault{
+        UnacceptableInitialTerminationTimeFaultType type = new UnacceptableInitialTerminationTimeFaultType();
+        type.setMinimumTime(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setValue(description);
+        type.getDescription().add(desc);
+
+        throw new UnacceptableInitialTerminationTimeFault(description, type);
+    }
+
+    public static void throwPublisherRegistrationFailedFault(String description) throws PublisherRegistrationFailedFault {
+        PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
+        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setValue(description);
+        type.getDescription().add(desc);
+
+        throw new PublisherRegistrationFailedFault(description, type);
+
+    }
+
+    public static void throwResourceUnknownFault(String description) throws ResourceUnknownFault {
+        ResourceUnknownFaultType type = new ResourceUnknownFaultType();
+        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setValue(description);
+
+        type.getDescription().add(desc);
+
+        throw new ResourceUnknownFault(description, type);
+    }
+
+    public static void throwUnableToDestroySubscriptionFault(String description) throws UnableToDestroySubscriptionFault {
+        UnableToDestroySubscriptionFaultType type = new UnableToDestroySubscriptionFaultType();
+        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setValue(description);
+
+        type.getDescription().add(desc);
+
+        throw new UnableToDestroySubscriptionFault(description, type);
+    }
+
+    public static void throwSubscribeCreationFailedFault(String description) throws SubscribeCreationFailedFault {
+        SubscribeCreationFailedFaultType type = new SubscribeCreationFailedFaultType();
+        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setValue(description);
+
+        type.getDescription().add(desc);
+
+        throw new SubscribeCreationFailedFault(description, type);
+    }
+
 
     /**
      * Builds and throws an {@link org.oasis_open.docs.wsn.b_2.InvalidFilterFaultType}

@@ -135,11 +135,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             /* The subscriptions is not recognized */
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimpleSubscriptionManager", "Subscription not found");
-                Log.d("SimpleSubscriptionManager", "Subscription not found");
-                Log.d("SimpleSubscriptionManager", "All subscriptions:");
-                for (String s : _subscriptions.keySet()) {
-                    Log.d("SimpleSubscriptionmanager", s);
-                }
                 Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
                 throw new ResourceUnknownFault("Subscription not found.", new ResourceUnknownFaultType());
             }

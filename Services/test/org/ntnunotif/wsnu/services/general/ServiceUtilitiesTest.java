@@ -5,6 +5,8 @@ import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
 
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -232,5 +234,19 @@ public class ServiceUtilitiesTest {
 
         FileOutputStream file2 = new FileOutputStream("Services/res/TestNotifyTwo.xml");
         XMLParser.writeObjectToStream(doubleNotif, file2);
+    }
+
+    @Test
+    public void testGetAddress() throws Exception {
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address("tormod.haugland.com");
+
+        W3CEndpointReference ref = builder.build();
+
+        String address = ServiceUtilities.getAddress(ref);
+
+        System.out.println(address);
+        assertEquals("tormod.haugland.com", address);
+
     }
 }

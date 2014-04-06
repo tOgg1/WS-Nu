@@ -34,6 +34,10 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;
     private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers;
 
+    public SimpleNotificationBroker() {
+        super();
+    }
+
     @Override
     @WebMethod(exclude = true)
     public boolean keyExists(String key) {
@@ -52,6 +56,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify) {
         _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
+        this.sendNotification(notify);
     }
 
     /**
@@ -77,13 +82,14 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         try {
             endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
         } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
+            ServiceUtilities.throwPublisherRegistrationFailedFault("Endpoint not recognizeable");
             throw new PublisherRegistrationFailedFault();
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
         if(terminationTime < System.currentTimeMillis()){
-            throw new UnacceptableInitialTerminationTimeFault("Invalid termination time. Can't be before current time");
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Invalid termination time. Can't be before current time");
         }
 
         String newSubscriptionKey = generateSubscriptionKey();

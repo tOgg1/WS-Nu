@@ -177,7 +177,6 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                         ServiceUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
                     }
-
                 }
             }
         }
