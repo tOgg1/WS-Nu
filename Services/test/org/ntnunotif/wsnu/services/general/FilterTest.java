@@ -117,17 +117,99 @@ public class FilterTest {
 
     @Test
     public void testFilterConcreteTopics() {
-        // TODO
+        // Create necessary elements, do an evaluation and check if result is correct
+
+        // Filters 4-6 are concrete topics in XML
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(3);
+        JAXBElement filter2 = (JAXBElement)allFilters.getAny().get(4);
+        JAXBElement filter3 = (JAXBElement)allFilters.getAny().get(5);
+
+        // Create Maps that can build their Subscription info
+        Map<QName, Object> filterMap1 = new HashMap<>();
+        Map<QName, Object> filterMap2 = new HashMap<>();
+        Map<QName, Object> filterMap3 = new HashMap<>();
+        filterMap1.put(filter1.getName(), filter1.getValue());
+        filterMap2.put(filter2.getName(), filter2.getValue());
+        filterMap3.put(filter3.getName(), filter3.getValue());
+
+        // Build SubscriptionInfo
+        FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo2 = new FilterSupport.SubscriptionInfo(filterMap2, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo3 = new FilterSupport.SubscriptionInfo(filterMap3, filterContext);
+
+        // Do evaluation
+        Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
+        Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
+        Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+
+        // Filter 1 and 2 should evaluate to 3 elements
+        Assert.assertEquals("First concrete filter failed notify elements evaluation", 3, notify1.getNotificationMessage().size());
+        Assert.assertEquals("Second concrete filter failed notify elements evaluation", 3, notify2.getNotificationMessage().size());
+        // Filter 3 should not evaluate to any elements
+        Assert.assertNull("Third concrete filter failed notify elements evaluation", notify3);
     }
 
     @Test
     public void testFilterFullTopics() {
-        // TODO
+        // Create necessary elements, do an evaluation and check if result is correct
+
+        // Filters 7-9 are full topics in XML
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(6);
+        JAXBElement filter2 = (JAXBElement)allFilters.getAny().get(7);
+        JAXBElement filter3 = (JAXBElement)allFilters.getAny().get(8);
+
+        // Create Maps that can build their Subscription info
+        Map<QName, Object> filterMap1 = new HashMap<>();
+        Map<QName, Object> filterMap2 = new HashMap<>();
+        Map<QName, Object> filterMap3 = new HashMap<>();
+        filterMap1.put(filter1.getName(), filter1.getValue());
+        filterMap2.put(filter2.getName(), filter2.getValue());
+        filterMap3.put(filter3.getName(), filter3.getValue());
+
+        // Build SubscriptionInfo
+        FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo2 = new FilterSupport.SubscriptionInfo(filterMap2, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo3 = new FilterSupport.SubscriptionInfo(filterMap3, filterContext);
+
+        // Do evaluation
+        Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
+        Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
+        Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+
+        // Filter 1 should evaluate to 8 elements
+        Assert.assertEquals("First full filter failed notify elements evaluation", 8, notify1.getNotificationMessage().size());
+        // Filter 2 should evaluate to 4 elements
+        Assert.assertEquals("Second full filter failed notify elements evaluation", 4, notify2.getNotificationMessage().size());
+        // Filter 3 should not evaluate to any elements
+        Assert.assertNull("Third full filter failed notify elements evaluation", notify3);
     }
 
     @Test
     public void testFilterXPathTopics() {
-        // TODO
+        // Create necessary elements, do an evaluation and check if result is correct
+
+        // Filters 10-12 are xpath topics in XML
+        JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(9);
+        JAXBElement filter2 = (JAXBElement)allFilters.getAny().get(10);
+        JAXBElement filter3 = (JAXBElement)allFilters.getAny().get(11);
+
+        // Create Maps that can build their Subscription info
+        Map<QName, Object> filterMap1 = new HashMap<>();
+        Map<QName, Object> filterMap2 = new HashMap<>();
+        Map<QName, Object> filterMap3 = new HashMap<>();
+        filterMap1.put(filter1.getName(), filter1.getValue());
+        filterMap2.put(filter2.getName(), filter2.getValue());
+        filterMap3.put(filter3.getName(), filter3.getValue());
+
+        // Build SubscriptionInfo
+        FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo2 = new FilterSupport.SubscriptionInfo(filterMap2, filterContext);
+        FilterSupport.SubscriptionInfo subscriptionInfo3 = new FilterSupport.SubscriptionInfo(filterMap3, filterContext);
+
+        // Do evaluation
+        Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
+        Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
+        Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
     }
 
     @Test

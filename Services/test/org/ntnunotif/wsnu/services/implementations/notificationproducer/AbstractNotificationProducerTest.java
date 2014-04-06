@@ -7,6 +7,8 @@ import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
 import javax.jws.WebParam;
+import javax.xml.namespace.NamespaceContext;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,7 +30,12 @@ public class AbstractNotificationProducerTest extends TestCase {
             }
 
             @Override
-            public List<String> getRecipients(Notify notify) {
+            protected Collection<String> getAllRecipients() {
+                return null;
+            }
+
+            @Override
+            protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
                 return null;
             }
 
