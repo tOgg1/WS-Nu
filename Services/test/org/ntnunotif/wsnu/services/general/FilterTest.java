@@ -112,7 +112,7 @@ public class FilterTest {
         Assert.assertEquals("First simple filter failed notify elements evaluation", 1, notify1.getNotificationMessage().size());
         Assert.assertEquals("Second simple filter failed notify elements evaluation", 1, notify2.getNotificationMessage().size());
         // Filter 3 should not evaluate to any elements
-        Assert.assertEquals("Third simple filter failed notify elements evaluation", 0, notify3.getNotificationMessage().size());
+        Assert.assertNull("Third simple filter failed notify elements evaluation", notify3);
     }
 
     @Test
