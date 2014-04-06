@@ -16,6 +16,7 @@ import javax.jws.WebService;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
@@ -61,23 +62,18 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         return _subscriptions.containsKey(key);
     }
 
-    /**
-     *
-     * @param notify
-     * @return
-     */
     @Override
     @WebMethod(exclude = true)
-    public List<String> getRecipients(Notify notify) {
-        ArrayList<String> recipients = new ArrayList<>();
-        // A list to remember which keys are to be removed from recipients
-        List<String> removeKeyList = new ArrayList<>();
+    protected Collection<String> getAllRecipients() {
+        // Something to remember which ones should be filtered out
+        ArrayList<String> removeKeyList = new ArrayList<>();
+
+        // go through all recipients and remember which should be removed
         for (String key : _subscriptions.keySet()) {
             ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple = _subscriptions.get(key);
             if (endpointTerminationTuple.termination < System.currentTimeMillis()) {
+                Log.d("SimpleNotificationProducer", "A subscription has been deemed too old: " + key);
                 removeKeyList.add(key);
-            } else {
-                recipients.add(endpointTerminationTuple.endpoint);
             }
         }
 
@@ -85,7 +81,13 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         for (String key: removeKeyList)
             _subscriptions.remove(key);
 
-        return recipients;
+        return _subscriptions.keySet();
+    }
+
+    @Override
+    @WebMethod(exclude = true)
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+        return notify;
     }
 
     /**

@@ -19,12 +19,10 @@ import javax.jws.WebResult;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /** Simple broker that stores publishers and subscriptions in hashmaps.
  * Created by tormod on 26.03.14.
@@ -45,9 +43,13 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    @WebMethod(exclude = true)
-    public List<String> getRecipients(Notify notify) {
-        return new ArrayList(_subscriptions.values());
+    protected Collection<String> getAllRecipients() {
+        return null;
+    }
+
+    @Override
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+        return null;
     }
 
     @Override

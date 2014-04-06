@@ -14,9 +14,10 @@ import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by tormod on 06.04.14.
@@ -36,7 +37,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    public List<String> getRecipients(Notify notify) {
+    protected Collection<String> getAllRecipients() {
+        return null;
+    }
+
+    @Override
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
         return null;
     }
 
