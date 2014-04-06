@@ -188,13 +188,11 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if (terminationTime < System.currentTimeMillis()) {
-                    // TODO Create helper function to fill in fault.
-                    throw new UnacceptableInitialTerminationTimeFault();
+                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                // TODO check up on this
-                throw new UnacceptableInitialTerminationTimeFault();
+                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Malformated termination time");
             }
         } else {
             /* Set it to terminate in one day */
@@ -212,8 +210,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            // TODO Fill in fault
-            throw new UnacceptableInitialTerminationTimeFault();
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Internal error: The date was not convertable to a gregorian calendar-instance. If the problem persists," +
+                    "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
 
         /* Generate new subscription hash */

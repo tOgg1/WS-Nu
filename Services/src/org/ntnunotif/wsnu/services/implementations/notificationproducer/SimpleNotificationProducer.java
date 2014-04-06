@@ -164,6 +164,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
+            Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
             ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Internal error: The date was not convertable to a gregorian calendar-instance. If the problem persists," +
                                                                           "please post an issue at http://github.com/tOgg1/WS-Nu");
         }

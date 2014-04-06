@@ -46,6 +46,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                        Notify notify) {
         _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
+        this.sendNotification(notify);
     }
 
     /**
@@ -67,6 +68,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             RegisterPublisher registerPublisherRequest)
             throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
             UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
+
         String endpointReference = null;
         try {
             endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
