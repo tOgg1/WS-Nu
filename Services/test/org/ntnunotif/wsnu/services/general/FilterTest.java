@@ -108,6 +108,10 @@ public class FilterTest {
             e.printStackTrace();
         }
 
+        // First two filtered results should not be null
+        Assert.assertNotNull("First Simple filter evaluated notify to null", notify1);
+        Assert.assertNotNull("Second Simple filter evaluated notify to null", notify2);
+
         // Filter 1 and 2 should evaluate to 1 element
         Assert.assertEquals("First simple filter failed notify elements evaluation", 1, notify1.getNotificationMessage().size());
         Assert.assertEquals("Second simple filter failed notify elements evaluation", 1, notify2.getNotificationMessage().size());
@@ -141,6 +145,10 @@ public class FilterTest {
         Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
         Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
         Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+
+        // First two filtered results should not be null
+        Assert.assertNotNull("First Concrete filter evaluated notify to null", notify1);
+        Assert.assertNotNull("Second Concrete filter evaluated notify to null", notify2);
 
         // Filter 1 and 2 should evaluate to 3 elements
         Assert.assertEquals("First concrete filter failed notify elements evaluation", 3, notify1.getNotificationMessage().size());
@@ -176,10 +184,14 @@ public class FilterTest {
         Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
         Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
 
+        // First two filtered results should not be null
+        Assert.assertNotNull("First full filter evaluated notify to null", notify1);
+        Assert.assertNotNull("Second full filter evaluated notify to null", notify2);
+
         // Filter 1 should evaluate to 8 elements
         Assert.assertEquals("First full filter failed notify elements evaluation", 8, notify1.getNotificationMessage().size());
-        // Filter 2 should evaluate to 4 elements
-        Assert.assertEquals("Second full filter failed notify elements evaluation", 4, notify2.getNotificationMessage().size());
+        // Filter 2 should evaluate to 3 elements
+        Assert.assertEquals("Second full filter failed notify elements evaluation", 3, notify2.getNotificationMessage().size());
         // Filter 3 should not evaluate to any elements
         Assert.assertNull("Third full filter failed notify elements evaluation", notify3);
     }
@@ -210,6 +222,16 @@ public class FilterTest {
         Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
         Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
         Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+
+        // First two filtered results should not be null
+        Assert.assertNotNull("First XPath filter evaluated notify to null", notify1);
+        Assert.assertNotNull("Second XPath filter evaluated notify to null", notify2);
+        Assert.assertNull("Third XPath filter should evaluate to null", notify3);
+
+        // Filter 1 should evaluate to 8 elements
+        Assert.assertEquals("First xpath filter failed notify elements evaluation", 8, notify1.getNotificationMessage().size());
+        // Filter 2 should evaluate to 3 elements
+        Assert.assertEquals("Second xpath filter failed notify elements evaluation", 3, notify2.getNotificationMessage().size());
     }
 
     @Test

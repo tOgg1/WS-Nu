@@ -68,6 +68,7 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
 
             try {
                 List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(topicExpression, notifyContext);
+                Log.d("DefaultTopicExpressionFilterEvaluator", "Notify TopicExpression was topic: " + topicAsQNameList.toString());
                 List<List<QName>> topic = new ArrayList<>();
                 topic.add(topicAsQNameList);
 

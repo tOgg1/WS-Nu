@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
 import com.google.common.collect.ImmutableMap;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
@@ -118,6 +119,7 @@ public class FilterSupport {
 
     public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo,
                                                NamespaceContext namespaceContext) {
+        Log.d("FilterSupport", "Evaluating notify with number of messages: " + notify.getNotificationMessage().size());
         // Tries not to destroy source Notify
         Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
 

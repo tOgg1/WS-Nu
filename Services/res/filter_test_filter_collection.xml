@@ -33,7 +33,7 @@
         //*
     </wsnt:TopicExpression>
     <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">
-        test:root1//.
+        //ask//.
     </wsnt:TopicExpression>
     <wsnt:TopicExpression Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full">
         //non-existent//*
@@ -44,7 +44,7 @@
         //*[@wstop:topic="true"]
     </wsnt:TopicExpression>
     <wsnt:TopicExpression Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
-        test:root2//*[@wstop:topic="true"]
+        //test:root2//*[@wstop:topic="true"]
     </wsnt:TopicExpression>
     <wsnt:TopicExpression Dialect="http://www.w3.org/TR/1999/REC-xpath-19991116">
         //*[@wstop:topic="false"]
