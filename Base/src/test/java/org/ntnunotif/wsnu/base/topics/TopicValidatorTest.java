@@ -1,11 +1,10 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
@@ -14,6 +13,7 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -259,14 +259,12 @@ public class TopicValidatorTest {
         System.out.println("Topic set any size: " + topicSet.getAny().size());
         for (Object o : topicSet.getAny()) {
             System.out.println("Topic child class: " + o.getClass().toString());
-            ElementNSImpl elementNS = (ElementNSImpl)o;
+            Element elementNS = (Element)o;
             System.out.println("\t" + elementNS.toString());
             System.out.println("\tNamespace URI: " + elementNS.getNamespaceURI());
             System.out.println("\tBase URI:" + elementNS.getBaseURI());
             System.out.println("\tLocal name: " + elementNS.getLocalName());
             System.out.println("\tPrefix: " + elementNS.getPrefix());
-            System.out.println("\tTypeName: " + elementNS.getTypeName());
-            System.out.println("\tTypeNamespaceUri: " + elementNS.getTypeNamespace());
             System.out.println("\tAttribute length: " + elementNS.getAttributes().getLength());
             System.out.println("\tAttributes:");
             NamedNodeMap attributes = elementNS.getAttributes();

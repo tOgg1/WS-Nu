@@ -421,6 +421,6 @@ public class ApplicationServer{
     }
 
     public static String getURI(){
-        return _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() != -1 ? _singleton._server.getURI().getPort() : 8080);
+        return _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() > -1 ? _singleton._server.getURI().getPort() : 8080);
     }
 }

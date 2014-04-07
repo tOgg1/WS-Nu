@@ -326,9 +326,15 @@ public class SoapForwardingHub implements Hub {
      * @return
      */
     public ServiceConnection findRecipient(String endpoint){
-        if(endpoint == null)
+        if(endpoint == null) // TODO: || endpoint.equals("")) ?
             return null;
         for(ServiceConnection connection : _services){
+
+            // TODO is this an acceptable fix?
+            if (connection == null || connection.getServiceEndpoint() == null)
+                continue;
+            // Fix end
+
             if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
                 return connection;
             }
