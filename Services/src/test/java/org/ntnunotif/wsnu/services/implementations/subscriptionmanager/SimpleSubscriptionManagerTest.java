@@ -5,13 +5,13 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import static junit.framework.TestCase.assertEquals;
@@ -41,7 +41,8 @@ public class SimpleSubscriptionManagerTest{
         hub.registerService(connector);
     }
 
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         hub.stop();
     }
 
@@ -53,7 +54,7 @@ public class SimpleSubscriptionManagerTest{
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
-        InputStream stream = new FileInputStream("Services/res/server_test_unsubscribe.xml");
+        InputStream stream = getClass().getResourceAsStream("/server_test_unsubscribe.xml");
 
         HttpClient client = new HttpClient();
         client.setFollowRedirects(false);
@@ -74,7 +75,7 @@ public class SimpleSubscriptionManagerTest{
         // Test with requestURL
         request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_unsubscribe.xml")));
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_unsubscribe.xml")));
 
         response = request.send();
         responseContent = response.getContentAsString();
@@ -94,7 +95,7 @@ public class SimpleSubscriptionManagerTest{
 
         Request request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_unsubscribe.xml")));
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_unsubscribe.xml")));
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
@@ -118,7 +119,7 @@ public class SimpleSubscriptionManagerTest{
 
         Request request = client.newRequest("http://"+requestUrl);
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("Services/res/server_test_renew.xml")));
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_renew.xml")));
 
         System.out.println(requestUrl);
 

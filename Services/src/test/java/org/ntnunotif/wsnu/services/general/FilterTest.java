@@ -19,7 +19,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,9 +26,9 @@ import java.util.Map;
  * Created by Inge on 02.04.2014.
  */
 public class FilterTest {
-    private static final String subscribeWithFilterLocation = "Services/res/server_test_subscribe.xml";
-    private static final String largeNotifyLocation = "Services/res/filter_test_large_notify.xml";
-    private static final String allFilterLocation = "Services/res/filter_test_filter_collection.xml";
+    private static final String subscribeWithFilterLocationRes = "/server_test_subscribe.xml";
+    private static final String largeNotifyLocationRes = "/filter_test_large_notify.xml";
+    private static final String allFilterLocationRes = "/filter_test_filter_collection.xml";
 
     private static InternalMessage subscribeInternalMessage;
     private static FilterType filterType;
@@ -48,15 +47,15 @@ public class FilterTest {
 
         // read in data from files
         try {
-            subscribeInternalMessage = XMLParser.parse(new FileInputStream(subscribeWithFilterLocation));
+            subscribeInternalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(subscribeWithFilterLocationRes));
             JAXBElement<Envelope> element = (JAXBElement<Envelope>)subscribeInternalMessage.getMessage();
             Body b = element.getValue().getBody();
             filterType = ((Subscribe)b.getAny().get(0)).getFilter();
-            InternalMessage internalMessage = XMLParser.parse(new FileInputStream(largeNotifyLocation));
+            InternalMessage internalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(largeNotifyLocationRes));
             notifyContext = internalMessage.getRequestInformation().getNamespaceContext();
             notifySource = (Notify)internalMessage.getMessage();
 
-            internalMessage= XMLParser.parse(new FileInputStream(allFilterLocation));
+            internalMessage= XMLParser.parse(FilterTest.class.getResourceAsStream(allFilterLocationRes));
             filterContext = internalMessage.getRequestInformation().getNamespaceContext();
             allFilters = (FilterType)((JAXBElement)internalMessage.getMessage()).getValue();
         } catch (Exception e) {

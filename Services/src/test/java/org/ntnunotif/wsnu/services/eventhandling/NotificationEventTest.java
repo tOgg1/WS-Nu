@@ -1,7 +1,7 @@
 package org.ntnunotif.wsnu.services.eventhandling;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
@@ -10,22 +10,24 @@ import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
 import javax.xml.bind.JAXBElement;
-import java.io.FileInputStream;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by tormod on 3/15/14.
  */
-public class NotificationEventTest extends TestCase {
+public class NotificationEventTest {
     private NotificationConsumer _consumer;
     private Notify _notification;
     private NotificationEvent _event;
     private ConsumerListener _listener;
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         _consumer = new NotificationConsumer(new SoapForwardingHub());
-        _notification = (Notify)XMLParser.parse(new FileInputStream("Services/res/server_test_notify.xml")).getMessage();
+        _notification = (Notify)XMLParser.parse(getClass().getResourceAsStream("/server_test_notify.xml")).getMessage();
         _event = new NotificationEvent(this, _notification);
         _listener = new ConsumerListener() {
             @Override

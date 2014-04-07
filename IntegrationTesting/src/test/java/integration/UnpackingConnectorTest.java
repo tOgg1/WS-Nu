@@ -1,6 +1,6 @@
 package integration;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
@@ -14,10 +14,12 @@ import org.w3._2001._12.soap_envelope.Envelope;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.*;
+
 /**
  * Created by tormod on 3/13/14.
  */
-public class UnpackingConnectorTest extends TestCase{
+public class UnpackingConnectorTest {
 
     private UnpackingConnector consumerConnector;
     private NotificationConsumer consumer;
@@ -25,8 +27,8 @@ public class UnpackingConnectorTest extends TestCase{
 
     private boolean stackTester = false;
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         consumer = new NotificationConsumer(new SoapForwardingHub());
         consumerConnector = new UnpackingConnector(consumer);
         messages = new ArrayList<Object>();

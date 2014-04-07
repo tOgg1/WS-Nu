@@ -17,7 +17,6 @@ import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -62,13 +61,13 @@ public class ApplicationServerWithHubTest{
 
         _hub.registerService(_consumerConnector);
 
-        InputStream sendStream_1_1 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
-        InputStream sendStream_1_2 = new FileInputStream("IntegrationTesting/res/server_test_notify.xml");
+        InputStream sendStream_1_1 = ApplicationServerWithHubTest.class.getResourceAsStream("/server_test_notify.xml");
+        InputStream sendStream_1_2 = ApplicationServerWithHubTest.class.getResourceAsStream("/server_test_notify.xml");
         _sendMessages.add(sendStream_1_1);
         _messages.add(XMLParser.parse(sendStream_1_2));
 
-        InputStream sendStream_2_1 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
-        InputStream sendStream_2_2 = new FileInputStream("IntegrationTesting/res/server_test_soap.xml");
+        InputStream sendStream_2_1 = ApplicationServerWithHubTest.class.getResourceAsStream("/server_test_soap.xml");
+        InputStream sendStream_2_2 = ApplicationServerWithHubTest.class.getResourceAsStream("/server_test_soap.xml");
         _sendMessages.add(sendStream_2_1);
         _messages.add(XMLParser.parse(sendStream_2_2));
     }

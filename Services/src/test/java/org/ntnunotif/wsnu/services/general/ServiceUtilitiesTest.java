@@ -226,13 +226,13 @@ public class ServiceUtilitiesTest {
 
         Notify notify = ServiceUtilities.createNotify(envelope, "TormodHaugland.com");
 
-        FileOutputStream file1 = new FileOutputStream("Services/res/TestNotifyOne.xml");
+        FileOutputStream file1 = new FileOutputStream(getClass().getResource("/TestNotifyOne.xml").getFile());
         XMLParser.writeObjectToStream(notify, file1);
 
         /* Multiple messages */
         Notify doubleNotif = ServiceUtilities.createNotify(new Envelope[]{envelope, envelope}, "TormodHaugland.com");
 
-        FileOutputStream file2 = new FileOutputStream("Services/res/TestNotifyTwo.xml");
+        FileOutputStream file2 = new FileOutputStream(getClass().getResource("/TestNotifyTwo.xml").getFile());
         XMLParser.writeObjectToStream(doubleNotif, file2);
     }
 
