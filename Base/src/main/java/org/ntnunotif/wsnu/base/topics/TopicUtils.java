@@ -1,16 +1,21 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
+import org.oasis_open.docs.wsn.b_2.MultipleTopicsSpecifiedFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.w3c.dom.*;
 
 import javax.xml.XMLConstants;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -419,7 +424,14 @@ public class TopicUtils {
      */
     public static void throwInvalidTopicExpressionFault(String lang, String desc) throws InvalidTopicExpressionFault {
         InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("TopicUtils", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
         BaseFaultType.Description description = new BaseFaultType.Description();
         description.setLang(lang);
         description.setValue(desc);
@@ -437,12 +449,36 @@ public class TopicUtils {
     public static void throwTopicExpressionDialectUnknownFault(String lang, String desc)
             throws TopicExpressionDialectUnknownFault {
         TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("TopicUtils", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
         BaseFaultType.Description description = new BaseFaultType.Description();
         description.setLang(lang);
         description.setValue(desc);
         faultType.getDescription().add(description);
         throw new TopicExpressionDialectUnknownFault("desc", faultType);
+    }
+
+    public static void throwMultipleTopicsSpecifiedFault(String lang, String desc) throws MultipleTopicsSpecifiedFault {
+        MultipleTopicsSpecifiedFaultType faultType = new MultipleTopicsSpecifiedFaultType();
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("TopicUtils", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
+        BaseFaultType.Description description = new BaseFaultType.Description();
+        description.setLang(lang);
+        description.setValue(desc);
+        faultType.getDescription().add(description);
+        throw new MultipleTopicsSpecifiedFault(desc, faultType);
     }
 
     public static boolean isNCName(String ncName) {

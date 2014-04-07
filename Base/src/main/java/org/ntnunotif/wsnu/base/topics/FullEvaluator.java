@@ -1,8 +1,6 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.oasis_open.docs.wsn.b_2.MultipleTopicsSpecifiedFaultType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -10,14 +8,11 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by Inge on 21.03.2014.
@@ -103,16 +98,6 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         return true;
     }
 
-    private static void throwMultipleTopicsSpecifiedFault(String lang, String desc) throws MultipleTopicsSpecifiedFault {
-        MultipleTopicsSpecifiedFaultType faultType = new MultipleTopicsSpecifiedFaultType();
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
-        BaseFaultType.Description description = new BaseFaultType.Description();
-        description.setLang(lang);
-        description.setValue(desc);
-        faultType.getDescription().add(description);
-        throw new MultipleTopicsSpecifiedFault(desc, faultType);
-    }
-
     public static List<QName> evaluateFullTopicExpressionToQNameList(String expression, NamespaceContext context)
             throws InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
         if (expression == null || expression.length() == 0)
@@ -131,7 +116,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         nc1 = "" + c;
                         state = BuildState.NC1;
                     } else {
-                        throwMultipleTopicsSpecifiedFault("en", "Either no root was specified, or a wildcard was used");
+                        TopicUtils.throwMultipleTopicsSpecifiedFault("en", "Either no root was specified, or a wildcard was used");
                     }
                     break;
                 case NC1:
@@ -143,7 +128,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                     } else if (c == ':') {
                         state = BuildState.NC2Start;
                     } else {
-                        throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
+                        TopicUtils.throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
                     }
                     break;
                 case NC2Start:
@@ -151,7 +136,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         nc2 = "" + c;
                         state = BuildState.NC2;
                     } else {
-                        throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
+                        TopicUtils.throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
                     }
                     break;
                 case NC2:
@@ -166,7 +151,7 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
                         qNames.add(new QName(ns, nc2));
                         state = BuildState.Start;
                     } else {
-                        throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
+                        TopicUtils.throwMultipleTopicsSpecifiedFault("en", "Could not define specific topic at character " + c);
                     }
                     break;
             }

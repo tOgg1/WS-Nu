@@ -1,11 +1,11 @@
 package org.ntnunotif.wsnu.base.util;
 
 import com.google.common.collect.Lists;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.w3._2001._12.soap_envelope.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -200,7 +200,7 @@ public class Utilities {
      * @param exclusiveParent Any parentclass that is to be excluded from the retrieval.
      * @return
      */
-    public static Iterable<Field> getFieldsUpTo(@NotNull Class<?> startClass,
+    public static Iterable<Field> getFieldsUpTo(@Nonnull Class<?> startClass,
                                                 @Nullable Class<?> exclusiveParent) {
 
         List<Field> currentClassFields = Lists.newArrayList(startClass.getDeclaredFields());

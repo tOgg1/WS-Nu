@@ -1,8 +1,5 @@
 package org.ntnunotif.wsnu.services.general;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
@@ -13,7 +10,12 @@ import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.trmd.ntsh.NothingToSeeHere;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
@@ -679,7 +681,7 @@ public class ServiceUtilities {
         return ts;
     }
 
-    public static Notify createNotify(int messageCount, @NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String[] producerReference, @NotNull TopicExpressionType[] topic, @Nullable Object[] any){
+    public static Notify createNotify(int messageCount, @Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String[] producerReference, @Nonnull TopicExpressionType[] topic, @Nullable Object[] any){
 
         if(messageCount <= 0){
             throw new IllegalArgumentException("MessageCount has to be larger than 0");
@@ -745,19 +747,19 @@ public class ServiceUtilities {
 
     /* ===== Single message functions ==== */
 
-    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable String producerReference, @Nullable TopicExpressionType topic){
+    public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable String producerReference, @Nullable TopicExpressionType topic){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, new TopicExpressionType[]{topic}, null);
     }
 
-    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable TopicExpressionType topic){
+    public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable TopicExpressionType topic){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null,  new TopicExpressionType[]{topic}, null);
     }
 
-    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint, @Nullable String producerReference){
+    public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable String producerReference){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, null, null);
     }
 
-    public static Notify createNotify(@NotNull Object messageContent, @NotNull String endpoint){
+    public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null, null, null);
     }
 
@@ -765,38 +767,38 @@ public class ServiceUtilities {
 
     /* ===== Multiple message functions */
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint){
         return createNotify(messageContent.length, messageContent, endpoint, null, null, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String producerReference[]){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String producerReference[]){
         return createNotify(messageContent.length, messageContent, endpoint, producerReference, null, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable  TopicExpressionType topic[]){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable  TopicExpressionType topic[]){
         return createNotify(messageContent.length, messageContent, endpoint, null, topic, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String[] endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
         return createNotify(messageContent.length, messageContent, endpoint, producerReference, topic, null);
     }
 
 
     /* ===== Multiple message functions with single endpointreference ===== */
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, null, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable String producerReference[]){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable String producerReference[]){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, null, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable  TopicExpressionType topic[]){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable  TopicExpressionType topic[]){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, topic, null);
     }
 
-    public static Notify createNotify(@NotNull Object[] messageContent, @NotNull String endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
+    public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, topic, null);
     }
 
@@ -823,7 +825,14 @@ public class ServiceUtilities {
 
     public static void throwUnacceptableInitialTerminationTimeFault(String description) throws UnacceptableInitialTerminationTimeFault{
         UnacceptableInitialTerminationTimeFaultType type = new UnacceptableInitialTerminationTimeFaultType();
-        type.setMinimumTime(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setMinimumTime(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setValue(description);
@@ -834,7 +843,14 @@ public class ServiceUtilities {
 
     public static void throwPublisherRegistrationFailedFault(String description) throws PublisherRegistrationFailedFault {
         PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
-        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setValue(description);
@@ -846,7 +862,14 @@ public class ServiceUtilities {
 
     public static void throwResourceUnknownFault(String description) throws ResourceUnknownFault {
         ResourceUnknownFaultType type = new ResourceUnknownFaultType();
-        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setValue(description);
@@ -858,7 +881,14 @@ public class ServiceUtilities {
 
     public static void throwUnableToDestroySubscriptionFault(String description) throws UnableToDestroySubscriptionFault {
         UnableToDestroySubscriptionFaultType type = new UnableToDestroySubscriptionFaultType();
-        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setValue(description);
@@ -870,7 +900,14 @@ public class ServiceUtilities {
 
     public static void throwSubscribeCreationFailedFault(String description) throws SubscribeCreationFailedFault {
         SubscribeCreationFailedFaultType type = new SubscribeCreationFailedFaultType();
-        type.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setValue(description);
@@ -894,7 +931,14 @@ public class ServiceUtilities {
 
         InvalidFilterFaultType faultType = new InvalidFilterFaultType();
         faultType.getUnknownFilter().add(filterName);
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setLang(language);
         desc.setValue(description);
@@ -906,7 +950,14 @@ public class ServiceUtilities {
             InvalidMessageContentExpressionFault {
 
         InvalidMessageContentExpressionFaultType faultType = new InvalidMessageContentExpressionFaultType();
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setLang(language);
         desc.setValue(description);
@@ -941,7 +992,14 @@ public class ServiceUtilities {
 
     public static void throwNoCurrentMessageOnTopicFault(String language, String description) throws NoCurrentMessageOnTopicFault {
         NoCurrentMessageOnTopicFaultType faultType = new NoCurrentMessageOnTopicFaultType();
-        faultType.setTimestamp(new XMLGregorianCalendarImpl(new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            faultType.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
         BaseFaultType.Description desc = new BaseFaultType.Description();
         desc.setLang(language);
         desc.setValue(description);
