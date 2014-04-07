@@ -363,38 +363,30 @@ public abstract class WebService {
         wsdlLocation = pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl";
 
         // add to path
-        if(os.equals("Windows")){
+        String command = "wsgen -cp \"" + classPath + "\" -d "+ pureEndpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
+        Log.d("WebService", "[Running command]: " + command);
 
+        Process procces = Runtime.getRuntime().exec(command);
+        procces.waitFor();
+
+        Log.d("WebService", "Normal output:");
+        BufferedReader normalOutputReader = new BufferedReader(new InputStreamReader(procces.getInputStream()));
+        String out;
+
+        while((out = normalOutputReader.readLine()) != null){
+            System.out.println(out);
         }
-        
-        if(os.equals("Linux")){
-            String command = "wsgen -cp " + classPath + " -d "+ pureEndpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
-            Log.d("WebService", "[Running command]: " + command);
 
-            Process procces = Runtime.getRuntime().exec(command);
-            procces.waitFor();
+        Log.d("WebService", "Error output:");
+        BufferedReader errorOutputReader = new BufferedReader(new InputStreamReader(procces.getErrorStream()));
 
-            Log.d("WebService", "Normal output:");
-            BufferedReader normalOutputReader = new BufferedReader(new InputStreamReader(procces.getInputStream()));
-            String out;
-
-            while((out = normalOutputReader.readLine()) != null){
-                System.out.println(out);
-            }
-
-            Log.d("WebService", "Error output:");
-            BufferedReader errorOutputReader = new BufferedReader(new InputStreamReader(procces.getErrorStream()));
-
-            while((out = errorOutputReader.readLine()) != null){
-                System.out.println(out);
-            }
-
-            normalOutputReader.close();
-            errorOutputReader.close();
-
-        }else if(os.equals("Windows")){
-
+        while((out = errorOutputReader.readLine()) != null){
+            System.out.println(out);
         }
+
+        normalOutputReader.close();
+        errorOutputReader.close();
+
         Log.d("WebService", "Generation completed");
 
         FileInputStream newStream = new FileInputStream(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");

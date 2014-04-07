@@ -144,7 +144,7 @@ public class ApplicationServer{
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
     public void start(SoapForwardingHub soapForwardingHub) throws Exception{
-        if(_isRunning){
+        if(_isRunning) {
             return;
         }
 
