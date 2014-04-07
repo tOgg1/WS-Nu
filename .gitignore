@@ -6,3 +6,4 @@ out/
 *.sublime*
 .idea/
 *META-INF/
+*/target/

@@ -19,6 +19,7 @@ import org.w3._2001._12.soap_envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * Created by tormod on 3/6/14.
@@ -47,7 +48,7 @@ public class ApplicationServerTest extends TestCase {
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_html_content.html")),
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_html_content.html")),
                                                                            "text/html;charset/utf-8");
         ContentResponse response = request.send();
         assertEquals(500, response.getStatus());
@@ -68,7 +69,7 @@ public class ApplicationServerTest extends TestCase {
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "application");
         request.header(HttpHeader.CONTENT_LENGTH, "200");
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_xml.xml")),
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_xml.xml")),
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
@@ -87,7 +88,7 @@ public class ApplicationServerTest extends TestCase {
         client.setFollowRedirects(true);
         client.start();
 
-        Object object = XMLParser.parse(new FileInputStream("Base/testres/server_test_soap.xml"));
+        Object object = XMLParser.parse(getClass().getResourceAsStream("/server_test_soap.xml"));
         Envelope env = (Envelope)((JAXBElement)((InternalMessage) object).getMessage()).getValue();
         Header head = env.getHeader();
         Body body = env.getBody();
@@ -95,7 +96,7 @@ public class ApplicationServerTest extends TestCase {
         // Send response
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);
-        request.content(new InputStreamContentProvider(new FileInputStream("Base/testres/server_test_soap.xml")),
+        request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_soap.xml")),
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
@@ -116,7 +117,7 @@ public class ApplicationServerTest extends TestCase {
         client.start();
 
         // Send response
-        FileInputStream file = new FileInputStream("Base/testres/server_test_subscribe.xml");
+        InputStream file = getClass().getResourceAsStream("/server_test_subscribe.xml");
 
         Request request = client.newRequest("http://localhost:8080/");
         request.method(HttpMethod.POST);

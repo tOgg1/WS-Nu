@@ -1,10 +1,9 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
-import org.ntnunotif.wsnu.base.topics.FullEvaluator;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;

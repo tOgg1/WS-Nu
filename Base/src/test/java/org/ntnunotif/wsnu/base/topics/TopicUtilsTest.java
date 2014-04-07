@@ -24,7 +24,7 @@ public class TopicUtilsTest {
     private static final String[] rootNSs = {"http://root_test1.com", "http://root_test2.com", "http://root_test3.com" };
     private static final String[] rootLocalNames = {"roo1", "root2" };
 
-    private static final String OUTQNameToTopicSet = "Base/testres/out_topic_utils_qnames_topic_set.xml";
+    private static final String OUTQNameToTopicSetRes = "/out_topic_utils_qnames_topic_set.xml";
 
     @BeforeClass
     public static void setup() {
@@ -111,6 +111,6 @@ public class TopicUtilsTest {
 
         // Write to file, so it is possible to see actual content of returned set
         JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, topicSetType);
-        XMLParser.writeObjectToStream(e, new FileOutputStream(OUTQNameToTopicSet));
+        XMLParser.writeObjectToStream(e, new FileOutputStream(getClass().getResource(OUTQNameToTopicSetRes).getFile()));
     }
 }

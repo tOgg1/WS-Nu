@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.FilterType;
@@ -13,19 +12,16 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.*;
 
 import javax.xml.bind.JAXBElement;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Created by Inge on 07.03.14.
  */
 public class XMLParserTest {
 
-    private static final String notifyFilePlace = "Base/testres/parse_test_notify.xml";
-    private static final String soapFilePlace = "Base/testres/server_test_soap.xml";
-    private static final String subscribeFilePlace = "Base/testres/server_test_subscribe.xml";
+    private static final String notifyResourcePlace = "/parse_test_notify.xml";
+    private static final String soapResourcePlace = "/server_test_soap.xml";
+    private static final String subscribeResourcePlace = "/server_test_subscribe.xml";
 
     private InputStream notifyTestStream = null;
     private InputStream soapTestStream = null;
@@ -34,9 +30,9 @@ public class XMLParserTest {
     @Before
     public void setup() {
         try {
-            notifyTestStream = new FileInputStream(notifyFilePlace);
-            soapTestStream = new FileInputStream(soapFilePlace);
-            subscribeTestStream = new FileInputStream(subscribeFilePlace);
+            notifyTestStream = getClass().getResourceAsStream(notifyResourcePlace);
+            soapTestStream = getClass().getResourceAsStream(soapResourcePlace);
+            subscribeTestStream = getClass().getResourceAsStream(subscribeResourcePlace);
         } catch (Exception e) {
             Log.e("XMLParser", "Could not read test files");
             e.printStackTrace();
@@ -100,13 +96,13 @@ public class XMLParserTest {
         }
         // TODO write to real tests:
         // Writing the three parsed objects to file for manual inspection:
-        FileOutputStream fileOutputStream = new FileOutputStream("Base/testres/parser_n2xml.xml");
+        FileOutputStream fileOutputStream = new FileOutputStream(getClass().getResource("/parser_n2xml.xml").getFile());
         XMLParser.writeObjectToStream(parsedObject1, fileOutputStream);
         fileOutputStream.close();
-        fileOutputStream = new FileOutputStream("Base/testres/parser_s2xml.xml");
+        fileOutputStream = new FileOutputStream(getClass().getResource("/parser_s2xml.xml").getFile());
         XMLParser.writeObjectToStream(parsedObject2, fileOutputStream);
         fileOutputStream.close();
-        fileOutputStream = new FileOutputStream("Base/testres/parser_sub2xml.xml");
+        fileOutputStream = new FileOutputStream(getClass().getResource("/parser_sub2xml.xml").getFile());
         XMLParser.writeObjectToStream(parsedObject3, fileOutputStream);
         fileOutputStream.close();
     }
@@ -122,8 +118,7 @@ public class XMLParserTest {
 
         Fault fault = new Fault();
         body.getAny().add(new ObjectFactory().createFault(fault));
-
-        FileOutputStream fileOut = new FileOutputStream("Base/testres/test_fault.xml");
+        FileOutputStream fileOut = new FileOutputStream(getClass().getResource("/test_fault.xml").getFile());
         XMLParser.writeObjectToStream(new ObjectFactory().createEnvelope(envelope), fileOut);
 
     }
