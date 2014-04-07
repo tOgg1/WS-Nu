@@ -48,8 +48,9 @@ public class AbstractNotificationProducerTest extends TestCase {
                 return null;
             }
 
+
             @Override
-            public SoapForwardingHub quickBuild() {
+            public SoapForwardingHub quickBuild(String endpointReference) {
                 return null;
             }
         };

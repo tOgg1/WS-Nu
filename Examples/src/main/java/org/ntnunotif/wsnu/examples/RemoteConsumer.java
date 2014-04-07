@@ -6,8 +6,6 @@ import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
-import javax.xml.ws.wsaddressing.W3CEndpointReference;
-import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -23,7 +21,7 @@ public class RemoteConsumer implements ConsumerListener {
 
     public RemoteConsumer() {
         consumer = new NotificationConsumer();
-        hub = consumer.quickBuild();
+        hub = consumer.quickBuild("MyConsumer");
 
         try {
             InputStream subscribe = new FileInputStream("Examples/res/server_test_subscribe.xml");

@@ -114,7 +114,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    public SoapForwardingHub quickBuild() {
+    public SoapForwardingHub quickBuild(String endpointReference) {
         return null;
     }
 }

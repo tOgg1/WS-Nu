@@ -639,9 +639,6 @@ public class ServiceUtilities {
         try {
             field = endpoint.getClass().getDeclaredField("address");
             field.setAccessible(true);
-            Object fieldData = field.get(endpoint);
-
-            System.out.println(fieldData.getClass().getName());
 
         } catch (NoSuchFieldException e) {
             for (Field sfield : endpoint.getClass().getDeclaredFields()) {
@@ -650,16 +647,10 @@ public class ServiceUtilities {
                     break;
                 }
             }
-            System.out.println("lol");
             return "";
         }
         field.setAccessible(true);
         final Object fieldInst = field.get(endpoint);
-
-        System.out.println("hello");
-        for (Field field1 : fieldInst.getClass().getDeclaredFields()) {
-            System.out.println(field1.getName());
-        }
 
         try {
             Field uri = fieldInst.getClass().getDeclaredField("uri");
@@ -670,6 +661,16 @@ public class ServiceUtilities {
             return "";
         }
 
+    }
+
+    /**
+     * Filters out a url's address in an endpointreference. Note that this functon does not check if the uri is valid, as long as it matches the following regex:
+     * [[^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/]]
+     * @param endpointReference
+     * @return
+     */
+    public static String filterEndpointReference(String endpointReference) {
+        return endpointReference.replaceAll("^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/", "");
     }
 
     public static<T> T[] createArrayOfEquals(T t, int length){

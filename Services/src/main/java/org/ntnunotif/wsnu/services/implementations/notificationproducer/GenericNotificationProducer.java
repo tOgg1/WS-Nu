@@ -262,9 +262,10 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     @Override
     @WebMethod(exclude = true)
-    public SoapForwardingHub quickBuild() {
+    public SoapForwardingHub quickBuild(String endpointReference) {
         try {
             SoapForwardingHub hub = new SoapForwardingHub();
+            this.setEndpointReference(endpointReference);
             //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);

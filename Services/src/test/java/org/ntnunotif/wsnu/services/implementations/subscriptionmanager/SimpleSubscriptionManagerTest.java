@@ -31,7 +31,7 @@ public class SimpleSubscriptionManagerTest{
     @BeforeClass
     public static void setUp() throws Exception {
         producer = new SimpleNotificationProducer();
-        hub = producer.quickBuild();
+        hub = producer.quickBuild("simpleProducer");
 
         manager = new SimpleSubscriptionManager(hub);
         connector = new UnpackingConnector(manager);

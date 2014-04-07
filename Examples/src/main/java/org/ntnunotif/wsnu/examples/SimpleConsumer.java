@@ -34,8 +34,7 @@ public class SimpleConsumer implements ConsumerListener {
     public SimpleConsumer() throws NoSuchMethodException {
 
         consumer = new NotificationConsumer();
-        hub = consumer.quickBuild();
-        consumer.setEndpointReference("Hello");
+        hub = consumer.quickBuild("MyConsumer");
         consumer.addConsumerListener(this);
         startTime = System.currentTimeMillis();
 

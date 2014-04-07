@@ -98,10 +98,24 @@ public abstract class WebService {
             throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
         }
 
+        if(endpointReference.matches("^(https?://)(.*)?")){
+            this.forceEndpointReference(endpointReference);
+            return;
+        }
+
+        if(_hub == null){
+            Log.e("WebService", "Hub-connection is not set for this Web Service, please set the hub, " +
+                    "(i.e by calling quickBuild) before using this method. You can also force " +
+                    "the reference by calling forceEndpointReference");
+            return;
+        }
+
         this.pureEndpointReference = endpointReference;
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
-        _connection.endpointUpdated(this.endpointReference);
+        if(_connection != null){
+            _connection.endpointUpdated(this.endpointReference);
+        }
     }
 
     /**
@@ -110,8 +124,8 @@ public abstract class WebService {
      */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
-        //TODO: Try to filter out the pureEndpointReference
-        this.pureEndpointReference = endpointReference;
+        System.out.println(this.endpointReference);
+        this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
         if(_connection == null)
             return;
         _connection.endpointUpdated(endpointReference);
@@ -243,7 +257,7 @@ public abstract class WebService {
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
      */
-    public abstract SoapForwardingHub quickBuild();
+    public abstract SoapForwardingHub quickBuild(String endpointReference);
 
     /**
      * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed
@@ -348,9 +362,11 @@ public abstract class WebService {
         File file = new File(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
         wsdlLocation = pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl";
 
+        // add to path
         if(os.equals("Windows")){
-            //TODO:
+
         }
+        
         if(os.equals("Linux")){
             String command = "wsgen -cp " + classPath + " -d "+ pureEndpointReference+"/" +" -wsdl " + this.getClass().getCanonicalName();
             Log.d("WebService", "[Running command]: " + command);
@@ -381,7 +397,6 @@ public abstract class WebService {
         }
         Log.d("WebService", "Generation completed");
 
-        Log.d("WebService", "Setting endpoint-variable in wsdl-file");
         FileInputStream newStream = new FileInputStream(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
         StringBuilder sb = new StringBuilder();
 
@@ -394,14 +409,13 @@ public abstract class WebService {
         String wsdl = sb.toString();
         wsdl = wsdl.replaceAll("soap:address location=\"REPLACE_WITH_ACTUAL_URL\"/>", "soap:address location=\""+endpointReference+"\"/>");
 
-        System.out.println(wsdl);
 
         byte[] bytes = wsdl.getBytes();
 
         FileOutputStream outStream = new FileOutputStream(pureEndpointReference+"/"+this.getClass().getSimpleName()+"Service.wsdl");
         outStream.write(bytes);
         outStream.close();
-        System.out.println("Hello");
+
     }
 
     public String getWsdlLocation() {
