@@ -7,3 +7,6 @@ out/
 .idea/
 *META-INF/
 */target/
+*.jar
+*.war
+lib/
