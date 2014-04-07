@@ -3,7 +3,6 @@ package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.util.EndpointReference;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
@@ -29,13 +28,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
      */
     private NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
 
-
-    /**
-     * The EndpointReference of this NotificatonConsumer. This does not have to,
-     * but can, be the same as the url/ip of the application server of the connected hub.
-     */
-    @EndpointReference(type = "uri")
-    public String _endpointReference;
 
     public NotificationConsumer() {
         super();
@@ -77,14 +69,15 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
 
     //@Override
     @WebMethod(exclude = true)
-    public SoapForwardingHub quickBuild() {
+    public SoapForwardingHub quickBuild(String endpointReference) {
         try{
             SoapForwardingHub hub = new SoapForwardingHub();
+            _hub = hub;
+            this.setEndpointReference(endpointReference);
             /* Most reasonable and simple connector for a consumer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
-            _hub = hub;
             return hub;
         }catch(Exception e){
             e.printStackTrace();

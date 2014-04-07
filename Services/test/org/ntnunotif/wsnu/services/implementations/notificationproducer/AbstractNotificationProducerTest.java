@@ -9,7 +9,6 @@ import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import javax.jws.WebParam;
 import javax.xml.namespace.NamespaceContext;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by tormod on 24.03.14.
@@ -49,8 +48,9 @@ public class AbstractNotificationProducerTest extends TestCase {
                 return null;
             }
 
+
             @Override
-            public SoapForwardingHub quickBuild() {
+            public SoapForwardingHub quickBuild(String endpointReference) {
                 return null;
             }
         };

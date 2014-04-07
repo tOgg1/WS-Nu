@@ -215,9 +215,10 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
     //@Override
     @WebMethod(exclude = true)
-    public SoapForwardingHub quickBuild() {
+    public SoapForwardingHub quickBuild(String endpointReference) {
         try{
             SoapForwardingHub hub = new SoapForwardingHub();
+            this.setEndpointReference(endpointReference);
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
