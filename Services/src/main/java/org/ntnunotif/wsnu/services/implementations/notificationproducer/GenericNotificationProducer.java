@@ -31,6 +31,8 @@ import java.util.*;
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
 public class GenericNotificationProducer extends AbstractNotificationProducer {
 
+    private static final QName topicExpressionQName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
+
     private final Map<String, NotificationMessageHolderType>  latestMessages = new HashMap<>();
 
     private final FilterSupport filterSupport;
@@ -304,6 +306,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
                     getCurrentMessageRequest.getTopic().getContent());
         }
+
+        //if (filterSupport == null || filterSupport.getFilterEvaluator(topicExpressionQName).is)
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();

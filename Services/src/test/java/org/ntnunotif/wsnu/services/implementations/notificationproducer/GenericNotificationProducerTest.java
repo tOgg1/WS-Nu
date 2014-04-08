@@ -42,10 +42,20 @@ public class GenericNotificationProducerTest {
     }
 
     @Test
-    public void testGetCurrentMessage() throws Exception {
+     public void testGetCurrentMessageDefault() throws Exception {
+        // TODO
+    }
+/*
+    @Test(expected = NoCurrentMessageOnTopicFault.class)
+    public void testGetCurrentMessageNoFilter() throws Exception {
         // TODO
     }
 
+    @Test(expected = NoCurrentMessageOnTopicFault.class)
+    public void testGetCurrentMessageNoCaching() throws Exception {
+        // TODO
+    }
+*/
     @Test
     public void testQuickBuild() throws Exception {
         SoapForwardingHub defaultHub  = defaultProducer.quickBuild("default");
