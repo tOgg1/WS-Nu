@@ -35,10 +35,56 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     private final FilterSupport filterSupport;
 
+    private final boolean cacheMessages;
+
     private Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
     public GenericNotificationProducer() {
+        Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
+        cacheMessages = true;
+    }
+
+    public GenericNotificationProducer(boolean supportFilters) {
+        if (supportFilters) {
+            Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
+            filterSupport = FilterSupport.createDefaultFilterSupport();
+        } else {
+            Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage allowed");
+            filterSupport = null;
+        }
+        cacheMessages = true;
+    }
+
+    public GenericNotificationProducer(boolean supportFilters, boolean cacheMessages) {
+        if (supportFilters) {
+            if (cacheMessages) {
+                Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            } else {
+                Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage disallowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            }
+        } else {
+            if (cacheMessages) {
+                Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage allowed, but unusable");
+                filterSupport = null;
+            } else {
+                Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage disallowed");
+                filterSupport = null;
+            }
+        }
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationProducer(FilterSupport filterSupport, boolean cacheMessages) {
+        if (cacheMessages)
+            Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage allowed");
+        else
+            Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage disallowed");
+        this.filterSupport = filterSupport;
+
+        this.cacheMessages = cacheMessages;
     }
 
     @Override
@@ -72,6 +118,14 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @Override
     @WebMethod(exclude = true)
     protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+
+        // See if we have the current recipient registered, and if message is cached
+        if (!subscriptions.containsKey(recipient))
+            return null;
+
+        if (filterSupport == null)
+            return notify;
+
         // Find current recipient to Notify
         SubscriptionHandle subscriptionHandle = subscriptions.get(recipient);
 
@@ -82,32 +136,35 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @Override
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
-        // Take out the latest messages
-        for (NotificationMessageHolderType messageHolderType: notify.getNotificationMessage()) {
-            TopicExpressionType topic = messageHolderType.getTopic();
 
-            // If it is connected to a topic, remember it
-            if (topic != null) {
+        // Check if we should cache message
+        if (cacheMessages) {
+            // Take out the latest messages
+            for (NotificationMessageHolderType messageHolderType : notify.getNotificationMessage()) {
+                TopicExpressionType topic = messageHolderType.getTopic();
 
-                try {
+                // If it is connected to a topic, remember it
+                if (topic != null) {
 
-                    List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
-                    String topicName = TopicUtils.topicToString(topicQNames);
-                    latestMessages.put(topicName, messageHolderType);
+                    try {
 
-                } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                    Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression");
-                    invalidTopicExpressionFault.printStackTrace();
-                } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
-                    Log.w("GenericNotificationProducer", "Tried to send a message with multiple topics");
-                    multipleTopicsSpecifiedFault.printStackTrace();
-                } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                    Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression dialect");
-                    topicExpressionDialectUnknownFault.printStackTrace();
+                        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
+                        String topicName = TopicUtils.topicToString(topicQNames);
+                        latestMessages.put(topicName, messageHolderType);
+
+                    } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
+                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression");
+                        invalidTopicExpressionFault.printStackTrace();
+                    } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
+                        Log.w("GenericNotificationProducer", "Tried to send a message with multiple topics");
+                        multipleTopicsSpecifiedFault.printStackTrace();
+                    } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
+                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression dialect");
+                        topicExpressionDialectUnknownFault.printStackTrace();
+                    }
                 }
             }
         }
-
         // Super type can do the rest
         super.sendNotification(notify, namespaceContext);
     }
@@ -155,7 +212,9 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                     JAXBElement filter = (JAXBElement) o;
 
                     // Filter legality checks
-                    if (filterSupport.supportsFilter(filter.getName(), filter.getValue(), namespaceContext)) {
+                    if (filterSupport != null &&
+                            filterSupport.supportsFilter(filter.getName(), filter.getValue(), namespaceContext)) {
+
                         QName fName = filter.getName();
 
                         Log.d("GenericNotificationProducer", "Subscription request contained filter: "
@@ -174,6 +233,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         }
 
         long terminationTime = 0;
+
         if (subscribeRequest.getInitialTerminationTime() != null) {
             try {
                 System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
@@ -238,6 +298,12 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                                                                getCurrentMessageRequest) throws
             InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault,
             ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
+
+        if (!cacheMessages) {
+            Log.w("GenericNotificationProducer", "Someone tried to get current message when caching is disabled");
+            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
+                    getCurrentMessageRequest.getTopic().getContent());
+        }
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
