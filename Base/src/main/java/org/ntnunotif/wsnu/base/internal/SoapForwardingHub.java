@@ -11,6 +11,7 @@ import org.xmlsoap.schemas.soap.envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -109,6 +110,10 @@ public class SoapForwardingHub implements Hub {
                         /* Re-use internalMessage object for optimization */
                         internalMessage.setMessage(message.getValue());
                     }
+
+                    /* Re-use internalMessage object for optimization */
+                    internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+
                 }catch(ClassCastException e){
                     Log.e("SoapForwardingHub","Failed to cast message to a SOAP envelope");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
@@ -164,11 +169,12 @@ public class SoapForwardingHub implements Hub {
                     Object messageToParse;
                     if(!((returnMessage.getMessage() instanceof org.w3._2001._12.soap_envelope.Envelope) ||
                             returnMessage.getMessage() instanceof Envelope)){
-                        org.w3._2001._12.soap_envelope.Envelope env = new org.w3._2001._12.soap_envelope.Envelope();
-                        org.w3._2001._12.soap_envelope.Body body = new org.w3._2001._12.soap_envelope.Body();
+                        Envelope env = new Envelope();
+                        Body body = new Body();
                         body.getAny().add(returnMessage.getMessage());
                         env.setBody(body);
-                        messageToParse = env;
+                        messageToParse = new JAXBElement<>(new QName("http://schemas.xmlsoap.org/soap/envelope/",
+                                "Envelope"), Envelope.class, env);
                     }else{
                         messageToParse = returnMessage.getMessage();
                     }

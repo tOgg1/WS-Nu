@@ -861,7 +861,7 @@ public class ServiceUtilities {
 
     }
 
-    public static void throwResourceUnknownFault(String description) throws ResourceUnknownFault {
+    public static void throwResourceUnknownFault(String language, String description) throws ResourceUnknownFault {
         ResourceUnknownFaultType type = new ResourceUnknownFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -873,6 +873,7 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
 
         type.getDescription().add(desc);

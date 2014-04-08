@@ -2,7 +2,7 @@ package org.ntnunotif.wsnu.base.util;
 
 import com.google.common.collect.Lists;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.w3._2001._12.soap_envelope.*;
+import org.xmlsoap.schemas.soap.envelope.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -270,6 +270,9 @@ public class Utilities {
         envelope.setBody(body);
         envelope.setHeader(header);
 
+        Object toSend = new JAXBElement<>(new QName("http://schemas.xmlsoap.org/soap/envelope/", "Envelope"),
+                Envelope.class, envelope);
+
         Method method;
         Log.d("Utilities.attemptToParseException", "Got exception " + exception.getClass() + " to parse");
 
@@ -277,7 +280,7 @@ public class Utilities {
             detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), exception.getClass(), null, exception));
 
             body.getAny().add(new ObjectFactory().createFault(fault));
-            XMLParser.writeObjectToStream(envelope, streamTo);
+            XMLParser.writeObjectToStream(toSend, streamTo);
             return;
         /* We couldn't write it directly, lets try and get some information. Primarily by looking for a method named
         * getFaultInfo, then any other method named info, and then trying every other method */
@@ -296,7 +299,7 @@ public class Utilities {
                 Object data = method.invoke(exception);
                 detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
                 body.getAny().add(new ObjectFactory().createFault(fault));
-                XMLParser.writeObjectToStream(envelope, streamTo);
+                XMLParser.writeObjectToStream(toSend, streamTo);
                 return;
             } catch (Exception f) {
                 f.printStackTrace();
@@ -314,7 +317,7 @@ public class Utilities {
                 Object data = method.invoke(exception);
                 detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
                 body.getAny().add(new ObjectFactory().createFault(fault));
-                XMLParser.writeObjectToStream(envelope, streamTo);
+                XMLParser.writeObjectToStream(toSend, streamTo);
                 return;
             }catch(Exception g){
                 Log.d("Utilities.attemptToParseException", "Any fault/info function failed to prase: " + g.getMessage());
@@ -330,7 +333,7 @@ public class Utilities {
                 Object data = method1.invoke(exception);
                 detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), data.getClass(), null, data));
                 body.getAny().add(new ObjectFactory().createFault(fault));
-                XMLParser.writeObjectToStream(envelope, streamTo);
+                XMLParser.writeObjectToStream(toSend, streamTo);
                 return;
             }catch(Exception h){
                 continue;
@@ -345,7 +348,7 @@ public class Utilities {
             try {
                 detail.getAny().add(new JAXBElement(new QName(namespaceName, faultName), field.getClass(), null, field));
                 body.getAny().add(new ObjectFactory().createFault(fault));
-                XMLParser.writeObjectToStream(envelope, streamTo);
+                XMLParser.writeObjectToStream(toSend, streamTo);
                 return;
             } catch (JAXBException e) {
                 continue;

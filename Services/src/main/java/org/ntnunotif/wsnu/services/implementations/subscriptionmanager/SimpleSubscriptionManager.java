@@ -136,7 +136,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimpleSubscriptionManager", "Subscription not found");
                 Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
-                throw new ResourceUnknownFault("Subscription not found.", new ResourceUnknownFaultType());
+                ServiceUtilities.throwResourceUnknownFault("en", "Subscription not found.");
             }
 
             Log.d("SimpleSubscriptionManager", "Removed subscription");
