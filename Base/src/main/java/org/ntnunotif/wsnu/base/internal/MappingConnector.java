@@ -3,8 +3,6 @@ package org.ntnunotif.wsnu.base.internal;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.InvalidWebServiceException;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.w3._2001._12.soap_envelope.Body;
-import org.w3._2001._12.soap_envelope.Envelope;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,16 +63,26 @@ public class MappingConnector extends WebServiceConnector{
              /* The message */
             Object potentialEnvelope = internalMessage.getMessage();
 
-            if(!(potentialEnvelope instanceof Envelope)){
+            if(!(potentialEnvelope instanceof org.w3._2001._12.soap_envelope.Envelope ||
+                    potentialEnvelope instanceof org.xmlsoap.schemas.soap.envelope.Envelope)){
                 Log.d("UnpackingRequestInformationConnector", "Content not envelope");
                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
             }
 
             /* Unpack the body */
-            Envelope envelope = (Envelope)potentialEnvelope;
-            Body body = ((Envelope) potentialEnvelope).getBody();
+            List<Object> messages;
 
-            List<Object> messages = body.getAny();
+            if (potentialEnvelope instanceof org.w3._2001._12.soap_envelope.Envelope) {
+                org.w3._2001._12.soap_envelope.Envelope envelope = (org.w3._2001._12.soap_envelope.Envelope) potentialEnvelope;
+                org.w3._2001._12.soap_envelope.Body body = envelope.getBody();
+                messages = body.getAny();
+            } else if (potentialEnvelope instanceof org.xmlsoap.schemas.soap.envelope.Envelope) {
+                org.xmlsoap.schemas.soap.envelope.Envelope envelope = (org.xmlsoap.schemas.soap.envelope.Envelope) potentialEnvelope;
+                org.xmlsoap.schemas.soap.envelope.Body body = envelope.getBody();
+                messages = body.getAny();
+            } else {
+                messages = new ArrayList<>();
+            }
 
             for(Object message : messages){
                 Class objectClass = message.getClass();

@@ -5,9 +5,9 @@ import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.Utilities;
-import org.w3._2001._12.soap_envelope.Body;
-import org.w3._2001._12.soap_envelope.Envelope;
-import org.w3._2001._12.soap_envelope.Header;
+import org.xmlsoap.schemas.soap.envelope.Body;
+import org.xmlsoap.schemas.soap.envelope.Envelope;
+import org.xmlsoap.schemas.soap.envelope.Header;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -92,21 +92,33 @@ public class SoapForwardingHub implements Hub {
         }else{
             Log.d("SoapForwardingHub", "Forwarding message");
             InternalMessage parsedMessage;
-            Envelope envelope;
+            //Envelope envelope;
             /* Try to parse and cast the message to a soap-envelope */
             try {
                 parsedMessage = XMLParser.parse((InputStream) internalMessage.getMessage());
                 try {
-                    envelope = (Envelope) ((JAXBElement) parsedMessage.getMessage()).getValue();
+                    // Check if message is any of the supported SOAP envelopes
+                    JAXBElement message = (JAXBElement)parsedMessage.getMessage();
+                    Class messageClass = message.getDeclaredType();
+                    if (messageClass.equals(org.w3._2001._12.soap_envelope.Envelope.class)) {
+
+                        /* Re-use internalMessage object for optimization */
+                        internalMessage.setMessage(message.getValue());
+                    } else if (messageClass.equals(org.xmlsoap.schemas.soap.envelope.Envelope.class)) {
+
+                        /* Re-use internalMessage object for optimization */
+                        internalMessage.setMessage(message.getValue());
+                    }
                 }catch(ClassCastException e){
+                    Log.e("SoapForwardingHub","Failed to cast message to a SOAP envelope");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
             } catch (JAXBException e) {
+                Log.e("SoapForwardingHub", "Parse error: " + e.getMessage());
                 return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             }
 
             /* Re-use internalMessage object for optimization */
-            internalMessage.setMessage(envelope);
             internalMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET;
 
             if(foundConnection){
@@ -150,9 +162,10 @@ public class SoapForwardingHub implements Hub {
                     }
                 }else{
                     Object messageToParse;
-                    if(!(returnMessage.getMessage() instanceof Envelope)){
-                        Envelope env = new Envelope();
-                        Body body = new Body();
+                    if(!((returnMessage.getMessage() instanceof org.w3._2001._12.soap_envelope.Envelope) ||
+                            returnMessage.getMessage() instanceof Envelope)){
+                        org.w3._2001._12.soap_envelope.Envelope env = new org.w3._2001._12.soap_envelope.Envelope();
+                        org.w3._2001._12.soap_envelope.Body body = new org.w3._2001._12.soap_envelope.Body();
                         body.getAny().add(returnMessage.getMessage());
                         env.setBody(body);
                         messageToParse = env;

@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.base.net;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 
 import javax.xml.bind.*;
 import javax.xml.stream.StreamFilter;
@@ -32,7 +33,9 @@ public class XMLParser {
             "org.oasis_open.docs.wsn.br_2",
             "org.oasis_open.docs.wsn.t_1",
             "org.oasis_open.docs.wsrf.bf_2",
-            "org.oasis_open.docs.wsrf.r_2"};
+            "org.oasis_open.docs.wsrf.r_2",
+            "org.xmlsoap.schemas.soap.envelope"
+    };
 
     /**
      * classLoader is the default loader for java classes.
@@ -130,12 +133,13 @@ public class XMLParser {
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     public static InternalMessage parse(InputStream inputStream) throws JAXBException {
+        Log.d("XMLParser", "Parsing message from InputStream");
         XMLInputFactory factory = XMLInputFactory.newFactory();
         try {
             XMLStreamReader streamReader = factory.createXMLStreamReader(inputStream);
             return parse(streamReader);
         } catch (XMLStreamException e) {
-            // TODO
+            Log.e("XMLParser", "Could not create XMLStream: " + e.getMessage());
             e.printStackTrace();
             throw new JAXBException("Could not create XMLStream to read from");
         }
@@ -151,18 +155,25 @@ public class XMLParser {
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     public static InternalMessage parse(XMLStreamReader xmlStreamReader) throws JAXBException {
+        Log.d("XMLParser", "Parsing message from XMLStreamReader");
         XMLParser p = new XMLParser();
         WSStreamFilter filter = p.new WSStreamFilter();
         XMLInputFactory factory = XMLInputFactory.newFactory();
         try {
             xmlStreamReader = factory.createFilteredReader(xmlStreamReader, filter);
         } catch (XMLStreamException e) {
+            Log.e("XMLParser", "Could not create XMLStream with filter: " + e.getMessage());
             e.printStackTrace();
             throw new JAXBException("Could not create XMLStream to read from");
         }
-        InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
-        msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
-        return msg;
+        try {
+            InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
+            msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
+            return msg;
+        } catch (JAXBException e) {
+            Log.e("XMLParser", "Could not unmarshal:" + e.toString());
+            throw e;
+        }
     }
 
     /**
