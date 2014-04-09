@@ -4,16 +4,19 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import javax.jws.WebMethod;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -108,6 +111,29 @@ public abstract class AbstractNotificationProducer extends WebService implements
     protected abstract Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext);
 
     /**
+     * Will try to send the {@link org.oasis_open.docs.wsn.b_2.Notify} to the
+     * {@link javax.xml.ws.wsaddressing.W3CEndpointReference} indicated.
+     *
+     * @param notify               the {@link org.oasis_open.docs.wsn.b_2.Notify} to send
+     * @param w3CEndpointReference the reference of the receiving endpoint
+     * @throws IllegalAccessException
+     */
+    @WebMethod(exclude = true)
+    public void sendSingleNotify(Notify notify, W3CEndpointReference w3CEndpointReference) throws IllegalAccessException {
+        if (_hub == null) {
+            Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
+                    " consider running this before sending messages");
+            return;
+        }
+
+        Log.d("AbstractNotificationProducer", "Was told to send single notify to a target");
+        InternalMessage outMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET, notify);
+        outMessage.getRequestInformation().setEndpointReference(ServiceUtilities.getAddress(w3CEndpointReference));
+        Log.d("AbstractNotificationProducer", "Forwarding Notify");
+        _hub.acceptLocalMessage(outMessage);
+    }
+
+    /**
      * Sends a notification to the endpoints. NamespaceContext is the context of the Notification.
      *
      * @param notify           the {@link org.oasis_open.docs.wsn.b_2.Notify} to send
@@ -115,6 +141,13 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
+        ObjectFactory factory = new ObjectFactory();
+
+        if (_hub == null) {
+            Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
+                    " consider running this before sending messages");
+            return;
+        }
 
         // Remember current message with context
         currentMessage = notify;

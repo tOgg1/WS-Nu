@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
@@ -84,6 +85,58 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage allowed");
         else
             Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage disallowed");
+        this.filterSupport = filterSupport;
+
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationProducer(Hub hub) {
+        this._hub = hub;
+        Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+        filterSupport = FilterSupport.createDefaultFilterSupport();
+        cacheMessages = true;
+    }
+
+    public GenericNotificationProducer(Hub hub, boolean supportFilters) {
+        this._hub = hub;
+        if (supportFilters) {
+            Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+            filterSupport = FilterSupport.createDefaultFilterSupport();
+        } else {
+            Log.d("GenericNotificationProducer", "Created new with hub and without filter support and GetCurrentMessage allowed");
+            filterSupport = null;
+        }
+        cacheMessages = true;
+    }
+
+    public GenericNotificationProducer(Hub hub, boolean supportFilters, boolean cacheMessages) {
+        this._hub = hub;
+        if (supportFilters) {
+            if (cacheMessages) {
+                Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            } else {
+                Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage disallowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            }
+        } else {
+            if (cacheMessages) {
+                Log.d("GenericNotificationProducer", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
+                filterSupport = null;
+            } else {
+                Log.d("GenericNotificationProducer", "Created new with hub, without filter support and GetCurrentMessage disallowed");
+                filterSupport = null;
+            }
+        }
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationProducer(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
+        this._hub = hub;
+        if (cacheMessages)
+            Log.d("GenericNotificationProducer", "Created new with hub, custom filter support and GetCurrentMessage allowed");
+        else
+            Log.d("GenericNotificationProducer", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
         this.filterSupport = filterSupport;
 
         this.cacheMessages = cacheMessages;

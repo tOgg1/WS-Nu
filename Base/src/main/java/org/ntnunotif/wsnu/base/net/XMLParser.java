@@ -109,20 +109,6 @@ public class XMLParser {
         return getJaxbContext().createMarshaller();
     }
 
-    /*
-    /**
-     * Parses the {@link javax.xml.soap.Node}, and returns the parsed tree structure
-     *
-     * @param node The {@link javax.xml.soap.Node} to parse.
-     *
-     * @return The apropriate object.
-     *
-     * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
-     */
-    //public static Object parse(Node node) throws JAXBException {
-    //    return getUnmarshaller().unmarshal(node);
-    //}
-
     /**
      * Parses the {@link java.io.InputStream}, and returns the parsed tree structure
      *
@@ -195,6 +181,7 @@ public class XMLParser {
 
         @Override
         public boolean accept(XMLStreamReader reader) {
+            // TODO This does not discover all namespaces, look into it
             if (reader.isStartElement()) {
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);

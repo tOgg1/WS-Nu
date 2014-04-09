@@ -8,10 +8,10 @@ import org.ntnunotif.wsnu.base.util.Utilities;
 import org.xmlsoap.schemas.soap.envelope.Body;
 import org.xmlsoap.schemas.soap.envelope.Envelope;
 import org.xmlsoap.schemas.soap.envelope.Header;
+import org.xmlsoap.schemas.soap.envelope.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -166,18 +166,8 @@ public class SoapForwardingHub implements Hub {
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else{
-                    Object messageToParse;
-                    if(!((returnMessage.getMessage() instanceof org.w3._2001._12.soap_envelope.Envelope) ||
-                            returnMessage.getMessage() instanceof Envelope)){
-                        Envelope env = new Envelope();
-                        Body body = new Body();
-                        body.getAny().add(returnMessage.getMessage());
-                        env.setBody(body);
-                        messageToParse = new JAXBElement<>(new QName("http://schemas.xmlsoap.org/soap/envelope/",
-                                "Envelope"), Envelope.class, env);
-                    }else{
-                        messageToParse = returnMessage.getMessage();
-                    }
+
+                    Object messageToParse = wrapInJAXBAcceptedSoapEnvelope(returnMessage.getMessage());
 
                     /* Try to parse the object directly into the OutputStream passed in*/
                     try{
@@ -215,6 +205,46 @@ public class SoapForwardingHub implements Hub {
         }
     }
 
+
+    /**
+     * Takes an object and wraps it in an JAXBElement with declared type Envelope. If it is already a JAXBElement with
+     * this declared type, it just returns it. If it is an accepted envelope, it creates the corresponding JAXBElement
+     * to wrap it in. If it is something else, it wraps it in an Envelope from namespace
+     * http://schemas.xmlsoap.org/soap/envelope/
+     *
+     * @param o the <code>Object</code> to wrap
+     * @return the wrapped JAXBElement
+     */
+    private Object wrapInJAXBAcceptedSoapEnvelope(Object o) {
+
+        // Check if this is already correct type
+        if (o instanceof JAXBElement) {
+            JAXBElement element = (JAXBElement)o;
+            if (element.getDeclaredType() == Envelope.class ||
+                    element.getDeclaredType() == org.w3._2001._12.soap_envelope.Envelope.class)
+                return o;
+        }
+
+        if (o != null) {
+            // Check if it is not already wrapped in an envelope, if so wrap it
+            if (!((o instanceof org.w3._2001._12.soap_envelope.Envelope) || o instanceof Envelope)) {
+                ObjectFactory factory = new ObjectFactory();
+                Envelope env = factory.createEnvelope();
+                Body body = factory.createBody();
+                body.getAny().add(o);
+                env.setBody(body);
+                return factory.createEnvelope(env);
+            } else if (o instanceof org.w3._2001._12.soap_envelope.Envelope) {
+                org.w3._2001._12.soap_envelope.ObjectFactory factory = new org.w3._2001._12.soap_envelope.ObjectFactory();
+                return factory.createEnvelope((org.w3._2001._12.soap_envelope.Envelope) o);
+            } else if (o instanceof Envelope) {
+                ObjectFactory factory = new ObjectFactory();
+                return factory.createEnvelope((Envelope) o);
+            }
+        }
+
+        return null;
+    }
     /**
      * Stop the hub and its delegates.
      * @throws Exception

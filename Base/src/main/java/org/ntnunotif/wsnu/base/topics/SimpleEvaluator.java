@@ -105,6 +105,12 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                         "it contained whitespace where disallowed");
         }
         // Split expression in prefix and local part
+        // If the expression started with "/", remove the first letter
+        if (expression.length() > 0 && expression.charAt(0) == '/') {
+            Log.w("SimpleEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
+            expression = expression.substring(1);
+        }
+
         String[] splitExpression = expression.split(":");
         if (splitExpression.length == 0 || splitExpression.length > 2) {
             // Check if local part contains "/", which si disallowed
