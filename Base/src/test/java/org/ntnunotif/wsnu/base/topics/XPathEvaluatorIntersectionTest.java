@@ -1,11 +1,9 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
-import org.ntnunotif.wsnu.base.topics.TopicUtils;
-import org.ntnunotif.wsnu.base.topics.XPathEvaluator;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.namespace.NamespaceContext;
