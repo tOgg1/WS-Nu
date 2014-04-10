@@ -144,8 +144,10 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             return new UnsubscribeResponse();
         }
 
-        throw new UnableToDestroySubscriptionFault("The subscription was not found as any parameter in the request-uri. Please send a " +
-                "request on the form: \"http://urlofthis.domain/webservice/?subscription=subscriptionreference", new UnableToDestroySubscriptionFaultType());
+        ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "The subscription was not found as any parameter" +
+                " in the request-uri. Please send a request on the form: " +
+                "\"http://urlofthis.domain/webservice/?subscription=subscriptionreference");
+        return null;
     }
 
     /**
@@ -186,11 +188,11 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                         Log.d("SimpleSubscriptionmanager", s);
                     }
                     Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
-                    throw new ResourceUnknownFault();
+                    ServiceUtilities.throwResourceUnknownFault("en", "Given resource was unknown: " + subRef);
                 }
             /* We just continue down here as the time-fetching operations are rather large */
             }else if(entry.getValue().length == 0){
-                throw new ResourceUnknownFault();
+                ServiceUtilities.throwResourceUnknownFault("en", "A blank resource is always unknown.");
             }
 
             String subRef = entry.getValue()[0];
@@ -198,7 +200,8 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             long time = ServiceUtilities.interpretTerminationTime(renewRequest.getTerminationTime());
 
             if(time < System.currentTimeMillis()) {
-                throw new UnacceptableTerminationTimeFault();
+                ServiceUtilities.throwUnacceptableTerminationTimeFault("en", "Tried to renew a subscription so it " +
+                        "should last until a time that has already passed.");
             }
 
             Log.d("SimpleSubscriptionManager", "Successfully renewed subscription");
@@ -207,7 +210,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         }
 
         Log.d("SimpleSubscriptionManager", "Subscription not found, probably ill-formatted request");
-        throw new ResourceUnknownFault();
+        ServiceUtilities.throwResourceUnknownFault("en", "The resource was not found. The request was probably ill " +
+                "formatted");
+        return null;
     }
 
     //@Override

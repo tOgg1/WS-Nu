@@ -243,7 +243,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if (consumerEndpoint == null) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("Missing endpointreference");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
         //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
@@ -251,7 +251,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         try {
             endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference malformated or missing.");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference malformated or missing.");
         }
 
         FilterType filters = subscribeRequest.getFilter();
@@ -295,11 +295,11 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if (terminationTime < System.currentTimeMillis()) {
-                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Termination time can not be before 'now'");
+                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Malformated termination time");
+                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
             }
         } else {
             /* Set it to terminate in one day */
@@ -317,7 +317,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Internal error: The date was not convertable to a gregorian calendar-instance. If the problem persists," +
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
+                    "convertable to a gregorian calendar-instance. If the problem persists," +
                     "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
 

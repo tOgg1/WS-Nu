@@ -125,14 +125,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if(consumerEndpoint == null){
-            ServiceUtilities.throwSubscribeCreationFailedFault("Missing endpointreference");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
         String endpointReference = null;
         try {
             endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("EndpointReference malformatted or missing.");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference malformatted or missing.");
         }
 
         FilterType filter = subscribeRequest.getFilter();
@@ -148,11 +148,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if(terminationTime < System.currentTimeMillis()){
-                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Termination time can not be before 'now'");
+                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Malformated termination time");
+                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
             }
         }else{
             /* Set it to terminate in one day */
@@ -170,8 +170,9 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Internal error: The date was not convertable to a gregorian calendar-instance. If the problem persists," +
-                                                                          "please post an issue at http://github.com/tOgg1/WS-Nu");
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
+                    "convertable to a gregorian calendar-instance. If the problem persists, " +
+                    "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
 
         /* Generate new subscription hash */
@@ -229,7 +230,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             _connection = connector;
             return hub;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage(), e);
         }
     }
 }

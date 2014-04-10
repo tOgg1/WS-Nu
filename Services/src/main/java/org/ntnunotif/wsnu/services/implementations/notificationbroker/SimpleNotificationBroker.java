@@ -84,14 +84,14 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         try {
             endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
         } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
-            ServiceUtilities.throwPublisherRegistrationFailedFault("Endpoint not recognizeable");
+            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Endpoint not recognizeable");
             throw new PublisherRegistrationFailedFault();
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
         if(terminationTime < System.currentTimeMillis()){
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("Invalid termination time. Can't be before current time");
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Invalid termination time. Can't be before current time");
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
