@@ -76,7 +76,9 @@ public class SoapForwardingHub implements Hub {
             if(foundConnection){
                 returnMessage = connection.acceptRequest(internalMessage);
             }else{
+                Log.d("SoapForwardingHub", "Looking for service to send to");
                 for(ServiceConnection service : _services){
+                    Log.d("SoapForwardingHub", "Attempting to forward request to " + service);
                     returnMessage = service.acceptRequest(internalMessage);
                     if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
@@ -99,9 +101,12 @@ public class SoapForwardingHub implements Hub {
                 try {
                     envelope = (Envelope) ((JAXBElement) parsedMessage.getMessage()).getValue();
                 }catch(ClassCastException e){
+                    Log.e("SoapForwardingHub", "Invalid message, expected JAXBElement -> Envelope, " +
+                            "got " + parsedMessage.getMessage().getClass());
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
             } catch (JAXBException e) {
+                Log.e("SoapForwardingHub", "Parse error: " + e.getMessage());
                 return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
             }
 
@@ -112,7 +117,9 @@ public class SoapForwardingHub implements Hub {
             if(foundConnection){
                 returnMessage = connection.acceptMessage(internalMessage);
             }else{
+                Log.d("SoapForwardingHub", "Looking for service to send to");
                 for(ServiceConnection service : _services){
+                    Log.d("SoapForwardingHub", "Attempting to forward request to " + service);
                     returnMessage = service.acceptMessage(internalMessage);
                     if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;

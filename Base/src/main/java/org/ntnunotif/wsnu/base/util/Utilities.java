@@ -245,7 +245,6 @@ public class Utilities {
             throw new IllegalArgumentException("");
         }
 
-
         String faultName, namespaceName;
         if(webFaultAnnotation.targetNamespace().equals("")){
             Log.w("Utilities.attemptToParseException", "The passed in WebFault [class = "+exception.getClass().getSimpleName()+"] does not carry any namespace information, please consider setting the namespace() variable");
