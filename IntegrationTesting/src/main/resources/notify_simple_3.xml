@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsnt:Notify xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2"
+             xmlns:test="http://test.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://docs.oasis-open.org/wsn/b-2 http://docs.oasis-open.org/wsn/b-2.xsd ">
+
+    <wsnt:NotificationMessage>
+        <wsnt:Topic Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple">test:root1</wsnt:Topic>
+        <wsnt:Message>
+            <hello>World</hello>
+        </wsnt:Message>
+    </wsnt:NotificationMessage>
+</wsnt:Notify>

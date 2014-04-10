@@ -130,6 +130,13 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
         // Create the list containing the QNames we wish to return
         List<QName> retVal = new ArrayList<>();
         // Split expression in its individual path parts
+
+        // If the expression started with "/", remove the first letter
+        if (expression.length() > 0 && expression.charAt(0) == '/') {
+            Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
+            expression = expression.substring(1);
+        }
+
         String[] pathed = expression.split("/");
         for (String str : pathed) {
             String[] name = str.split(":");

@@ -511,7 +511,7 @@ public class TopicUtils {
         if (c == '-' || c == '.')
             return true;
         // Number
-        return c >= '0' && c <= '9' || isNCStartChar(c);
+        return (c >= '0' && c <= '9') || isNCStartChar(c);
     }
 
     public static String topicToString(List<QName> topic) {

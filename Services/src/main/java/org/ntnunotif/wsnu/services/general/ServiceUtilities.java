@@ -635,29 +635,44 @@ public class ServiceUtilities {
     }
 
     public static String getAddress(W3CEndpointReference endpoint) throws IllegalAccessException {
-        Field field;
+        Log.d("ServiceUtilities", "Retrieving address from W3CEndpointReference");
+        Field field = null;
         try {
             field = endpoint.getClass().getDeclaredField("address");
             field.setAccessible(true);
 
         } catch (NoSuchFieldException e) {
+            Log.w("ServiceUtilities", "getAddress did not find the field, trying harder");
             for (Field sfield : endpoint.getClass().getDeclaredFields()) {
                 if(sfield.getName().matches("(.*)?[aA][dD][dD]?[rR]([eE][sS][sS])?") && sfield.getType().equals(String.class)){
                     field = sfield;
                     break;
                 }
             }
+            if (field == null) {
+                Log.e("ServiceUtilities", "getAddress did not find the field, returning blank String");
+                return "";
+            }
+        }
+
+        Log.d("ServiceUtilities", "getAddress found field address, accessing field");
+        field.setAccessible(true);
+        Object fieldInst = field.get(endpoint);
+
+        // If field was null, we should return empty address
+        if (fieldInst == null) {
+            Log.e("ServiceUtilities", "getAddress was called on endpoint with null address field, returning blank string");
             return "";
         }
-        field.setAccessible(true);
-        final Object fieldInst = field.get(endpoint);
 
         try {
+            Log.d("ServiceUtilities", "getAddress found field address, finding uri");
             Field uri = fieldInst.getClass().getDeclaredField("uri");
             uri.setAccessible(true);
+            Log.d("ServiceUtilities", "getAddress found uri, casting and returning");
             return (String)uri.get(fieldInst);
         } catch (NoSuchFieldException e) {
-            
+            Log.e("ServiceUtilities", "getAddress could not find actual uri, returning empty String");
             return "";
         }
 
@@ -861,7 +876,7 @@ public class ServiceUtilities {
 
     }
 
-    public static void throwResourceUnknownFault(String description) throws ResourceUnknownFault {
+    public static void throwResourceUnknownFault(String language, String description) throws ResourceUnknownFault {
         ResourceUnknownFaultType type = new ResourceUnknownFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -873,6 +888,7 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
 
         type.getDescription().add(desc);

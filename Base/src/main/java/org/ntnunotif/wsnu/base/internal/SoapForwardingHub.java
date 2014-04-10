@@ -5,9 +5,10 @@ import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.Utilities;
-import org.w3._2001._12.soap_envelope.Body;
-import org.w3._2001._12.soap_envelope.Envelope;
-import org.w3._2001._12.soap_envelope.Header;
+import org.xmlsoap.schemas.soap.envelope.Body;
+import org.xmlsoap.schemas.soap.envelope.Envelope;
+import org.xmlsoap.schemas.soap.envelope.Header;
+import org.xmlsoap.schemas.soap.envelope.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -76,9 +77,7 @@ public class SoapForwardingHub implements Hub {
             if(foundConnection){
                 returnMessage = connection.acceptRequest(internalMessage);
             }else{
-                Log.d("SoapForwardingHub", "Looking for service to send to");
                 for(ServiceConnection service : _services){
-                    Log.d("SoapForwardingHub", "Attempting to forward request to " + service);
                     returnMessage = service.acceptRequest(internalMessage);
                     if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
@@ -94,15 +93,29 @@ public class SoapForwardingHub implements Hub {
         }else{
             Log.d("SoapForwardingHub", "Forwarding message");
             InternalMessage parsedMessage;
-            Envelope envelope;
+            //Envelope envelope;
             /* Try to parse and cast the message to a soap-envelope */
             try {
                 parsedMessage = XMLParser.parse((InputStream) internalMessage.getMessage());
                 try {
-                    envelope = (Envelope) ((JAXBElement) parsedMessage.getMessage()).getValue();
+                    // Check if message is any of the supported SOAP envelopes
+                    JAXBElement message = (JAXBElement)parsedMessage.getMessage();
+                    Class messageClass = message.getDeclaredType();
+                    if (messageClass.equals(org.w3._2001._12.soap_envelope.Envelope.class)) {
+
+                        /* Re-use internalMessage object for optimization */
+                        internalMessage.setMessage(message.getValue());
+                    } else if (messageClass.equals(org.xmlsoap.schemas.soap.envelope.Envelope.class)) {
+
+                        /* Re-use internalMessage object for optimization */
+                        internalMessage.setMessage(message.getValue());
+                    }
+
+                    /* Re-use internalMessage object for optimization */
+                    internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+
                 }catch(ClassCastException e){
-                    Log.e("SoapForwardingHub", "Invalid message, expected JAXBElement -> Envelope, " +
-                            "got " + parsedMessage.getMessage().getClass());
+                    Log.e("SoapForwardingHub","Failed to cast message to a SOAP envelope");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
             } catch (JAXBException e) {
@@ -111,7 +124,6 @@ public class SoapForwardingHub implements Hub {
             }
 
             /* Re-use internalMessage object for optimization */
-            internalMessage.setMessage(envelope);
             internalMessage.statusCode = STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET;
 
             if(foundConnection){
@@ -135,7 +147,7 @@ public class SoapForwardingHub implements Hub {
         /* Everything is processed properly, and we can figure out what to return */
         if((returnMessage.statusCode & STATUS_OK) > 0){
             /* If we have a message we should try and convert it to an inputstream before returning
-            * Notably the ApplicationServer does accept other form of messages, but it is more logical to conert
+            * Notably the ApplicationServer does accept other form of messages, but it is more logical to convert
             * it at this point */
             if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0){
                 Log.d("SoapForwardingHub", "Returning message");
@@ -156,16 +168,8 @@ public class SoapForwardingHub implements Hub {
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else{
-                    Object messageToParse;
-                    if(!(returnMessage.getMessage() instanceof Envelope)){
-                        Envelope env = new Envelope();
-                        Body body = new Body();
-                        body.getAny().add(returnMessage.getMessage());
-                        env.setBody(body);
-                        messageToParse = env;
-                    }else{
-                        messageToParse = returnMessage.getMessage();
-                    }
+
+                    Object messageToParse = wrapInJAXBAcceptedSoapEnvelope(returnMessage.getMessage());
 
                     /* Try to parse the object directly into the OutputStream passed in*/
                     try{
@@ -203,6 +207,46 @@ public class SoapForwardingHub implements Hub {
         }
     }
 
+
+    /**
+     * Takes an object and wraps it in an JAXBElement with declared type Envelope. If it is already a JAXBElement with
+     * this declared type, it just returns it. If it is an accepted envelope, it creates the corresponding JAXBElement
+     * to wrap it in. If it is something else, it wraps it in an Envelope from namespace
+     * http://schemas.xmlsoap.org/soap/envelope/
+     *
+     * @param o the <code>Object</code> to wrap
+     * @return the wrapped JAXBElement
+     */
+    private Object wrapInJAXBAcceptedSoapEnvelope(Object o) {
+
+        // Check if this is already correct type
+        if (o instanceof JAXBElement) {
+            JAXBElement element = (JAXBElement)o;
+            if (element.getDeclaredType() == Envelope.class ||
+                    element.getDeclaredType() == org.w3._2001._12.soap_envelope.Envelope.class)
+                return o;
+        }
+
+        if (o != null) {
+            // Check if it is not already wrapped in an envelope, if so wrap it
+            if (!((o instanceof org.w3._2001._12.soap_envelope.Envelope) || o instanceof Envelope)) {
+                ObjectFactory factory = new ObjectFactory();
+                Envelope env = factory.createEnvelope();
+                Body body = factory.createBody();
+                body.getAny().add(o);
+                env.setBody(body);
+                return factory.createEnvelope(env);
+            } else if (o instanceof org.w3._2001._12.soap_envelope.Envelope) {
+                org.w3._2001._12.soap_envelope.ObjectFactory factory = new org.w3._2001._12.soap_envelope.ObjectFactory();
+                return factory.createEnvelope((org.w3._2001._12.soap_envelope.Envelope) o);
+            } else if (o instanceof Envelope) {
+                ObjectFactory factory = new ObjectFactory();
+                return factory.createEnvelope((Envelope) o);
+            }
+        }
+
+        return null;
+    }
     /**
      * Stop the hub and its delegates.
      * @throws Exception
