@@ -57,14 +57,18 @@ public class TestSimpleProducer {
 
         // Send all notifies 4 times with a pause between each send
         for (int i = 0; i < 4; i++) {
+            System.out.println("Starting notification cycle.");
             for (Notify notify: notifies) {
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     System.out.println("The thread was interrupted while sleeping!");
                 }
+
+                System.out.println("Sending a notify");
                 producer.sendNotification(notify);
             }
+            System.out.println("Notification cycle done");
         }
 
     }

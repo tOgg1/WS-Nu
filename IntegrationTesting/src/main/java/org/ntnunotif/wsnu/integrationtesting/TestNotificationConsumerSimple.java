@@ -17,13 +17,18 @@ public class TestNotificationConsumerSimple {
 
     public static void main(String[] args) throws Exception {
         System.out.println("This is a test to test a simple consumer.");
-        System.out.println("To where should I send Subscribe?");
+
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("To where should I send Subscribe?");
+
         String endpoint = bufferedReader.readLine();
 
         System.out.println("Trying to connect to: " + endpoint);
+
         NotificationConsumer consumer = new NotificationConsumer();
         consumer.quickBuild(CONSUMER_ENDPOINT);
+
         consumer.addConsumerListener(new ConsumerListener() {
             @Override
             public void notify(NotificationEvent event) {
