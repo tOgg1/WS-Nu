@@ -254,7 +254,7 @@ public class FilterTest {
         filterMap1.put(filter1.getName(), filter1.getValue());
         filterMap2.put(filter2.getName(), filter2.getValue());
         filterMap3.put(filter3.getName(), filter3.getValue());
-        filterMap3.put(filter4.getName(), filter4.getValue());
+        filterMap4.put(filter4.getName(), filter4.getValue());
 
         // Build SubscriptionInfo
         FilterSupport.SubscriptionInfo subscriptionInfo1 = new FilterSupport.SubscriptionInfo(filterMap1, filterContext);
@@ -266,7 +266,7 @@ public class FilterTest {
         Notify notify1 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo1, notifyContext);
         Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
         Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
-        Notify notify4 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
+        Notify notify4 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo4, notifyContext);
 
         // Filter 2 should be evaluated to null
         Assert.assertNull("Filter 2 was not null", notify2);

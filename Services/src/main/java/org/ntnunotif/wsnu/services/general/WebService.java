@@ -106,9 +106,8 @@ public abstract class WebService {
             return;
         }
 
-        String errorMessage = null;
         if(_hub == null){
-            errorMessage = "Hub is not set for this Web Service, please set the hub, " +
+            String errorMessage = "Hub is not set for this Web Service, please set the hub, " +
                     "(i.e by calling quickBuild) before using this method. You can also force " +
                     "the reference by calling forceEndpointReference";
             Log.e("WebService", errorMessage);
