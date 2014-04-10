@@ -228,11 +228,11 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             // Start the application server with this hub
             ApplicationServer.getInstance().start(hub);
 
+            this.setEndpointReference(endpointReference);
+
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
-
-            this.setEndpointReference(endpointReference);
 
             return hub;
         } catch (Exception e) {

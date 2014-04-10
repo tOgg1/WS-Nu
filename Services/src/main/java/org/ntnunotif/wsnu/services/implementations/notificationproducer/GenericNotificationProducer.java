@@ -395,15 +395,15 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
 
+            this.setEndpointReference(endpointReference);
+
             // Start the application server with this hub
             ApplicationServer.getInstance().start(hub);
 
+            //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
-
-            this.setEndpointReference(endpointReference);
-            //* This is the most reasonable connector for this NotificationProducer *//*
 
             return hub;
         } catch (Exception e) {

@@ -94,7 +94,7 @@ public abstract class WebService {
      *
      * @param endpointReference
      * @throws java.lang.IllegalArgumentException if the argument contains a backslash
-     * @throws java.lang.IllegalStateException if either hub or connection is not set
+     * @throws java.lang.IllegalStateException if hub is not set
      */
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
@@ -112,23 +112,19 @@ public abstract class WebService {
                     "(i.e by calling quickBuild) before using this method. You can also force " +
                     "the reference by calling forceEndpointReference";
             Log.e("WebService", errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
 
         if (_connection == null) {
-            Log.e("WebService", "Connection is not set for this Web Service. Endpoint reference is meaningless if " +
-                    "there is no way this service acn accept messages");
-            errorMessage = errorMessage == null ? "" : errorMessage;
-            errorMessage += "Connection is not set for this Web Service. Endpoint reference is meaningless if there " +
-                    "is no way this service acn accept messages";
+            Log.d("WebService", "Connection is not set for this Web Service. Endpoint reference is meaningless if " +
+                    "there is no way this service can accept messages, so to use it, set up a connection.");
         }
-
-        if (errorMessage != null)
-            throw new IllegalStateException(errorMessage);
 
         this.pureEndpointReference = endpointReference;
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
-        _connection.endpointUpdated(this.endpointReference);
+        if (_connection != null)
+            _connection.endpointUpdated(this.endpointReference);
     }
 
     /**
@@ -141,8 +137,10 @@ public abstract class WebService {
         this.endpointReference = endpointReference;
         System.out.println(this.endpointReference);
         this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
-        if(_connection == null)
-            throw new IllegalStateException("You cannot force an endpoint in a Web Service if its connector is null!");
+        if(_connection == null) {
+            Log.w("WebService", "Tried to force an endpoint reference for a null connector.");
+            return;
+        }
         _connection.endpointUpdated(endpointReference);
     }
 
