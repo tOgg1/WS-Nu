@@ -88,7 +88,7 @@ public class ApplicationServerWithHubTest{
 
         ContentResponse response = request.send();
 
-        assertEquals(200, response.getStatus());
+        assertEquals("Expected nothing, http status", 200, response.getStatus());
 
         // Send a notify-request, expect something
         request = client.newRequest("http://localhost:8080/");
@@ -98,7 +98,7 @@ public class ApplicationServerWithHubTest{
         response = request.send();
         System.out.println(response.getContentAsString());
 
-        assertEquals(200, response.getStatus());
+        assertEquals("Expected something, http status", 200, response.getStatus());
     }
 
     @Test
