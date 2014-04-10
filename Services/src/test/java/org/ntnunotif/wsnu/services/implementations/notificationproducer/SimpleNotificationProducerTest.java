@@ -12,7 +12,7 @@ public class SimpleNotificationProducerTest {
     public void testQuickBuild() throws Exception {
         SimpleNotificationProducer prod = new SimpleNotificationProducer();
         SoapForwardingHub hub = prod.quickBuild("simpleNot");
-        hub.stop();
+        //hub.stop();
     }
 
     @Test

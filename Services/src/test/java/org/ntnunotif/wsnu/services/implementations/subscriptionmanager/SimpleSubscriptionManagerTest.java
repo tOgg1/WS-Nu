@@ -67,7 +67,7 @@ public class SimpleSubscriptionManagerTest{
 
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
-        assertEquals(200, response.getStatus());
+        assertEquals("Test without request URL", 200, response.getStatus());
         assertNotNull(responseContent);
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
@@ -79,7 +79,7 @@ public class SimpleSubscriptionManagerTest{
 
         response = request.send();
         responseContent = response.getContentAsString();
-        assertEquals(200, response.getStatus());
+        assertEquals("Test with request URL", 200, response.getStatus());
         System.out.println(responseContent);
         assertNotNull(responseContent);
     }
@@ -100,7 +100,7 @@ public class SimpleSubscriptionManagerTest{
         ContentResponse response = request.send();
         String responseContent = response.getContentAsString();
         System.out.println(responseContent);
-        assertEquals(500, response.getStatus());
+        assertEquals("Response was wrong for url http://" + requestUrl, 500, response.getStatus());
     }
 
     @Test

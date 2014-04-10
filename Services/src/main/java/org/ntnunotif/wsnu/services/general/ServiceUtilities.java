@@ -512,13 +512,13 @@ public class ServiceUtilities {
             try{
                 return extractXsdDatetime(time);
             }catch(RuntimeException e){
-                throw new UnacceptableTerminationTimeFault();
+                throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, reason given: " + e.getMessage());
             }
         }else{
              /* Neither worked, send an unacceptableTerminationTimeFault*/
-            throw new UnacceptableTerminationTimeFault();
+            throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, could not translate: " + time);
         }
-
+    return -1;
     }
 
     public static long extractXsdDuration(String time){
@@ -839,7 +839,7 @@ public class ServiceUtilities {
         return returnValue;
     }
 
-    public static void throwUnacceptableInitialTerminationTimeFault(String description) throws UnacceptableInitialTerminationTimeFault{
+    public static void throwUnacceptableInitialTerminationTimeFault(String language, String description) throws UnacceptableInitialTerminationTimeFault{
         UnacceptableInitialTerminationTimeFaultType type = new UnacceptableInitialTerminationTimeFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -851,13 +851,35 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
         type.getDescription().add(desc);
 
         throw new UnacceptableInitialTerminationTimeFault(description, type);
     }
 
-    public static void throwPublisherRegistrationFailedFault(String description) throws PublisherRegistrationFailedFault {
+    public static void throwUnacceptableTerminationTimeFault(String language, String description) throws UnacceptableTerminationTimeFault {
+        UnacceptableTerminationTimeFaultType type = new UnacceptableTerminationTimeFaultType();
+
+        // TODO Should maxtime be set?
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setMinimumTime(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        type.getDescription().add(desc);
+
+        throw new UnacceptableTerminationTimeFault(description, type);
+    }
+
+    public static void throwPublisherRegistrationFailedFault(String language, String description) throws PublisherRegistrationFailedFault {
         PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -869,6 +891,7 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
         type.getDescription().add(desc);
 
@@ -896,7 +919,7 @@ public class ServiceUtilities {
         throw new ResourceUnknownFault(description, type);
     }
 
-    public static void throwUnableToDestroySubscriptionFault(String description) throws UnableToDestroySubscriptionFault {
+    public static void throwUnableToDestroySubscriptionFault(String language, String description) throws UnableToDestroySubscriptionFault {
         UnableToDestroySubscriptionFaultType type = new UnableToDestroySubscriptionFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -908,6 +931,7 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
 
         type.getDescription().add(desc);
@@ -915,7 +939,7 @@ public class ServiceUtilities {
         throw new UnableToDestroySubscriptionFault(description, type);
     }
 
-    public static void throwSubscribeCreationFailedFault(String description) throws SubscribeCreationFailedFault {
+    public static void throwSubscribeCreationFailedFault(String language, String description) throws SubscribeCreationFailedFault {
         SubscribeCreationFailedFaultType type = new SubscribeCreationFailedFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -927,6 +951,7 @@ public class ServiceUtilities {
         }
 
         BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
         desc.setValue(description);
 
         type.getDescription().add(desc);

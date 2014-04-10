@@ -17,12 +17,12 @@
     <Call name="addConnector">
         <Arg>
             <New class="org.eclipse.jetty.server.ServerConnector">
-                <Arg name="server"><Ref id="DefaultWSNUApplicationServer"></Ref></Arg>
+                <Arg name="server"><Ref refid="DefaultWSNUApplicationServer"></Ref></Arg>
                 <Arg name="factories">
                     <Array type="org.eclipse.jetty.server.ConnectionFactory">
                         <Item>
                             <New class="org.eclipse.jetty.server.HttpConnectionFactory">
-                                <Arg name="config"><Ref id="httpConfig"></Ref></Arg>
+                                <Arg name="config"><Ref refid="httpConfig"></Ref></Arg>
                             </New>
                         </Item>
                     </Array>
