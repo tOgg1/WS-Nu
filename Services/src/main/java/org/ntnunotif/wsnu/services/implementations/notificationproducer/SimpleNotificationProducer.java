@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -221,8 +222,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(exclude = true)
     public SoapForwardingHub quickBuild(String endpointReference) {
         try {
+            // Ensure the application server is stopped.
+            ApplicationServer.getInstance().stop();
+
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
+
+            // Start the application server with this hub
+            ApplicationServer.getInstance().start(hub);
 
             //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
