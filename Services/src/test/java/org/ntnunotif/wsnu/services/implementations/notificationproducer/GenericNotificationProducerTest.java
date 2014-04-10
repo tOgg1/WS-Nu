@@ -1,9 +1,11 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 
 /**
  * Created by Inge on 08.04.2014.
@@ -19,6 +21,11 @@ public class GenericNotificationProducerTest {
         defaultProducer = new GenericNotificationProducer();
         noFilterProducer = new GenericNotificationProducer(false);
         noFilterNoCachingProducer = new GenericNotificationProducer(false, false);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception{
+        ApplicationServer.getInstance().stop();
     }
 
     @Test
