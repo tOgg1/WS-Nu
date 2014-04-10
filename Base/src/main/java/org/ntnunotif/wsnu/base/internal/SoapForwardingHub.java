@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.internal;
 
+import com.google.common.io.ByteStreams;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
@@ -150,20 +151,23 @@ public class SoapForwardingHub implements Hub {
             * Notably the ApplicationServer does accept other form of messages, but it is more logical to convert
             * it at this point */
             if((returnMessage.statusCode & STATUS_HAS_MESSAGE) > 0){
+
                 Log.d("SoapForwardingHub", "Returning message");
                 if((returnMessage.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) > 0){
                     try{
-                        InputStream stream = (InputStream)returnMessage.getMessage();
-                        returnMessage.setMessage(stream);
-                    }catch(ClassCastException e){
-                        Log.e("SoapForwardingHub", "Casting the returnMessage to InputStream failed, even though someone set the MESSAGE_IS_INPUTSTREAM flag");
+                        ByteStreams.copy((InputStream) returnMessage.getMessage(), streamToRequestor);
+                        return new InternalMessage(STATUS_OK, null);
+                    }catch(Exception e){
+                        Log.e("SoapForwardingHub", "Casting the returnMessage to InputStream failed, " +
+                                "even though someone set the MESSAGE_IS_INPUTSTREAM flag.");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else if((returnMessage.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0){
                     try{
-                        InputStream stream = Utilities.convertToInputStream((OutputStream) returnMessage.getMessage());
-                        returnMessage.setMessage(stream);
-                    }catch(ClassCastException e){
+                        ByteStreams.copy(Utilities.convertToInputStream((OutputStream) returnMessage.getMessage()),
+                                         streamToRequestor);
+                        return new InternalMessage(STATUS_OK, null);
+                    }catch(Exception e){
                         Log.e("SoapForwardingHub", "Casting the returnMessage to OutputStream failed, even though someone set the MESSAGE_IS_OUTPUSTREAM flag");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
@@ -171,29 +175,27 @@ public class SoapForwardingHub implements Hub {
 
                     Object messageToParse = wrapInJAXBAcceptedSoapEnvelope(returnMessage.getMessage());
 
-                    /* Try to parse the object directly into the OutputStream passed in*/
+                    /* Try to parse the object directly into the OutputStream passed in */
                     try{
                         XMLParser.writeObjectToStream(messageToParse, streamToRequestor);
-                        returnMessage.statusCode = STATUS_OK;
-                    /* This was not do-able*/
+                        return new InternalMessage(STATUS_OK, null);
+                    /* This was not do-able */
                     }catch(JAXBException e){
                         Log.e("SoapForwardingHub", "Unable to marshal returnMessage. Consider converting the message-paylod at an earlier point.");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }
-                return returnMessage;
             /* We have no message and can just return */
             }else{
-                Log.d("SoapForwardingHub", "Returning nothing");
                 return returnMessage;
             }
-        /* Something went wrong up the stack, but we're not gonna meddle with it here, return the message back to the applicationserver
-         * and let it figure out what error message to send back */
         }else{
             if((returnMessage.statusCode & STATUS_EXCEPTION_SHOULD_BE_HANDLED) > 0){
                 Log.d("SoapForwardingHub", "Exception thrown up the stack");
                 try{
                     Utilities.attemptToParseException((Exception) returnMessage.getMessage(), streamToRequestor);
+                    Log.d("SoapForwardingHub", "Returning parsed error");
+                    return new InternalMessage(STATUS_FAULT, null);
                 }catch(IllegalArgumentException e){
                     Log.e("SoapForwardingHub.acceptNetMessage", "Error not parseable, the error can not be a wsdl-specified one.");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
@@ -383,13 +385,16 @@ public class SoapForwardingHub implements Hub {
         for(ServiceConnection connection : _services){
 
             // Ensure we have connection with endpoint
-            if (connection == null || connection.getServiceEndpoint() == null)
+            if (connection == null || connection.getServiceEndpoint() == null) {
                 continue;
+            }
 
+            System.out.println("serviceendpoint: " + connection.getServiceEndpoint());
             if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
                 return connection;
             }
         }
+        Log.d("SoapForwardingHub", "Found no matching connection for URL: " + endpoint);
         return null;
     }
 }

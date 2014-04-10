@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
 import java.io.InputStream;
@@ -43,6 +44,7 @@ public class SimpleSubscriptionManagerTest{
 
     @AfterClass
     public static void tearDown() throws Exception {
+        ApplicationServer.getInstance().stop();
         hub.stop();
     }
 

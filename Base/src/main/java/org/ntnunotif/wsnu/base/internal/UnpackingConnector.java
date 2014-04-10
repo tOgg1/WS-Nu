@@ -102,7 +102,7 @@ public class UnpackingConnector extends WebServiceConnector {
                 messages = new ArrayList<>();
             }
 
-            Log.d("UnpackingConnector", "Sending message to web service at " + _webService.toString());
+            Log.d("UnpackingConnector", "Sending message to Web Service at " + _webService.toString());
 
             for(Object message : messages){
 
@@ -136,14 +136,16 @@ public class UnpackingConnector extends WebServiceConnector {
                                 return returnMessage;
 
                             } catch (IllegalAccessException e) {
-                                Log.e("Unpacking Connector","The method being accessed is not public. Something must be wrong with the" +
+                                Log.e("UnpackingConnector","The method being accessed is not public. Something must be wrong with the" +
                                         "org.generated classes.\n A @WebMethod can not have private access");
                                 e.printStackTrace();
                                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
                             } catch (InvocationTargetException e) {
+                                Log.d("UnpackingConnector", "Caught exception at the web service");
                                 return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
                             }
                         }else{
+                            Log.d("UnpackingConnector", "Invalid destination");
                             return new InternalMessage(STATUS_FAULT_INVALID_DESTINATION, null);
                         }
                     }
@@ -151,6 +153,5 @@ public class UnpackingConnector extends WebServiceConnector {
             }
             return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
         }
-
     }
 }

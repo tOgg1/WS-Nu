@@ -13,8 +13,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -133,7 +133,9 @@ public class ApplicationServer{
         try {
             _server.stop();
             _serverThread.join();
+            _parentHub = null;
             _isRunning = false;
+            _hasBeenInvoked = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
