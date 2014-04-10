@@ -77,9 +77,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         String endpointReference = null;
         try {
-            endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
-        } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
-            throw new PublisherRegistrationFailedFault();
+            endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
+        } catch (IllegalAccessException e) {
+            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Could not register publisher, failed to " +
+                    "understand the endpoint reference");
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();

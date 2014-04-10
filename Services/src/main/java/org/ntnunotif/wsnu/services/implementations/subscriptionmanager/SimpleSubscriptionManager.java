@@ -219,11 +219,14 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public SoapForwardingHub quickBuild(String endpointReference) {
         try {
             SoapForwardingHub hub = new SoapForwardingHub();
-            this.setEndpointReference(endpointReference);
+            _hub = hub;
+
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
-            _hub = hub;
+
+            this.setEndpointReference(endpointReference);
+
             return hub;
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());

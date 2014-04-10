@@ -91,7 +91,10 @@ public abstract class WebService {
      * {@link #forceEndpointReference(String)} ) and append the endpointreference to it.
      * Thus, if you want to give a web service the endpoint reference http://serverurl.domain/myWebService,
      * you only have to pass in "myWebService".
+     *
      * @param endpointReference
+     * @throws java.lang.IllegalArgumentException if the argument contains a backslash
+     * @throws java.lang.IllegalStateException if either hub or connection is not set
      */
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
@@ -103,31 +106,43 @@ public abstract class WebService {
             return;
         }
 
+        String errorMessage = null;
         if(_hub == null){
-            Log.e("WebService", "Hub-connection is not set for this Web Service, please set the hub, " +
+            errorMessage = "Hub is not set for this Web Service, please set the hub, " +
                     "(i.e by calling quickBuild) before using this method. You can also force " +
-                    "the reference by calling forceEndpointReference");
-            return;
+                    "the reference by calling forceEndpointReference";
+            Log.e("WebService", errorMessage);
         }
+
+        if (_connection == null) {
+            Log.e("WebService", "Connection is not set for this Web Service. Endpoint reference is meaningless if " +
+                    "there is no way this service acn accept messages");
+            errorMessage = errorMessage == null ? "" : errorMessage;
+            errorMessage += "Connection is not set for this Web Service. Endpoint reference is meaningless if there " +
+                    "is no way this service acn accept messages";
+        }
+
+        if (errorMessage != null)
+            throw new IllegalStateException(errorMessage);
 
         this.pureEndpointReference = endpointReference;
         this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
 
-        if(_connection != null){
-            _connection.endpointUpdated(this.endpointReference);
-        }
+        _connection.endpointUpdated(this.endpointReference);
     }
 
     /**
      * Forces the endpoint reference to the endpointreference set.
+     *
      * @param endpointReference
+     * @throws java.lang.IllegalStateException if the {@link org.ntnunotif.wsnu.base.internal.ServiceConnection} is not set
      */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
         System.out.println(this.endpointReference);
         this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
         if(_connection == null)
-            return;
+            throw new IllegalStateException("You cannot force an endpoint in a Web Service if its connector is null!");
         _connection.endpointUpdated(endpointReference);
     }
 

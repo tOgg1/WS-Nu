@@ -630,7 +630,8 @@ public class ServiceUtilities {
             }
             return raw;
         }else{
-            throw new SubscribeCreationFailedFault();
+            throwSubscribeCreationFailedFault("en", "Could not understand endpoint");
+            return null;
         }
     }
 

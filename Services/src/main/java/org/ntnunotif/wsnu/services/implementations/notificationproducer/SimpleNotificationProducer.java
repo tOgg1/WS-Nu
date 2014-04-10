@@ -223,11 +223,14 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         try {
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
-            this.setEndpointReference(endpointReference);
+
             //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
+
+            this.setEndpointReference(endpointReference);
+
             return hub;
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage(), e);

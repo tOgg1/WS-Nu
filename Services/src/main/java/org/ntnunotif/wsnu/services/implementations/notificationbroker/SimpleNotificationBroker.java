@@ -82,10 +82,9 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
            UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
         String endpointReference = null;
         try {
-            endpointReference = ServiceUtilities.parseW3CEndpoint(registerPublisherRequest.getPublisherReference().toString());
-        } catch (SubscribeCreationFailedFault subscribeCreationFailedFault) {
+            endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
+        } catch (IllegalAccessException e) {
             ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Endpoint not recognizeable");
-            throw new PublisherRegistrationFailedFault();
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
@@ -144,7 +143,12 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             throw new SubscribeCreationFailedFault("Missing EndpointReference");
         }
 
-        String endpointReference = ServiceUtilities.parseW3CEndpoint(consumerEndpoint.toString());
+        String endpointReference = null;
+        try {
+            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
+        } catch (IllegalAccessException e) {
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Could not understand endpoint reference.");
+        }
 
         FilterType filter = subscribeRequest.getFilter();
 

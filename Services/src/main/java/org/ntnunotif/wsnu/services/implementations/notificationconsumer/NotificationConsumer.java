@@ -73,11 +73,14 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         try{
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
-            this.setEndpointReference(endpointReference);
+
             /* Most reasonable and simple connector for a consumer */
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
+
+            this.setEndpointReference(endpointReference);
+
             return hub;
         }catch(Exception e){
             e.printStackTrace();
