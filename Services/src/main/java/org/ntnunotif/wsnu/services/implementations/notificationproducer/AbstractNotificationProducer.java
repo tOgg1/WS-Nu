@@ -47,6 +47,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Default constructor.
      */
     protected AbstractNotificationProducer() {
+
     }
 
     /**
@@ -219,12 +220,12 @@ public abstract class AbstractNotificationProducer extends WebService implements
         return this.usesManager;
     }
 
-    protected static class SubscriptionHandle {
-        final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
-        final FilterSupport.SubscriptionInfo subscriptionInfo;
+    public static class SubscriptionHandle {
+        public final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+        public final FilterSupport.SubscriptionInfo subscriptionInfo;
 
-        SubscriptionHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple,
-                           FilterSupport.SubscriptionInfo subscriptionInfo) {
+        public SubscriptionHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple,
+                                  FilterSupport.SubscriptionInfo subscriptionInfo) {
             this.endpointTerminationTuple = endpointTerminationTuple;
             this.subscriptionInfo = subscriptionInfo;
         }

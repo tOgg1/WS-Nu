@@ -40,7 +40,7 @@ public interface ServiceConnection {
      * Fetches the request-information currently set in the connector.
      * @return
      */
-    public RequestInformation getReqeustInformation();
+    public RequestInformation getRequestInformation();
 
 
     /**

@@ -224,7 +224,6 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         super.sendNotification(notify, namespaceContext);
     }
 
-
     @Override
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
@@ -238,7 +237,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         Log.d("GenericNotificationProducer", "Got new subscription request");
 
         // Remember the namespace context
-        NamespaceContext namespaceContext = _connection.getReqeustInformation().getNamespaceContext();
+        NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
@@ -246,12 +245,11 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
-        //TODO: This is not particularly pretty, make WebService have a W3Cendpointreference variable instead of String?
         String endpointReference = null;
         try {
             endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference malformated or missing.");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
         FilterType filters = subscribeRequest.getFilter();
@@ -365,7 +363,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
-        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getReqeustInformation().getNamespaceContext());
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext());
         String topicName = TopicUtils.topicToString(topicQNames);
 
         // Find latest message on this topic

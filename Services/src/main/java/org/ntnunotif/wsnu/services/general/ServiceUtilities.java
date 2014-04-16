@@ -959,6 +959,26 @@ public class ServiceUtilities {
         throw new SubscribeCreationFailedFault(description, type);
     }
 
+    public static void throwPublisherRegistrationFault(String language, String description) throws PublisherRegistrationFailedFault {
+        PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
+        try {
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            type.setTimestamp(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("ServiceUtilities", "Could not build XMLGregorianCalendar; fault created without timestamp");
+            e.printStackTrace();
+        }
+
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+
+        type.getDescription().add(desc);
+
+        throw new PublisherRegistrationFailedFault(description, type);
+    }
+
 
     /**
      * Builds and throws an {@link org.oasis_open.docs.wsn.b_2.InvalidFilterFaultType}

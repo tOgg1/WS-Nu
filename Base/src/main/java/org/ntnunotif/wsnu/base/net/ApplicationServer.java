@@ -268,9 +268,13 @@ public class ApplicationServer{
             }else{
                 if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) == 0){
                     Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
-                            "Please convert your message to an InputStream before calling this method.");
+                          "Please convert your message to an InputStream before calling this methbod.");
                     return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                 }else{
+                    if(message.getMessage() == null){
+                        Log.e("ApplicationServer", "No content was found to send");
+                        return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                    }
                     Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
                     request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
                     ContentResponse response = request.send();

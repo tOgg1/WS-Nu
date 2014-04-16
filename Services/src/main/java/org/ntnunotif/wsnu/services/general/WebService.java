@@ -153,7 +153,7 @@ public abstract class WebService {
      * @return
      */
     public InternalMessage acceptRequest(){
-        RequestInformation requestInformation = _connection.getReqeustInformation();
+        RequestInformation requestInformation = _connection.getRequestInformation();
 
         String uri = requestInformation.getRequestURL();
         Log.d("WebService", "Request accepted: " + uri);

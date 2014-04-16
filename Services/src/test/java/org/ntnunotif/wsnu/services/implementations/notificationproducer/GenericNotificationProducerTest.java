@@ -52,7 +52,7 @@ public class GenericNotificationProducerTest {
      public void testGetCurrentMessageDefault() throws Exception {
         // TODO
     }
-/*
+    /*
     @Test(expected = NoCurrentMessageOnTopicFault.class)
     public void testGetCurrentMessageNoFilter() throws Exception {
         // TODO

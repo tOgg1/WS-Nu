@@ -210,7 +210,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
     }
 
     @Override
-    public RequestInformation getReqeustInformation() {
+    public RequestInformation getRequestInformation() {
         return _requestInformation;
     }
 }

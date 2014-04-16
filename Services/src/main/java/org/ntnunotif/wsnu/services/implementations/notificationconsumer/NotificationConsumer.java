@@ -46,7 +46,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify) {
-        _eventSupport.fireNotificationEvent(notify, _connection.getReqeustInformation());
+        _eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
     }
 
     @WebMethod(exclude = true)

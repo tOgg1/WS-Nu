@@ -111,7 +111,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
            Unsubscribe unsubscribeRequest)
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
         Log.d("SimpleSubscriptionManager", "Received unsubscribe request");
-        RequestInformation requestInformation = _connection.getReqeustInformation();
+        RequestInformation requestInformation = _connection.getRequestInformation();
 
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
             if(!entry.getKey().equals("subscription")){
@@ -167,7 +167,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
         System.out.println(_subscriptions.size());
 
-        RequestInformation requestInformation = _connection.getReqeustInformation();
+        RequestInformation requestInformation = _connection.getRequestInformation();
 
         Log.d("SimpleSubscriptionManager", "Received renew request");
         /* Find the subscription tag */

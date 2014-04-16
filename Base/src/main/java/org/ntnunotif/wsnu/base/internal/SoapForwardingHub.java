@@ -290,6 +290,7 @@ public class SoapForwardingHub implements Hub {
                 return _server.sendMessage(message);
             /* This is worse */
             }else{
+                ObjectFactory factory = new ObjectFactory();
                 Envelope envelope = new Envelope();
                 Header header = new Header();
                 Body body = new Body();
@@ -297,7 +298,7 @@ public class SoapForwardingHub implements Hub {
                 envelope.setBody(body);
                 envelope.setHeader(header);
 
-                InputStream messageAsStream = Utilities.convertUnknownToInputStream(envelope);
+                InputStream messageAsStream = Utilities.convertUnknownToInputStream(factory.createEnvelope(envelope));
                 message.setMessage(messageAsStream);
                 message.statusCode = STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM;
                 return _server.sendMessage(message);

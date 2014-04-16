@@ -97,6 +97,9 @@ public class UnpackingConnector extends WebServiceConnector {
             } else if (potentialEnvelope instanceof org.xmlsoap.schemas.soap.envelope.Envelope) {
                 org.xmlsoap.schemas.soap.envelope.Envelope envelope = (org.xmlsoap.schemas.soap.envelope.Envelope) potentialEnvelope;
                 org.xmlsoap.schemas.soap.envelope.Body body = envelope.getBody();
+                if(body == null || envelope == null){
+                    return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
                 messages = body.getAny();
             } else {
                 messages = new ArrayList<>();
