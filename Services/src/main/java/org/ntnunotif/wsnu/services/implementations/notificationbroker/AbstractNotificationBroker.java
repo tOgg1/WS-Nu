@@ -5,9 +5,11 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
+import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.brw_2.NotificationBroker;
 
 import javax.jws.WebMethod;
@@ -15,6 +17,7 @@ import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
+import java.util.ArrayList;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
@@ -27,24 +30,24 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public abstract class AbstractNotificationBroker extends AbstractNotificationProducer implements NotificationBroker {
 
-    protected NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
+    protected NotificationEventSupport eventSupport = new NotificationEventSupport(this);
 
     protected AbstractNotificationBroker() {
         super();
     }
 
-    protected AbstractNotificationBroker(Hub _hub) {
-        super(_hub);
+    protected AbstractNotificationBroker(Hub hub) {
+        super(hub);
     }
 
     @WebMethod(exclude = true)
     public void addConsumerListener(ConsumerListener listener){
-        _eventSupport.addNotificationListener(listener);
+        eventSupport.addNotificationListener(listener);
     }
 
     @WebMethod(exclude = true)
     public void removeConsumerListener(ConsumerListener listener){
-        _eventSupport.removeNotificationListener(listener);
+        eventSupport.removeNotificationListener(listener);
     }
 
     @WebMethod(exclude = true)
@@ -64,8 +67,18 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
         message.getRequestInformation().setEndpointReference(address);
         _hub.acceptLocalMessage(message);
-        System.out.println(message);
     }
 
+    public static class PublisherHandle {
+        public final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+        public final ArrayList<TopicExpressionType> registeredTopics;
+        public final boolean demand;
+
+        public PublisherHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple, ArrayList<TopicExpressionType> registeredTopics, boolean demand) {
+            this.endpointTerminationTuple = endpointTerminationTuple;
+            this.registeredTopics = registeredTopics;
+            this.demand = demand;
+        }
+    }
 
 }

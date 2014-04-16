@@ -1,10 +1,9 @@
 package org.ntnunotif.wsnu.base.topics;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
-import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.bind.JAXBElement;

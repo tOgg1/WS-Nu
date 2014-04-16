@@ -38,7 +38,7 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
         if (filter instanceof QueryExpressionType) {
             QueryExpressionType queryExpressionFilter = (QueryExpressionType) filter;
 
-            // Check dialect of expression, warnif not supported
+            // Check dialect of expression, warn if not supported
             if (!dialectSupported.equals(queryExpressionFilter.getDialect())) {
 
                 Log.w("DefaultMessageContentFilterEvaluator", "Asked to evaluate filter with unknown dialect: " +
@@ -104,6 +104,9 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
 
         String filterContent = ServiceUtilities.extractQueryExpressionString(queryFilter);
 
+        Log.d("DefaultMessageContentFilterEvaluator", "Evaluating message with expression: " + filterContent +
+                " Number of elements in Notify: " + notify.getNotificationMessage().size());
+
         // Build XPath environment
         XPath xPath = XPathFactory.newInstance().newXPath();
         // Set up correct context
@@ -122,6 +125,7 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
 
                     if (!evaluated) {
                         notify.getNotificationMessage().remove(i--);
+                        Log.d("DefaultMessageContentFilterEvaluator", "A notify was removed by the filter");
                     }
 
                 } catch (XPathExpressionException e) {

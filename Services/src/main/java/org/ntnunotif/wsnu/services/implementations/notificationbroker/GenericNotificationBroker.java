@@ -144,7 +144,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
 
         // Log subscribe event
-        Log.d("GenericNotificationProducer", "Got new subscription request");
+        Log.d("GenericNotificationBroker", "Got new subscription request");
 
         // Remember the namespace context
         NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
@@ -159,7 +159,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         try {
             endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference malformated or missing.");
+            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
         FilterType filters = subscribeRequest.getFilter();
@@ -180,12 +180,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
                         QName fName = filter.getName();
 
-                        Log.d("GenericNotificationProducer", "Subscription request contained filter: "
+                        Log.d("GenericNotificationBroker", "Subscription request contained filter: "
                                 + fName);
 
                         filtersPresent.put(fName, filter.getValue());
                     } else {
-                        Log.w("GenericNotificationProducer", "Subscription attempt with non-supported filter: "
+                        Log.w("GenericNotificationBroker", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
                         ServiceUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
@@ -246,8 +246,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                 namespaceContext);
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
-        subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple,
-                subscriptionInfo));
+        subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
         Log.d("GenericNotificationBroker", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
 
@@ -260,7 +259,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                        Notify notify) {
-        _eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
+        eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
         this.sendNotification(notify);
     }
 
@@ -294,15 +293,16 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         String endpointReference = null;
         try {
-            endpointReference = ServiceUtilities.getAddress(publisherEndpoint);
+            endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
         } catch (IllegalAccessException e) {
-            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "EndpointReference mal formatted or missing");
+            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Could not register publisher, failed to " +
+                    "understand the endpoint reference");
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
         if(terminationTime < System.currentTimeMillis()){
-            throw new UnacceptableInitialTerminationTimeFault("Invalid termination time. Can't be before current time");
+            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Invalid termination time. Can't be before current time");
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
@@ -322,8 +322,42 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest", name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") GetCurrentMessage getCurrentMessageRequest) throws InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault, ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
-        return null;
+    @WebResult(name = "GetCurrentMessageResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2",
+            partName = "GetCurrentMessageResponse")
+    @WebMethod(operationName = "GetCurrentMessage")
+    public GetCurrentMessageResponse getCurrentMessage(@WebParam(partName = "GetCurrentMessageRequest",
+            name = "GetCurrentMessage", targetNamespace = "http://docs.oasis-open.org/wsn/b-2") GetCurrentMessage
+                                                               getCurrentMessageRequest) throws
+            InvalidTopicExpressionFault, TopicExpressionDialectUnknownFault, MultipleTopicsSpecifiedFault,
+            ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
+
+        if (!cacheMessages) {
+            Log.w("GenericNotificationBroker", "Someone tried to get current message when caching is disabled");
+            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
+                    getCurrentMessageRequest.getTopic().getContent());
+        }
+
+        //if (filterSupport == null || filterSupport.getFilterEvaluator(topicExpressionQName).is)
+
+        // Find out which topic there was asked for (Exceptions automatically thrown)
+        TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext());
+        String topicName = TopicUtils.topicToString(topicQNames);
+
+        // Find latest message on this topic
+        NotificationMessageHolderType holderType = latestMessages.get(topicName);
+
+        if (holderType == null) {
+            Log.d("GenericNotificationBroker", "Was asked for current message on a topic that was not sent");
+            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
+            return null;
+
+        } else {
+            GetCurrentMessageResponse response = new GetCurrentMessageResponse();
+            // TODO check out if this should be the content of the response
+            response.getAny().add(holderType.getMessage());
+            return response;
+        }
     }
 
     @Override

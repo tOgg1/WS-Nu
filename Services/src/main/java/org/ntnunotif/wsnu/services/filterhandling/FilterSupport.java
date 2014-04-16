@@ -129,6 +129,9 @@ public class FilterSupport {
                     subscriptionInfo.getFilter(fName), subscriptionInfo.namespaceContext);
         }
 
+        Log.d("FilterSupport", "Returning evaluated notifies: " +
+                (returnValue == null ? null : returnValue.getNotificationMessage().size()));
+
         return returnValue;
     }
 }

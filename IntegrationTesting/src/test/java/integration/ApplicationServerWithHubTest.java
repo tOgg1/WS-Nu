@@ -20,8 +20,8 @@ import org.ntnunotif.wsnu.services.implementations.notificationconsumer.Notifica
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by tormod on 3/14/14.
@@ -72,7 +72,6 @@ public class ApplicationServerWithHubTest{
         _messages.add(XMLParser.parse(sendStream_2_2));
     }
 
-
     @Test
     public void testSendingInvalidMessage() throws Exception {
         SslContextFactory sslFactory = new SslContextFactory();
@@ -88,7 +87,7 @@ public class ApplicationServerWithHubTest{
 
         ContentResponse response = request.send();
 
-        assertEquals(200, response.getStatus());
+        assertEquals("Expected nothing, http status", 200, response.getStatus());
 
         // Send a notify-request, expect something
         request = client.newRequest("http://localhost:8080/");
@@ -98,9 +97,8 @@ public class ApplicationServerWithHubTest{
         response = request.send();
         System.out.println(response.getContentAsString());
 
-        assertEquals(200, response.getStatus());
+        assertEquals("Expected something, http status", 200, response.getStatus());
     }
-
     @Test
     public void testSendingNotification() throws Exception {
         assertTrue(true);

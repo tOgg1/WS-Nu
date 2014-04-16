@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -386,14 +387,22 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     @WebMethod(exclude = true)
     public SoapForwardingHub quickBuild(String endpointReference) {
         try {
+            // Ensure the application server is stopped.
+            ApplicationServer.getInstance().stop();
+
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
 
             this.setEndpointReference(endpointReference);
+
+            // Start the application server with this hub
+            ApplicationServer.getInstance().start(hub);
+
             //* This is the most reasonable connector for this NotificationProducer *//*
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
             _connection = connector;
+
             return hub;
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
