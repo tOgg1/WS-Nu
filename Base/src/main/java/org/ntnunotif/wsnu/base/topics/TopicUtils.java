@@ -1,10 +1,7 @@
 package org.ntnunotif.wsnu.base.topics;
 
 import org.ntnunotif.wsnu.base.util.Log;
-import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
-import org.oasis_open.docs.wsn.b_2.MultipleTopicsSpecifiedFaultType;
-import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
-import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
@@ -525,5 +522,57 @@ public class TopicUtils {
         }
 
         return returnString;
+    }
+
+    public static TopicExpressionType translateQNameListTopicToTopicExpression(List<QName> topic) {
+
+        if (topic == null || topic.size() < 1) {
+            Log.w("TopicUtils", "Tried to convert empty list to topic expression");
+            return null;
+        }
+
+        ObjectFactory factory = new ObjectFactory();
+        TopicExpressionType topicExpressionType = factory.createTopicExpressionType();
+        String expression = null;
+        int tnsno = 1;
+
+        if (topic.size() == 1) {
+            // Simple Topic expression dialect
+            topicExpressionType.setDialect(SimpleEvaluator.dialectURI);
+        } else {
+            // Concrete Topic Expression dialect
+            topicExpressionType.setDialect(ConcreteEvaluator.dialectURI);
+        }
+
+        for (QName qName : topic) {
+
+            if (qName.getNamespaceURI() == null || qName.getNamespaceURI().equals(XMLConstants.NULL_NS_URI)) {
+                // Null namespace, only local part is relevant. This is a NCName, and should be used directly
+                expression = expression == null ? qName.getLocalPart() : expression + "/" + qName.getLocalPart();
+            } else {
+                // Namespace is not null. Retain namespace information in node.
+
+                String prefix;
+                if (qName.getPrefix() == null || qName.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+                    // There is not stored a prefix in the qname, create new
+                    prefix = "tnsg" + tnsno++;
+                    Log.d("TopicUtils", "A automatic prefix for a QName was generated: " + prefix);
+                } else
+                    prefix = qName.getPrefix();
+
+                // add namespace context to the expression node
+                topicExpressionType.getOtherAttributes().put(
+                        new QName(XMLConstants.XML_NS_URI, prefix, "xmlns"), qName.getNamespaceURI()
+                );
+
+                // Add the prefixed name to the expression
+                String name = prefix + qName.getLocalPart();
+                expression = expression == null ? name : expression + "/" + name;
+            }
+        }
+
+        topicExpressionType.getContent().add(expression);
+        Log.d("TopicUtils", "A topic as a QName list was translated to a topic expression: " + expression);
+        return topicExpressionType;
     }
 }
