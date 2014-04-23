@@ -22,6 +22,6 @@ public final class PublisherRegistrationEvent {
     }
 
     public static enum Type{
-
+        DESTROYED
     }
 }

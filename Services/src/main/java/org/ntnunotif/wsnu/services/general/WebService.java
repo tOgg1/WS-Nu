@@ -1,9 +1,7 @@
 package org.ntnunotif.wsnu.services.general;
 
-import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.ServiceConnection;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
+import org.ntnunotif.wsnu.base.internal.*;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.*;
 
@@ -332,7 +330,28 @@ public abstract class WebService {
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
      */
-    public abstract SoapForwardingHub quickBuild(String endpointReference);
+    public SoapForwardingHub quickBuild(String endpointReference) {
+        try {
+            // Ensure the application server is stopped.
+            ApplicationServer.getInstance().stop();
+
+            SoapForwardingHub hub = new SoapForwardingHub();
+            _hub = hub;
+
+            // Start the application server with this hub
+            ApplicationServer.getInstance().start(hub);
+
+            this.setEndpointReference(endpointReference);
+
+            UnpackingConnector connector = new UnpackingConnector(this);
+            hub.registerService(connector);
+            _connection = connector;
+
+            return hub;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
+    }
 
     /**
      * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed

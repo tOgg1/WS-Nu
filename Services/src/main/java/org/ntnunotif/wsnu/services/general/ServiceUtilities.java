@@ -3,7 +3,9 @@ package org.ntnunotif.wsnu.services.general;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
+import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
 import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
+import org.oasis_open.docs.wsn.brw_2.ResourceNotDestroyedFault;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
@@ -1071,7 +1073,22 @@ public class ServiceUtilities {
     }
 
     public static void throwTopicNotSupportedFault(String language, String description) throws TopicNotSupportedFault{
-        TopicNotSupportedFaultType type = new TopicNotSupportedFaultType();
+        TopicNotSupportedFaultType faultType = new TopicNotSupportedFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
 
+        throw new TopicNotSupportedFault(description, faultType);
+    }
+
+    public static void throwResouceNotDestroyedFault(String language, String description) throws ResourceNotDestroyedFault{
+        ResourceNotDestroyedFaultType faultType = new ResourceNotDestroyedFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+
+        throw new ResourceNotDestroyedFault(description, faultType);
     }
 }
