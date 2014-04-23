@@ -6,6 +6,7 @@ import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
@@ -142,6 +143,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
             Log.d("SimpleSubscriptionManager", "Removed subscription");
             _subscriptions.remove(subRef);
+            fireSubscriptionChanged(subRef, SubscriptionEvent.Type.UNSUBSCRIBE);
             return new UnsubscribeResponse();
         }
 
@@ -165,8 +167,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
         Renew renewRequest)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
-
-        System.out.println(_subscriptions.size());
 
         RequestInformation requestInformation = _connection.getRequestInformation();
 
@@ -205,8 +205,10 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                         "should last until a time that has already passed.");
             }
 
+
             Log.d("SimpleSubscriptionManager", "Successfully renewed subscription");
             _subscriptions.put(subRef, time);
+            fireSubscriptionChanged(subRef, SubscriptionEvent.Type.RENEW);
             return new RenewResponse();
         }
 

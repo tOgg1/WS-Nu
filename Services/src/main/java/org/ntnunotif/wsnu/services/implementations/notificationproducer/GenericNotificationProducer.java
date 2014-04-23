@@ -7,6 +7,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -406,6 +407,30 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             return hub;
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
+    }
+
+    public void subscriptionChanged(SubscriptionEvent event) {
+        SubscriptionHandle handle;
+        switch(event.getType()){
+            case PAUSE:
+                handle = subscriptions.get(event.getSubscriptionReference());
+                if(handle != null){
+                    handle.isPaused = true;
+                }
+                return;
+            case RESUMSE:
+                handle = subscriptions.get(event.getSubscriptionReference());
+                if(handle != null){
+                    handle.isPaused = false;
+                }
+                return;
+            case UNSUBSCRIBE:
+                subscriptions.remove(event.getSubscriptionReference());
+                return;
+            default:
+            case RENEW:
+                return;
         }
     }
 }

@@ -2,9 +2,12 @@ package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionChangedListener;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.oasis_open.docs.wsn.bw_2.SubscriptionManager;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +34,12 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      * Reference to the scheduled task.
      */
     private ScheduledFuture<?> _future;
+
+    /**
+     * SubscriptionListeners
+     * @param hub
+     */
+    private ArrayList<SubscriptionChangedListener> _listeners;
 
     /**
      * Default constructor
@@ -68,11 +77,41 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
     public abstract void addSubscriber(String endpointReference, long subscriptionEnd);
 
     /**
-     * Removes a subscriber. This function has overlapping functionality with the SubscriptionManager interface shell.
+     * Removes a subscriber. This function might seem to have overlapping functionality with the SubscriptionManager interface shell.
      * However, this function is assumed to be callable internally as well as from the WebMethod unsubscribe/renew.
      * @param endpointReference
      */
     public abstract void removeSubscriber(String endpointReference);
+
+    /**
+     * Adds a listener
+     * @param listener
+     */
+    public void addSubscriptionChangedListener(SubscriptionChangedListener listener){
+        _listeners.add(listener);
+    }
+
+    /**
+     * Removes a listener
+     * @param listener
+     */
+    public void removeSubscriptionChangedListener(SubscriptionChangedListener listener){
+        _listeners.remove(listener);
+    }
+
+    /**
+     * Fire subscription changed event
+     * @param endpoint
+     * @param type
+     */
+    protected void fireSubscriptionChanged(String endpoint ,SubscriptionEvent.Type type){
+        SubscriptionEvent event = new SubscriptionEvent(endpointReference, type);
+        for (SubscriptionChangedListener listener : _listeners) {
+            listener.subscriptionChanged(event);
+        }
+    }
+
+
 
     /**
      * The function that is supposed to check for expired subscriptions. This is implementation specific, depending on, amongst other things, if persistent storage is used or not.
@@ -86,4 +125,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
     public void run(){
         this.update();
     }
+
+
+
 }

@@ -1069,4 +1069,9 @@ public class ServiceUtilities {
         faultType.getDescription().add(desc);
         throw new NoCurrentMessageOnTopicFault(description, faultType);
     }
+
+    public static void throwTopicNotSupportedFault(String language, String description) throws TopicNotSupportedFault{
+        TopicNotSupportedFaultType type = new TopicNotSupportedFaultType();
+
+    }
 }

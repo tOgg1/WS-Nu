@@ -5,9 +5,11 @@ import org.ntnunotif.wsnu.base.internal.ServiceConnection;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
 import org.ntnunotif.wsnu.base.util.*;
-import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.*;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -228,6 +230,67 @@ public abstract class WebService {
         info.setEndpointReference(requestUri);
         outMessage.setRequestInformation(info);
         return _hub.acceptLocalMessage(outMessage);
+    }
+
+    /**
+     * Sends a subscriptionrequest with a termination time of one day (default hardcoded value, if anything else is wanted,
+     * call {@link #sendSubscriptionRequest(String, String)}.
+     * @param address
+     * @return
+     */
+    public InternalMessage sendSubscriptionRequest(String address){
+        return sendSubscriptionRequest(address, "P1D");
+    }
+
+    public InternalMessage sendSubscriptionRequest(String address, String terminationTime){
+        Subscribe subscribe = new Subscribe();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        System.out.println(getEndpointReference());
+        builder.address(getEndpointReference());
+
+        W3CEndpointReference reference = builder.build();
+        subscribe.setConsumerReference(reference);
+
+        subscribe.setInitialTerminationTime(baseFactory.createSubscribeInitialTerminationTime(terminationTime));
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
+        message.getRequestInformation().setEndpointReference(address);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendUnsubscribeRequest(String subscriptionEndpoint){
+        Unsubscribe unsubscribe = new Unsubscribe();
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, unsubscribe);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendRenewRequest(String subscriptionEndpoint){
+        return sendRenewRequest(subscriptionEndpoint, "P1D");
+    }
+
+    public InternalMessage sendRenewRequest(String subscriptionEndpoint, String terminationTime){
+        Renew renew = new Renew();
+        renew.setTerminationTime(terminationTime);
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, renew);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendPauseRequest(String subscriptionEndpoint){
+        PauseSubscription pauseSubscription = new PauseSubscription();
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, pauseSubscription);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendResumeRequest(String subscriptionEndpoint){
+        ResumeSubscription resumeSubscription = new ResumeSubscription();
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, resumeSubscription);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
     }
 
     public String fetchRemoteWsdl(String endpoint){
