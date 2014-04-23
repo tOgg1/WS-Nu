@@ -3,7 +3,7 @@ package org.ntnunotif.wsnu.services.eventhandling;
 /**
  * Created by tormod on 23.04.14.
  */
-public class SubscriptionEvent {
+public final class SubscriptionEvent {
 
     private final String subscriptionReference;
     private final Type type;

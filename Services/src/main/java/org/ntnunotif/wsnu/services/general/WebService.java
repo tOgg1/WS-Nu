@@ -422,6 +422,8 @@ public abstract class WebService {
      */
     public void generateWSDLandXSDSchemas() throws Exception {
 
+        //TODO: Add support for windows-commandline
+
         if(endpointReference == null){
             throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");
         }

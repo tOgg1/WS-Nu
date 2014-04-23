@@ -33,16 +33,22 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
     /**
      * Reference to the scheduled task.
      */
-    private ScheduledFuture<?> _future;
+    private ScheduledFuture<?> _task;
 
     /**
      * SubscriptionListeners
      * @param hub
      */
-    private ArrayList<SubscriptionChangedListener> _listeners;
+    private ArrayList<SubscriptionChangedListener> _listeners = new ArrayList<>();
 
     /**
      * Default constructor
+     */
+    protected AbstractSubscriptionManager() {
+    }
+
+    /**
+     *
      * @param hub
      */
     protected AbstractSubscriptionManager(Hub hub) {
@@ -63,8 +69,8 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      */
     private void resetScheduler()
     {
-        _future.cancel(false);
-        _future = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
+        _task.cancel(false);
+        _task = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
     }
 
     public abstract boolean keyExists(String key);

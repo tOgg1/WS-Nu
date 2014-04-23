@@ -22,6 +22,7 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
     protected boolean demandRegistered;
     protected boolean cacheMessages;
 
+
     protected AbstractNotificationBroker() {
         super();
     }

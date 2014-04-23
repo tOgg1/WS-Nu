@@ -1,17 +1,11 @@
 package org.ntnunotif.wsnu.services.eventhandling;
 
-import com.google.common.io.ByteStreams;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
-import sun.misc.IOUtils;
 
-import java.beans.PropertyChangeSupport;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EventObject;
@@ -21,7 +15,7 @@ import java.util.List;
  * Created by tormod on 3/13/14.
  */
 //TODO: What more methods do we need?
-public class NotificationEvent extends EventObject{
+public final class NotificationEvent extends EventObject{
 
     private Notify _notification;
     private RequestInformation _requestInformation;

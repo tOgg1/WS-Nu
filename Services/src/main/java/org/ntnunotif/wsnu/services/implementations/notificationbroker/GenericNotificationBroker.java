@@ -403,7 +403,26 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
     }
 
+    @WebMethod(exclude = true)
+    public void pauseDemandPublishers(){
+        for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
+            if(entry.getValue().demand){
+                sendPauseRequest(entry.getKey());
+            }
+        }
+    }
+
+    @WebMethod(exclude = true)
+    public void resumeDemandPublishers(){
+        for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
+            if(entry.getValue().demand){
+                sendResumeRequest(entry.getKey());
+            }
+        }
+    }
+
     @Override
+    @WebMethod(exclude=true)
     public void subscriptionChanged(SubscriptionEvent event) {
         SubscriptionHandle handle;
         switch(event.getType()){
@@ -424,7 +443,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
                 //If we have any demand-based publishers we need to pause our subscription if we dont have any subscriptions left here
                 if(subscriptions.size() == 0){
-
+                    pauseDemandPublishers();
                 }
                 return;
             default:
