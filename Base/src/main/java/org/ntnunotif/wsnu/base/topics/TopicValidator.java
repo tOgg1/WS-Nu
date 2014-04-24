@@ -15,6 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <code>TopicValidator</code> should evaluate topics as defined in OASIS specification. Default dialects supported are
+ * <ul>
+ *     <li>SimpleDialect ( http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple )</li>
+ *     <li>ConcreteDialect ( http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete )</li>
+ *     <li>FullDialect ( http://docs.oasis-open.org/wsn/t-1/TopicExpression/Full )</li>
+ *     <li>XPath ( http://www.w3.org/TR/1999/REC-xpath-19991116 )</li>
+ * </ul>
  * Created by tormod on 3/3/14.
  */
 public class TopicValidator {
@@ -26,7 +33,7 @@ public class TopicValidator {
      * Instantiates the delegated evaluators.
      */
     static {
-        topicExpressionEvaluators = new HashMap<String, TopicExpressionEvaluatorInterface>();
+        topicExpressionEvaluators = new HashMap<>();
         TopicExpressionEvaluatorInterface evaluator = new XPathEvaluator();
         topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
         evaluator = new SimpleEvaluator();
@@ -196,10 +203,20 @@ public class TopicValidator {
         return evaluator.isLegalExpression(topicExpressionType, namespaceContext);
     }
 
+    /**
+     * Tells if the character / is allowed as start character for simple and concrete expressions.
+     *
+     * @return <code>true</code> if allowed, <code>false</code> otherwise
+     */
     public static boolean isSlashAsSimpleAndConcreteDialectStartAccepted() {
         return _slashAsSimpleAndConcreteDialectStartAccepted;
     }
 
+    /**
+     * Sets if the character / should be allowed as start character for simple and concrete expressions.
+     *
+     * @param value whether the character / should be allowed as beginning character
+     */
     public static void setSlashAsSimpleAndConcreteDialectStartAccepted(boolean value) {
         _slashAsSimpleAndConcreteDialectStartAccepted = value;
     }
