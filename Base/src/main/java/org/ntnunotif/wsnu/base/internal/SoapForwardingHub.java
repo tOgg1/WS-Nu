@@ -121,7 +121,13 @@ public class SoapForwardingHub implements Hub {
                 }
             } catch (JAXBException e) {
                 Log.e("SoapForwardingHub", "Parse error: " + e.getMessage());
-                return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
+                try {
+                    // Return a generic Soap error
+                    XMLParser.writeObjectToStream(Utilities.createSoapFault("Client"), streamToRequestor);
+                    return new InternalMessage(STATUS_FAULT, null);
+                } catch (JAXBException e1) {
+                    return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
+                }
             }
 
             /* Re-use internalMessage object for optimization */

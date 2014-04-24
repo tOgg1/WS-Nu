@@ -361,4 +361,23 @@ public class Utilities {
         }
         throw new IllegalArgumentException("Object passed in is not parseable");
     }
+
+    public static Object createSoapFault(String code) {
+        ObjectFactory soapObjectFactory = new ObjectFactory();
+
+        Envelope envelope = soapObjectFactory.createEnvelope();
+        Body body = soapObjectFactory.createBody();
+        Header header = soapObjectFactory.createHeader();
+        Fault fault = soapObjectFactory.createFault();
+        Detail detail = soapObjectFactory.createDetail();
+
+        //TODO: Code can now be something non-standard, should we check for this?
+        fault.setFaultcode(new QName("http://schemas.xmlsoap.org/soap/envelope/", code));
+        fault.setDetail(detail);
+        envelope.setBody(body);
+        envelope.setHeader(header);
+
+        JAXBElement toSend = soapObjectFactory.createEnvelope(envelope);
+        return toSend;
+    }
 }
