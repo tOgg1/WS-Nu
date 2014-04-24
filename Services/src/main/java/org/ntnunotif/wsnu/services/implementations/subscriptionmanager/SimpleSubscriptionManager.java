@@ -193,4 +193,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                 "formatted");
         return null;
     }
+
+    @Override
+    public boolean hasSubscription(String subscriptionReference) {
+        return _subscriptions.containsKey(subscriptionReference);
+    }
 }

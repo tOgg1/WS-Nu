@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
  */
 public class ServiceUtilities {
 
+
     public static final class EndpointTerminationTuple{
         public final String endpoint;
         public final long termination;
@@ -1090,5 +1091,25 @@ public class ServiceUtilities {
         faultType.getDescription().add(desc);
 
         throw new ResourceNotDestroyedFault(description, faultType);
+    }
+
+    public static void throwPauseFailedFault(String language, String description) throws PauseFailedFault {
+        PauseFailedFaultType faultType = new PauseFailedFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+
+        throw new PauseFailedFault(description, faultType);
+    }
+
+    public static void throwResumeFailedFault(String language, String description) throws ResumeFailedFault {
+        ResumeFailedFaultType faultType = new ResumeFailedFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+
+        throw new ResumeFailedFault(description, faultType);
     }
 }

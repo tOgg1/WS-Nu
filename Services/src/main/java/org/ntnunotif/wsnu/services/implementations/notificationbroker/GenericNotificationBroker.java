@@ -432,7 +432,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     handle.isPaused = true;
                 }
                 return;
-            case RESUMSE:
+            case RESUME:
                 handle = subscriptions.get(event.getSubscriptionReference());
                 if(handle != null){
                         handle.isPaused = false;

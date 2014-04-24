@@ -25,6 +25,6 @@ public final class SubscriptionEvent {
         UNSUBSCRIBE,
         RENEW,
         PAUSE,
-        RESUMSE
+        RESUME
     }
 }

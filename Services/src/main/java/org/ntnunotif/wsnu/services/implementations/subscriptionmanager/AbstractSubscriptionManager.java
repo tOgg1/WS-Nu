@@ -76,6 +76,14 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
     public abstract boolean keyExists(String key);
 
     /**
+     * Method to check if the manager has a subscription.
+     * @param subscriptionReference
+     * @return True if and only if the manager has the subscription currently in its system. This should return true even
+     * if the manager has paused the subscription
+     */
+    public abstract boolean hasSubscription(String subscriptionReference);
+
+    /**
      * Adds a subscriber. This function has overlapping functionality with the SubscriptionManager interface shell.
      * However, this function is assumed to be callable internally (particularly from a Producer).
      * @param endpointReference
