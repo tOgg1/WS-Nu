@@ -33,6 +33,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("SimpleEvaluator", "evaluateTopicWithExpression called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -40,6 +41,8 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("SimpleEvaluator", "getIntersection called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
@@ -86,6 +89,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("SimpleEvaluator", "isExpressionPermittedInNamespace called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -93,6 +97,8 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
+
+        Log.d("SimpleEvaluator", "evaluateTopicExpressionToQName called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
@@ -150,6 +156,8 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("SimpleEvaluator", "isLegalExpression called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("SimpleEvaluator[Topic]", "Was asked to check a non-simple expression");

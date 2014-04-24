@@ -47,6 +47,7 @@ public class TopicUtils {
      * @return The topics represented as lists of {@link javax.xml.namespace.QName}s.
      */
     public static List<List<QName>> topicSetToQNameList(TopicSetType set, boolean recursive) {
+        Log.d("TopicUtils", "topicSetToQNameList called, recursive: " + recursive);
         if (recursive)
             return topicSetToQNameListRecursive(set);
         return topicSetToQNameListNonRecursive(set);
@@ -60,6 +61,7 @@ public class TopicUtils {
      * @see org.ntnunotif.wsnu.base.topics.TopicUtils#topicSetToQNameList(org.oasis_open.docs.wsn.t_1.TopicSetType, boolean)
      */
     private static List<List<QName>> topicSetToQNameListNonRecursive(TopicSetType set) {
+        Log.d("TopicUtils", "private non recursive method called");
         List<List<QName>> list = new ArrayList<>();
         for (Object o : set.getAny()) {
             if (o instanceof Node) {
@@ -80,6 +82,7 @@ public class TopicUtils {
      * @see org.ntnunotif.wsnu.base.topics.TopicUtils#topicSetToQNameList(org.oasis_open.docs.wsn.t_1.TopicSetType, boolean)
      */
     private static List<List<QName>> topicSetToQNameListRecursive(TopicSetType set) {
+        Log.d("TopicUtils", "Private recursive method called");
         List<List<QName>> list = new ArrayList<>();
         Stack<Node> nodeStack = new Stack<>();
         // Push all nodes to stack we are exploring from.
@@ -115,6 +118,10 @@ public class TopicUtils {
      * @return the resulting {@link org.oasis_open.docs.wsn.t_1.TopicSetType}
      */
     public static TopicSetType qNameListListToTopicSet(List<List<QName>> names) {
+        Log.d("TopicUtils", "qNameListListToTopicSet called with list sized: " + (names == null ? "null" : names.size()));
+        if (names == null)
+            return null;
+
         TopicSetType topicSet = new TopicSetType();
         for (List<QName> qNameList : names) {
             addTopicToTopicSet(qNameList, topicSet);
@@ -132,9 +139,11 @@ public class TopicUtils {
     public static List<QName> topicNodeToQNameList(Node topicNode) {
         if (!isTopic(topicNode))
             return null;
+
+        Log.d("TopicUtils", "topicNodeToQNameList called.");
         List<QName> qNames = new ArrayList<>();
         Node current = topicNode;
-        // TODO check up on if assumption that if grandparent is null, we are at root topic
+
         // Create a stack holding all the topics we shall add to list of QNames from root to leaf
         Stack<Node> nodeStack = new Stack<>();
 
@@ -171,6 +180,7 @@ public class TopicUtils {
      * @param topicSet The set to add the topic to
      */
     public static void addTopicToTopicSet(List<QName> topic, TopicSetType topicSet) {
+        Log.d("TopicUtils", "addTopicToTopicSet(List<QName>, TopicSetType) called.");
         Node topicNode = qNameListToTopicNode(topic);
         addTopicToTopicSet(topicNode, topicSet);
     }
@@ -185,8 +195,11 @@ public class TopicUtils {
      * @param topicSet The TopicSetType to merge topic into
      */
     public static void addTopicToTopicSet(Node topic, TopicSetType topicSet) {
+        Log.d("TopicUtils", "addTopicToTopicSet(Node, TopicSetType) called");
         if (!isTopic(topic))
             throw new IllegalArgumentException("Tried to add a non-topic to a topic set!");
+
+        Log.d("TopicUtils", "Finding root topic.");
         // A stack that will contain the parent nodes of topic from top to bottom.
         Stack<Node> topicStack = new Stack<>();
         // Add the topic itself to the stack, and go through all its parents until grandparent is not defined.
@@ -200,6 +213,7 @@ public class TopicUtils {
         // Pop first element from stack, so we can see what we should merge from
         current = topicStack.pop();
 
+        Log.d("TopicUtils", "Finding node to merge from");
         // Find root element to merge from, if any. Sort by both local names and namespaces
         Node mergeFromNode = null;
         String topNS = current.getNamespaceURI();
@@ -232,10 +246,12 @@ public class TopicUtils {
 
         // If we did not find any to merge from, we can just add it to the any list in the topicSet
         if (mergeFromNode == null) {
+            Log.d("TopicUtils", "Node added");
             topicSet.getAny().add(current);
             return;
         }
 
+        Log.d("TopicUtils", "Merging");
         // If not, we find the first element that does not already exist in topicSet and merge from there
         // Ensure there still are elements to merge from, and that we shall continue down the set tree
         boolean foundNode = false;
@@ -282,6 +298,7 @@ public class TopicUtils {
      * @return The identified <code>Node</code>, or <code>null</code> if no <code>Node</code> child could be located.
      */
     public static Node findElementWithNameAndNamespace(Node root, String name, String namespace) {
+        Log.d("TopicUtils", "findElementWithNameAndNamespace called");
         NodeList nodeList = root.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             // see if child is element, and if so, has local name equal to string given
@@ -318,6 +335,7 @@ public class TopicUtils {
      * a {@link org.oasis_open.docs.wsn.t_1.TopicSetType}
      */
     public static Node qNameListToTopicNode(List<QName> nameList) {
+        Log.d("TopicUtils", "qNameListToTopicNode called");
         if (nameList == null || nameList.size() == 0)
             return null;
         try {
@@ -358,6 +376,7 @@ public class TopicUtils {
      *                                            a {@link org.w3c.dom.Node#ELEMENT_NODE}
      */
     public static void makeTopicNode(Node node) {
+        Log.d("TopicUtils", "makeTopicNode called");
         if (node == null)
             return;
         if (node.getNodeType() != Node.ELEMENT_NODE)
@@ -377,6 +396,7 @@ public class TopicUtils {
      * @return <code>true</code> if topic attribute is present and true. <code>false</code> otherwise.
      */
     public static boolean isTopic(Node node) {
+        Log.d("TopicUtils", "isTopic called");
         if (node == null)
             return false;
         NamedNodeMap nodeMap = node.getAttributes();
@@ -397,6 +417,7 @@ public class TopicUtils {
      *                                     content is not a simple <code>String</code>.
      */
     public static String extractExpression(TopicExpressionType topicExpressionType) throws InvalidTopicExpressionFault {
+        Log.d("TopicUtils", "extractExpression called");
         String expression = null;
         for (Object o : topicExpressionType.getContent()) {
             if (o instanceof String) {
@@ -420,6 +441,8 @@ public class TopicUtils {
      * @throws InvalidTopicExpressionFault the exception is thrown
      */
     public static void throwInvalidTopicExpressionFault(String lang, String desc) throws InvalidTopicExpressionFault {
+        Log.d("TopicUtils", "Throwing InvalidTopicExpressionFault: " + desc);
+
         InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -445,6 +468,8 @@ public class TopicUtils {
      */
     public static void throwTopicExpressionDialectUnknownFault(String lang, String desc)
             throws TopicExpressionDialectUnknownFault {
+        Log.d("TopicUtils", "Throwing TopicExpressionDialectUnknownFault: " + desc);
+
         TopicExpressionDialectUnknownFaultType faultType = new TopicExpressionDialectUnknownFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -462,6 +487,8 @@ public class TopicUtils {
     }
 
     public static void throwMultipleTopicsSpecifiedFault(String lang, String desc) throws MultipleTopicsSpecifiedFault {
+        Log.d("TopicUtils", "Throwing MultipleTopicsSpecifiedFault: " + desc);
+
         MultipleTopicsSpecifiedFaultType faultType = new MultipleTopicsSpecifiedFaultType();
         try {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -479,6 +506,8 @@ public class TopicUtils {
     }
 
     public static boolean isNCName(String ncName) {
+        Log.d("TopicUtils", "isNCName called on: " + ncName);
+
         if (ncName == null || ncName.length() == 0)
             return false;
 
@@ -512,6 +541,8 @@ public class TopicUtils {
     }
 
     public static String topicToString(List<QName> topic) {
+        Log.d("TopicUtils", "topicToString called");
+
         if (topic == null || topic.size() == 0)
             return null;
 
@@ -525,6 +556,8 @@ public class TopicUtils {
     }
 
     public static TopicExpressionType translateQNameListTopicToTopicExpression(List<QName> topic) {
+
+        Log.d("TopicUtils", "translateQNameListTopicToTopicExpression called");
 
         if (topic == null || topic.size() < 1) {
             Log.w("TopicUtils", "Tried to convert empty list to topic expression");

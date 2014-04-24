@@ -33,6 +33,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "evaluateTopicWithExpression called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -40,6 +41,8 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("ConcreteEvaluator", "getIntersection called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en",
@@ -109,6 +112,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "isExpressionPermittedInNamespace called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -116,6 +120,8 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
+
+        Log.d("ConcreteEvaluator", "evaluateTopicExpressionToQName called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en",
@@ -185,7 +191,10 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "isLegalExpression called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("ConcreteEvaluator[Topic]", "Was asked to check a non-concrete expression");
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Concrete evaluator can evaluate concrete dialect!");

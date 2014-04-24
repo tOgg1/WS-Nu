@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.topics;
 
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
@@ -68,6 +69,8 @@ public class TopicValidator {
      */
     public static boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("TopicValidator", "isExpressionPermittedInNamespace called");
+
         // Delegating work
         String dialect = expression.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
@@ -100,6 +103,8 @@ public class TopicValidator {
     public static TopicSetType getIntersection(TopicExpressionType expression, TopicSetType topicSet,
                                                NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("TopicValidator", "getIntersection called");
+
         // Delegating work
         String dialect = expression.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
@@ -127,6 +132,8 @@ public class TopicValidator {
      */
     public static boolean evaluateTopicWithExpression(TopicExpressionType expression, TopicType topic)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("TopicValidator", "evaluateTopicWithExpression called");
+
         // Delegating work
         String dialect = expression.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
@@ -157,6 +164,8 @@ public class TopicValidator {
     public static List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
+        Log.d("TopicValidator", "evaluateTopicExpressionToQName called");
+
         // Delegating work
         String dialect = topicExpressionType.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
@@ -176,6 +185,7 @@ public class TopicValidator {
      * @param evaluator the evaluator to add
      */
     public static void addTopicExpressionEvaluator(TopicExpressionEvaluatorInterface evaluator) {
+        Log.d("TopicValidator", "addTopicExpressionEvaluator called");
         synchronized (TopicValidator.class) {
             topicExpressionEvaluators.put(evaluator.getDialectURIAsString(), evaluator);
         }
@@ -191,6 +201,8 @@ public class TopicValidator {
      */
     public static boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("TopicValidator", "isLegalExpression called");
+
         // Delegating work
         String dialect = topicExpressionType.getDialect();
         TopicExpressionEvaluatorInterface evaluator = topicExpressionEvaluators.get(dialect);
@@ -209,6 +221,7 @@ public class TopicValidator {
      * @return <code>true</code> if allowed, <code>false</code> otherwise
      */
     public static boolean isSlashAsSimpleAndConcreteDialectStartAccepted() {
+        Log.d("TopicValidator", "isSlashAsSimpleAndConcreteDialectStartAccepted called");
         return _slashAsSimpleAndConcreteDialectStartAccepted;
     }
 
@@ -218,6 +231,7 @@ public class TopicValidator {
      * @param value whether the character / should be allowed as beginning character
      */
     public static void setSlashAsSimpleAndConcreteDialectStartAccepted(boolean value) {
+        Log.d("TopicValidator", "setSlashAsSimpleAndConcreteDialectStartAccepted called");
         _slashAsSimpleAndConcreteDialectStartAccepted = value;
     }
 }

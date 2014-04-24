@@ -35,6 +35,7 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("XPathEvaluator", "evaluateTopicWithExpression called");
         throw new UnsupportedOperationException("Namespace evaluation is still not implemented");
     }
 
@@ -42,6 +43,8 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("XPathEvaluator", "getIntersection called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "XPath evaluator can evaluate XPath dialect!");
@@ -55,12 +58,14 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("XPathEvaluator", "isExpressionPermittedInNamespace called");
         throw new UnsupportedOperationException("Permittance in namespace is still not implemented");
     }
 
     @Override
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
+        Log.d("XPathEvaluator", "evaluateTopicExpressionToQName called");
         String expression = TopicUtils.extractExpression(topicExpressionType);
 
         return FullEvaluator.evaluateFullTopicExpressionToQNameList(expression, context);
@@ -69,6 +74,9 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("XPathEvaluator", "isLegalExpression called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("XPathEvaluator[Topic]", "Was asked to check a non-XPath expression");
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "XPath evaluator can evaluate XPath dialect!");
@@ -94,6 +102,8 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
 
     public static TopicSetType getXpathIntersection(String expression, TopicSetType setType, NamespaceContext context)
             throws InvalidTopicExpressionFault {
+
+        Log.d("XPathEvaluator", "getXpathIntersection called");
 
         // Build XPath environment
         XPathFactory xPathFactory = XPathFactory.newInstance();
