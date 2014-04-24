@@ -27,21 +27,25 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
     private ArrayList<String> _pausedSubscriptions = new ArrayList<>();
 
     @Override
+    @WebMethod(exclude = true)
     public boolean keyExists(String key) {
         return _subscriptions.containsKey(key);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void addSubscriber(String endpointReference, long subscriptionEnd) {
         _subscriptions.put(endpointReference, subscriptionEnd);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void removeSubscriber(String endpointReference) {
         _subscriptions.remove(endpointReference);
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void update() {
         long timeNow = System.currentTimeMillis();
         Log.d("SimpleSubscriptionManager", "Updating");

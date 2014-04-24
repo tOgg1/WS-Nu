@@ -357,8 +357,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         if (!cacheMessages) {
             Log.w("GenericNotificationProducer", "Someone tried to get current message when caching is disabled");
-            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
-                    getCurrentMessageRequest.getTopic().getContent());
+            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "This producer does not cache messages, " +
+                                            "and therefore does not support the getCurrentMessage interface");
         }
 
         //if (filterSupport == null || filterSupport.getFilterEvaluator(topicExpressionQName).is)
