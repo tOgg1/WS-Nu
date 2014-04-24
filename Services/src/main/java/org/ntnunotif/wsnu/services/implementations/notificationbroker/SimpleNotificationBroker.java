@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
@@ -57,7 +58,6 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify) {
-        eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
         this.sendNotification(notify);
     }
 
@@ -231,5 +231,10 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         }catch(Exception e){
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void subscriptionChanged(SubscriptionEvent event) {
+
     }
 }

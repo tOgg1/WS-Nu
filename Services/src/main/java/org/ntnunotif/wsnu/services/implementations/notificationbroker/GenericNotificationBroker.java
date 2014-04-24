@@ -1,9 +1,12 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
+import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -33,15 +36,12 @@ import java.util.*;
  */
 public class GenericNotificationBroker extends AbstractNotificationBroker {
 
-    private Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
-    private Map<String, SubscriptionHandle> _publishers = new HashMap<>();
+    protected Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
+    protected Map<String, PublisherHandle> publishers = new HashMap<>();
 
     private final Map<String, NotificationMessageHolderType>  latestMessages = new HashMap<>();
 
     private final FilterSupport filterSupport;
-
-    private boolean demandRegistered;
-    private boolean cacheMessages;
 
     public GenericNotificationBroker() {
         super();
@@ -49,8 +49,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         filterSupport = FilterSupport.createDefaultFilterSupport();
 
         cacheMessages = true;
+
         demandRegistered = true;
     }
+
+
 
     @Override
     @WebMethod(exclude = true)
@@ -118,13 +121,13 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                         latestMessages.put(topicName, messageHolderType);
 
                     } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression");
+                        Log.w("GenericNotificationBroker", "Tried to send a topic with an invalid expression");
                         invalidTopicExpressionFault.printStackTrace();
                     } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a message with multiple topics");
+                        Log.w("GenericNotificationBroker", "Tried to send a message with multiple topics");
                         multipleTopicsSpecifiedFault.printStackTrace();
                     } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression dialect");
+                        Log.w("GenericNotificationBroker", "Tried to send a topic with an invalid expression dialect");
                         topicExpressionDialectUnknownFault.printStackTrace();
                     }
                 }
@@ -259,7 +262,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                        Notify notify) {
-        eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
         this.sendNotification(notify);
     }
 
@@ -299,6 +301,18 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     "understand the endpoint reference");
         }
 
+        List<TopicExpressionType> topics = registerPublisherRequest.getTopic();
+
+        for (TopicExpressionType topic : topics) {
+            try {
+                if(!TopicValidator.isLegalExpression(topic, namespaceContext)){
+                    ServiceUtilities.throwTopicNotSupportedFault("en", "Expression given is not a legal topicexpression");
+                }
+            } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
+                topicExpressionDialectUnknownFault.printStackTrace();
+            }
+        }
+
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
         if(terminationTime < System.currentTimeMillis()){
@@ -308,8 +322,14 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         String newSubscriptionKey = generateSubscriptionKey();
         String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
 
-        //_publishers.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference,
-        //       terminationTime));
+        // Send subscriptionRequest back if isDemand isRequested
+        if(registerPublisherRequest.isDemand()){
+            this.sendSubscriptionRequest(endpointReference);
+        }
+
+        publishers.put(newSubscriptionKey,
+                new PublisherHandle(new ServiceUtilities.EndpointTerminationTuple(newSubscriptionKey, terminationTime),
+                                    topics, registerPublisherRequest.isDemand()));
 
         RegisterPublisherResponse response = new RegisterPublisherResponse();
 
@@ -337,8 +357,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     getCurrentMessageRequest.getTopic().getContent());
         }
 
-        //if (filterSupport == null || filterSupport.getFilterEvaluator(topicExpressionQName).is)
-
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
         List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext());
@@ -362,6 +380,75 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
     @Override
     public SoapForwardingHub quickBuild(String endpointReference) {
-        return null;
+        try {
+            // Ensure the application server is stopped.
+            ApplicationServer.getInstance().stop();
+
+            SoapForwardingHub hub = new SoapForwardingHub();
+            _hub = hub;
+
+            this.setEndpointReference(endpointReference);
+
+            // Start the application server with this hub
+            ApplicationServer.getInstance().start(hub);
+
+            //* This is the most reasonable connector for this NotificationBroker *//*
+            UnpackingConnector connector = new UnpackingConnector(this);
+            hub.registerService(connector);
+            _connection = connector;
+
+            return hub;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
+    }
+
+    @WebMethod(exclude = true)
+    public void pauseDemandPublishers(){
+        for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
+            if(entry.getValue().demand){
+                sendPauseRequest(entry.getKey());
+            }
+        }
+    }
+
+    @WebMethod(exclude = true)
+    public void resumeDemandPublishers(){
+        for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
+            if(entry.getValue().demand){
+                sendResumeRequest(entry.getKey());
+            }
+        }
+    }
+
+    @Override
+    @WebMethod(exclude=true)
+    public void subscriptionChanged(SubscriptionEvent event) {
+        SubscriptionHandle handle;
+        switch(event.getType()){
+            case PAUSE:
+                handle = subscriptions.get(event.getSubscriptionReference());
+                if(handle != null){
+                    handle.isPaused = true;
+                }
+                return;
+            case RESUME:
+                handle = subscriptions.get(event.getSubscriptionReference());
+                if(handle != null){
+                        handle.isPaused = false;
+                }
+                return;
+            case UNSUBSCRIBE:
+                subscriptions.remove(event.getSubscriptionReference());
+
+                //If we have any demand-based publishers we need to pause our subscription if we dont have any subscriptions left here
+                if(subscriptions.size() == 0){
+                    pauseDemandPublishers();
+                }
+                return;
+            default:
+            case RENEW:
+                return;
+        }
     }
 }

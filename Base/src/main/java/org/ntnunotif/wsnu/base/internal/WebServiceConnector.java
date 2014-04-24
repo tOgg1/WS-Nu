@@ -157,9 +157,10 @@ public abstract class WebServiceConnector implements ServiceConnection{
     @Override
     public InternalMessage acceptRequest(InternalMessage message) {
 
+        Log.d("WebServiceConnector", "Accepted requestMessage");
+        Log.d("WebServiceConnector", "Setting requestInformation: " + message.getRequestInformation());
         _requestInformation = message.getRequestInformation();
 
-        Log.d("WebServiceConnector", "Accepted requestMessage");
         if(_requestMethod == null){
             Log.e("WebServiceConnector", "AcceptRequest function called on a connector not having defined the requestmethod. " +
                     "Please call setRequestMethod with the appropriate method");

@@ -5,6 +5,7 @@ import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -242,5 +243,10 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         } catch (Exception e) {
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void subscriptionChanged(SubscriptionEvent event) {
+
     }
 }

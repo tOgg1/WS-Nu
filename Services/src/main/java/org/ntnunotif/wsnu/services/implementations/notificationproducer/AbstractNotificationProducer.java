@@ -5,6 +5,7 @@ import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionChangedListener;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
@@ -27,7 +28,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 /**
  * Created by tormod on 3/11/14.
  */
-public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer {
+public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer, SubscriptionChangedListener {
 
     protected Notify currentMessage;
     protected NamespaceContext currentMessageNamespaceContext;
@@ -206,12 +207,14 @@ public abstract class AbstractNotificationProducer extends WebService implements
     @WebMethod(exclude = true)
     public void setSubscriptionManager(AbstractSubscriptionManager manager) {
         this.manager = manager;
+        this.manager.addSubscriptionChangedListener(this);
         this.usesManager = true;
     }
 
     @WebMethod(exclude = true)
     public void clearSubscriptionManager() {
         this.manager = null;
+        this.manager.removeSubscriptionChangedListener(this);
         this.usesManager = false;
     }
 
@@ -223,6 +226,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public static class SubscriptionHandle {
         public final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         public final FilterSupport.SubscriptionInfo subscriptionInfo;
+        public boolean isPaused = false;
 
         public SubscriptionHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple,
                                   FilterSupport.SubscriptionInfo subscriptionInfo) {

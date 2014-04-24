@@ -1,16 +1,13 @@
 package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.UnableToDestroySubscriptionFault;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
-import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
 import javax.jws.WebMethod;
@@ -33,28 +30,12 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     private HashMap<String, Long> _subscriptions;
 
     /**
-     * Variable indicating whether the subscription manager should autorenew or not.
-     */
-    private boolean _autoRenew = false;
-
-    /**
-     * Time period added to renew if no particular period is specified. Default value is one day.
-     */
-    private final long renewTime = 86400;
-
-    /**
      * Constructor.
      * @param hub
      */
     public SimpleSubscriptionManager(Hub hub) {
         super(hub);
         _subscriptions = new HashMap<String, Long>();
-    }
-
-
-    @WebMethod(exclude = true)
-    public void setAutoRenew(boolean autoRenew){
-        _autoRenew = autoRenew;
     }
 
     @Override
@@ -68,7 +49,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     public void addSubscriber(String subscriptionReference, long subscriptionEnd) {
         Log.d("SimpleSubscriptionmanager", "Adding subscription: " + subscriptionReference);
         _subscriptions.put(subscriptionReference, subscriptionEnd);
-        System.out.println(_subscriptions.size());
     }
 
     @Override
@@ -87,11 +67,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
                 /* The subscription is expired */
                 if(entry.getValue().longValue() > timeNow){
-                    if(_autoRenew){
-                        entry.setValue(entry.getValue().longValue() + renewTime);
-                    }else{
-                        _subscriptions.remove(entry.getKey());
-                    }
+                    _subscriptions.remove(entry.getKey());
                 }
             }
         }
@@ -126,8 +102,9 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                     _subscriptions.remove(subRef);
                     return new UnsubscribeResponse();
                 }
-                throw new ResourceUnknownFault("Ill-formated subscription-parameter", new ResourceUnknownFaultType());
+                ServiceUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
             } else if(entry.getValue().length == 0){
+                ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "Subscription-parameter in URL is missing value");
                 throw new UnableToDestroySubscriptionFault("Subscription-parameter is missing value", new UnableToDestroySubscriptionFaultType());
             }
 
@@ -142,10 +119,11 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
 
             Log.d("SimpleSubscriptionManager", "Removed subscription");
             _subscriptions.remove(subRef);
+            fireSubscriptionChanged(subRef, SubscriptionEvent.Type.UNSUBSCRIBE);
             return new UnsubscribeResponse();
         }
 
-        ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "The subscription was not found as any parameter" +
+        ServiceUtilities.throwResourceUnknownFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?subscription=subscriptionreference");
         return null;
@@ -165,8 +143,6 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         @WebParam(partName = "RenewRequest", name = "Renew", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
         Renew renewRequest)
     throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
-
-        System.out.println(_subscriptions.size());
 
         RequestInformation requestInformation = _connection.getRequestInformation();
 
@@ -205,8 +181,10 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
                         "should last until a time that has already passed.");
             }
 
+
             Log.d("SimpleSubscriptionManager", "Successfully renewed subscription");
             _subscriptions.put(subRef, time);
+            fireSubscriptionChanged(subRef, SubscriptionEvent.Type.RENEW);
             return new RenewResponse();
         }
 
@@ -216,27 +194,8 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         return null;
     }
 
-    //@Override
-    public SoapForwardingHub quickBuild(String endpointReference) {
-        try {
-            // Ensure the application server is stopped.
-            ApplicationServer.getInstance().stop();
-
-            SoapForwardingHub hub = new SoapForwardingHub();
-            _hub = hub;
-
-            // Start the application server with this hub
-            ApplicationServer.getInstance().start(hub);
-
-            this.setEndpointReference(endpointReference);
-
-            UnpackingConnector connector = new UnpackingConnector(this);
-            hub.registerService(connector);
-            _connection = connector;
-
-            return hub;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
-        }
+    @Override
+    public boolean hasSubscription(String subscriptionReference) {
+        return _subscriptions.containsKey(subscriptionReference);
     }
 }

@@ -1,13 +1,13 @@
 package org.ntnunotif.wsnu.services.general;
 
-import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.ServiceConnection;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.base.internal.WebServiceConnector;
+import org.ntnunotif.wsnu.base.internal.*;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.*;
-import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.*;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -230,6 +230,67 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(outMessage);
     }
 
+    /**
+     * Sends a subscriptionrequest with a termination time of one day (default hardcoded value, if anything else is wanted,
+     * call {@link #sendSubscriptionRequest(String, String)}.
+     * @param address
+     * @return
+     */
+    public InternalMessage sendSubscriptionRequest(String address){
+        return sendSubscriptionRequest(address, "P1D");
+    }
+
+    public InternalMessage sendSubscriptionRequest(String address, String terminationTime){
+        Subscribe subscribe = new Subscribe();
+
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        System.out.println(getEndpointReference());
+        builder.address(getEndpointReference());
+
+        W3CEndpointReference reference = builder.build();
+        subscribe.setConsumerReference(reference);
+
+        subscribe.setInitialTerminationTime(baseFactory.createSubscribeInitialTerminationTime(terminationTime));
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
+        message.getRequestInformation().setEndpointReference(address);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendUnsubscribeRequest(String subscriptionEndpoint){
+        Unsubscribe unsubscribe = new Unsubscribe();
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, unsubscribe);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendRenewRequest(String subscriptionEndpoint){
+        return sendRenewRequest(subscriptionEndpoint, "P1D");
+    }
+
+    public InternalMessage sendRenewRequest(String subscriptionEndpoint, String terminationTime){
+        Renew renew = new Renew();
+        renew.setTerminationTime(terminationTime);
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, renew);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendPauseRequest(String subscriptionEndpoint){
+        PauseSubscription pauseSubscription = new PauseSubscription();
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, pauseSubscription);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendResumeRequest(String subscriptionEndpoint){
+        ResumeSubscription resumeSubscription = new ResumeSubscription();
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, resumeSubscription);
+        message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
     public String fetchRemoteWsdl(String endpoint){
         String uri = endpoint + "?wsdl";
         InternalMessage returnMessage = sendRequest(uri);
@@ -269,7 +330,28 @@ public abstract class WebService {
      * Quickbuilds an implementing Web Service.
      * @return The hub connected to the built Web Service
      */
-    public abstract SoapForwardingHub quickBuild(String endpointReference);
+    public SoapForwardingHub quickBuild(String endpointReference) {
+        try {
+            // Ensure the application server is stopped.
+            ApplicationServer.getInstance().stop();
+
+            SoapForwardingHub hub = new SoapForwardingHub();
+            _hub = hub;
+
+            // Start the application server with this hub
+            ApplicationServer.getInstance().start(hub);
+
+            this.setEndpointReference(endpointReference);
+
+            UnpackingConnector connector = new UnpackingConnector(this);
+            hub.registerService(connector);
+            _connection = connector;
+
+            return hub;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
+        }
+    }
 
     /**
      * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed
@@ -358,6 +440,8 @@ public abstract class WebService {
      * Generate WSDL/XSD schemas.
      */
     public void generateWSDLandXSDSchemas() throws Exception {
+
+        //TODO: Add support for windows-commandline
 
         if(endpointReference == null){
             throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");

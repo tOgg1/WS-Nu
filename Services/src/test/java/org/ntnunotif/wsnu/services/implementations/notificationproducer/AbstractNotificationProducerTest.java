@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import junit.framework.TestCase;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
@@ -49,6 +50,10 @@ public class AbstractNotificationProducerTest extends TestCase {
                 return null;
             }
 
+            @Override
+            public void subscriptionChanged(SubscriptionEvent event) {
+
+            }
 
             @Override
             public SoapForwardingHub quickBuild(String endpointReference) {
