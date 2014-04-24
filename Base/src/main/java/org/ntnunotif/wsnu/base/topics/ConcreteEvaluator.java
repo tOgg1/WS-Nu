@@ -72,13 +72,13 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
 
                 // Ensure last letter in namespace is not /
-                if (nodeNS != null && nodeNS.charAt(nodeNS.length() - 1) == '/') {
+                if (nodeNS != null && nodeNS.length() != 0 && (nodeNS.charAt(nodeNS.length() - 1) == '/' || nodeNS.charAt(nodeNS.length() - 1) == ':')) {
                     nodeNS = nodeNS.substring(0, nodeNS.length() - 1);
                 }
 
                 // Defining curNS as current namespace, and removes the last character if it is /
                 String curNS = curName.getNamespaceURI();
-                if (curNS != null && curNS.charAt(curNS.length() - 1) == '/') {
+                if (curNS != null && curNS.length() != 0 && (curNS.charAt(curNS.length() - 1) == '/' || curNS.charAt(curNS.length() - 1) == ':')) {
                     curNS = curNS.substring(0, curNS.length() - 1);
                 }
 

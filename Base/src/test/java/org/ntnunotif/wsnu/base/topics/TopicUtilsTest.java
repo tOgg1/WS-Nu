@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.bind.JAXBElement;
@@ -24,6 +26,7 @@ public class TopicUtilsTest {
     private static final String[] rootLocalNames = {"roo1", "root2" };
 
     private static final String OUTQNameToTopicSetRes = "/out_topic_utils_qnames_topic_set.xml";
+    private static final String OUTQNameListTranslateRes = "/out_topic_utils_translate_list_to_expression.xml";
 
     @BeforeClass
     public static void setup() {
@@ -111,5 +114,20 @@ public class TopicUtilsTest {
         // Write to file, so it is possible to see actual content of returned set
         JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, topicSetType);
         XMLParser.writeObjectToStream(e, new FileOutputStream(getClass().getResource(OUTQNameToTopicSetRes).getFile()));
+    }
+
+    @Test
+    public void testTranslateQNameListTopicToTopicExpression() throws Exception {
+        //
+        List<QName> qNames = new ArrayList<>();
+        qNames.add(new QName("http://www.example.com", "localName", "pre"));
+        TopicExpressionType topicExpressionType = TopicUtils.translateQNameListTopicToTopicExpression(qNames);
+
+        Assert.assertEquals("Wrong amount of things attributes added to topic", 1, topicExpressionType.getOtherAttributes().size());
+
+        ObjectFactory factory = new ObjectFactory();
+        Object parseable = factory.createTopicExpression(topicExpressionType);
+        XMLParser.writeObjectToStream(parseable, System.out);
+        XMLParser.writeObjectToStream(parseable, new FileOutputStream(getClass().getResource(OUTQNameListTranslateRes).getFile()));
     }
 }

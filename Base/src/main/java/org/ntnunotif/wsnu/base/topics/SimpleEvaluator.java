@@ -68,7 +68,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                 String nodeNS = node.getNamespaceURI();
 
                 // Ensure last letter in namespace is not /
-                if (nodeNS != null && nodeNS.charAt(nodeNS.length() - 1) == '/') {
+                if (nodeNS != null && nodeNS.length() != 0 && (nodeNS.charAt(nodeNS.length() - 1) == '/' || nodeNS.charAt(nodeNS.length() - 1) == ':')) {
                     nodeNS = nodeNS.substring(0, nodeNS.length()-1);
                 }
 
@@ -85,7 +85,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                     String topicNS = topic.getNamespaceURI();
                     // Ensure topicNS does not end with /
 
-                    if (topicNS != null && topicNS.charAt(topicNS.length() - 1) == '/') {
+                    if (topicNS != null && topicNS.length() != 0 && (topicNS.charAt(topicNS.length() - 1) == '/' || topicNS.charAt(topicNS.length() - 1) == ':')) {
                         topicNS = topicNS.substring(0, topicNS.length()-1);
                     }
 

@@ -596,14 +596,14 @@ public class TopicUtils {
                 } else
                     prefix = qName.getPrefix();
 
-                // add namespace context to the expression node
-                topicExpressionType.getOtherAttributes().put(
-                        new QName(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, XMLConstants.XMLNS_ATTRIBUTE),
-                        qName.getNamespaceURI()
-                );
+                // check if this is the default xmlns attribute
+                if (!prefix.equals(XMLConstants.XMLNS_ATTRIBUTE)) {
+                    // add namespace context to the expression node
+                    topicExpressionType.getOtherAttributes().put(new QName("xmlns:" + prefix), qName.getNamespaceURI());
+                }
 
                 // Add the prefixed name to the expression
-                String name = prefix + qName.getLocalPart();
+                String name = prefix + ":" + qName.getLocalPart();
                 expression = expression == null ? name : expression + "/" + name;
             }
         }

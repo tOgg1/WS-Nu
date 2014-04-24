@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns5:TopicExpression xmlns:ns2="http://www.w3.org/2001/12/soap-envelope"
+                     xmlns:ns3="http://docs.oasis-open.org/wsrf/bf-2" xmlns:ns4="http://www.w3.org/2005/08/addressing"
+                     xmlns:ns5="http://docs.oasis-open.org/wsn/b-2" xmlns:ns6="http://docs.oasis-open.org/wsn/t-1"
+                     xmlns:ns7="http://docs.oasis-open.org/wsn/br-2"
+                     xmlns:ns8="http://schemas.xmlsoap.org/soap/envelope/"
+                     xmlns:ns9="http://docs.oasis-open.org/wsrf/r-2"
+                     Dialect="http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple"
+                     xmlns:pre="http://www.example.com">pre:localName
+</ns5:TopicExpression>
