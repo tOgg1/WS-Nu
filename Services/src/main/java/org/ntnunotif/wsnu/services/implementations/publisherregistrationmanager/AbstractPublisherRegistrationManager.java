@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tormod on 23.04.14.
@@ -36,10 +37,31 @@ public abstract class AbstractPublisherRegistrationManager extends WebService im
      */
     private ArrayList<PublisherChangedListener> _listeners = new ArrayList<>();
 
-    protected AbstractPublisherRegistrationManager(){}
+    protected AbstractPublisherRegistrationManager(){
+        setScheduleInterval(60);
+    }
 
     protected AbstractPublisherRegistrationManager(Hub hub) {
         super(hub);
+        setScheduleInterval(60);
+    }
+
+    /**
+     * Sets the interval of scheduling.
+     * @param seconds
+     */
+    public void setScheduleInterval(long seconds){
+        _scheduleInterval = seconds;
+        resetScheduler();
+    }
+
+    /**
+     * Resets the scheduler
+     */
+    private void resetScheduler()
+    {
+        _task.cancel(false);
+        _task = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
     }
 
     public abstract void addPublisher(String endpointReference, long subscriptionEnd);
@@ -47,7 +69,10 @@ public abstract class AbstractPublisherRegistrationManager extends WebService im
     public abstract void removePublisher(String endpointReference);
 
     public void firePublisherRegistrationChanged(String reference, PublisherRegistrationEvent.Type type){
-
+        PublisherRegistrationEvent event = new PublisherRegistrationEvent(reference, type);
+        for (PublisherChangedListener listener : _listeners) {
+            listener.publisherChanged(event);
+        }
     }
 
     /**

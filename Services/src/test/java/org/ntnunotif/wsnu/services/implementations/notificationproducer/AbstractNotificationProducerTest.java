@@ -68,7 +68,7 @@ public class AbstractNotificationProducerTest extends TestCase {
     }
 
     public void testGenerateSubscriptionKey() throws Exception {
-        String newKey = producer.generateNewSubscriptionURL();
+        String newKey = producer.generateNewHashedURL("subscription");
         System.out.println(newKey);
         assertTrue(newKey != null);
     }

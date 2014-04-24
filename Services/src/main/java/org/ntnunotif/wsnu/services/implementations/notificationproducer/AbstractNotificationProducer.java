@@ -58,13 +58,13 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @throws java.security.NoSuchAlgorithmException
      */
     @WebMethod(exclude = true)
-    public String generateSubscriptionKey() {
+    public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
         String hash = "";
         try {
             hash = ServiceUtilities.generateSHA1Key(string);
-            while (keyExists(hash))
+            while(keyExists(hash))
                 hash = ServiceUtilities.generateSHA1Key(string);
         } catch (NoSuchAlgorithmException e) {
             hash = ServiceUtilities.generateNTSHKey(string);
@@ -75,17 +75,17 @@ public abstract class AbstractNotificationProducer extends WebService implements
     }
 
     @WebMethod(exclude = true)
-    public String generateNewSubscriptionURL() {
+    public String generateNewHashedURL(String prefix) {
         String newHash = generateSubscriptionKey();
 
         String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
-        return endpointReference + "/?subscription=" + newHash;
+        return endpointReference + "/?" + prefix +"=" + newHash;
     }
 
     @WebMethod(exclude = true)
-    public String generateSubscriptionURL(String key) {
+    public String generateHashedURLFromKey(String prefix, String key) {
         String endpointReference = usesManager ? manager.getEndpointReference() : this.getEndpointReference();
-        return endpointReference + "/?subscription=" + key;
+        return endpointReference + "/?" + prefix + "=" + key;
     }
 
     @WebMethod(exclude = true)

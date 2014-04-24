@@ -45,6 +45,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      * Default constructor
      */
     protected AbstractSubscriptionManager() {
+        setScheduleInterval(60);
     }
 
     /**
@@ -53,6 +54,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      */
     protected AbstractSubscriptionManager(Hub hub) {
         super(hub);
+        setScheduleInterval(60);
     }
 
     /**
@@ -69,7 +71,9 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      */
     private void resetScheduler()
     {
-        _task.cancel(false);
+        if(_task != null){
+            _task.cancel(false);
+        }
         _task = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
     }
 
@@ -124,8 +128,6 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
             listener.subscriptionChanged(event);
         }
     }
-
-
 
     /**
      * The function that is supposed to check for expired subscriptions. This is implementation specific, depending on, amongst other things, if persistent storage is used or not.

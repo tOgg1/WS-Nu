@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 
 import org.ntnunotif.wsnu.base.internal.Hub;
+import org.ntnunotif.wsnu.services.eventhandling.PublisherChangedListener;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -17,7 +18,7 @@ import java.util.List;
 @javax.jws.WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "NotificationBroker")
 @XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
-public abstract class AbstractNotificationBroker extends AbstractNotificationProducer implements NotificationBroker {
+public abstract class AbstractNotificationBroker extends AbstractNotificationProducer implements NotificationBroker, PublisherChangedListener {
 
     protected boolean demandRegistered;
     protected boolean cacheMessages;

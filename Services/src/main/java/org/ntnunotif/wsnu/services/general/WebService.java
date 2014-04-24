@@ -98,7 +98,7 @@ public abstract class WebService {
      */
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
-            throw new IllegalArgumentException("EndpointReference can not containt the character \\(backslash)");
+            throw new IllegalArgumentException("EndpointReference can not contain the character \\(backslash)");
         }
 
         if(endpointReference.matches("^(https?://)(.*)?")){

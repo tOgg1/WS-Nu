@@ -179,7 +179,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
         /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("subscription", newSubscriptionKey);
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();

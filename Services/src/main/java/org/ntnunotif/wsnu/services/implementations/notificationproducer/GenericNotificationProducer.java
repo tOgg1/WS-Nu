@@ -152,7 +152,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     @Override
     @WebMethod(exclude = true)
-    protected Collection<String> getAllRecipients() {
+    protected final Collection<String> getAllRecipients() {
         // Something to remember which ones should be filtered out
         ArrayList<String> removeKeyList = new ArrayList<>();
 
@@ -169,7 +169,15 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         for (String key: removeKeyList)
             subscriptions.remove(key);
 
-        return subscriptions.keySet();
+        ArrayList<String> returnList = new ArrayList<>();
+
+        // Filter out the paused subscriptions
+        for (Map.Entry<String, SubscriptionHandle> entry : subscriptions.entrySet()) {
+            if(!entry.getValue().isPaused){
+                returnList.add(entry.getKey());
+            }
+        }
+        return returnList;
     }
 
     @Override
@@ -291,7 +299,6 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         if (subscribeRequest.getInitialTerminationTime() != null) {
             try {
-                System.out.println(subscribeRequest.getInitialTerminationTime().getValue());
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if (terminationTime < System.currentTimeMillis()) {
@@ -324,7 +331,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("subscription", newSubscriptionKey);
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
@@ -339,6 +346,10 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
+
+        if(usesManager){
+            manager.addSubscriber(newSubscriptionKey, terminationTime);
+        }
 
         Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
 

@@ -1,11 +1,13 @@
 package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -44,16 +46,105 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     private final FilterSupport filterSupport;
 
     public GenericNotificationBroker() {
-        super();
-
+        Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
-
         cacheMessages = true;
-
-        demandRegistered = true;
     }
 
+    public GenericNotificationBroker(boolean supportFilters) {
+        if (supportFilters) {
+            Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
+            filterSupport = FilterSupport.createDefaultFilterSupport();
+        } else {
+            Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage allowed");
+            filterSupport = null;
+        }
+        cacheMessages = true;
+    }
 
+    public GenericNotificationBroker(boolean supportFilters, boolean cacheMessages) {
+        if (supportFilters) {
+            if (cacheMessages) {
+                Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            } else {
+                Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage disallowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            }
+        } else {
+            if (cacheMessages) {
+                Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage allowed, but unusable");
+                filterSupport = null;
+            } else {
+                Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage disallowed");
+                filterSupport = null;
+            }
+        }
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationBroker(FilterSupport filterSupport, boolean cacheMessages) {
+        if (cacheMessages){
+            Log.d("GenericNotificationBroker", "Created new with custom filter support and GetCurrentMessage allowed");
+        } else {
+            Log.d("GenericNotificationBroker", "Created new with custom filter support and GetCurrentMessage disallowed");
+        }
+
+        this.filterSupport = filterSupport;
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationBroker(Hub hub) {
+        this._hub = hub;
+        Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+        filterSupport = FilterSupport.createDefaultFilterSupport();
+        cacheMessages = true;
+    }
+
+    public GenericNotificationBroker(Hub hub, boolean supportFilters) {
+        this._hub = hub;
+        if (supportFilters) {
+            Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+            filterSupport = FilterSupport.createDefaultFilterSupport();
+        } else {
+            Log.d("GenericNotificationBroker", "Created new with hub and without filter support and GetCurrentMessage allowed");
+            filterSupport = null;
+        }
+        cacheMessages = true;
+    }
+
+    public GenericNotificationBroker(Hub hub, boolean supportFilters, boolean cacheMessages) {
+        this._hub = hub;
+        if (supportFilters) {
+            if (cacheMessages) {
+                Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            } else {
+                Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage disallowed");
+                filterSupport = FilterSupport.createDefaultFilterSupport();
+            }
+        } else {
+            if (cacheMessages) {
+                Log.d("GenericNotificationBroker", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
+                filterSupport = null;
+            } else {
+                Log.d("GenericNotificationBroker", "Created new with hub, without filter support and GetCurrentMessage disallowed");
+                filterSupport = null;
+            }
+        }
+        this.cacheMessages = cacheMessages;
+    }
+
+    public GenericNotificationBroker(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
+        this._hub = hub;
+        if (cacheMessages)
+            Log.d("GenericNotificationBroker", "Created new with hub, custom filter support and GetCurrentMessage allowed");
+        else
+            Log.d("GenericNotificationBroker", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
+        this.filterSupport = filterSupport;
+
+        this.cacheMessages = cacheMessages;
+    }
 
     @Override
     @WebMethod(exclude = true)
@@ -77,8 +168,9 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
 
         // Remove keys
-        for (String key: removeKeyList)
+        for (String key : removeKeyList) {
             subscriptions.remove(key);
+        }
 
         return subscriptions.keySet();
     }
@@ -235,7 +327,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("subscription", newSubscriptionKey);
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
@@ -320,7 +412,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("publisherregistration", newSubscriptionKey);
 
         // Send subscriptionRequest back if isDemand isRequested
         if(registerPublisherRequest.isDemand()){
@@ -435,7 +527,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             case RESUME:
                 handle = subscriptions.get(event.getSubscriptionReference());
                 if(handle != null){
-                        handle.isPaused = false;
+                    handle.isPaused = false;
                 }
                 return;
             case UNSUBSCRIBE:
@@ -450,5 +542,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             case RENEW:
                 return;
         }
+    }
+
+    @Override
+    public void publisherChanged(PublisherRegistrationEvent event) {
+
     }
 }
