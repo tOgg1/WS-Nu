@@ -20,6 +20,8 @@ import java.util.Map;
 public class TopicValidator {
     private static Map<String, TopicExpressionEvaluatorInterface> topicExpressionEvaluators;
 
+    private static boolean _slashAsSimpleAndConcreteDialectStartAccepted = false;
+
     /**
      * Instantiates the delegated evaluators.
      */
@@ -194,4 +196,11 @@ public class TopicValidator {
         return evaluator.isLegalExpression(topicExpressionType, namespaceContext);
     }
 
+    public static boolean isSlashAsSimpleAndConcreteDialectStartAccepted() {
+        return _slashAsSimpleAndConcreteDialectStartAccepted;
+    }
+
+    public static void setSlashAsSimpleAndConcreteDialectStartAccepted(boolean value) {
+        _slashAsSimpleAndConcreteDialectStartAccepted = value;
+    }
 }

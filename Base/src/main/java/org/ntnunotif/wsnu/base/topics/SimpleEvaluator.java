@@ -101,14 +101,20 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
         // The topic expression should now be trimmed. Check for whitespace occurrence
         for (int i = 0; i < expression.length(); i++) {
             if (Character.isWhitespace(expression.charAt(i)))
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in SimpleExpressionDialect; " +
                         "it contained whitespace where disallowed");
         }
         // Split expression in prefix and local part
-        // If the expression started with "/", remove the first letter
+        // If the expression started with "/", remove the first letter or throw an exception
         if (expression.length() > 0 && expression.charAt(0) == '/') {
-            Log.w("SimpleEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
-            expression = expression.substring(1);
+            if (TopicValidator.isSlashAsSimpleAndConcreteDialectStartAccepted()) {
+                Log.w("SimpleEvaluator[Topic]", "A simple expression started with \"/\" which was omitted.");
+                expression = expression.substring(1);
+            } else {
+                Log.w("SimpleEvaluator[Topic]", "A simple expression started with \"/\" and was rejected.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in SimpleExpressionDialect." +
+                        " It started with an illegal character ('/')");
+            }
         }
 
         String[] splitExpression = expression.split(":");
@@ -144,6 +150,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("SimpleEvaluator[Topic]", "Was asked to check a non-simple expression");
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate simple dialect!");

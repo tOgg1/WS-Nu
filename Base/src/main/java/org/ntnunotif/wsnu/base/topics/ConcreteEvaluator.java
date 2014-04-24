@@ -131,10 +131,16 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
         List<QName> retVal = new ArrayList<>();
         // Split expression in its individual path parts
 
-        // If the expression started with "/", remove the first letter
+        // If the expression started with "/", remove the first letter, or throw an exception
         if (expression.length() > 0 && expression.charAt(0) == '/') {
-            Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
-            expression = expression.substring(1);
+            if (TopicValidator.isSlashAsSimpleAndConcreteDialectStartAccepted()) {
+                Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
+                expression = expression.substring(1);
+            } else {
+                Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" and was rejected.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in " +
+                        "ConcreteExpressionDialect. It started with an illegal character ('/')");
+            }
         }
 
         String[] pathed = expression.split("/");
