@@ -115,9 +115,6 @@ public class Utilities {
         return false;
     }
 
-
-
-
     /**
      * Takes in a class and checks if it has a method with the passed in name.
      */
