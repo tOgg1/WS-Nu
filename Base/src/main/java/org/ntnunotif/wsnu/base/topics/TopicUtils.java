@@ -377,10 +377,13 @@ public class TopicUtils {
      */
     public static void makeTopicNode(Node node) {
         Log.d("TopicUtils", "makeTopicNode called");
+
         if (node == null)
             return;
+
         if (node.getNodeType() != Node.ELEMENT_NODE)
             throw new IllegalArgumentException("Tried to make a non-element node topic!");
+
         Element element = (Element) node;
         Document owner = element.getOwnerDocument();
         Attr topicAttr = owner.createAttributeNS(WS_TOPIC_NAMESPACE, "topic");

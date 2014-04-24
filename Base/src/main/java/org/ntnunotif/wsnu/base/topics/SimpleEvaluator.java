@@ -50,6 +50,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
         QName topic;
         try {
             topic = evaluateTopicExpressionToQName(topicExpressionType, namespaceContext).get(0);
+            Log.d("SimpleEvaluator", "Expression QName: " + topic.toString());
         } catch (MultipleTopicsSpecifiedFault fault) {
             // This is impossible in simple dialect
             Log.e("SimpleEvaluator[Topic]", "A simple topic expression got evaluated to multiple topics. This " +
@@ -65,6 +66,12 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
 
                 Node node = (Node) o;
                 String nodeNS = node.getNamespaceURI();
+
+                // Ensure last letter in namespace is not /
+                if (nodeNS != null && nodeNS.charAt(nodeNS.length() - 1) == '/') {
+                    nodeNS = nodeNS.substring(0, nodeNS.length()-1);
+                }
+
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
                 boolean bothNSisNull = topic.getNamespaceURI() == null ||
                         topic.getNamespaceURI().equals(XMLConstants.NULL_NS_URI);
@@ -75,7 +82,14 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                         break;
                     }
                 } else {
-                    if (topic.getNamespaceURI() != null && topic.getNamespaceURI().equals(nodeNS) &&
+                    String topicNS = topic.getNamespaceURI();
+                    // Ensure topicNS does not end with /
+
+                    if (topicNS != null && topicNS.charAt(topicNS.length() - 1) == '/') {
+                        topicNS = topicNS.substring(0, topicNS.length()-1);
+                    }
+
+                    if (topicNS != null && topicNS.equals(nodeNS) &&
                             topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
                         retVal.getAny().add(node);
                         break;
