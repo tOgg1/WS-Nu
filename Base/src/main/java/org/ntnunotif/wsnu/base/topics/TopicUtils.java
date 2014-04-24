@@ -598,7 +598,8 @@ public class TopicUtils {
 
                 // add namespace context to the expression node
                 topicExpressionType.getOtherAttributes().put(
-                        new QName(XMLConstants.XML_NS_URI, prefix, "xmlns"), qName.getNamespaceURI()
+                        new QName(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, XMLConstants.XMLNS_ATTRIBUTE),
+                        qName.getNamespaceURI()
                 );
 
                 // Add the prefixed name to the expression
