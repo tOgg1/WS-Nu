@@ -33,6 +33,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "evaluateTopicWithExpression called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -40,6 +41,8 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("ConcreteEvaluator", "getIntersection called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en",
@@ -65,12 +68,23 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
             // An element that can be a topic is a node. Only proceed if it is
             if (o instanceof Node) {
                 Node node = (Node) o;
-                String nodeNs = node.getNamespaceURI();
+                String nodeNS = node.getNamespaceURI();
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
 
+                // Ensure last letter in namespace is not /
+                if (nodeNS != null && nodeNS.charAt(nodeNS.length() - 1) == '/') {
+                    nodeNS = nodeNS.substring(0, nodeNS.length() - 1);
+                }
+
+                // Defining curNS as current namespace, and removes the last character if it is /
+                String curNS = curName.getNamespaceURI();
+                if (curNS != null && curNS.charAt(curNS.length() - 1) == '/') {
+                    curNS = curNS.substring(0, curNS.length() - 1);
+                }
+
                 // Both namespaces must either be null or equal
-                if (((nodeNs == null || nodeNs.equals(XMLConstants.NULL_NS_URI)) && curNamespaceNull) ||
-                        (nodeNs != null && nodeNs.equals(curName.getNamespaceURI()))) {
+                if (((nodeNS == null || nodeNS.equals(XMLConstants.NULL_NS_URI)) && curNamespaceNull) ||
+                        (nodeNS != null && nodeNS.equals(curNS))) {
 
                     // Both local names must be equal, and if they are, we have found the root node to check from
                     if (curName.getLocalPart().equals(nodeName)) {
@@ -109,6 +123,7 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "isExpressionPermittedInNamespace called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -116,6 +131,8 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
+
+        Log.d("ConcreteEvaluator", "evaluateTopicExpressionToQName called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en",
@@ -131,10 +148,16 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
         List<QName> retVal = new ArrayList<>();
         // Split expression in its individual path parts
 
-        // If the expression started with "/", remove the first letter
+        // If the expression started with "/", remove the first letter, or throw an exception
         if (expression.length() > 0 && expression.charAt(0) == '/') {
-            Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
-            expression = expression.substring(1);
+            if (TopicValidator.isSlashAsSimpleAndConcreteDialectStartAccepted()) {
+                Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
+                expression = expression.substring(1);
+            } else {
+                Log.w("ConcreteEvaluator[Topic]", "A concrete expression started with \"/\" and was rejected.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in " +
+                        "ConcreteExpressionDialect. It started with an illegal character ('/')");
+            }
         }
 
         String[] pathed = expression.split("/");
@@ -179,7 +202,10 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     @Override
-    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+    public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
+            TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("ConcreteEvaluator", "isLegalExpression called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("ConcreteEvaluator[Topic]", "Was asked to check a non-concrete expression");
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Concrete evaluator can evaluate concrete dialect!");

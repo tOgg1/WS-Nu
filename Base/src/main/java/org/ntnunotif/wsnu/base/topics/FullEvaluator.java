@@ -31,13 +31,16 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        return false;
+        Log.d("FullEvaluator", "evaluateTopicWithExpression called");
+        throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
     @Override
     public TopicSetType getIntersection(TopicExpressionType topicExpressionType, TopicSetType topicSetType,
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("FullEvaluator", "getIntersection called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Full evaluator can evaluate Full dialect!");
@@ -56,13 +59,16 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        return false;
+        Log.d("FullEvaluator", "isExpressionPermittedInNamespace called");
+        throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
     @Override
     public List<QName> evaluateTopicExpressionToQName(TopicExpressionType topicExpressionType, NamespaceContext context)
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
+        Log.d("FullEvaluator", "evaluateTopicExpressionToQName called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Full evaluator can evaluate Full dialect!");
 
@@ -79,6 +85,8 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("FullEvaluator", "isLegalExpression called");
 
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("FullEvaluator[Topic]", "Was asked to check a non-full expression");
@@ -100,6 +108,9 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
 
     public static List<QName> evaluateFullTopicExpressionToQNameList(String expression, NamespaceContext context)
             throws InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
+
+        Log.d("FullEvaluator", "evaluateFullTopicExpressionToQNameList called");
+
         if (expression == null || expression.length() == 0)
             TopicUtils.throwInvalidTopicExpressionFault("en", "No expression given to evaluate");
 
@@ -181,6 +192,9 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
     }
 
     private static boolean isFullDialect(String expression) {
+
+        Log.d("FullEvaluator", "isFullDialect called");
+
         // A simple check, do we need to proceed?
         if (expression == null || expression.length() == 0)
             return false;

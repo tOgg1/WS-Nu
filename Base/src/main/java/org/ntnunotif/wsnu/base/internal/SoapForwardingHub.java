@@ -181,7 +181,20 @@ public class SoapForwardingHub implements Hub {
                         return new InternalMessage(STATUS_OK, null);
                     /* This was not do-able */
                     }catch(JAXBException e){
-                        Log.e("SoapForwardingHub", "Unable to marshal returnMessage. Consider converting the message-paylod at an earlier point.");
+                        String faultMessage = e.getClass().getName();
+                        faultMessage += e.getMessage() == null ? "" : e.getMessage();
+                        Throwable cause = e.getCause();
+                        while (cause != null) {
+                            faultMessage += "\n\tCaused by: ";
+                            faultMessage += cause.getClass().getName() + (cause.getMessage() == null ? "" : cause.getMessage());
+                            cause = cause.getCause();
+                        }
+                        if (e.getLinkedException() != null) {
+                            faultMessage += "\n\tWith linked exception:" + e.getLinkedException().getClass().getName();
+                            faultMessage += e.getLinkedException().getMessage() == null ? "" : e.getLinkedException().getMessage();
+                        }
+                        Log.e("SoapForwardingHub", "Unable to marshal returnMessage. Consider converting the " +
+                                "message-paylod at an earlier point. Reason given:\n\t" + faultMessage);
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }

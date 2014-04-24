@@ -33,6 +33,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean evaluateTopicWithExpression(TopicExpressionType topicExpressionType, TopicType topicType)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("SimpleEvaluator", "evaluateTopicWithExpression called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -41,12 +42,15 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                                         NamespaceContext namespaceContext)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
 
+        Log.d("SimpleEvaluator", "getIntersection called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
 
         QName topic;
         try {
             topic = evaluateTopicExpressionToQName(topicExpressionType, namespaceContext).get(0);
+            Log.d("SimpleEvaluator", "Expression QName: " + topic.toString());
         } catch (MultipleTopicsSpecifiedFault fault) {
             // This is impossible in simple dialect
             Log.e("SimpleEvaluator[Topic]", "A simple topic expression got evaluated to multiple topics. This " +
@@ -62,6 +66,12 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
 
                 Node node = (Node) o;
                 String nodeNS = node.getNamespaceURI();
+
+                // Ensure last letter in namespace is not /
+                if (nodeNS != null && nodeNS.charAt(nodeNS.length() - 1) == '/') {
+                    nodeNS = nodeNS.substring(0, nodeNS.length()-1);
+                }
+
                 String nodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
                 boolean bothNSisNull = topic.getNamespaceURI() == null ||
                         topic.getNamespaceURI().equals(XMLConstants.NULL_NS_URI);
@@ -72,7 +82,14 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                         break;
                     }
                 } else {
-                    if (topic.getNamespaceURI() != null && topic.getNamespaceURI().equals(nodeNS) &&
+                    String topicNS = topic.getNamespaceURI();
+                    // Ensure topicNS does not end with /
+
+                    if (topicNS != null && topicNS.charAt(topicNS.length() - 1) == '/') {
+                        topicNS = topicNS.substring(0, topicNS.length()-1);
+                    }
+
+                    if (topicNS != null && topicNS.equals(nodeNS) &&
                             topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
                         retVal.getAny().add(node);
                         break;
@@ -86,6 +103,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace)
             throws TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+        Log.d("SimpleEvaluator", "isExpressionPermittedInNamespace called");
         throw new UnsupportedOperationException("Topic namespace not supported yet!");
     }
 
@@ -94,6 +112,8 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
             throws UnsupportedOperationException, InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault,
             TopicExpressionDialectUnknownFault {
 
+        Log.d("SimpleEvaluator", "evaluateTopicExpressionToQName called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect()))
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate Simple dialect!");
 
@@ -101,14 +121,20 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
         // The topic expression should now be trimmed. Check for whitespace occurrence
         for (int i = 0; i < expression.length(); i++) {
             if (Character.isWhitespace(expression.charAt(i)))
-                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not a SimpleExpressionDialect; " +
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in SimpleExpressionDialect; " +
                         "it contained whitespace where disallowed");
         }
         // Split expression in prefix and local part
-        // If the expression started with "/", remove the first letter
+        // If the expression started with "/", remove the first letter or throw an exception
         if (expression.length() > 0 && expression.charAt(0) == '/') {
-            Log.w("SimpleEvaluator[Topic]", "A concrete expression started with \"/\" which was omitted.");
-            expression = expression.substring(1);
+            if (TopicValidator.isSlashAsSimpleAndConcreteDialectStartAccepted()) {
+                Log.w("SimpleEvaluator[Topic]", "A simple expression started with \"/\" which was omitted.");
+                expression = expression.substring(1);
+            } else {
+                Log.w("SimpleEvaluator[Topic]", "A simple expression started with \"/\" and was rejected.");
+                TopicUtils.throwInvalidTopicExpressionFault("en", "The expression was not in SimpleExpressionDialect." +
+                        " It started with an illegal character ('/')");
+            }
         }
 
         String[] splitExpression = expression.split(":");
@@ -144,6 +170,9 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     @Override
     public boolean isLegalExpression(TopicExpressionType topicExpressionType, NamespaceContext namespaceContext) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
+
+        Log.d("SimpleEvaluator", "isLegalExpression called");
+
         if (!dialectURI.equals(topicExpressionType.getDialect())) {
             Log.w("SimpleEvaluator[Topic]", "Was asked to check a non-simple expression");
             TopicUtils.throwTopicExpressionDialectUnknownFault("en", "Simple evaluator can evaluate simple dialect!");
