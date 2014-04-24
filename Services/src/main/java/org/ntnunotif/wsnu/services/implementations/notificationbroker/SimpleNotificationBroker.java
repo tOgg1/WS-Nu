@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -30,8 +31,8 @@ import java.util.*;
  */
 public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
-    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;
-    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers;
+    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions = new HashMap<>();
+    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers = new HashMap<>();
 
     public SimpleNotificationBroker() {
         super();
@@ -45,7 +46,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
     @Override
     protected Collection<String> getAllRecipients() {
-        return null;
+        return _subscriptions.keySet();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("publisherregistration", newSubscriptionKey);
 
         _publishers.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
 
@@ -189,7 +190,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
         /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateSubscriptionURL(newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey("subscription", newSubscriptionKey);
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
@@ -235,6 +236,11 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
     @Override
     public void subscriptionChanged(SubscriptionEvent event) {
+
+    }
+
+    @Override
+    public void publisherChanged(PublisherRegistrationEvent event) {
 
     }
 }

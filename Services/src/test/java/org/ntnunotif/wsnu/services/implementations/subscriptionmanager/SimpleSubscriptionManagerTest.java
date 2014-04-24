@@ -52,7 +52,7 @@ public class SimpleSubscriptionManagerTest{
     public void testUnsubscribe() throws Exception {
 
         String subscription = producer.generateSubscriptionKey();
-        String requestUrl = producer.generateSubscriptionURL(subscription);
+        String requestUrl = producer.generateHashedURLFromKey("subscription", subscription);
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
@@ -89,7 +89,7 @@ public class SimpleSubscriptionManagerTest{
     @Test
     public void testSubscriptionDoesntExist() throws Exception {
         String subscription = producer.generateSubscriptionKey();
-        String requestUrl = producer.generateSubscriptionURL(subscription);
+        String requestUrl = producer.generateHashedURLFromKey("subscription", subscription);
 
         HttpClient client = new HttpClient();
         client.setFollowRedirects(false);
@@ -109,7 +109,7 @@ public class SimpleSubscriptionManagerTest{
     public void testRenew() throws Exception {
 
         String subscription = producer.generateSubscriptionKey();
-        String requestUrl = producer.generateSubscriptionURL(subscription);
+        String requestUrl = producer.generateHashedURLFromKey("subscription", subscription);
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 

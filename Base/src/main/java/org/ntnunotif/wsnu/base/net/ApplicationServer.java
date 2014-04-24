@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
@@ -256,7 +255,6 @@ public class ApplicationServer{
         /* Create the actual http-request*/
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
         request.method(HttpMethod.POST);
-        request.header(HttpHeader.CONTENT_LENGTH, "200");
 
         /* Try to send the message */
         try{

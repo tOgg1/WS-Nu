@@ -1,6 +1,9 @@
 package org.ntnunotif.wsnu.services.general;
 
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
 import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
@@ -10,6 +13,7 @@ import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.omg.PortableInterceptor.RequestInfo;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.annotation.Nonnull;
@@ -78,6 +82,14 @@ public class ServiceUtilities {
         }
     }
 
+    /**
+     * InputManager utility-class. This class contains functionality for handling inputs to stdin.
+     * An inputmanager instance keeps several hashmaps containing information about <b>Method rerouting</b>. I.e. commands
+     * that are to be rerouted to certain methods. If such a command is registered to stdin, the method registered for rerouting
+     * on this command will be called.
+     * Any other command will be run as a terminal command on the local operating system.
+     *
+     */
     public static class InputManager extends Thread {
 
         private HashMap<String, Method> _methodRerouting;
@@ -499,7 +511,6 @@ public class ServiceUtilities {
     }
 
 
-
     /**
      * Get termination from a time-string
      * @param time
@@ -581,7 +592,9 @@ public class ServiceUtilities {
     /**
      * Checks if a string is formatted in XsdDatetime. This function might return true on strings that are validly formatted,
      * but contains invalid months. E.g. 2014-13-11T36:00:00Z-25:00, which is an invalid date in three places (date, hour and subtracted hour).
-     * @param time
+     * @param timeøvde å knuse vindu
+
+Deretter begynte «Maria» å synke.
      * @return
      */
     public static boolean isXsdDatetime(String time){
@@ -619,7 +632,7 @@ public class ServiceUtilities {
 
     /**
      * This method is deprecated, please use {@link #getAddress(javax.xml.ws.wsaddressing.W3CEndpointReference)}
-     *  instead.
+     * instead.
      */
     @Deprecated
     public static String parseW3CEndpoint(String s) throws SubscribeCreationFailedFault{
@@ -1111,5 +1124,13 @@ public class ServiceUtilities {
         faultType.getDescription().add(desc);
 
         throw new ResumeFailedFault(description, faultType);
+    }
+
+    public static InternalMessage sendRequest(String url) throws Exception{
+        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK, null);
+        RequestInformation requestInformation = new RequestInformation();
+        requestInformation.setEndpointReference(url);
+        message.setRequestInformation(requestInformation);
+        return ApplicationServer.getInstance().sendMessage(message);
     }
 }

@@ -115,9 +115,6 @@ public class Utilities {
         return false;
     }
 
-
-
-
     /**
      * Takes in a class and checks if it has a method with the passed in name.
      */
@@ -360,5 +357,23 @@ public class Utilities {
             }
         }
         throw new IllegalArgumentException("Object passed in is not parseable");
+    }
+
+    public static Object createSoapFault(String code, String description) {
+        ObjectFactory soapObjectFactory = new ObjectFactory();
+
+        Envelope envelope = soapObjectFactory.createEnvelope();
+        Body body = soapObjectFactory.createBody();
+        Header header = soapObjectFactory.createHeader();
+        Fault fault = soapObjectFactory.createFault();
+
+        //TODO: Code can now be something non-standard, should we check for this?
+        fault.setFaultcode(new QName("http://schemas.xmlsoap.org/soap/envelope/", code));
+        fault.setFaultstring(description);
+        envelope.setBody(body);
+        envelope.setHeader(header);
+
+        JAXBElement toSend = soapObjectFactory.createEnvelope(envelope);
+        return toSend;
     }
 }
