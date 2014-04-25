@@ -324,12 +324,13 @@ public class XMLParser {
             if (event.getSeverity() >= _severityStop) {
                 Log.e("XMLParser.NuValidationEventHandler", "A too severe event occurred during parsing, message given:"
                         + event.getMessage() + " at line: " + event.getLocator().getLineNumber() + ", column: " +
-                        event.getLocator().getColumnNumber() + " (node " + event.getLocator().getNode().getNodeName()
-                        + ")");
+                        event.getLocator().getColumnNumber() + (event.getLocator().getNode() == null ? "" :
+                        (" (node " + event.getLocator().getNode().getNodeName() + ")")));
                 return false;
             }
             Log.w("XMLParser.NuValidationEventHandler", "A" + (event.getSeverity() == ValidationEvent.WARNING ?
-                    " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing");
+                    " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing " +
+                    "(severity level " + event.getSeverity() + ")");
             return true;
         }
     }
