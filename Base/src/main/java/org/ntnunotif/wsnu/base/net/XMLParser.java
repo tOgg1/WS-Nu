@@ -64,7 +64,7 @@ public class XMLParser {
             "/schemas/org.xmlsoap.schemas.soap.envelope.xsd"
     };
 
-    private static int _stopParsingAtSeverity = 2;
+    private static int _stopParsingAtSeverity = ValidationEvent.FATAL_ERROR;
 
     private static final List<String> externalSchemaLocations = new ArrayList<>();
 
