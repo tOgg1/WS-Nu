@@ -39,6 +39,5 @@ public class RemoteConsumer implements ConsumerListener {
 
     @Override
     public void notify(NotificationEvent event) {
-        System.out.println("Omg....");
     }
 }

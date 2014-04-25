@@ -149,12 +149,13 @@ public class UnpackingConnector extends WebServiceConnector {
                             }
                         }else{
                             Log.d("UnpackingConnector", "Invalid destination");
-                            return new InternalMessage(STATUS_FAULT_INVALID_DESTINATION, null);
+                            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_DESTINATION, null);
                         }
                     }
                 }
             }
-            return new InternalMessage(STATUS_FAULT_UNKNOWN_METHOD, null);
+            Log.d("UnpackingConnector", "Unknonwn method");
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_UNKNOWN_METHOD, null);
         }
     }
 }

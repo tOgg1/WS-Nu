@@ -1,32 +1,35 @@
 package org.ntnunotif.wsnu.base.internal;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.jws.WebMethod;
-import javax.jws.WebService;
 import java.util.HashMap;
 
 /**
  * Created by tormod on 25.03.14.
  */
-public class MappingConnectorTest extends TestCase {
-    MappingConnector connector;
-    WebAwesomeService service;
+public class MappingConnectorTest {
+    private static MappingConnector connector;
+    private static WebAwesomeService service;
 
     @javax.jws.WebService(name = "AwesomeService")
-    private class WebAwesomeService{
+    private static class WebAwesomeService{
 
         @WebMethod
         public void myAwesomeWebMethod(String roflParameter){
-            System.out.println("HELLO!!!!!!!!!!!");
         }
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass
+    public static void setUp() throws Exception {
+
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
 
         HashMap<String, String> methodNames = new HashMap<>();
         methodNames.put("String", "myAwesomeWebMethod");

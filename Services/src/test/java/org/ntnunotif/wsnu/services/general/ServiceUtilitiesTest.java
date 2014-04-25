@@ -1,7 +1,9 @@
 package org.ntnunotif.wsnu.services.general;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.ObjectFactory;
@@ -9,8 +11,6 @@ import org.w3._2001._12.soap_envelope.ObjectFactory;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileOutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.*;
 
@@ -18,6 +18,13 @@ import static junit.framework.TestCase.*;
  * Created by tormod on 24.03.14.
  */
 public class ServiceUtilitiesTest {
+
+    @BeforeClass
+    public static void setUp(){
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+    }
 
     @Test
     public void testXsdDuration() throws Exception {
@@ -66,51 +73,6 @@ public class ServiceUtilitiesTest {
 
     @Test
     public void testRegexTwo() throws Exception{
-        String test = "P1D";
-        Matcher matcher = Pattern.compile("[0-9]+D").matcher(test);
-        if(matcher.find()){
-            String match = matcher.group();
-            System.out.println(match);
-        }
-    }
-
-    @Test
-    public void testRegexThree() throws Exception{
-        String test = "http://tormodhaugland.com/myWebService";
-        String withoutDomain = test.replaceAll("^"+"http://tormodhaugland.com", "");
-        System.out.println(withoutDomain);
-        String withoutSlash = withoutDomain.replaceAll("^/", "");
-        System.out.println(withoutSlash);
-
-        String endPoint = "/myWebService/somedocument.xml";
-        boolean matchTest = endPoint.matches("^/?" + test.replaceAll("^http://tormodhaugland.com", "") + "(.*)?");
-        String stripped = test.replaceAll("http://tormodhaugland.com", "");
-        System.out.println(stripped);
-        System.out.println(endPoint.matches("/?"+stripped+"(.*?)"));
-        System.out.println(matchTest);
-    }
-
-    @Test
-    public void testRegexFour() throws Exception{
-        String contentLimiterOne = ".*[.]xml";
-        String contentLimiterTwo = "^tormod.*";
-
-        String testOne = "tormod.xml";
-
-        System.out.println(testOne.matches(contentLimiterOne));
-        System.out.println(testOne.matches(contentLimiterTwo));
-
-        String testTwo = "tormod.haugland.xml";
-        System.out.println(testTwo.matches(contentLimiterOne));
-        System.out.println(testTwo.matches(contentLimiterTwo));
-
-        String testThree = "haugland.xml";
-        System.out.println(testThree.matches(contentLimiterOne));
-        System.out.println(testThree.matches(contentLimiterTwo));
-    }
-
-    @Test
-    public void testRegexFive() throws Exception{
         String faultNameOne = "FaultInfo";
         String faultNameTwo = "getFaultInfo";
         String faultNameThree = "fault";
@@ -146,31 +108,30 @@ public class ServiceUtilitiesTest {
     public void testExtractXsdDur() throws Exception{
         String test="PT5H";
         long lol = ServiceUtilities.extractXsdDuration(test);
-        System.out.println(lol);
-        System.out.println(System.currentTimeMillis());
-        System.out.println(lol - System.currentTimeMillis());
         assertTrue(lol - System.currentTimeMillis() <  1000*3600*5 + 1000*10);
 
         String yearTest = "P2Y9MT3H2M";
         long lol2 = ServiceUtilities.extractXsdDuration(yearTest);
 
-        System.out.println(lol2);
-
+        assertTrue(lol2 > 1000*3600*24*265);
     }
 
     @Test
     public void testExtractDateTime() throws Exception {
         String test = "2014-08-02T11:50:00";
         long lol = ServiceUtilities.extractXsdDatetime(test);
-        System.out.println(lol);
     }
 
     @Test
     public void testInterpretTerminationTime() throws Exception {
         String testOne = "2014-08-02T11:50:00";
-        System.out.println(ServiceUtilities.interpretTerminationTime(testOne));
         String testTwo = "P1DT1H";
-        System.out.println(ServiceUtilities.interpretTerminationTime(testTwo));
+
+        Log.d("ServiceUtilitiesTest", testOne);
+        Log.d("ServiceUtilitiesTest", testTwo);
+
+        assertTrue(testOne != null);
+        assertTrue(testTwo != null);
     }
 
     @Test
@@ -193,13 +154,9 @@ public class ServiceUtilitiesTest {
                 "                </Address></EndpointReference>";
         String extractedFour = ServiceUtilities.parseW3CEndpoint(testFour);
         assertEquals("http://78.91.27.226:8080", extractedFour);
-
-        System.out.println(extractedOne);
-        System.out.println(extractedTwo);
-        System.out.println(extractedThree);
-        System.out.println(extractedFour);
     }
 
+    @Test
     public void testContentManager() throws Exception{
         ServiceUtilities.ContentManager contentManager = new ServiceUtilities.ContentManager("151.236.234");
 
@@ -212,11 +169,10 @@ public class ServiceUtilitiesTest {
         String testThree= "porn.com";
         String testFour = "lolthislolislolsomelollolroflllolsentencelol.xml";
 
-        System.out.println(contentManager.accepts(testOne));
-        System.out.println(contentManager.accepts(testTwo));
-        System.out.println(contentManager.accepts(testThree));
-        System.out.println(contentManager.accepts(testFour));
-
+        assertTrue(contentManager.accepts(testOne));
+        assertFalse(contentManager.accepts(testTwo));
+        assertFalse(contentManager.accepts(testThree));
+        assertFalse(contentManager.accepts(testFour));
     }
 
     @Test
@@ -249,10 +205,7 @@ public class ServiceUtilitiesTest {
 
         String address = ServiceUtilities.getAddress(ref);
 
-        System.out.println(address);
         assertEquals("tormod.haugland.com", address);
-
-
 
     }
 

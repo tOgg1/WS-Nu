@@ -46,8 +46,8 @@ public class Log {
         Log._writeToFile = _writeToFile;
     }
 
-    public static void setLogErrors(boolean logErrors) {
-        Log._logErrors = _logErrors;
+    public static void setEnableErrors(boolean logErrors) {
+        Log._logErrors = logErrors;
     }
 
     public static void setEnableDebug(boolean _enableDebug) {

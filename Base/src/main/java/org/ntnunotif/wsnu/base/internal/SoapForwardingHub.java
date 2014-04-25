@@ -122,8 +122,8 @@ public class SoapForwardingHub implements Hub {
             } catch (JAXBException e) {
                 Log.e("SoapForwardingHub", "Parse error: " + e.getMessage());
                 try {
-                    // Return a generic Soap error
-                    XMLParser.writeObjectToStream(Utilities.createSoapFault("Client", "Invalid formatted SOAP-Message"), streamToRequestor);
+                // Return a generic Soap error
+                    XMLParser.writeObjectToStream(Utilities.createSoapFault("Client", "Invalid formatted message"), streamToRequestor);
                     return new InternalMessage(STATUS_FAULT, null);
                 } catch (JAXBException e1) {
                     return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR | STATUS_FAULT, null);
@@ -221,6 +221,11 @@ public class SoapForwardingHub implements Hub {
                 }catch(ClassCastException e){
                     Log.e("SoapForwardingHub.acceptNetMessage", "The returned exception is not a subclass of Exception.");
                     return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
+            // Create a generic soap fault
+            } else {
+                if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
+
                 }
             }
             Log.d("SoapForwardingHub", "Something went wrong, returning error");
@@ -409,7 +414,6 @@ public class SoapForwardingHub implements Hub {
                 continue;
             }
 
-            System.out.println("serviceendpoint: " + connection.getServiceEndpoint());
             if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
                 return connection;
             }

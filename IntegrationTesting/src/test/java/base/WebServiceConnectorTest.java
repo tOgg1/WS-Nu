@@ -1,8 +1,9 @@
 package base;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
@@ -12,19 +13,22 @@ import javax.jws.WebService;
  * Created by tormod on 25.03.14.
  */
 public class WebServiceConnectorTest {
-    private SimpleNotificationProducer producer;
-    private NotificationConsumer consumer;
-    private UnpackingConnector one, two, three;
+    private static SimpleNotificationProducer producer;
+    private static NotificationConsumer consumer;
+    private static UnpackingConnector one, two, three;
 
-    @WebService
-    private class WebServiceWithoutEndPoint{
-
-    }
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUpClass(){
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
         producer = new SimpleNotificationProducer();
         consumer = new NotificationConsumer();
+    }
+
+    @WebService
+    private class WebServiceWithoutEndPoint {
+
     }
 
     @Test

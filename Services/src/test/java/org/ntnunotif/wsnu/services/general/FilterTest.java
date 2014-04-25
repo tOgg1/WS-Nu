@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -19,6 +20,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +44,10 @@ public class FilterTest {
     @BeforeClass
     public static void globalSetup() throws Exception{
 
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+
         // Create filter support
         defaultFilterSupport = FilterSupport.createDefaultFilterSupport();
 
@@ -57,20 +63,6 @@ public class FilterTest {
         internalMessage= XMLParser.parse(FilterTest.class.getResourceAsStream(allFilterLocationRes));
         filterContext = internalMessage.getRequestInformation().getNamespaceContext();
         allFilters = (FilterType)((JAXBElement)internalMessage.getMessage()).getValue();
-    }
-
-    @Test
-    public void testExamineFilterContent() {
-        Assert.assertNotNull("Filter was null, cannot inspect", filterType);
-        for (Object o : filterType.getAny()) {
-            System.out.println("New filter:");
-            if (o instanceof JAXBElement) {
-                JAXBElement je = (JAXBElement) o;
-                System.out.println("Declared type: " + je.getDeclaredType());
-                System.out.println("Scope: " + je.getScope());
-                System.out.println("Name: " + je.getName());
-            }
-        }
     }
 
     @Test
@@ -100,8 +92,9 @@ public class FilterTest {
         Notify notify2 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo2, notifyContext);
         Notify notify3 = defaultFilterSupport.evaluateNotifyToSubscription(notifySource, subscriptionInfo3, notifyContext);
 
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
-            XMLParser.writeObjectToStream(notify1, System.out);
+            XMLParser.writeObjectToStream(notify1, stream);
         } catch (JAXBException e) {
             e.printStackTrace();
         }

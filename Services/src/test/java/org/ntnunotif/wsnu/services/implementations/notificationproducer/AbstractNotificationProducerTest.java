@@ -1,8 +1,9 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
-import junit.framework.TestCase;
+import org.junit.BeforeClass;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -12,18 +13,22 @@ import javax.jws.WebParam;
 import javax.xml.namespace.NamespaceContext;
 import java.util.Collection;
 
+import static junit.framework.TestCase.assertTrue;
+
 /**
  * Created by tormod on 24.03.14.
  */
-public class AbstractNotificationProducerTest extends TestCase {
-    AbstractNotificationProducer producer;
-    SoapForwardingHub hub;
+public class AbstractNotificationProducerTest {
+    private static AbstractNotificationProducer producer;
+    private static SoapForwardingHub hub;
 
-
+    @BeforeClass
     public void setUp() throws Exception {
-        super.setUp();
-        hub = new SoapForwardingHub();
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
 
+        hub = new SoapForwardingHub();
         producer = new AbstractNotificationProducer() {
             @Override
             public boolean keyExists(String key) {
@@ -69,7 +74,6 @@ public class AbstractNotificationProducerTest extends TestCase {
 
     public void testGenerateSubscriptionKey() throws Exception {
         String newKey = producer.generateNewHashedURL("subscription");
-        System.out.println(newKey);
-        assertTrue(newKey != null);
+        assertTrue("Newkey was null", newKey != null);
     }
 }
