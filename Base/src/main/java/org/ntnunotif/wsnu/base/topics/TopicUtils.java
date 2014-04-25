@@ -391,6 +391,21 @@ public class TopicUtils {
         element.setAttributeNodeNS(topicAttr);
     }
 
+    public static void forceNonTopicNode(Node node) {
+        Log.d("TopicUtils", "forceNonTopicNode called");
+
+        if (node == null)
+            return;
+
+        if (node.getNodeType() != Node.ELEMENT_NODE)
+            throw new IllegalArgumentException("Tried to force a non-element node non-topic!");
+
+        Element element = (Element) node;
+        Attr topicAttr = element.getAttributeNodeNS(WS_TOPIC_NAMESPACE, "topic");
+        if (topicAttr != null)
+            topicAttr.setValue("false");
+    }
+
     /**
      * Checks if a given node has the topic attribute. The attribute must have namespace
      * <code>http://docs.oasis-open.org/wsn/t-1</code>, as defined by OASIS wsn-ws_topics-1.3-spec-os.

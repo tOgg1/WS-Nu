@@ -2,14 +2,24 @@ package org.ntnunotif.wsnu.base.net;
 
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.xml.sax.SAXException;
 
-import javax.xml.bind.*;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>XMLParser</code> is a static tool utility for parsing XML documents to and from Java objects.
@@ -40,12 +50,41 @@ public class XMLParser {
     /**
      * classLoader is the default loader for java classes.
      */
-    private  static ClassLoader classLoader = org.oasis_open.docs.wsn.b_2.ObjectFactory.class.getClassLoader();
+    private static ClassLoader classLoader = org.oasis_open.docs.wsn.b_2.ObjectFactory.class.getClassLoader();
 
     /**
-     * This class should never instantiated.
+     * The schema that should be used in validation.
      */
-    private XMLParser() {}
+    private static Schema schema = null;
+
+    private static final String[] builtInSchemaLocations = {
+            "/schemas/org.w3._2001._12.soap_envelope.xsd",
+            "/schemas/org.oasis_open.docs.wsn.b_2.xsd",
+            "/schemas/org.oasis_open.docs.wsn.br_2.xsd",
+            "/schemas/org.oasis_open.docs.wsn.t_1.xsd",
+            "/schemas/org.oasis_open.docs.wsrf.bf_2.xsd",
+            "/schemas/org.oasis_open.docs.wsrf.r_2.xsd",
+            "/schemas/org.xmlsoap.schemas.soap.envelope.xsd"
+    };
+
+    private static final List<String> externalSchemaLocations = new ArrayList<>();
+
+    private static boolean _skippingSchemaValidation = false;
+
+    // Ensure schemas are parsed on load
+    static {
+        try {
+            updateSchema();
+        } catch (JAXBException e) {
+            Log.e("XMLParser", "Could not load schemas for validation properly.");
+        }
+    }
+
+    /**
+     * This class should never be instantiated.
+     */
+    private XMLParser() {
+    }
 
     /**
      * Extends <code>XMLParser</code>s capabilities. <code>registerReturnObjectPackageWithObjectFactory</code> registers
@@ -58,23 +97,41 @@ public class XMLParser {
         synchronized (XMLParser.class) {
             jaxbContext = null;
             String[] newPaths = new String[classPaths.length + 1];
-            for (int i = 0; i < classPaths.length; i++) {
-                newPaths[i] = classPaths[i];
-            }
+            System.arraycopy(classPaths, 0, newPaths, 0, classPaths.length);
             newPaths[newPaths.length - 1] = classPath;
             classPaths = newPaths;
         }
+    }
+
+    public static void registerSchemaLocation(String systemID) throws JAXBException {
+        Log.d("XMLParser", "External schema location added");
+        externalSchemaLocations.add(systemID);
+        updateSchema();
     }
 
     /**
      * gets the {@link javax.xml.bind.Unmarshaller} with context given by context paths.
      *
      * @return the apropriate <code>Unmarshaller</code>
-     *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     private static Unmarshaller getUnmarshaller() throws JAXBException {
-       return getJaxbContext().createUnmarshaller();
+        Unmarshaller unmarshaller = getJaxbContext().createUnmarshaller();
+        if (!_skippingSchemaValidation) {
+            if (unmarshaller.getSchema() == null) {
+
+                // Check if schemas are okay
+                if (schema == null)
+                    updateSchema();
+
+                // If they still are not okay, something has gone terribly wrong.
+                if (schema == null)
+                    Log.w("XMLParser", "Schema creation failed, unable to validate.");
+                else
+                    unmarshaller.setSchema(schema);
+            }
+        }
+        return unmarshaller;
     }
 
     /**
@@ -82,14 +139,13 @@ public class XMLParser {
      * objects.
      *
      * @return the current jaxbContext
-     *
      * @throws JAXBException if new instance of jaxbContext fails for some reason.
      */
     private static JAXBContext getJaxbContext() throws JAXBException {
         synchronized (XMLParser.class) {
             if (jaxbContext == null) {
                 String cp = null;
-                for (String s: classPaths)
+                for (String s : classPaths)
                     cp = cp == null ? s : cp + ":" + s;
                 jaxbContext = JAXBContext.newInstance(cp, classLoader);
             }
@@ -97,25 +153,60 @@ public class XMLParser {
         }
     }
 
+    private static Schema updateSchema() throws JAXBException {
+        synchronized (XMLParser.class) {
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            StreamSource[] streamSources = new StreamSource[builtInSchemaLocations.length + externalSchemaLocations.size()];
+
+            for (int i = 0; i < builtInSchemaLocations.length; i++) {
+                streamSources[i] = new StreamSource(XMLParser.class.getResourceAsStream(builtInSchemaLocations[i]));
+            }
+
+            for (int i = builtInSchemaLocations.length, j = 0; i < streamSources.length; i++, j++) {
+                streamSources[i] = new StreamSource(externalSchemaLocations.get(j));
+            }
+
+            try {
+                schema = factory.newSchema(streamSources);
+            } catch (SAXException e) {
+                Log.e("XMLParser", "Could not generate schema for validation, reason given: " + e.getMessage());
+            }
+        }
+        return schema;
+    }
+
     /**
      * get the {@link javax.xml.bind.Marshaller} with context given by context paths. Used to convert java objects to
      * xml.
      *
      * @return the apropriate <code>Marshaller</code>
-     *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
-    private static Marshaller getMarshaller() throws JAXBException{
-        return getJaxbContext().createMarshaller();
+    private static Marshaller getMarshaller() throws JAXBException {
+        Marshaller marshaller = getJaxbContext().createMarshaller();
+        if (!_skippingSchemaValidation) {
+            if (marshaller.getSchema() == null) {
+
+                // Check if schemas are okay
+                if (schema == null)
+                    updateSchema();
+
+                // If they still are not okay, something has gone terribly wrong.
+                if (schema == null) {
+                    Log.w("XMLParser", "Unable to create schemas, schema validation not performed");
+                } else {
+                    marshaller.setSchema(schema);
+                }
+            }
+        }
+        return marshaller;
     }
 
     /**
      * Parses the {@link java.io.InputStream}, and returns the parsed tree structure
      *
      * @param inputStream The {@link java.io.InputStream} to parse.
-     *
      * @return The apropriate object.
-     *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     public static InternalMessage parse(InputStream inputStream) throws JAXBException {
@@ -135,9 +226,7 @@ public class XMLParser {
      * Parses the {@link javax.xml.stream.XMLStreamReader}, and returns the parsed tree structure
      *
      * @param xmlStreamReader The {@link javax.xml.stream.XMLStreamReader} to parse.
-     *
      * @return The apropriate object.
-     *
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
     public static InternalMessage parse(XMLStreamReader xmlStreamReader) throws JAXBException {
@@ -145,15 +234,16 @@ public class XMLParser {
         XMLParser p = new XMLParser();
         WSStreamFilter filter = p.new WSStreamFilter();
         XMLInputFactory factory = XMLInputFactory.newFactory();
+
         try {
             xmlStreamReader = factory.createFilteredReader(xmlStreamReader, filter);
         } catch (XMLStreamException e) {
             Log.e("XMLParser", "Could not create XMLStream with filter: " + e.getMessage());
-            e.printStackTrace();
             throw new JAXBException("Could not create XMLStream to read from");
         }
         try {
-            InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, getUnmarshaller().unmarshal(xmlStreamReader));
+            Unmarshaller unmarshaller = getUnmarshaller();
+            InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, unmarshaller.unmarshal(xmlStreamReader));
             msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
             return msg;
         } catch (JAXBException e) {
@@ -165,14 +255,22 @@ public class XMLParser {
     /**
      * Converts the given object to XML and writes its content to the stream.
      *
-     * @param object the object to parse to XML
+     * @param object       the object to parse to XML
      * @param outputStream the stream to write to
      * @throws JAXBException if JAXBContext could not be created or any unexpected events happens during writing.
-     *      {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
-     *      {@link javax.xml.bind.Marshaller#marshal(Object, java.io.OutputStream)}
+     *                       {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
+     *                       {@link javax.xml.bind.Marshaller#marshal(Object, java.io.OutputStream)}
      */
     public static void writeObjectToStream(Object object, OutputStream outputStream) throws JAXBException {
         getMarshaller().marshal(object, outputStream);
+    }
+
+    public static boolean isSkippingSchemaValidation() {
+        return _skippingSchemaValidation;
+    }
+
+    public static void setSkippingSchemaValidation(boolean _skippingSchemaValidation) {
+        XMLParser._skippingSchemaValidation = _skippingSchemaValidation;
     }
 
 
@@ -181,7 +279,6 @@ public class XMLParser {
 
         @Override
         public boolean accept(XMLStreamReader reader) {
-            // TODO This does not discover all namespaces, look into it
             if (reader.isStartElement()) {
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);
@@ -195,6 +292,4 @@ public class XMLParser {
             return namespaceContext;
         }
     }
-
-
 }

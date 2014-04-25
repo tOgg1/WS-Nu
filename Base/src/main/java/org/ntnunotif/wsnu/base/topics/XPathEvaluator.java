@@ -8,14 +8,18 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by Inge on 10.03.14.
@@ -136,8 +140,42 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
                     Node node = nodeList.item(i);
 
                     // Ensure that it is actual topics we have selected
-                    if (TopicUtils.isTopic(node))
-                        returnSet.getAny().add(node);
+                    if (TopicUtils.isTopic(node)) {
+
+                        // All nodes need to be imported to new tree, to ensure we do not change other results
+                        // Go to root node and add it
+                        Stack<Node> nodeStack = new Stack<>();
+                        nodeStack.push(node);
+
+                        while (node != null && node.getParentNode() != null && node.getParentNode().getParentNode() != null) {
+                            node = node.getParentNode();
+                            nodeStack.push(node);
+                        }
+
+                        try {
+                            // Try to build the topic list from root to end
+                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                            factory.setNamespaceAware(true);
+                            Document owner = factory.newDocumentBuilder().newDocument();
+                            Element firstChild = owner.createElement("SetRoot");
+
+                            node = owner.importNode(nodeStack.pop(), false);
+                            firstChild.appendChild(node);
+
+                            //owner.appendChild(node);
+                            returnSet.getAny().add(node);
+
+                            while (!nodeStack.empty()) {
+                                // Make sure the previous node is not marked as topic
+                                TopicUtils.forceNonTopicNode(node);
+                                Node current = owner.importNode(nodeStack.pop(), false);
+                                node.appendChild(current);
+                                node = current;
+                            }
+                        } catch (ParserConfigurationException e) {
+                            Log.e("XPathEvaluator", "Tried to build a topic set, but failed. " + e.getMessage());
+                        }
+                    }
                 }
             } catch (XPathExpressionException e) {
                 TopicUtils.throwInvalidTopicExpressionFault("en", "Some part of expression failed evaluation. " +

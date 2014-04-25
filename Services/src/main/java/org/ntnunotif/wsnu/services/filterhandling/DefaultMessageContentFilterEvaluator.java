@@ -66,6 +66,8 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
                 } catch (IllegalArgumentException e) {
                     Log.w("DefaultMessageContentFilterEvaluator", "Malformed MessageContentFilter, can not " +
                             "understand complex or empty filters.");
+                    ServiceUtilities.throwInvalidMessageContentExpressionFault("en", "XPath expression must must be " +
+                            "single strong, not neither empty nor complex.");
                     return false;
                 } catch (XPathExpressionException e) {
                     Log.w("DefaultMessageContentFilterEvaluator", "Was asked to check a malformed XPath expression");

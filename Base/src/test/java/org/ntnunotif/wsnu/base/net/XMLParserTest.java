@@ -9,6 +9,7 @@ import org.oasis_open.docs.wsn.b_2.Subscribe;
 import org.w3._2001._12.soap_envelope.*;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.io.*;
 
 /**
@@ -116,6 +117,8 @@ public class XMLParserTest {
         envelope.setHeader(header);
 
         Fault fault = new Fault();
+        fault.setFaultcode(new QName("Server"));
+        fault.setFaultstring("Something went wrong");
         body.getAny().add(new ObjectFactory().createFault(fault));
         FileOutputStream fileOut = new FileOutputStream(getClass().getResource("/test_fault.xml").getFile());
         XMLParser.writeObjectToStream(new ObjectFactory().createEnvelope(envelope), fileOut);

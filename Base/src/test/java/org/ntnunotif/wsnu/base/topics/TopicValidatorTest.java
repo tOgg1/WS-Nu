@@ -11,6 +11,7 @@ import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
 import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
+import org.oasis_open.docs.wsn.t_1.ObjectFactory;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
@@ -260,8 +261,9 @@ public class TopicValidatorTest {
         // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getRequestInformation().getNamespaceContext());
         // Convert to more easily readable format
-        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
+        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, true);
         Assert.assertNotNull("TopicValidator returned null!", ret);
+        System.out.println(retAsQNameList);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 1, retAsQNameList.size());
 
         // Check for correctness
@@ -280,7 +282,7 @@ public class TopicValidatorTest {
         // Do calculation
         TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getRequestInformation().getNamespaceContext());
         // Convert to more easily readable format
-        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, false);
+        List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, true);
         Assert.assertNotNull("TopicValidator returned null!", ret);
         Assert.assertEquals("Topic evaluation returned wrong number of topics!", 3, retAsQNameList.size());
 
@@ -297,7 +299,8 @@ public class TopicValidatorTest {
         Assert.assertTrue("Returned list did not contain root_topic2!", retAsQNameList.contains(root2));
         Assert.assertTrue("Returned list did not contain child_topic!", retAsQNameList.contains(child));
 
-        JAXBElement e = new JAXBElement<>(new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet"), TopicSetType.class, ret);
+        ObjectFactory factory = new ObjectFactory();
+        JAXBElement e = factory.createTopicSet(ret);
         XMLParser.writeObjectToStream(e, new FileOutputStream(getClass().getResource(OUTGcmXPathMulPathRes).getFile()));
     }
 
