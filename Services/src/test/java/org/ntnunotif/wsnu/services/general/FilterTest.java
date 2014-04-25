@@ -40,27 +40,23 @@ public class FilterTest {
     private static FilterSupport defaultFilterSupport;
 
     @BeforeClass
-    public static void globalSetup() {
+    public static void globalSetup() throws Exception{
 
         // Create filter support
         defaultFilterSupport = FilterSupport.createDefaultFilterSupport();
 
         // read in data from files
-        try {
-            subscribeInternalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(subscribeWithFilterLocationRes));
-            JAXBElement<Envelope> element = (JAXBElement<Envelope>)subscribeInternalMessage.getMessage();
-            Body b = element.getValue().getBody();
-            filterType = ((Subscribe)b.getAny().get(0)).getFilter();
-            InternalMessage internalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(largeNotifyLocationRes));
-            notifyContext = internalMessage.getRequestInformation().getNamespaceContext();
-            notifySource = (Notify)internalMessage.getMessage();
+        subscribeInternalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(subscribeWithFilterLocationRes));
+        JAXBElement<Envelope> element = (JAXBElement<Envelope>)subscribeInternalMessage.getMessage();
+        Body b = element.getValue().getBody();
+        filterType = ((Subscribe)b.getAny().get(0)).getFilter();
+        InternalMessage internalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(largeNotifyLocationRes));
+        notifyContext = internalMessage.getRequestInformation().getNamespaceContext();
+        notifySource = (Notify)internalMessage.getMessage();
 
-            internalMessage= XMLParser.parse(FilterTest.class.getResourceAsStream(allFilterLocationRes));
-            filterContext = internalMessage.getRequestInformation().getNamespaceContext();
-            allFilters = (FilterType)((JAXBElement)internalMessage.getMessage()).getValue();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        internalMessage= XMLParser.parse(FilterTest.class.getResourceAsStream(allFilterLocationRes));
+        filterContext = internalMessage.getRequestInformation().getNamespaceContext();
+        allFilters = (FilterType)((JAXBElement)internalMessage.getMessage()).getValue();
     }
 
     @Test

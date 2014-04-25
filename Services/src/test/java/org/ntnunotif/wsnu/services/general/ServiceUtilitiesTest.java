@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
+import org.w3._2001._12.soap_envelope.ObjectFactory;
 
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
@@ -222,7 +223,10 @@ public class ServiceUtilitiesTest {
     public void testCreateNotify() throws Exception {
 
         /* Lets put an envelope in the notify, LOL */
-        Envelope envelope = new Envelope();
+        ObjectFactory objectFactory = new ObjectFactory();
+        Envelope envelope = objectFactory.createEnvelope();
+        envelope.setHeader(objectFactory.createHeader());
+        envelope.setBody(objectFactory.createBody());
 
         Notify notify = ServiceUtilities.createNotify(envelope, "TormodHaugland.com");
 
