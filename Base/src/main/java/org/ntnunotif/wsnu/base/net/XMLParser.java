@@ -5,10 +5,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -67,16 +64,20 @@ public class XMLParser {
             "/schemas/org.xmlsoap.schemas.soap.envelope.xsd"
     };
 
+    private static int _stopParsingAtSeverity = 2;
+
     private static final List<String> externalSchemaLocations = new ArrayList<>();
 
     private static boolean _skippingSchemaValidation = false;
 
-    // Ensure schemas are parsed on load
+    // Ensure schemas are parsed on load, if needed
     static {
-        try {
-            updateSchema();
-        } catch (JAXBException e) {
-            Log.e("XMLParser", "Could not load schemas for validation properly.");
+        if (!_skippingSchemaValidation) {
+            try {
+                updateSchema();
+            } catch (JAXBException e) {
+                Log.e("XMLParser", "Could not load schemas for validation properly.");
+            }
         }
     }
 
@@ -125,10 +126,12 @@ public class XMLParser {
                     updateSchema();
 
                 // If they still are not okay, something has gone terribly wrong.
-                if (schema == null)
+                if (schema == null) {
                     Log.w("XMLParser", "Schema creation failed, unable to validate.");
-                else
+                } else {
                     unmarshaller.setSchema(schema);
+                    unmarshaller.setEventHandler(new NuValidationEventHandler(_stopParsingAtSeverity));
+                }
             }
         }
         return unmarshaller;
@@ -196,6 +199,7 @@ public class XMLParser {
                     Log.w("XMLParser", "Unable to create schemas, schema validation not performed");
                 } else {
                     marshaller.setSchema(schema);
+                    marshaller.setEventHandler(new NuValidationEventHandler(_stopParsingAtSeverity));
                 }
             }
         }
@@ -271,6 +275,21 @@ public class XMLParser {
 
     public static void setSkippingSchemaValidation(boolean _skippingSchemaValidation) {
         XMLParser._skippingSchemaValidation = _skippingSchemaValidation;
+        if (!_skippingSchemaValidation && schema == null) {
+            try {
+                updateSchema();
+            } catch (JAXBException e) {
+                Log.e("XMLParser", "Could not create the schemas necessary for correct validation");
+            }
+        }
+    }
+
+    public static int getStopParsingAtSeverity() {
+        return _stopParsingAtSeverity;
+    }
+
+    public static void set_stopParsingAtSeverity(int value) {
+        _stopParsingAtSeverity = value;
     }
 
 
@@ -290,6 +309,28 @@ public class XMLParser {
 
         public NuNamespaceContext getNamespaceContext() {
             return namespaceContext;
+        }
+    }
+
+    private static class NuValidationEventHandler implements ValidationEventHandler {
+        final int _severityStop;
+
+        NuValidationEventHandler(final int severityStop) {
+            _severityStop = severityStop;
+        }
+
+        @Override
+        public boolean handleEvent(ValidationEvent event) {
+            if (event.getSeverity() >= _severityStop) {
+                Log.e("XMLParser.NuValidationEventHandler", "A too severe event occurred during parsing, message given:"
+                        + event.getMessage() + " at line: " + event.getLocator().getLineNumber() + ", column: " +
+                        event.getLocator().getColumnNumber() + " (node " + event.getLocator().getNode().getNodeName()
+                        + ")");
+                return false;
+            }
+            Log.w("XMLParser.NuValidationEventHandler", "A" + (event.getSeverity() == ValidationEvent.WARNING ?
+                    " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing");
+            return true;
         }
     }
 }

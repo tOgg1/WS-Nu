@@ -31,6 +31,8 @@ public class TopicUtils {
      */
     public static final String WS_TOPIC_NAMESPACE = "http://docs.oasis-open.org/wsn/t-1";
 
+    private static int tnsno = 1;
+
     /**
      * Should never be instantiated.
      */
@@ -585,7 +587,6 @@ public class TopicUtils {
         ObjectFactory factory = new ObjectFactory();
         TopicExpressionType topicExpressionType = factory.createTopicExpressionType();
         String expression = null;
-        int tnsno = 1;
 
         if (topic.size() == 1) {
             // Simple Topic expression dialect
