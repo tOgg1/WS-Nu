@@ -13,7 +13,6 @@ import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.omg.PortableInterceptor.RequestInfo;
 import org.trmd.ntsh.NothingToSeeHere;
 
 import javax.annotation.Nonnull;
@@ -592,9 +591,7 @@ public class ServiceUtilities {
     /**
      * Checks if a string is formatted in XsdDatetime. This function might return true on strings that are validly formatted,
      * but contains invalid months. E.g. 2014-13-11T36:00:00Z-25:00, which is an invalid date in three places (date, hour and subtracted hour).
-     * @param timeøvde å knuse vindu
-
-Deretter begynte «Maria» å synke.
+     * @param
      * @return
      */
     public static boolean isXsdDatetime(String time){

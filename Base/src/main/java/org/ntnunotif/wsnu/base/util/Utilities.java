@@ -37,7 +37,7 @@ public class Utilities {
     /**
      * Takes any object, and tries to convert its data to an inputstream. The internal attempt-order is as follows:
      * 1.   String
-     * 2.   Something parseable
+     * 2.   Something parsable
      * 3.   Inputstream
      * 4.   Outputstream
      * 5.   Byte-array
@@ -372,6 +372,8 @@ public class Utilities {
         fault.setFaultstring(description);
         envelope.setBody(body);
         envelope.setHeader(header);
+
+        body.getAny().add(fault);
 
         JAXBElement toSend = soapObjectFactory.createEnvelope(envelope);
         return toSend;

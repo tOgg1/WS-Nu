@@ -130,9 +130,18 @@ public class ApplicationServer{
      */
     public void stop(){
         try {
-            _server.stop();
-            _serverThread.join();
-            _parentHub = null;
+            if(_server != null) {
+                _server.stop();
+            }
+
+            if(_serverThread != null) {
+                _serverThread.join();
+            }
+
+            if(_parentHub != null) {
+                _parentHub = null;
+            }
+
             _isRunning = false;
             _hasBeenInvoked = false;
         } catch (Exception e) {

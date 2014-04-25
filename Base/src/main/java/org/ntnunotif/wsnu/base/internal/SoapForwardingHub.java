@@ -122,7 +122,7 @@ public class SoapForwardingHub implements Hub {
             } catch (JAXBException e) {
                 Log.e("SoapForwardingHub", "Parse error: " + e.getMessage());
                 try {
-                    // Return a generic Soap error
+                // Return a generic Soap error
                     XMLParser.writeObjectToStream(Utilities.createSoapFault("Client", "Invalid formatted SOAP-Message"), streamToRequestor);
                     return new InternalMessage(STATUS_FAULT, null);
                 } catch (JAXBException e1) {
