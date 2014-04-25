@@ -1,6 +1,5 @@
 package org.ntnunotif.wsnu.base.net;
 
-import junit.framework.TestCase;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -8,27 +7,33 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.base.net.ApplicationServer;
-import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.Header;
 
 import javax.xml.bind.JAXBElement;
-import java.io.FileInputStream;
 import java.io.InputStream;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by tormod on 3/6/14.
  */
-public class ApplicationServerTest extends TestCase {
+public class ApplicationServerTest {
 
-    private ApplicationServer _server;
+    private static ApplicationServer _server;
 
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
         _server = ApplicationServer.getInstance();
         _server.start(new SoapForwardingHub());
     }
@@ -51,7 +56,7 @@ public class ApplicationServerTest extends TestCase {
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_html_content.html")),
                                                                            "text/html;charset/utf-8");
         ContentResponse response = request.send();
-        assertEquals(500, response.getStatus());
+        assertEquals("Response on bad request was not 500", 500, response.getStatus());
     }
 
     @Test
@@ -73,8 +78,7 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        //TODO: This should be changed to some error status, as the server should not be able to process plain xml
-        assertEquals(500, response.getStatus());
+        assertEquals("Response on bad request was not 500", 500, response.getStatus());
     }
 
     @Test
@@ -100,10 +104,7 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(404, response.getStatus());
-
-        System.out.println(response.getContentAsString());
-
+        assertEquals("Expected not found", 404, response.getStatus());
     }
 
     @Test
@@ -127,13 +128,12 @@ public class ApplicationServerTest extends TestCase {
                 "application/soap+xml;charset/utf-8");
 
         ContentResponse response = request.send();
-        assertEquals(404, response.getStatus());
-
-        System.out.println(response.getContentAsString());
+        assertEquals("Expected not found", 404, response.getStatus());
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
+
+    @AfterClass
+    public static void tearDown() throws Exception {
         _server.stop();
     }
 }

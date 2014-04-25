@@ -68,7 +68,6 @@ public final class NotificationEvent extends EventObject{
      * Extract and return the message from the notification
      * @return
      */
-    //TODO: Perhaps do something more here?
     public List<NotificationMessageHolderType.Message> getMessage(){
         List<NotificationMessageHolderType> messageHolderType = _notification.getNotificationMessage();
 

@@ -2,8 +2,10 @@ package org.ntnunotif.wsnu.base.topics;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.namespace.NamespaceContext;
@@ -18,6 +20,13 @@ public class XPathEvaluatorIntersectionTest {
 
     private NamespaceContext namespaceContext;
     private TopicSetType topicSetType;
+
+    @BeforeClass
+    public static void setUpClass(){
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+    }
 
     @Before
     public void setUp() {

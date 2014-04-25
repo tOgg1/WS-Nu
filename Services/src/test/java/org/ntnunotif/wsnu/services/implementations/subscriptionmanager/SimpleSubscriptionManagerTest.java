@@ -82,8 +82,7 @@ public class SimpleSubscriptionManagerTest{
         response = request.send();
         responseContent = response.getContentAsString();
         assertEquals("Test with request URL", 200, response.getStatus());
-        System.out.println(responseContent);
-        assertNotNull(responseContent);
+        assertNotNull("ResponseContent was null: No content was returned", responseContent);
     }
 
     @Test
@@ -100,8 +99,6 @@ public class SimpleSubscriptionManagerTest{
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_unsubscribe.xml")));
 
         ContentResponse response = request.send();
-        String responseContent = response.getContentAsString();
-        System.out.println(responseContent);
         assertEquals("Response was wrong for url http://" + requestUrl, 500, response.getStatus());
     }
 
@@ -113,8 +110,6 @@ public class SimpleSubscriptionManagerTest{
 
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
-        System.out.println(subscription);
-
         HttpClient client = new HttpClient();
         client.setFollowRedirects(false);
         client.start();
@@ -123,11 +118,7 @@ public class SimpleSubscriptionManagerTest{
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_renew.xml")));
 
-        System.out.println(requestUrl);
-
         ContentResponse response = request.send();
-        String responseContent = response.getContentAsString();
-        System.out.println(responseContent);
-        assertEquals(200, response.getStatus());
+        assertEquals("Response status was wrong", 200, response.getStatus());
     }
 }

@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
@@ -13,9 +14,6 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.NamespaceContext;
@@ -83,7 +81,11 @@ public class TopicValidatorTest {
     private static final String testRootTopic2 = "root_topic2";
 
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+
         InputStream fis = null;
         try {
             fis = TopicValidatorTest.class.getResourceAsStream(gcmXPathFalsePathRes);
@@ -247,45 +249,6 @@ public class TopicValidatorTest {
                 fullLegalMultipleMsg.getRequestInformation().getNamespaceContext()
         );
     }
-
-    @Test
-    public void disassembleNamespaceContext() {
-        NamespaceContext nsc = xPathMulMsg.getRequestInformation().getNamespaceContext();
-        System.out.println("\n\nNamespace Context:\n\n" + nsc + "\n");
-    }
-
-    @Test
-    public void disassembleTopicSetToOutput() {
-        System.out.println("Topic set any size: " + topicSet.getAny().size());
-        for (Object o : topicSet.getAny()) {
-            System.out.println("Topic child class: " + o.getClass().toString());
-            Element elementNS = (Element)o;
-            System.out.println("\t" + elementNS.toString());
-            System.out.println("\tNamespace URI: " + elementNS.getNamespaceURI());
-            System.out.println("\tBase URI:" + elementNS.getBaseURI());
-            System.out.println("\tLocal name: " + elementNS.getLocalName());
-            System.out.println("\tPrefix: " + elementNS.getPrefix());
-            System.out.println("\tAttribute length: " + elementNS.getAttributes().getLength());
-            System.out.println("\tAttributes:");
-            NamedNodeMap attributes = elementNS.getAttributes();
-            String indent = "\t\t";
-            while (attributes != null) {
-                Node node;
-                for (int i = 0; i < attributes.getLength(); i++) {
-                    node = attributes.item(i);
-                    System.out.println();
-                    System.out.println(indent + "Prefix: " + node.getPrefix());
-                    System.out.println(indent + "Base URI: " + node.getBaseURI());
-                    System.out.println(indent + "Namespace URI" + node.getNamespaceURI());
-                    System.out.println(indent + "Local name: " + node.getLocalName());
-                    System.out.println(indent + "Text content: " + node.getTextContent());
-                }
-                attributes = null;
-            }
-        }
-    }
-
-
 
     @Test
     public void testGetIntersectionNull() throws Exception{

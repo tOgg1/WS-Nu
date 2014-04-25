@@ -13,6 +13,7 @@ import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
@@ -42,6 +43,10 @@ public class ApplicationServerWithHubTest{
 
     @BeforeClass
     public static void setUp() throws Exception {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+
         _stackFlag = false;
 
         _sendMessages = new ArrayList<>();
@@ -87,7 +92,7 @@ public class ApplicationServerWithHubTest{
 
         ContentResponse response = request.send();
 
-        assertEquals("Expected nothing, http status", 200, response.getStatus());
+        assertEquals("Expected nothing, http status", 500, response.getStatus());
 
         // Send a notify-request, expect something
         request = client.newRequest("http://localhost:8080/");
@@ -95,8 +100,6 @@ public class ApplicationServerWithHubTest{
         request.content(new InputStreamContentProvider(_sendMessages.get(0)));
 
         response = request.send();
-        System.out.println(response.getContentAsString());
-
         assertEquals("Expected something, http status", 200, response.getStatus());
     }
     @Test

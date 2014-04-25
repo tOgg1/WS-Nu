@@ -1,34 +1,40 @@
 package integration;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Body;
 import org.w3._2001._12.soap_envelope.Envelope;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by tormod on 3/13/14.
  */
 public class UnpackingConnectorTest {
 
-    private UnpackingConnector consumerConnector;
-    private NotificationConsumer consumer;
-    private ArrayList<Object> messages;
+    private static UnpackingConnector consumerConnector;
+    private static NotificationConsumer consumer;
+    private static ArrayList<Object> messages;
 
     private boolean stackTester = false;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+
         consumer = new NotificationConsumer(new SoapForwardingHub());
         consumerConnector = new UnpackingConnector(consumer);
         messages = new ArrayList<Object>();
@@ -52,13 +58,13 @@ public class UnpackingConnectorTest {
         stackTester = false;
         InternalMessage sendMessage = new InternalMessage(InternalMessage.STATUS_OK, messages.get(0));
         InternalMessage message = consumerConnector.acceptMessage(sendMessage);
-        assertTrue((message.statusCode & InternalMessage.STATUS_HAS_MESSAGE) == 0);
-        assertTrue(stackTester);
+        assertTrue("Message from connector did not have returnMessage", (message.statusCode & InternalMessage.STATUS_HAS_MESSAGE) == 0);
+        assertTrue("The stacktest-flag failed, notify never got called", stackTester);
     }
 
     @Test
     public void testGetServiceType(){
         Class someClass = consumerConnector.getServiceType();
-        assertEquals(someClass, consumer.getClass());
+        assertEquals("Class of connector is wrong when returned from connector", someClass, consumer.getClass());
     }
 }

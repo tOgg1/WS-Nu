@@ -1,9 +1,6 @@
 package org.ntnunotif.wsnu.base.net;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.FilterType;
@@ -26,6 +23,13 @@ public class XMLParserTest {
     private InputStream notifyTestStream = null;
     private InputStream soapTestStream = null;
     private InputStream subscribeTestStream = null;
+
+    @BeforeClass
+    public static void setUpClass() {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+    }
 
     @Before
     public void setup() {
@@ -63,8 +67,6 @@ public class XMLParserTest {
         Object parsedObject = XMLParser.parse(soapTestStream).getMessage();
         Assert.assertNotNull("Parsed object was null", parsedObject);
         JAXBElement element = (JAXBElement) parsedObject;
-        System.out.println(element.getDeclaredType());
-        System.out.println(element.getName());
         // TODO Complete test
         Envelope env =(Envelope) ((JAXBElement) parsedObject).getValue();
     }
@@ -86,9 +88,6 @@ public class XMLParserTest {
                 FilterType ft = subscribe.getFilter();
                 for (Object o : ft.getAny()) {
                     JAXBElement el = (JAXBElement) o;
-                    // printing of element content information
-                    System.out.println(el.getName());
-                    System.out.println(el.getDeclaredType());
                 }
             }
         } catch (Exception e) {

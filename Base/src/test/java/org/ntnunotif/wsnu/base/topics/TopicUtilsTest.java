@@ -4,12 +4,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,10 @@ public class TopicUtilsTest {
 
     @BeforeClass
     public static void setup() {
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
+
         fullQNameList = new ArrayList<>();
         List<QName> qNameList= new ArrayList<>();
         for (String ns: namespaces) {
@@ -127,7 +133,7 @@ public class TopicUtilsTest {
 
         ObjectFactory factory = new ObjectFactory();
         Object parseable = factory.createTopicExpression(topicExpressionType);
-        XMLParser.writeObjectToStream(parseable, System.out);
+        XMLParser.writeObjectToStream(parseable, new ByteArrayOutputStream());
         XMLParser.writeObjectToStream(parseable, new FileOutputStream(getClass().getResource(OUTQNameListTranslateRes).getFile()));
     }
 }

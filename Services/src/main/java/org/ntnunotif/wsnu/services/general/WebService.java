@@ -134,7 +134,6 @@ public abstract class WebService {
      */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
-        System.out.println(this.endpointReference);
         this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
         if(_connection == null) {
             Log.w("WebService", "Tried to force an endpoint reference for a null connector.");
@@ -244,7 +243,6 @@ public abstract class WebService {
         Subscribe subscribe = new Subscribe();
 
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        System.out.println(getEndpointReference());
         builder.address(getEndpointReference());
 
         W3CEndpointReference reference = builder.build();
