@@ -249,6 +249,36 @@ public class XMLParser {
     }
 
     /**
+     * Attempts to parse the given {@link org.ntnunotif.wsnu.base.util.InternalMessage}.
+     *
+     * @param internalMessage a container for the request to parse
+     * @return the internal message given as argument, with filled in additional request information
+     * @throws JAXBException if no way of parsing the request is found, or something else fails.
+     */
+    public static InternalMessage parse(InternalMessage internalMessage) throws JAXBException {
+        Log.d("XMLParser", "Parsing message from InternalMessage");
+        Object message = internalMessage.getMessage();
+        InternalMessage parsedMessage = null;
+        if (message instanceof InputStream) {
+            parsedMessage = parse((InputStream) message);
+        } else if (message instanceof XMLStreamReader) {
+            parsedMessage = parse((XMLStreamReader) message);
+        }
+
+        if (parsedMessage == null) {
+            Log.e("XMLParser", "Could not unmarshall object of class" + message.getClass());
+            throw new JAXBException("No way of unmarshalling " + message.getClass() + " 0found");
+        }
+
+        internalMessage.setMessage(parsedMessage.getMessage());
+
+        internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
+        internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+
+        return internalMessage;
+    }
+
+    /**
      * Parses the {@link javax.xml.stream.XMLStreamReader}, and returns the parsed tree structure
      *
      * @param xmlStreamReader The {@link javax.xml.stream.XMLStreamReader} to parse.

@@ -97,7 +97,7 @@ public class SoapForwardingHub implements Hub {
             //Envelope envelope;
             /* Try to parse and cast the message to a soap-envelope */
             try {
-                parsedMessage = XMLParser.parse((InputStream) internalMessage.getMessage());
+                parsedMessage = XMLParser.parse(internalMessage);
                 try {
                     // Check if message is any of the supported SOAP envelopes
                     JAXBElement message = (JAXBElement)parsedMessage.getMessage();
@@ -111,10 +111,6 @@ public class SoapForwardingHub implements Hub {
                         /* Re-use internalMessage object for optimization */
                         internalMessage.setMessage(message.getValue());
                     }
-
-                    /* Re-use internalMessage object for optimization */
-                    internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
-                    internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
 
                 }catch(ClassCastException e){
                     Log.e("SoapForwardingHub","Failed to cast message to a SOAP envelope");
