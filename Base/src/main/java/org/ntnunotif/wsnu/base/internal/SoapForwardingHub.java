@@ -225,11 +225,23 @@ public class SoapForwardingHub implements Hub {
             // Create a generic soap fault
             } else {
                 if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
-
+                    try {
+                        XMLParser.writeObjectToStream(Utilities.createSoapFault("Client", "The message did not contain any information relevant to any web service at this address"), streamToRequestor);
+                        return returnMessage;
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Something went horribly wrong while creating a soap fault: " + e.getMessage());
+                    }
+                } else {
+                    try {
+                        XMLParser.writeObjectToStream(Utilities.createSoapFault("Server", "Something went wrong at the server."), streamToRequestor);
+                        return returnMessage;
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Something went horribly wrong while creating a soap fault: " + e.getMessage());
+                    }
                 }
             }
-            Log.d("SoapForwardingHub", "Something went wrong, returning error");
-            return returnMessage;
         }
     }
 

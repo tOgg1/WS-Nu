@@ -373,7 +373,7 @@ public class Utilities {
         envelope.setBody(body);
         envelope.setHeader(header);
 
-        body.getAny().add(fault);
+        body.getAny().add(soapObjectFactory.createFault(fault));
 
         JAXBElement toSend = soapObjectFactory.createEnvelope(envelope);
         return toSend;
