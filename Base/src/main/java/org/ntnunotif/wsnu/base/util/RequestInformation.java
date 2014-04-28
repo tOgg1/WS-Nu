@@ -1,12 +1,16 @@
 package org.ntnunotif.wsnu.base.util;
 
+import org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo;
+
 import javax.xml.namespace.NamespaceContext;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Class containing meta-information about a request. Primarily used in an InternalMessage
+ *
  * @author Tormod Haugland
- * Created by tormod on 24.03.14.
+ *         Created by tormod on 24.03.14.
  */
 public class RequestInformation {
 
@@ -16,6 +20,8 @@ public class RequestInformation {
     private String _requestURL;
     private Map<String, String[]> _parameters;
     private int _httpStatus;
+
+    private List<NuParseValidationEventInfo> _parseValidationEventInfos;
 
 
     public RequestInformation() {
@@ -67,5 +73,25 @@ public class RequestInformation {
 
     public void setHttpStatus(int httpStatus) {
         this._httpStatus = httpStatus;
+    }
+
+    /**
+     * Gets the parse {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to the request. If
+     * schema validation is turned on, this will return <code>null</code>.
+     *
+     * @return the {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to this request or
+     * <code>null</code> if schema validation is turned on.
+     */
+    public List<NuParseValidationEventInfo> getParseValidationEventInfos() {
+        return _parseValidationEventInfos;
+    }
+
+    /**
+     * Sets the {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to the request
+     *
+     * @param parseValidationEventInfos the infos to set
+     */
+    public void setParseValidationEventInfos(List<NuParseValidationEventInfo> parseValidationEventInfos) {
+        this._parseValidationEventInfos = parseValidationEventInfos;
     }
 }

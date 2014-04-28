@@ -6,6 +6,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
+import javax.xml.namespace.QName;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * The <code>XMLParser</code> is a static tool utility for parsing XML documents to and from Java objects.
@@ -267,7 +269,17 @@ public class XMLParser {
         }
         try {
             Unmarshaller unmarshaller = getUnmarshaller();
+            NuRequestInformationValidationEventHandler validationEventHandler = null;
+            if (_skippingSchemaValidation) {
+                validationEventHandler = new NuRequestInformationValidationEventHandler(filter);
+                unmarshaller.setEventHandler(validationEventHandler);
+            }
             InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, unmarshaller.unmarshal(xmlStreamReader));
+
+            if (validationEventHandler != null) {
+                msg.getRequestInformation().setParseValidationEventInfos(validationEventHandler.parseValidationEventInfos);
+            }
+
             msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
             return msg;
         } catch (JAXBException e) {
@@ -337,14 +349,23 @@ public class XMLParser {
      */
     private class WSStreamFilter implements StreamFilter {
         NuNamespaceContext namespaceContext = new NuNamespaceContext();
+        Stack<QName> elementPath = new Stack<>();
+        XMLStreamReader reader;
 
         @Override
         public boolean accept(XMLStreamReader reader) {
+            this.reader = reader;
+
             if (reader.isStartElement()) {
+                elementPath.push(reader.getName());
+
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);
                     namespaceContext.put(prefix, reader.getNamespaceURI(i));
                 }
+
+            } else if (reader.isEndElement()) {
+                elementPath.pop();
             }
             return true;
         }
@@ -376,6 +397,37 @@ public class XMLParser {
             Log.w("XMLParser.NuValidationEventHandler", "A" + (event.getSeverity() == ValidationEvent.WARNING ?
                     " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing " +
                     "(severity level " + event.getSeverity() + ")");
+            return true;
+        }
+    }
+
+    /**
+     * A {@link javax.xml.bind.ValidationEventHandler} used when schema validation is turned off to log validation errors.
+     */
+    private static class NuRequestInformationValidationEventHandler implements ValidationEventHandler {
+
+        final WSStreamFilter filter;
+        final List<NuParseValidationEventInfo> parseValidationEventInfos = new ArrayList<>();
+
+        NuRequestInformationValidationEventHandler(WSStreamFilter filter) {
+            this.filter = filter;
+        }
+
+        @Override
+        public boolean handleEvent(ValidationEvent event) {
+
+            Stack<QName> path = (Stack<QName>) filter.elementPath.clone();
+            boolean isStartElement = filter.reader.isStartElement();
+            boolean isEndElement = filter.reader.isEndElement();
+            int eventType = filter.reader.getEventType();
+            QName currentName = isStartElement || isEndElement ? filter.reader.getName() : null;
+
+            NuParseValidationEventInfo info = new NuParseValidationEventInfo(event, event.getSeverity(), currentName,
+                    path, eventType, isStartElement, isEndElement);
+
+            parseValidationEventInfos.add(info);
+
+            Log.d("XMLParser.NuRequestInformationValidationEventHandler", "Validation event logged: " + event.toString());
             return true;
         }
     }
