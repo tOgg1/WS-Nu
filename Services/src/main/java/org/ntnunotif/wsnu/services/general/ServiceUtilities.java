@@ -1057,6 +1057,8 @@ public class ServiceUtilities {
                     throw new IllegalArgumentException("The QueryExpressionType had too complex content");
                 } else
                     retValue = (String)o;
+            } else {
+                throw new IllegalArgumentException("The QueryExpressionType had too complex content");
             }
         }
         if (retValue == null) {
