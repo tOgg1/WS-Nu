@@ -255,7 +255,7 @@ public class XMLParser {
      * @return the internal message given as argument, with filled in additional request information
      * @throws JAXBException if no way of parsing the request is found, or something else fails.
      */
-    public static InternalMessage parse(InternalMessage internalMessage) throws JAXBException {
+    public static void parse(InternalMessage internalMessage) throws JAXBException {
         Log.d("XMLParser", "Parsing message from InternalMessage");
         Object message = internalMessage.getMessage();
         InternalMessage parsedMessage = null;
@@ -274,8 +274,6 @@ public class XMLParser {
 
         internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
         internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
-
-        return internalMessage;
     }
 
     /**
