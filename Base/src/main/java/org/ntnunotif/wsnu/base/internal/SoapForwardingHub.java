@@ -114,6 +114,7 @@ public class SoapForwardingHub implements Hub {
 
                     /* Re-use internalMessage object for optimization */
                     internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+                    internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
 
                 }catch(ClassCastException e){
                     Log.e("SoapForwardingHub","Failed to cast message to a SOAP envelope");
