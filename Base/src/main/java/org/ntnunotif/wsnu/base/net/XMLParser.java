@@ -5,10 +5,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -67,16 +64,27 @@ public class XMLParser {
             "/schemas/org.xmlsoap.schemas.soap.envelope.xsd"
     };
 
+    /**
+     * If schema validation is done, this determines which severity level the validation should stop parsing at.
+     */
+    private static int _stopParsingAtSeverity = ValidationEvent.FATAL_ERROR;
+
+    /**
+     * If there exists external schemas, they should be referenced here.
+     */
     private static final List<String> externalSchemaLocations = new ArrayList<>();
 
-    private static boolean _skippingSchemaValidation = false;
+    /**
+     * Tells whether parser should skip schema validation.
+     */
+    private static boolean _skippingSchemaValidation = true;
 
-    // Ensure schemas are parsed on load
+    /**
+     * Ensure schemas are parsed on load, if needed
+     */
     static {
-        try {
+        if (!_skippingSchemaValidation) {
             updateSchema();
-        } catch (JAXBException e) {
-            Log.e("XMLParser", "Could not load schemas for validation properly.");
         }
     }
 
@@ -103,6 +111,13 @@ public class XMLParser {
         }
     }
 
+    /**
+     * Register an external schema with this parser.
+     *
+     * @param systemID the ID of the external schema, registration done through a
+     *                 {@link javax.xml.transform.stream.StreamSource}. For more information, see {@link javax.xml.transform.stream.StreamSource#StreamSource(java.lang.String)}
+     * @throws JAXBException
+     */
     public static void registerSchemaLocation(String systemID) throws JAXBException {
         Log.d("XMLParser", "External schema location added");
         externalSchemaLocations.add(systemID);
@@ -125,10 +140,12 @@ public class XMLParser {
                     updateSchema();
 
                 // If they still are not okay, something has gone terribly wrong.
-                if (schema == null)
+                if (schema == null) {
                     Log.w("XMLParser", "Schema creation failed, unable to validate.");
-                else
+                } else {
                     unmarshaller.setSchema(schema);
+                    unmarshaller.setEventHandler(new NuValidationEventHandler(_stopParsingAtSeverity));
+                }
             }
         }
         return unmarshaller;
@@ -153,7 +170,13 @@ public class XMLParser {
         }
     }
 
-    private static Schema updateSchema() throws JAXBException {
+    /**
+     * Updates the {@link javax.xml.validation.Schema} used for validation. This includes both internal schemas and
+     * external ones.
+     *
+     * @return The newly generated schema.
+     */
+    private static Schema updateSchema() {
         synchronized (XMLParser.class) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             StreamSource[] streamSources = new StreamSource[builtInSchemaLocations.length + externalSchemaLocations.size()];
@@ -196,6 +219,7 @@ public class XMLParser {
                     Log.w("XMLParser", "Unable to create schemas, schema validation not performed");
                 } else {
                     marshaller.setSchema(schema);
+                    marshaller.setEventHandler(new NuValidationEventHandler(_stopParsingAtSeverity));
                 }
             }
         }
@@ -265,15 +289,52 @@ public class XMLParser {
         getMarshaller().marshal(object, outputStream);
     }
 
+    /**
+     * Tells if parser is set to skip validation against schemas or not.
+     *
+     * @return
+     */
     public static boolean isSkippingSchemaValidation() {
         return _skippingSchemaValidation;
     }
 
+    /**
+     * Sets if parser should validate against schemas or not.
+     *
+     * @param _skippingSchemaValidation if this parser should skip schema validation.
+     */
     public static void setSkippingSchemaValidation(boolean _skippingSchemaValidation) {
         XMLParser._skippingSchemaValidation = _skippingSchemaValidation;
+        if (!_skippingSchemaValidation && schema == null) {
+            updateSchema();
+        }
     }
 
+    /**
+     * Gets the severity this parser should stop parsing at.
+     *
+     * @return the severity level
+     * @see javax.xml.bind.ValidationEvent#WARNING
+     * @see javax.xml.bind.ValidationEvent#ERROR
+     * @see javax.xml.bind.ValidationEvent#FATAL_ERROR
+     */
+    public static int getStopParsingAtSeverity() {
+        return _stopParsingAtSeverity;
+    }
 
+    /**
+     * Sets the severity this parser should stop parsing at.
+     *
+     * @param value The severity level. Should be one of {@link javax.xml.bind.ValidationEvent#WARNING},
+     *              {@link javax.xml.bind.ValidationEvent#ERROR} or {@link javax.xml.bind.ValidationEvent#FATAL_ERROR}
+     */
+    public static void setStopParsingAtSeverity(int value) {
+        _stopParsingAtSeverity = value;
+    }
+
+    /**
+     * Stream filter that keeps track of namespaces during parsing from xml.
+     */
     private class WSStreamFilter implements StreamFilter {
         NuNamespaceContext namespaceContext = new NuNamespaceContext();
 
@@ -290,6 +351,32 @@ public class XMLParser {
 
         public NuNamespaceContext getNamespaceContext() {
             return namespaceContext;
+        }
+    }
+
+    /**
+     * A {@link javax.xml.bind.ValidationEventHandler} used in schema validation.
+     */
+    private static class NuValidationEventHandler implements ValidationEventHandler {
+        final int _severityStop;
+
+        NuValidationEventHandler(final int severityStop) {
+            _severityStop = severityStop;
+        }
+
+        @Override
+        public boolean handleEvent(ValidationEvent event) {
+            if (event.getSeverity() >= _severityStop) {
+                Log.e("XMLParser.NuValidationEventHandler", "A too severe event occurred during parsing, message given:"
+                        + event.getMessage() + " at line: " + event.getLocator().getLineNumber() + ", column: " +
+                        event.getLocator().getColumnNumber() + (event.getLocator().getNode() == null ? "" :
+                        (" (node " + event.getLocator().getNode().getNodeName() + ")")));
+                return false;
+            }
+            Log.w("XMLParser.NuValidationEventHandler", "A" + (event.getSeverity() == ValidationEvent.WARNING ?
+                    " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing " +
+                    "(severity level " + event.getSeverity() + ")");
+            return true;
         }
     }
 }
