@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.base.util;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo;
 
 import javax.xml.namespace.NamespaceContext;
@@ -43,12 +44,31 @@ public class RequestInformation {
         this._parameters = _parameters;
     }
 
+    /**
+     * @deprecated use getNamespaceContext(Object) instead
+     * @return a non guaranteed namespace context
+     */
+    @Deprecated
     public NamespaceContext getNamespaceContext() {
         return _namespaceContext;
     }
 
+    /**
+     * @deprecated use setNamespaceContextResolver(NuNamespaceContextResolver) instead
+     * @param _context the non-guaranteed context
+     */
+    @Deprecated
     public void setNamespaceContext(NamespaceContext _context) {
         this._namespaceContext = _context;
+    }
+
+    public void setNamespaceContextResolver(NuNamespaceContextResolver resolver) {
+        // TODO
+    }
+
+    public NamespaceContext getNamespaceContext(Object object) {
+        // TODO
+        return _namespaceContext;
     }
 
     public String getEndpointReference() {
