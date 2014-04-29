@@ -2,11 +2,12 @@ package org.ntnunotif.wsnu.examples.StockBroker;
 
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.Utilities;
 import org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
-import org.oasis_open.docs.wsn.brw_2.RegisterPublisher;
 import org.xmlsoap.schemas.soap.envelope.Body;
 import org.xmlsoap.schemas.soap.envelope.Envelope;
 import org.xmlsoap.schemas.soap.envelope.Header;
@@ -14,6 +15,7 @@ import org.xmlsoap.schemas.soap.envelope.Header;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -162,9 +164,17 @@ public class StockPublisher {
 
     public void sendUpdatedStock(StockChanged stockChanged){
         Notify notify = ServiceUtilities.createNotify(stockChanged, brokerReference, ApplicationServer.getURI());
+
         Envelope envelope = generateEnvelope();
         envelope.getBody().getAny().add(notify);
-        InternalMessage message = new InternalMessage();
+
+        InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
+        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK| InternalMessage.STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+
+        InternalMessage returnMessage = server.sendMessage(message);
+        if(returnMessage.statusCode != InternalMessage.STATUS_OK){
+            Log.e("StockPublisher", "Something went wrong at the broker...");
+        }
     }
 
     /**
@@ -183,11 +193,17 @@ public class StockPublisher {
         String webPage = (String) responseMessage;
 
         ArrayList<StockChanged> stocks = getStocks(webPage);
+
         for (StockChanged stock : stocks) {
             String symbol = stock.getSymbol();
             if(!storedStocks.containsKey(symbol)){
                 storedStocks.put(symbol, stock);
                 sendUpdatedStock(stock);
+            } else {
+                if(!equals(storedStocks.get(symbol), stock)){
+                    sendUpdatedStock(stock);
+                    storedStocks.put(symbol, stock);
+                }
             }
         }
     }
