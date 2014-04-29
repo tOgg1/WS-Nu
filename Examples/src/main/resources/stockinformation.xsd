@@ -1,0 +1,15 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="StockChanged">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Symbol" type="xs:string"></xs:element>
+                <xs:element name="Name" type="xs:string"></xs:element>
+                <xs:element name="LastChange" type="xs:string"></xs:element>
+                <xs:element name="Value" type="xs:float"></xs:element>
+                <xs:element name="ChangeAbsolute" type="xs:float"></xs:element>
+                <xs:element name="ChangeRelative" type="xs:float"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

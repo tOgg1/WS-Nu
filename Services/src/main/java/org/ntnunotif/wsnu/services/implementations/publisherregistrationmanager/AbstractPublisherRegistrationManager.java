@@ -37,13 +37,41 @@ public abstract class AbstractPublisherRegistrationManager extends WebService im
      */
     private ArrayList<PublisherChangedListener> _listeners = new ArrayList<>();
 
+    /**
+     * Constructor using the default schedule interval of 60 seconds
+     */
     protected AbstractPublisherRegistrationManager(){
-        setScheduleInterval(60);
+        super();
+        _scheduleInterval = 60;
+        setScheduleInterval(_scheduleInterval);
     }
 
+    /**
+     * Constructor taking in a hub as an argument
+     * @param hub
+     */
     protected AbstractPublisherRegistrationManager(Hub hub) {
         super(hub);
-        setScheduleInterval(60);
+        _scheduleInterval = 60;
+        setScheduleInterval(_scheduleInterval);
+    }
+
+    /**
+     * Constructor taking in the schedule interval as an argument.
+     */
+    protected AbstractPublisherRegistrationManager(int scheduleInterval){
+        super();
+        _scheduleInterval = scheduleInterval;
+        setScheduleInterval(scheduleInterval);
+    }
+
+    /**
+     * Constructor taking both a hub and the scheduleinterval as arguments.
+     */
+    protected AbstractPublisherRegistrationManager(Hub hub, int scheduleInterval){
+        super(hub);
+        _scheduleInterval = scheduleInterval;
+        setScheduleInterval(scheduleInterval);
     }
 
     /**

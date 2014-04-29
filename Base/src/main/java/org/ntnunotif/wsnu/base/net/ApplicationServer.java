@@ -183,6 +183,38 @@ public class ApplicationServer{
         }
     }
 
+    /**
+     * Starts the server without a hub-conncetion, only allowing for messages to be sent out
+     */
+    public void startNoHub() throws Exception {
+        if(_isRunning){
+            return;
+        }
+
+        _isRunning = true;
+        _client = new HttpClient();
+        _client.setFollowRedirects(false);
+        _client.start();
+
+               /* Start server */
+        try {
+            _serverThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        _server.start();
+                        _server.join();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            _serverThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void restart() throws Exception{
         _server.stop();
@@ -263,16 +295,17 @@ public class ApplicationServer{
 
         /* Create the actual http-request*/
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
-        request.method(HttpMethod.POST);
 
         /* Try to send the message */
         try{
             /* Raw request */
             if((message.statusCode & STATUS_HAS_MESSAGE) == 0){
+                request.method(HttpMethod.GET);
                 Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
                 ContentResponse response = request.send();
                 return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
             }else{
+                request.method(HttpMethod.POST);
                 if((message.statusCode & STATUS_MESSAGE_IS_INPUTSTREAM) == 0){
                     Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
                           "Please convert your message to an InputStream before calling this methbod.");
@@ -320,6 +353,11 @@ public class ApplicationServer{
          */
         @Override
         public void handle(String s, org.eclipse.jetty.server.Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
+
+            if(_parentHub == null){
+                httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
+                request.setHandled(true);
+            }
 
             /* Handle headers */
             Enumeration<String> headerNames = httpServletRequest.getHeaderNames();

@@ -581,6 +581,7 @@ public class ServiceUtilities {
             currentTimeStamp += 1000*Long.parseLong(matcher.group().replace("S", ""));
         }
 
+
         return currentTimeStamp;
     }
 

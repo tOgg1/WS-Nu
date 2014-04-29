@@ -1,0 +1,2944 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script language="javascript">
+        if (location.href.indexOf('/commentsChild?') == -1){
+                document.write("<scr"+"ipt type='text/javascript' src='//nexus.ensighten.com/reuters/Bootstrap.js'></scr"+"ipt>");
+        }
+</script>
+
+<title>Market Indices | Reuters.com</title>
+		<meta id="MetaDescription" name="description" content="Reuters.com for the latest indices and markets news."></meta>
+		<meta id="MetaKeywords" name="keywords" content="indices, Dow Jones Industrial Average, DJIA, Nasdaq, NYSE">
+
+
+<meta name="parsely-page" content='{"type": "sectionpage","tags": "[indices, Dow Jones Industrial Average, DJIA, Nasdaq, NYSE]", "title": "", "link": "", "image_url": "", "post_id": "", "pub_date": "", "section": "", "author": "" }' >
+			<link rel="shortcut icon" href="/resources/images/favicon.ico" />
+  <link rel="icon" href="/resources/images/favicon.ico"  />
+
+	<link href="http://s3.reutersmedia.net/resources_v2/css/rcom-main.css" rel="stylesheet" />
+<script src="http://s3.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/yahoo/yahoo-min.js" type="text/javascript"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/event/event-min.js" type="text/javascript"></script>
+	<script src="http://s3.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/dom/dom-min.js" type="text/javascript"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script>
+	<script src="http://s3.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/animation/animation-min.js" type="text/javascript"></script>
+	<script src="http://s3.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/connection/connection-min.js" type="text/javascript"></script>
+	<script src="http://s2.reutersmedia.net/resources_v2/js/libraries/yui_2_7_0/cookie/cookie-min.js" type="text/javascript"></script>
+<script src="http://s3.reutersmedia.net/resources_v2/js/libraries/jquery-1.6.1.min.js" type="text/javascript"></script>
+<script src="http://s3.reutersmedia.net/resources_v2/js/rcom-main.js"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/rcom-agent.js"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/extensions.js"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/rcom-ads.js"></script>
+	<script src="http://s4.reutersmedia.net/resources_v2/js/rcom-wt-mlt.js"></script>
+	<script src="http://s2.reutersmedia.net/resources_v2/js/rcom-pid.js"></script>
+	<script src="http://s3.reutersmedia.net/resources_v2/js/rcom-geoIP.js"></script>
+<script type="text/javascript" src="http://s4.reutersmedia.net/resources_v2/js/rcom-tns.js"></script>
+<link href="/resources_v2/css/rcom-section.css" rel="stylesheet" />
+<script language="javascript" src="/resources_v2/js/rcom-section.js"></script>
+<script type="text/javascript" type="text/javascript" src="http://s2.reutersmedia.net/resources_v2/js/refresh.js" ></script>
+	<noscript><meta http-equiv="refresh" content="480;url=/home"></noscript>
+
+
+</head>
+<body>
+
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W9SLGS"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>if (location.href.indexOf('/commentsChild?') == -1){ (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})
+(window,document,'script','dataLayer','GTM-W9SLGS'); }</script>
+<!-- End Google Tag Manager -->
+
+<script>
+var revop_wtfpc = YAHOO.util.Cookie.get("WT_FPC"); // read webtrends cookie
+if (revop_wtfpc==null) {
+	var u = ";U=NC;";
+	}
+else
+	{
+	var u = ";U="+revop_wtfpc+";";
+	}
+</script> <!-- see if snrd cookie was set by trigger page -->
+<script>
+var srnd = YAHOO.util.Cookie.get("srnd_keyword");
+var srnd_sequence = YAHOO.util.Cookie.get("srnd_sequence");
+if (srnd!=null && srnd!="")
+  {
+         var srnd="srnd="+srnd+";srnd_sequence="+srnd_sequence+";";
+  }
+
+</script>
+
+
+<link href="http://s4.reutersmedia.net/resources_v2/css/rcom-masthead-nav-new.css" rel="stylesheet" />
+<script src="/assets/info" type="text/javascript"></script>
+<script type="text/javascript">
+var currentUsedEdition = 'BETAUS';
+</script>
+
+<div id="header">
+<a name="top" id="top" style="position: absolute;overflow:hidden;">&nbsp;</a>
+	<div id="marketsHeader"></div>
+    <div id="market-cont"><div id="md-toggle"></div></div>
+	<div id="masthead">
+		<div class="mast-strip">
+		<div id="logo"><a id="logoLink" href="/" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'logo','label':''});" ><img src="/resources_v2/images/masthead-logo.gif" alt="Reuters" border="0" /></a></div>
+
+	<div id="editionsTop" class="panel editions">
+			<ul id="editionSwitchTop" class="editionSwitch">
+				<li>
+					<div class="currentEditionTitle">Edition:</div>
+					<div class="currentEdition">U.S.</div>
+					<div class="editionArrow"></div>
+					<ul>
+                    	<li><a href="http://af.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});" >Africa</a></li>
+						<li><a href="http://ara.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});" >Arabic</a></li>
+						<li><a href="http://ar.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});" >Argentina</a></li>
+						<li><a href="http://br.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});" >Brazil</a></li>
+						<li><a href="http://ca.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});" >Canada</a></li>
+						<li><a href="http://cn.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">China</a></li>
+						<li><a href="http://fr.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">France</a></li>
+						<li><a href="http://de.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Germany</a></li>
+<li><a href="http://in.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">India</a></li>
+<li><a href="http://it.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Italy</a></li>
+						<li><a href="http://jp.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Japan</a></li>
+						<li><a href="http://lta.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Latin America</a></li>
+						<li><a href="http://mx.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Mexico</a></li>
+				    <li><a href="http://ru.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Russia</a></li>
+						<li><a href="http://es.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">Spain</a></li>
+<li><a href="http://uk.reuters.com" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'edition switcher','label':$(this).attr('href')});">United Kingdom</a></li>
+</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="search" class="panel">
+		<div id="searchbox">
+			<form id="searchForm" name="searchbox" method="get" action="/search" autocomplete="off">
+				<input id="searchfield" name="blob" type="text" value="Search News & Quotes" size="30"
+					onfocus="var strSearchValue = document.forms['searchbox'].blob.value;if(strSearchValue.trim() == 'Search News & Quotes'){document.forms['searchbox'].blob.value = '';}"
+					onblur="var strSearchValue = document.forms['searchbox'].blob.value;if(strSearchValue.trim() == ''){document.forms['searchbox'].blob.value = 'Search News & Quotes';}"
+					onkeypress="if(event.keyCode == 13) {document.forms['searchbox'].submit();return false;}" maxlength="128"
+				/>
+				<input type="submit" id="searchbuttonNav" onclick="return Reuters.utils.submitSearch();" value="" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'search','label': document.forms['searchbox'].blob.value});" >
+			</form>
+		</div>
+	</div>
+		<div id="utilities" class="panel"></div>
+	</div>
+	</div>
+
+	<div id="dd-navigation">
+    	<div id="nav-strip">
+            <ul>
+                <li class="nav-item no-subnav" id="nav-item_1"><a href="/home" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Home</span></a>
+                    </li>
+                <li class="nav-item" id="nav-item_2"><a href="/finance" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Business</span></a>
+                    <div class="subnav " id="subnav_2">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/finance" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Business Home</a></li>
+                            <li class=""><a href="/finance/economy" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Economy</a></li>
+                            <li class=""><a href="http://newsandinsight.thomsonreuters.com/Legal/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Legal</a></li>
+                            <li class=""><a href="/finance/deals" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Deals</a></li>
+                            <li class=""><a href="/news/video?videoChannel=5" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Business Video</a></li>
+                            <li class=""><a href="/subjects/aerospace-and-defense" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Aerospace & Defense</a></li>
+                            <li class=""><a href="/subjects/banks" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Banks</a></li>
+                            <li class=""><a href="/subjects/autos" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Autos</a></li>
+                            <li class=""><a href="/finance/summits" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Reuters Summits</a></li>
+                            <li class="lastChild "><a href="/finance/smallBusiness" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Small Business</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item active" id="nav-item_3"><a href="/finance/markets" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Markets</span></a>
+                    <div class="subnav double" id="subnav_3">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/finance/markets" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Markets Home</a></li>
+                            <li class=""><a href="/finance/markets/us" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >U.S. Markets</a></li>
+                            <li class=""><a href="/finance/markets/europe" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >European Markets</a></li>
+                            <li class=""><a href="/finance/markets/asia" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Asian Markets</a></li>
+                            <li class=""><a href="/finance/global-market-data" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Global Market Data</a></li>
+                            <li class="active "><a href="/finance/markets/indices" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Indices</a></li>
+                            <li class=""><a href="/finance/stocks" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Stocks</a></li>
+                            <li class="lastChild "><a href="/finance/bonds" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Bonds</a></li>
+                            </ul><ul class="two"><li class=""><a href="/finance/currencies" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Currencies</a></li>
+                            <li class=""><a href="/finance/commodities" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Commodities</a></li>
+                            <li class=""><a href="/finance/futures" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Futures</a></li>
+                            <li class=""><a href="/finance/funds" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Funds</a></li>
+                            <li class=""><a href="http://www.pehub.com/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >peHUB</a></li>
+                            <li class=""><a href="/finance/EarningsUS" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Earnings</a></li>
+                            <li class="lastChild "><a href="/finance/markets/dividends" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Dividends</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_4"><a href="/news/world" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">World</span></a>
+                    <div class="subnav double" id="subnav_4">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/news/world" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >World Home</a></li>
+                            <li class=""><a href="/news/us" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >U.S.</a></li>
+                            <li class=""><a href="/subjects/specialReports" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Special Reports</a></li>
+                            <li class=""><a href="http://www.reuters.com/investigates" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Reuters Investigates</a></li>
+                            <li class=""><a href="/subjects/euro-zone" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Euro Zone</a></li>
+                            <li class=""><a href="/subjects/middle-east" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Middle East</a></li>
+                            <li class="lastChild "><a href="/places/china" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >China</a></li>
+                            </ul><ul class="two"><li class=""><a href="/places/japan" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Japan</a></li>
+                            <li class=""><a href="/places/mexico" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Mexico</a></li>
+                            <li class=""><a href="/places/brazil" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Brazil</a></li>
+                            <li class=""><a href="/places/africa" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Africa</a></li>
+                            <li class=""><a href="/places/russia" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Russia</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/india" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >India Insight</a></li>
+                            <li class="lastChild "><a href="/news/video?videoChannel=117760" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >World Video</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_5"><a href="/politics" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Politics</span></a>
+                    <div class="subnav " id="subnav_5">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/politics" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Politics Home</a></li>
+                            <li class=""><a href="/subjects/supreme-court" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Supreme Court</a></li>
+                            <li class="lastChild "><a href="/news/video?videoChannel=1003" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Politics Video</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_6"><a href="/news/technology" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Tech</span></a>
+                    <div class="subnav " id="subnav_6">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/news/technology" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Technology Home</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/mediafile" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >MediaFile</a></li>
+                            <li class=""><a href="/news/science" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Science</a></li>
+                            <li class=""><a href="/news/video?videoChannel=6" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Tech Video</a></li>
+                            <li class="lastChild "><a href="/bizfinance/technology/Top100Innovators" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Top 100 Global Innovators</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_7"><a href="http://blogs.reuters.com/us/" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Opinion</span></a>
+                    <div class="subnav double" id="subnav_7">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="http://blogs.reuters.com/us/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Opinion Home</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/john-lloyd" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >John Lloyd</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/felix-salmon" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Felix Salmon</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/jackshafer" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Jack Shafer</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/david-rohde" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >David Rohde</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/nicholas-wapshott/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Nicholas Wapshott</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/bethany-mclean/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Bethany McLean</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/anatole-kaletsky" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Anatole Kaletsky</a></li>
+                            <li class="lastChild "><a href="http://blogs.reuters.com/edward-hadas/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Edward Hadas</a></li>
+                            </ul><ul class="two"><li class=""><a href="http://blogs.reuters.com/hugo-dixon/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Hugo Dixon</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/ian-bremmer/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Ian Bremmer</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/lawrencesummers/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Lawrence Summers</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/great-debate" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >The Great Debate</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/reihan-salam/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Reihan Salam</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/mark-leonard" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Mark Leonard</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/stories-id-like-to-see/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Steven Brill</a></li>
+                            <li class="lastChild "><a href="http://blogs.reuters.com/alison-frankel/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Alison Frankel</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_8"><a href="http://blogs.reuters.com/breakingviews/" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Breakingviews</span></a>
+                    <div class="subnav " id="subnav_8">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/equities/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Equities</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/credit" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Credit</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/private-equity/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Private Equity</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/m-a/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >M&A</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/macro-markets/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Macro & Markets</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/breakingviews/category/politics/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Politics</a></li>
+                            <li class="lastChild "><a href="/news/video/reuters-tv/breakingviews" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Breakingviews Video</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_9"><a href="/finance/personal-finance" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Money</span></a>
+                    <div class="subnav double" id="subnav_9">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/finance/personal-finance" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Money Home</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/taxbreak/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Tax Break</a></li>
+                            <li class=""><a href="/subjects/us-lipper-awards" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Lipper Awards</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/globalinvesting" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Global Investing</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/muniland" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >MuniLand</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/unstructuredfinance/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Unstructured Finance</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/linda-stern/ " target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Linda Stern</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/mark-miller/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Mark Miller</a></li>
+                            <li class="lastChild "><a href="http://blogs.reuters.com/john-wasik/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >John Wasik</a></li>
+                            </ul><ul class="two"><li class=""><a href="http://blogs.reuters.com/jim-saft/" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >James Saft</a></li>
+                            <li class=""><a href="https://commerce.us.reuters.com/purchase/default.do" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Analyst Research</a></li>
+                            <li class=""><a href="http://alerts.us.reuters.com/US/company.asp" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Alerts</a></li>
+                            <li class=""><a href="http://portfolio.us.reuters.com/US/watchlist/create.asp" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Watchlist</a></li>
+                            <li class=""><a href="http://portfolio.us.reuters.com/US/public/index.asp" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Portfolio</a></li>
+                            <li class=""><a href="http://stockscreener.us.reuters.com/Stock/US/Index?quickscreen=gaarp" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Stock Screener</a></li>
+                            <li class=""><a href="http://funds.us.reuters.com/US/screener/screener.asp" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Fund Screener</a></li>
+                            <li class="lastChild "><a href="/news/video?videoChannel=303" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Personal Finance Video</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_10"><a href="/news/lifestyle" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Life</span></a>
+                    <div class="subnav " id="subnav_10">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/news/health" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Health</a></li>
+                            <li class=""><a href="/news/sports" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Sports</a></li>
+                            <li class=""><a href="/news/entertainment/arts" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Arts</a></li>
+                            <li class=""><a href="/news/entertainment" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Entertainment</a></li>
+                            <li class=""><a href="/news/oddlyEnough" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Oddly Enough</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/faithworld" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Faithworld</a></li>
+                            <li class="lastChild "><a href="/news/video?videoChannel=1004" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Lifestyle Video</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item" id="nav-item_11"><a href="/news/pictures" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Pictures</span></a>
+                    <div class="subnav " id="subnav_11">
+
+                        <div class="subnav-inner">
+                        <ul class="one">
+
+                            <li class=""><a href="/news/pictures" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Pictures Home</a></li>
+                            <li class=""><a href="http://blogs.reuters.com/photo" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Reuters Photographers</a></li>
+                            <li class="lastChild "><a href="http://blogs.reuters.com/fullfocus" target="_top" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sub-sections','label':$(this).attr('href')});" >Full Focus</a></li>
+                            </ul>
+
+                       </div>
+
+                       </div>
+
+                       </li>
+                <li class="nav-item no-subnav" id="nav-item_12"><a href="/news/video/" onmousedown="dataLayer.push({'event':'click-event','category':'navigation','action':'sections','label':$(this).attr('href')});" ><span class="primary-link">Video</span></a>
+                    </li>
+                </ul>
+       	</div>
+    </div>
+</div>
+<script src="http://s2.reutersmedia.net/resources_v2/js/libraries/jquery.bgiframe.js" type="text/javascript"></script>
+<script src="http://s4.reutersmedia.net/resources_v2/js/rcom-nav.js" type="text/javascript"></script>
+
+<div id="content"><div class="section bleeding" id="breakingNewsBand">
+	<div class="sectionContent">
+
+
+<div class="linebreak"></div>
+	<div class="sectionColumns">
+
+<div class="gridPanel grid12">
+<div id="breakingNewsContent"></div>
+<script type="text/javascript">
+Reuters.utils.replaceContent("breakingNewsContent", "/assets/breakingNews", null, null);
+</script>
+
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="section bleeding" id="bannerStrip">
+	<div class="sectionContent">
+<div class="sectionColumns">
+
+<div class="gridPanel grid12">
+<style>
+
+
+#bannerStrip
+.sectionContent { width: 990px; }
+.sectionContent .grid12 { width: 960px !important; }
+.sectionContent .grid12 .ad { margin: 0; }
+#homepageSponsorBand, #adTopBanner { margin-bottom: 0px; }
+
+
+</style>
+
+<div class="linebreak"></div>
+	<div class="ad" id="leaderboard">
+
+		<script language="javascript" type="text/javascript">
+
+		  var adsrc = 'us.reuters/bizfinance/markets/indices;' + 'type=leaderboard;sz=728x90;tile=1;' + '';
+		  adsrc = TR.createDFPUrl(adsrc);
+		  if ( typeof(AD_TRACKER) != 'undefined' ) {
+		     adsrc = AD_TRACKER.processAdSrcType(adsrc);
+		  }
+
+
+		  if ((typeof (hideAllAds) == 'undefined' || hideAllAds == false) && (typeof (AD_TRACKER) == 'undefined' || AD_TRACKER.isAdHidden('leaderboard') == false) &&
+		      (typeof (hideAd_10033840) == 'undefined' || hideAd_10033840 == false)) {
+              if (typeof (TR) !== "undefined") {
+                 TR.writeDFPURL("http://ad.doubleclick.net/N4735792/adj/" + adsrc);
+              }
+		  }
+
+		  </script>
+
+		<noscript>
+		    <a href="http://ad.doubleclick.net/N4735792/jump/us.reuters/bizfinance/markets/indices;type=leaderboard;sz=728x90;tile=1;ord=1851?" target="_blank">
+		      <img src="http://ad.doubleclick.net/N4735792/ad/us.reuters/bizfinance/markets/indices;type=leaderboard;sz=728x90;tile=1;ord=1851?" width="728" height="90" border="0" alt="">
+		    </a>
+		</noscript>
+
+		</div>
+
+		</div>
+
+</div>
+
+</div>
+</div>
+<div class="section gridlined8" id="topContent">
+	<div class="sectionContent">
+<div id="sectionHeader"><div id="sectionTitle"><h1>Indices<span id="topicDataInfo"></span></h1>
+	</div><div class="pageSponsor"><div class="ad" id="sponsorlogo">
+
+		<script language="javascript" type="text/javascript">
+
+		  var adsrc = 'us.reuters/bizfinance/markets/indices;' + 'type=sponsorlogo;sz=1x1;taga=aaaaaaaaa;' + '';
+		  adsrc = TR.createDFPUrl(adsrc);
+		  if ( typeof(AD_TRACKER) != 'undefined' ) {
+		     adsrc = AD_TRACKER.processAdSrcType(adsrc);
+		  }
+
+
+		  if ((typeof (hideAllAds) == 'undefined' || hideAllAds == false) && (typeof (AD_TRACKER) == 'undefined' || AD_TRACKER.isAdHidden('sponsorlogo') == false) &&
+		      (typeof (hideAd_15603798) == 'undefined' || hideAd_15603798 == false)) {
+              if (typeof (TR) !== "undefined") {
+                 TR.writeDFPURL("http://ad.doubleclick.net/N4735792/adj/" + adsrc);
+              }
+		  }
+
+		  </script>
+
+		<noscript>
+		    <a href="http://ad.doubleclick.net/N4735792/jump/us.reuters/bizfinance/markets/indices;type=sponsorlogo;sz=1x1;taga=aaaaaaaaa;ord=5283?" target="_blank">
+		      <img src="http://ad.doubleclick.net/N4735792/ad/us.reuters/bizfinance/markets/indices;type=sponsorlogo;sz=1x1;taga=aaaaaaaaa;ord=5283?" width="1" height="1" border="0" alt="">
+		    </a>
+		</noscript>
+
+		</div>
+
+		</div>
+
+<div id="sectionHeaderTopics"><div id="headerTopics">
+<div class="sectionRelatedTopics">
+
+	<ul><h3>Related Topics: </h3>
+	<li><a href="/finance/markets">Global Markets</a></li><li><a href="/finance/global-market-data">Market Data</a></li><li><a href="/finance/stocks">Stocks</a></li><li><a href="/finance/currencies">Currencies</a></li><li><a href="/finance/commodities">Commodities</a></li><li><span class="hrefClone seeMoreTopics" onclick="Reuters.section.seeAllTopics(this);" id="moreTopicsLink">More topics</span></li></ul>
+</div>
+
+	<div id="moreRelatedTopics0">
+            <div id="moreRelatedTopicsContent">
+               <h3>Topics also related to :</h3>
+               <ul>
+             	<li><a href="http://stockscreener.us.reuters.com/Stock/US/Index?quickscreen=gaarp">Stock Screener</a></li>
+				<li><a href="https://commerce.us.reuters.com/login/pages/login/portfolioLogin.do?go=http://portfolio.us.reuters.com/US/overview.asp&go_withoutlogin=http://portfolio.us.reuters.com/US/public/index.asp">Portfolio</a></li>
+				<li><a href="https://commerce.us.reuters.com/login/pages/login/portfolioLogin.do?go=http://funds.us.reuters.com/US/overview.asp&go_withoutlogin=%20http://funds.us.reuters.com/US/overview.asp">Funds</a></li>
+				</ul>
+            </div>
+        </div>
+	</div>
+</div></div><div class="sectionColumns">
+
+<div class="column1 gridPanel grid8">
+<div class="linebreak"><a name="american"></a></div><h1>All American Indices<span id="topicDataInfo"></span></h1>
+	<div class="module">
+
+		<div class="moduleBody">
+		<div class="timestamp">
+Data as of&nbsp;29 Apr 2014. All quotes delayed at least 15 minutes.</div>
+<table cellspacing="1" cellpadding="1" width="100%" class="dataTable">
+	<tbody class="dataSmall">
+		<tr>
+			<th>Symb</th>
+			<th>Index</th>
+      <th>Mkt Report</th>
+      <th class="data">Time</th>
+			<th class="data">Last</th>
+			<th class="data">Chg</th>
+			<th class="data">Chg %</th>
+		</tr>
+      </tbody>
+      <tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.DJI">.DJI</a>
+				</td>
+				<td>
+				Dow Jones Industrial Average</td>
+        <td><a href="/do/latestArticleInChannel?channel=usMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">16,448.74</td>
+				<td class="data changeUp">+87.28</td>
+				<td class="data changeUp">+0.53%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.IXIC">.IXIC</a>
+				</td>
+				<td>
+				Nasdaq Composite Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=usMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">4,074.40</td>
+				<td class="data changeDown">-1.16</td>
+				<td class="data changeDown">-0.03%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.NYA">.NYA</a>
+				</td>
+				<td>
+				NYSE Composite Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">10,526.52</td>
+				<td class="data changeUp">+21.51</td>
+				<td class="data changeUp">+0.20%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDUSP">.TRXFLDUSP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity US Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">169.97</td>
+				<td class="data changeUp">+0.31</td>
+				<td class="data changeUp">+0.18%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDCAP">.TRXFLDCAP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Canada Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">273.16</td>
+				<td class="data changeDown">-0.11</td>
+				<td class="data changeDown">-0.04%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDLAPU">.TRXFLDLAPU</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Latin America</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">367.31</td>
+				<td class="data changeUp">+1.34</td>
+				<td class="data changeUp">+0.37%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.NIN">.NIN</a>
+				</td>
+				<td>
+				NYSE International 100 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">5,737.55</td>
+				<td class="data changeUp">+24.88</td>
+				<td class="data changeUp">+0.44%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.NTM">.NTM</a>
+				</td>
+				<td>
+				NYSE TMT Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">7,083.80</td>
+				<td class="data changeUp">+31.40</td>
+				<td class="data changeUp">+0.45%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.NUS">.NUS</a>
+				</td>
+				<td>
+				NYSE US 100 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">7,975.89</td>
+				<td class="data changeUp">+31.70</td>
+				<td class="data changeUp">+0.40%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.NWL">.NWL</a>
+				</td>
+				<td>
+				NYSE World Leaders Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">7,143.54</td>
+				<td class="data changeUp">+29.35</td>
+				<td class="data changeUp">+0.41%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.GSPTSE">.GSPTSE</a>
+				</td>
+				<td>
+				S&P/TSX Composite Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=canadaMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">14,530.91</td>
+				<td class="data changeDown">-2.66</td>
+				<td class="data changeDown">-0.02%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.XAX">.XAX</a>
+				</td>
+				<td>
+				AMEX Composite Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=usMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">2,615.20</td>
+				<td class="data changeUp">+1.64</td>
+				<td class="data changeUp">+0.06%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.NWX">.NWX</a>
+				</td>
+				<td>
+				AMEX Network Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">323.83</td>
+				<td class="data changeDown">-3.75</td>
+				<td class="data changeDown">-1.14%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.XMI">.XMI</a>
+				</td>
+				<td>
+				AMEX Major Market Index 905 to 1000</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">1,846.90</td>
+				<td class="data changeUp">+9.33</td>
+				<td class="data changeUp">+0.51%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.XOI">.XOI</a>
+				</td>
+				<td>
+				AMEX Oil Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">1,601.38</td>
+				<td class="data changeUp">+11.41</td>
+				<td class="data changeUp">+0.72%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.XAL">.XAL</a>
+				</td>
+				<td>
+				AMEX Airline Index 300 TO 395</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">77.84</td>
+				<td class="data changeDown">-0.99</td>
+				<td class="data changeDown">-1.25%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.QQV">.QQV</a>
+				</td>
+				<td>
+				QQQ Volatility Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">12.02</td>
+				<td class="data changeDown">-1.23</td>
+				<td class="data changeDown">-9.28%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.MXX">.MXX</a>
+				</td>
+				<td>
+				MXSE IPC</td>
+        <td><a href="/do/latestArticleInChannel?channel=mexicoMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">40,136.57</td>
+				<td class="data changeDown">-61.83</td>
+				<td class="data changeDown">-0.15%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.BATSK">.BATSK</a>
+				</td>
+				<td>
+				BATS 1000 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">21,094.49</td>
+				<td class="data changeUp">+33.35</td>
+				<td class="data changeUp">+0.16%</td>
+			</tr>
+	</tbody>
+		</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="linebreak"><a name="european"></a></div><h1>All European Indices<span id="topicDataInfo"></span></h1>
+	<div class="module">
+
+		<div class="moduleBody">
+		<div class="timestamp">
+Data as of&nbsp;29 Apr 2014. All quotes delayed at least 15 minutes.</div>
+<table cellspacing="1" cellpadding="1" width="100%" class="dataTable">
+	<tbody class="dataSmall">
+		<tr>
+			<th>Symb</th>
+			<th>Index</th>
+      <th>Mkt Report</th>
+      <th class="data">Time</th>
+			<th class="data">Last</th>
+			<th class="data">Chg</th>
+			<th class="data">Chg %</th>
+		</tr>
+      </tbody>
+      <tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDEXPU">.TRXFLDEXPU</a>
+				</td>
+				<td>
+				Thomson Reuters Europe (ex UK & Ire)</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">180.37</td>
+				<td class="data changeUp">+0.99</td>
+				<td class="data changeUp">+0.55%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDEEPU">.TRXFLDEEPU</a>
+				</td>
+				<td>
+				Thomson Reuters Em Mkt Europe</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">364.33</td>
+				<td class="data changeUp">+3.31</td>
+				<td class="data changeUp">+0.92%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDGBP">.TRXFLDGBP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity UK Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">129.28</td>
+				<td class="data changeUp">+0.46</td>
+				<td class="data changeUp">+0.36%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDDEP">.TRXFLDDEP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Germany Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">158.02</td>
+				<td class="data changeUp">+0.85</td>
+				<td class="data changeUp">+0.54%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDFRP">.TRXFLDFRP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity France Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">142.71</td>
+				<td class="data changeDown">-0.12</td>
+				<td class="data changeDown">-0.09%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.FTSE">.FTSE</a>
+				</td>
+				<td>
+				FTSE 100 Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=londonMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">6,737.42</td>
+				<td class="data changeUp">+37.26</td>
+				<td class="data changeUp">+0.56%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.GDAXI">.GDAXI</a>
+				</td>
+				<td>
+				DAX Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=germanyMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:52am EDT</td>
+				<td class="data">9,509.68</td>
+				<td class="data changeUp">+63.32</td>
+				<td class="data changeUp">+0.67%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.FCHI">.FCHI</a>
+				</td>
+				<td>
+				CAC 40 Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=franceMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">4,462.80</td>
+				<td class="data changeUp">+2.27</td>
+				<td class="data changeUp">+0.05%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.SSMI">.SSMI</a>
+				</td>
+				<td>
+				SMI Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=swissMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">8,429.69</td>
+				<td class="data changeUp">+44.83</td>
+				<td class="data changeUp">+0.53%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.SMSI">.SMSI</a>
+				</td>
+				<td>
+				Madrid General Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:35am EDT</td>
+				<td class="data">1,060.23</td>
+				<td class="data changeUp">+3.99</td>
+				<td class="data changeUp">+0.38%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.OMXSPI">.OMXSPI</a>
+				</td>
+				<td>
+				OMX Stockholm All Share Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:53am EDT</td>
+				<td class="data">441.37</td>
+				<td class="data changeUp">+1.42</td>
+				<td class="data changeUp">+0.32%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.OMXHPI">.OMXHPI</a>
+				</td>
+				<td>
+				OMX Helsinki All Share Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">7,382.31</td>
+				<td class="data changeUp">+161.83</td>
+				<td class="data changeUp">+2.24%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.OMXC20">.OMXC20</a>
+				</td>
+				<td>
+				OMX Copenhagen 20 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">703.04</td>
+				<td class="data changeUp">+5.97</td>
+				<td class="data changeUp">+0.86%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.OSEAX">.OSEAX</a>
+				</td>
+				<td>
+				Oslo Exchange All-share Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">639.11</td>
+				<td class="data changeUp">+9.13</td>
+				<td class="data changeUp">+1.45%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.ISEQ">.ISEQ</a>
+				</td>
+				<td>
+				ISEQ Overall Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:53am EDT</td>
+				<td class="data">4,876.43</td>
+				<td class="data changeUp">+41.00</td>
+				<td class="data changeUp">+0.85%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.AEX">.AEX</a>
+				</td>
+				<td>
+				AEX Amsterdam Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=amsterdamMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">394.95</td>
+				<td class="data changeUp">+1.22</td>
+				<td class="data changeUp">+0.31%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.BFX">.BFX</a>
+				</td>
+				<td>
+				Bell 20 Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=belgiumMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">3,099.77</td>
+				<td class="data changeDown">-8.15</td>
+				<td class="data changeDown">-0.26%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.IBEX">.IBEX</a>
+				</td>
+				<td>
+				Ibex 35 Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=spainMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">10,375.40</td>
+				<td class="data changeUp">+54.50</td>
+				<td class="data changeUp">+0.53%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.BVLG">.BVLG</a>
+				</td>
+				<td>
+				PSI General</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">3,051.18</td>
+				<td class="data changeUp">+1.39</td>
+				<td class="data changeUp">+0.05%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.STOXX50">.STOXX50</a>
+				</td>
+				<td>
+				STOXX 50</td>
+        <td><a href="/do/latestArticleInChannel?channel=eurMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:53am EDT</td>
+				<td class="data">2,952.48</td>
+				<td class="data changeUp">+8.28</td>
+				<td class="data changeUp">+0.28%</td>
+			</tr>
+	</tbody>
+		</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="linebreak"><a name="asia"></a></div><h1>Asia/Pacific Indices<span id="topicDataInfo"></span></h1>
+	<div class="module">
+
+		<div class="moduleBody">
+		<div class="timestamp">
+Data as of&nbsp;29 Apr 2014. All quotes delayed at least 15 minutes.</div>
+<table cellspacing="1" cellpadding="1" width="100%" class="dataTable">
+	<tbody class="dataSmall">
+		<tr>
+			<th>Symb</th>
+			<th>Index</th>
+      <th>Mkt Report</th>
+      <th class="data">Time</th>
+			<th class="data">Last</th>
+			<th class="data">Chg</th>
+			<th class="data">Chg %</th>
+		</tr>
+      </tbody>
+      <tbody>
+		<tr class="stripe">
+        		</tr>
+	</tbody>
+		<tr>
+        		</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDJPP">.TRXFLDJPP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Japan Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">101.46</td>
+				<td class="data changeDown">-0.79</td>
+				<td class="data changeDown">-0.77%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDHKP">.TRXFLDHKP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity HK Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:30am EDT</td>
+				<td class="data">253.02</td>
+				<td class="data changeUp">+2.29</td>
+				<td class="data changeUp">+0.91%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDCNP">.TRXFLDCNP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity China Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20130403 -->
+					<!-- current date 20140429 -->
+
+					3 Apr 2013</td>
+				<td class="data">236.73</td>
+				<td class="data changeDown">-1.26</td>
+				<td class="data changeDown">-0.53%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDINP">.TRXFLDINP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity India Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">708.50</td>
+				<td class="data changeDown">-0.29</td>
+				<td class="data changeDown">-0.04%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.N225">.N225</a>
+				</td>
+				<td>
+				Nikkei Stock Average 225</td>
+        <td><a href="/do/latestArticleInChannel?channel=tokyoMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140428 -->
+					<!-- current date 20140429 -->
+
+					28 Apr 2014</td>
+				<td class="data">14,288.23</td>
+				<td class="data changeDown">-141.03</td>
+				<td class="data changeDown">-0.98%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.HSI">.HSI</a>
+				</td>
+				<td>
+				Hang Seng Index</td>
+        <td><a href="/do/latestArticleInChannel?channel=hongkongMktRpt">View</a></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:01am EDT</td>
+				<td class="data">22,453.89</td>
+				<td class="data changeUp">+321.36</td>
+				<td class="data changeUp">+1.45%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.AORD">.AORD</a>
+				</td>
+				<td>
+				ASX All Ordinaries Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					3:40am EDT</td>
+				<td class="data">5,466.94</td>
+				<td class="data changeDown">-49.20</td>
+				<td class="data changeDown">-0.89%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.KS11">.KS11</a>
+				</td>
+				<td>
+				KOSPI Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					2:00am EDT</td>
+				<td class="data">1,964.77</td>
+				<td class="data changeDown">-4.49</td>
+				<td class="data changeDown">-0.23%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.FTSTI">.FTSTI</a>
+				</td>
+				<td>
+				Straits Times Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">3,235.05</td>
+				<td class="data changeDown">-7.66</td>
+				<td class="data changeDown">-0.24%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.JKSE">.JKSE</a>
+				</td>
+				<td>
+				Jakarta Composite</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:39am EDT</td>
+				<td class="data">4,819.31</td>
+				<td class="data changeUp">+0.55</td>
+				<td class="data changeUp">+0.01%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.PSI">.PSI</a>
+				</td>
+				<td>
+				PSE Composite Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					3:44am EDT</td>
+				<td class="data">6,636.45</td>
+				<td class="data changeUp">+32.10</td>
+				<td class="data changeUp">+0.49%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.KSE">.KSE</a>
+				</td>
+				<td>
+				Karachi SE 100 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">28,357.43</td>
+				<td class="data changeDown">-334.19</td>
+				<td class="data changeDown">-1.16%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.SSEC">.SSEC</a>
+				</td>
+				<td>
+				Shanghai Composite Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					3:00am EDT</td>
+				<td class="data">2,020.34</td>
+				<td class="data changeUp">+16.85</td>
+				<td class="data changeUp">+0.84%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TWII">.TWII</a>
+				</td>
+				<td>
+				Taiwan SE Weighted Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					1:33am EDT</td>
+				<td class="data">8,872.11</td>
+				<td class="data changeUp">+62.40</td>
+				<td class="data changeUp">+0.71%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.BSESN">.BSESN</a>
+				</td>
+				<td>
+				Bombay Sensitive 30 index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">22,533.54</td>
+				<td class="data changeDown">-98.07</td>
+				<td class="data changeDown">-0.43%</td>
+			</tr>
+	</tbody>
+		</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="linebreak"><a name="africa"></a></div><h1>Africa/Middle East Indices<span id="topicDataInfo"></span></h1>
+	<div class="module">
+
+		<div class="moduleBody">
+		<div class="timestamp">
+Data as of&nbsp;29 Apr 2014. All quotes delayed at least 15 minutes.</div>
+<table cellspacing="1" cellpadding="1" width="100%" class="dataTable">
+	<tbody class="dataSmall">
+		<tr>
+			<th>Symb</th>
+			<th>Index</th>
+      <th>Mkt Report</th>
+      <th class="data">Time</th>
+			<th class="data">Last</th>
+			<th class="data">Chg</th>
+			<th class="data">Chg %</th>
+		</tr>
+      </tbody>
+      <tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.TRXFLDAFPU">.TRXFLDAFPU</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Africa Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">292.27</td>
+				<td class="data changeDown">-1.18</td>
+				<td class="data changeDown">-0.40%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TRXFLDZAP">.TRXFLDZAP</a>
+				</td>
+				<td>
+				Thomson Reuters Equity Sth Africa Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:38am EDT</td>
+				<td class="data">688.90</td>
+				<td class="data changeDown">-5.47</td>
+				<td class="data changeDown">-0.79%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.JALSH">.JALSH</a>
+				</td>
+				<td>
+				JSE All Share Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">48,679.14</td>
+				<td class="data changeDown">-231.76</td>
+				<td class="data changeDown">-0.47%</td>
+			</tr>
+	</tbody>
+		<tr>
+        		<td>
+				    <a href="index?symbol=.TA100">.TA100</a>
+				</td>
+				<td>
+				TA 100 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:39am EDT</td>
+				<td class="data">1,256.63</td>
+				<td class="data changeDown">-4.71</td>
+				<td class="data changeDown">-0.37%</td>
+			</tr>
+	</tbody>
+		<tr class="stripe">
+        		<td>
+				    <a href="index?symbol=.XU100">.XU100</a>
+				</td>
+				<td>
+				ISE National 100 Index</td>
+        <td></td>
+        <td class="data">
+					<!-- quote date 20140429 -->
+					<!-- current date 20140429 -->
+
+					4:54am EDT</td>
+				<td class="data">72,785.17</td>
+				<td class="data changeUp">+386.63</td>
+				<td class="data changeUp">+0.53%</td>
+			</tr>
+	</tbody>
+		</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+	<div>
+<script type="text/javascript">
+  TR.insertBussUnit("http:\/\/ad.doubleclick.net\/N4735792\/adj\/us.reuters;type=BizDev_Section_SP1;sz=610x1");
+</script>
+<div class="linebreak"></div>
+</div><div class="linebreak"></div>
+
+
+<div class="linebreak"></div>
+	</div>
+
+<div class="column2 gridPanel grid4">
+<div class="ad" id="mpu">
+
+		<script language="javascript" type="text/javascript">
+
+		  var adsrc = 'us.reuters/bizfinance/markets/indices;' + 'type=mpu;sz=300x250;tile=2;' + '';
+		  adsrc = TR.createDFPUrl(adsrc);
+		  if ( typeof(AD_TRACKER) != 'undefined' ) {
+		     adsrc = AD_TRACKER.processAdSrcType(adsrc);
+		  }
+
+
+		  if ((typeof (hideAllAds) == 'undefined' || hideAllAds == false) && (typeof (AD_TRACKER) == 'undefined' || AD_TRACKER.isAdHidden('mpu') == false) &&
+		      (typeof (hideAd_10033855) == 'undefined' || hideAd_10033855 == false)) {
+              if (typeof (TR) !== "undefined") {
+                 TR.writeDFPURL("http://ad.doubleclick.net/N4735792/adj/" + adsrc);
+              }
+		  }
+
+		  </script>
+
+		<noscript>
+		    <a href="http://ad.doubleclick.net/N4735792/jump/us.reuters/bizfinance/markets/indices;type=mpu;sz=300x250;tile=2;ord=4306?" target="_blank">
+		      <img src="http://ad.doubleclick.net/N4735792/ad/us.reuters/bizfinance/markets/indices;type=mpu;sz=300x250;tile=2;ord=4306?" width="300" height="250" border="0" alt="">
+		    </a>
+		</noscript>
+
+		</div>
+
+		<div class="section">
+	<div class="sectionContent">
+<div class="sectionColumns">
+
+<div class="gridPanel grid12">
+<script type="text/javascript">
+	Reuters.namespace("info");
+	Reuters.info.outbrain_env = 'produsx';
+</script>
+<script type="text/javascript">
+targetUrl = window.location.pathname;
+document.write('<div class="OUTBRAIN" data-src="http://www.reuters.com' + targetUrl +'?env' + Reuters.info.outbrain_env +'=0" data-widget-id="SF_2" data-ob-template="reuters" ></div>');
+</script>
+<script type="text/javascript" src="http://widget.perfectmarket.com/reuters/load.js"></script>
+
+<div class="linebreak"></div>
+	</div>
+
+</div>
+
+</div>
+</div>
+
+
+<div class="section" id="markets-module">
+<div class="sectionContent">
+<link href="/resources_v2/css/rcom-markets-module.css" rel="stylesheet" /><div class="linebreak"></div>
+	<div id="mm-header"><div class="module">
+<div class="moduleHeader"><h3>Markets</h3></div>
+</div></div><!-- tab4Name is empty -->
+		<!-- tab4Target is empty -->
+		<script src="http://s4.reutersmedia.net/resources_v2/js/tabs.js"></script>
+
+<div class="linebreak"></div>
+<div id="mm-tabs"><div class="tabs">
+				<ul>
+				<li id="MM-tabs_0" class=""><span class="hrefClone">U.S.</span></li>
+					<li id="MM-tabs_1" class=""><span class="hrefClone">Europe</span></li>
+					<li id="MM-tabs_2" class=""><span class="hrefClone">Asia</span></li>
+					<li id="MM-tabs_3" class="current"><span class="hrefClone">Sectors</span></li>
+					</ul>
+				<script type="text/javascript">
+					RTR_Tabs.addTabGroup("MM-tabs", "", "standard", "", "", "");
+							RTR_Tabs.addTab("MM-tabs_0", "tab1");
+							RTR_Tabs.addTab("MM-tabs_1", "tab2");
+							RTR_Tabs.addTab("MM-tabs_2", "tab3");
+							RTR_Tabs.addTab("MM-tabs_3", "tab4");
+					RTR_Tabs.init("MM-tabs");
+				</script>
+			</div>
+			<script type="text/javascript">
+			RTR_Tabs.hiLiteTab("MM-tabs_3");
+			</script>
+			</div><style>
+
+.marketslogo {
+    left: 108px;
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    z-index: 999999;
+}
+
+</style><div class="marketslogo" id="marketslogo">
+
+		<script language="javascript" type="text/javascript">
+
+		  var adsrc = 'us.reuters/bizfinance/markets/indices;' + 'type=marketslogo;sz=1x1;taga=aaaaaaaaa;' + '';
+		  adsrc = TR.createDFPUrl(adsrc);
+		  if ( typeof(AD_TRACKER) != 'undefined' ) {
+		     adsrc = AD_TRACKER.processAdSrcType(adsrc);
+		  }
+
+
+		  if ((typeof (hideAllAds) == 'undefined' || hideAllAds == false) && (typeof (AD_TRACKER) == 'undefined' || AD_TRACKER.isAdHidden('marketslogo') == false) &&
+		      (typeof (hideAd_16095287) == 'undefined' || hideAd_16095287 == false)) {
+              if (typeof (TR) !== "undefined") {
+                 TR.writeDFPURL("http://ad.doubleclick.net/N4735792/adj/" + adsrc);
+              }
+		  }
+
+		  </script>
+
+		<noscript>
+		    <a href="http://ad.doubleclick.net/N4735792/jump/us.reuters/bizfinance/markets/indices;type=marketslogo;sz=1x1;taga=aaaaaaaaa;ord=2303?" target="_blank">
+		      <img src="http://ad.doubleclick.net/N4735792/ad/us.reuters/bizfinance/markets/indices;type=marketslogo;sz=1x1;taga=aaaaaaaaa;ord=2303?" width="1" height="1" border="0" alt="">
+		    </a>
+		</noscript>
+
+		</div>
+
+		<div id="tab1" class="hidden"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/markets/indices">
+					Market Indices</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<link href="http://s2.reutersmedia.net/resources_v2/css/rcom-stockSearch.css" rel="stylesheet" />
+
+<div class="module investingControlsContainer">
+<div class="moduleBody investingControls">
+    <script language="javascript" type="text/javascript">
+    function OnClickGo(inputs, symbol) {
+  	  try {
+			if(inputs.length) {
+	  	        for(var i = 0;i < inputs.length;i++) {
+	  	          if(inputs[i].checked) {
+		        	var url = inputs[i].value;
+		            url = url.replace("[ric]", symbol);
+		            document.location.href = url;
+		            break;
+		          }
+		        }
+			} else {
+				var url = inputs.value;
+				url = url.replace("[ric]", symbol);
+				document.location.href = url;
+			}
+	      }catch(e){}
+    }
+    function OnStockSearchSubmit(sId) {
+      var stockSearch = 'stockSearch_'+sId;
+      var stockSearchSymbol = 'stockSearchSymbol_'+sId;
+      var stockSearchType = 'stockSearchType_'+sId;
+      try {
+        var symbol = document.getElementById(stockSearchSymbol).value;
+        if(symbol === "" || symbol === "Enter company name or Symbol") {
+			return false;
+        } else {
+        	eval('OnClickGo(document.forms["'+stockSearch+'"].'+stockSearchType+', encodeURIComponent(symbol))');
+        }
+      }catch(e){}
+    }
+    </script>
+
+<form name="stockSearch_951" >
+	<div class="stockSearchContainer">
+		<div class="searchInput">
+				<input type="hidden" name="stockSearchType_951" value="/finance/stocks/lookup?searchType=any&search=[ric]" checked="checked" />
+				<span class="uppercase bold label">Stock Search</span>
+		</div>
+		<div class="searchInput2">
+			<div class="searchbox">
+	    		<input type="text" class="searchfield" id="stockSearchSymbol_951" name="stockSearchSymbol" value="Enter company name or Symbol" />
+	    		<input type="image""class="searchbutton" src="/resources_v2/images/btn_header_go.gif" id="btnStockSearchSubmit_951"/>
+	    	</div>
+    	</div>
+	</div>
+
+</form>
+</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+
+			function searchSubmit_951() {
+			OnStockSearchSubmit('951');
+			return false;
+		}
+		Reuters.utils.enableSearchBox('stockSearchSymbol_951', 'Enter company name or Symbol', searchSubmit_951);
+		document.getElementById('btnStockSearchSubmit_951').onclick = searchSubmit_951;
+</script><table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable">
+	<tbody class="dataSmall">
+
+
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.DJI">DOW</a></td>
+						<td class="data size8" valign="middle">16,448.74</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +87.28</td>
+				<td class="data" valign="middle">+0.53%</td>
+
+			</tr>
+		<tr><td valign="middle"><a href="/finance/markets/index?symbol=.SPX">S&P 500</a></td>
+						<td class="data size8" valign="middle">1,869.43</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +6.03</td>
+				<td class="data" valign="middle">+0.32%</td>
+
+			</tr>
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.IXIC">NASDAQ</a></td>
+						<td class="data size8" valign="middle">4,074.40</td>
+                <td class="data dataDown" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowNeg.gif"> -1.16</td>
+				<td class="data" valign="middle">-0.03%</td>
+
+			</tr>
+		<tr><td valign="middle"><a href="/finance/markets/index?symbol=.TRXFLDUSP">TR US Index</a></td>
+						<td class="data size8" valign="middle">169.97</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.31</td>
+				<td class="data" valign="middle">+0.18%</td>
+
+			</tr>
+		</table>
+<div class="moreLink">
+				<a href="/finance/markets/indices">&#187; All Indices</a></div></div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="mm-currencies"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/currencies">
+					Currencies</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table cellspacing="1" cellpadding="1" width="100%" border="0" id="currPairs" class="dataTable">
+<tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=EUR&amp;destAmt=&amp;destCurr=USD">EUR/USD</a></td>
+		<td class="data bold">
+			1.3867</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  <tr class="stripe">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=GBP&amp;destAmt=&amp;destCurr=USD">GBP/USD</a></td>
+		<td class="data bold">
+			1.6800</td>
+		<td class="data dataDown bold">
+			-0.04%</td>
+	</tr>
+  <tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=USD&amp;destAmt=&amp;destCurr=JPY">USD/JPY</a></td>
+		<td class="data bold">
+			102.62</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  </tbody></table>
+ <div class="moreLink">
+				<a href="/finance/currencies">&#187; All Currencies</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+	<div class="mm-commodities"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/commodities">
+					Commodities</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable"><tbody class="dataSmall">
+		<tr>
+</tr>
+
+<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=GCc1">
+                	Gold</a></td>
+				<td class="data" valign="top">
+					1,289.50</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-9.20</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-0.71%</td>
+            </tr>
+	<tr class="stripe">
+			<td valign="top">
+                <a href="/finance/commodity?symbol=CLc1">
+                	Oil</a></td>
+				<td class="data" valign="top">
+					101.30</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46%</td>
+            </tr>
+	<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=Cc1">
+                	Corn</a></td>
+				<td class="data" valign="top">
+					512.00</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+4.25</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.84%</td>
+            </tr>
+	</table>
+<div class="moreLink">
+				<a href="/finance/commodities">&#187; All Commodities</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+
+
+</div><div id="tab2" class="hidden"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/markets/indices">
+					Market Indices</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<link href="http://s2.reutersmedia.net/resources_v2/css/rcom-stockSearch.css" rel="stylesheet" />
+
+<div class="module investingControlsContainer">
+<div class="moduleBody investingControls">
+    <script language="javascript" type="text/javascript">
+    function OnClickGo(inputs, symbol) {
+  	  try {
+			if(inputs.length) {
+	  	        for(var i = 0;i < inputs.length;i++) {
+	  	          if(inputs[i].checked) {
+		        	var url = inputs[i].value;
+		            url = url.replace("[ric]", symbol);
+		            document.location.href = url;
+		            break;
+		          }
+		        }
+			} else {
+				var url = inputs.value;
+				url = url.replace("[ric]", symbol);
+				document.location.href = url;
+			}
+	      }catch(e){}
+    }
+    function OnStockSearchSubmit(sId) {
+      var stockSearch = 'stockSearch_'+sId;
+      var stockSearchSymbol = 'stockSearchSymbol_'+sId;
+      var stockSearchType = 'stockSearchType_'+sId;
+      try {
+        var symbol = document.getElementById(stockSearchSymbol).value;
+        if(symbol === "" || symbol === "Enter company name or Symbol") {
+			return false;
+        } else {
+        	eval('OnClickGo(document.forms["'+stockSearch+'"].'+stockSearchType+', encodeURIComponent(symbol))');
+        }
+      }catch(e){}
+    }
+    </script>
+
+<form name="stockSearch_203" >
+	<div class="stockSearchContainer">
+		<div class="searchInput">
+				<input type="hidden" name="stockSearchType_203" value="/finance/stocks/lookup?searchType=any&search=[ric]" checked="checked" />
+				<span class="uppercase bold label">Stock Search</span>
+		</div>
+		<div class="searchInput2">
+			<div class="searchbox">
+	    		<input type="text" class="searchfield" id="stockSearchSymbol_203" name="stockSearchSymbol" value="Enter company name or Symbol" />
+	    		<input type="image""class="searchbutton" src="/resources_v2/images/btn_header_go.gif" id="btnStockSearchSubmit_203"/>
+	    	</div>
+    	</div>
+	</div>
+
+</form>
+</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+
+			function searchSubmit_203() {
+			OnStockSearchSubmit('203');
+			return false;
+		}
+		Reuters.utils.enableSearchBox('stockSearchSymbol_203', 'Enter company name or Symbol', searchSubmit_203);
+		document.getElementById('btnStockSearchSubmit_203').onclick = searchSubmit_203;
+</script><table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable">
+	<tbody class="dataSmall">
+
+
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.FTSE">FTSE 100</a></td>
+						<td class="data size8" valign="middle">6,737.42</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +37.26</td>
+				<td class="data" valign="middle">+0.56%</td>
+
+			</tr>
+		<tr><td valign="middle"><a href="/finance/markets/index?symbol=.GDAXI">DAX</a></td>
+						<td class="data size8" valign="middle">9,509.68</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +63.32</td>
+				<td class="data" valign="middle">+0.67%</td>
+
+			</tr>
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.FCHI">CAC 40</a></td>
+						<td class="data size8" valign="middle">4,462.80</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +2.27</td>
+				<td class="data" valign="middle">+0.05%</td>
+
+			</tr>
+		<tr><td valign="middle"><a href="/finance/markets/index?symbol=.TRXFLDEXPU"> TR Europe</a></td>
+						<td class="data size8" valign="middle">180.37</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.99</td>
+				<td class="data" valign="middle">+0.55%</td>
+
+			</tr>
+		</table>
+<div class="moreLink">
+				<a href="/finance/markets/indices">&#187; All Indices</a></div></div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="mm-currencies"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/currencies">
+					Currencies</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table cellspacing="1" cellpadding="1" width="100%" border="0" id="currPairs" class="dataTable">
+<tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=EUR&amp;destAmt=&amp;destCurr=USD">EUR/USD</a></td>
+		<td class="data bold">
+			1.3867</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  <tr class="stripe">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=GBP&amp;destAmt=&amp;destCurr=USD">GBP/USD</a></td>
+		<td class="data bold">
+			1.6800</td>
+		<td class="data dataDown bold">
+			-0.04%</td>
+	</tr>
+  <tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=USD&amp;destAmt=&amp;destCurr=JPY">USD/JPY</a></td>
+		<td class="data bold">
+			102.62</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  </tbody></table>
+ <div class="moreLink">
+				<a href="/finance/currencies">&#187; All Currencies</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+	<div class="mm-commodities"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/commodities">
+					Commodities</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable"><tbody class="dataSmall">
+		<tr>
+</tr>
+
+<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=GCc1">
+                	Gold</a></td>
+				<td class="data" valign="top">
+					1,289.50</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-9.20</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-0.71%</td>
+            </tr>
+	<tr class="stripe">
+			<td valign="top">
+                <a href="/finance/commodity?symbol=CLc1">
+                	Oil</a></td>
+				<td class="data" valign="top">
+					101.30</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46%</td>
+            </tr>
+	<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=Cc1">
+                	Corn</a></td>
+				<td class="data" valign="top">
+					512.00</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+4.25</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.84%</td>
+            </tr>
+	</table>
+<div class="moreLink">
+				<a href="/finance/commodities">&#187; All Commodities</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+
+
+</div><div id="tab3" class="hidden"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/markets/indices">
+					Market Indices</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<link href="http://s2.reutersmedia.net/resources_v2/css/rcom-stockSearch.css" rel="stylesheet" />
+
+<div class="module investingControlsContainer">
+<div class="moduleBody investingControls">
+    <script language="javascript" type="text/javascript">
+    function OnClickGo(inputs, symbol) {
+  	  try {
+			if(inputs.length) {
+	  	        for(var i = 0;i < inputs.length;i++) {
+	  	          if(inputs[i].checked) {
+		        	var url = inputs[i].value;
+		            url = url.replace("[ric]", symbol);
+		            document.location.href = url;
+		            break;
+		          }
+		        }
+			} else {
+				var url = inputs.value;
+				url = url.replace("[ric]", symbol);
+				document.location.href = url;
+			}
+	      }catch(e){}
+    }
+    function OnStockSearchSubmit(sId) {
+      var stockSearch = 'stockSearch_'+sId;
+      var stockSearchSymbol = 'stockSearchSymbol_'+sId;
+      var stockSearchType = 'stockSearchType_'+sId;
+      try {
+        var symbol = document.getElementById(stockSearchSymbol).value;
+        if(symbol === "" || symbol === "Enter company name or Symbol") {
+			return false;
+        } else {
+        	eval('OnClickGo(document.forms["'+stockSearch+'"].'+stockSearchType+', encodeURIComponent(symbol))');
+        }
+      }catch(e){}
+    }
+    </script>
+
+<form name="stockSearch_514" >
+	<div class="stockSearchContainer">
+		<div class="searchInput">
+				<input type="hidden" name="stockSearchType_514" value="/finance/stocks/lookup?searchType=any&search=[ric]" checked="checked" />
+				<span class="uppercase bold label">Stock Search</span>
+		</div>
+		<div class="searchInput2">
+			<div class="searchbox">
+	    		<input type="text" class="searchfield" id="stockSearchSymbol_514" name="stockSearchSymbol" value="Enter company name or Symbol" />
+	    		<input type="image""class="searchbutton" src="/resources_v2/images/btn_header_go.gif" id="btnStockSearchSubmit_514"/>
+	    	</div>
+    	</div>
+	</div>
+
+</form>
+</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+
+			function searchSubmit_514() {
+			OnStockSearchSubmit('514');
+			return false;
+		}
+		Reuters.utils.enableSearchBox('stockSearchSymbol_514', 'Enter company name or Symbol', searchSubmit_514);
+		document.getElementById('btnStockSearchSubmit_514').onclick = searchSubmit_514;
+</script><table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable">
+	<tbody class="dataSmall">
+
+
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.N225">Nikkei</a></td>
+						<td class="data size8" valign="middle">14,288.23</td>
+                <td class="data dataDown" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowNeg.gif"> -141.03</td>
+				<td class="data" valign="middle">-0.98%</td>
+
+			</tr>
+		<tr><td valign="middle"><a href="/finance/markets/index?symbol=.HSI">Hang Seng</a></td>
+						<td class="data size8" valign="middle">22,453.89</td>
+                <td class="data dataUp" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +321.36</td>
+				<td class="data" valign="middle">+1.45%</td>
+
+			</tr>
+		<tr class="stripe"><td valign="middle"><a href="/finance/markets/index?symbol=.BSESN"> Sensex</a></td>
+						<td class="data size8" valign="middle">22,533.54</td>
+                <td class="data dataDown" valign="middle" ><img height="6" width="11" src="/resources_v2/images/arrowNeg.gif"> -98.07</td>
+				<td class="data" valign="middle">-0.43%</td>
+
+			</tr>
+		<tr></tr>
+		</table>
+<div class="moreLink">
+				<a href="/finance/markets/indices">&#187; All Indices</a></div></div>
+		</div>
+		<div class="linebreak"></div>
+	<div class="mm-currencies"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/currencies">
+					Currencies</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table cellspacing="1" cellpadding="1" width="100%" border="0" id="currPairs" class="dataTable">
+<tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=EUR&amp;destAmt=&amp;destCurr=USD">EUR/USD</a></td>
+		<td class="data bold">
+			1.3867</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  <tr class="stripe">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=GBP&amp;destAmt=&amp;destCurr=USD">GBP/USD</a></td>
+		<td class="data bold">
+			1.6800</td>
+		<td class="data dataDown bold">
+			-0.04%</td>
+	</tr>
+  <tr class="">
+    <td><a href="/finance/currencies/quote?srcAmt=1&amp;srcCurr=USD&amp;destAmt=&amp;destCurr=JPY">USD/JPY</a></td>
+		<td class="data bold">
+			102.62</td>
+		<td class="data dataUp bold">
+			+0.14%</td>
+	</tr>
+  </tbody></table>
+ <div class="moreLink">
+				<a href="/finance/currencies">&#187; All Currencies</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+	<div class="mm-commodities"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/commodities">
+					Commodities</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable"><tbody class="dataSmall">
+		<tr>
+</tr>
+
+<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=GCc1">
+                	Gold</a></td>
+				<td class="data" valign="top">
+					1,289.50</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-9.20</td>
+				<td class="data changeDown" nowrap="nowrap" valign="top">
+					-0.71%</td>
+            </tr>
+	<tr class="stripe">
+			<td valign="top">
+                <a href="/finance/commodity?symbol=CLc1">
+                	Oil</a></td>
+				<td class="data" valign="top">
+					101.30</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.46%</td>
+            </tr>
+	<tr>
+			<td valign="top">
+                <a href="/finance/commodity?symbol=Cc1">
+                	Corn</a></td>
+				<td class="data" valign="top">
+					512.00</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+4.25</td>
+				<td class="data changeUp" nowrap="nowrap" valign="top">
+					+0.84%</td>
+            </tr>
+	</table>
+<div class="moreLink">
+				<a href="/finance/commodities">&#187; All Commodities</a></div></div>
+		</div>
+		</div>
+
+<div class="linebreak"></div>
+
+
+</div><div id="tab4"><div class="module">
+
+		<div class="moduleHeader">
+				<h3>
+					Sector Summary</h3>
+			</div>
+		<div class="moduleBody">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" class="dataTable">
+<tbody class="dataSmall">
+
+ <tr  >
+                            <td class="sectorTitle">
+                             <a href="/sectors/energy">Energy</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.17%</td>
+                            </tr>
+	 					<tr  class="stripe" >
+                            <td class="sectorTitle">
+                             <a href="/sectors/basic-materials">Basic Materials</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.09%</td>
+                            </tr>
+	 					<tr  >
+                            <td class="sectorTitle">
+                             <a href="/sectors/industrials">Industrials</a>
+                            </td>
+                            <td class="data sectorPercentage  changeDown"><img height="6" width="11" src="/resources_v2/images/arrowNeg.gif"> -0.02%</td>
+                            </tr>
+	 					<tr  class="stripe" >
+                            <td class="sectorTitle">
+                             <a href="/sectors/cyclicals">Cyclical Goods & Services</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.02%</td>
+                            </tr>
+	 					<tr  >
+                            <td class="sectorTitle">
+                             <a href="/sectors/non-cyclicals">Non-Cyclical Goods & Services</a>
+                            </td>
+                            <td class="data sectorPercentage  changeDown"><img height="6" width="11" src="/resources_v2/images/arrowNeg.gif"> -0.01%</td>
+                            </tr>
+	 					<tr  class="stripe" >
+                            <td class="sectorTitle">
+                             <a href="/sectors/financials">Financials</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.16%</td>
+                            </tr>
+	 					<tr  >
+                            <td class="sectorTitle">
+                             <a href="/sectors/healthcare">Healthcare</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.01%</td>
+                            </tr>
+	 					<tr  class="stripe" >
+                            <td class="sectorTitle">
+                             <a href="/sectors/technology">Technology</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.04%</td>
+                            </tr>
+	 					<tr  >
+                            <td class="sectorTitle">
+                             <a href="/sectors/telecom">Telecoms</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.26%</td>
+                            </tr>
+	 					<tr  class="stripe" >
+                            <td class="sectorTitle">
+                             <a href="/sectors/utilities">Utilities</a>
+                            </td>
+                            <td class="data sectorPercentage  changeUp"><img height="6" width="11" src="/resources_v2/images/arrowPos.gif"> +0.10%</td>
+                            </tr>
+	 					</tbody>
+</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+
+
+</div><div id="mm-footer"><div class="module">
+<div class="moduleBody">
+<ul>
+<li><a href="/finance/currencies">Currency Converter</a></li>
+<li><a href="/finance/stocks">Quotes</a></li>
+<li class="last"><a href="/finance/markets/hotStocks">Hot Stocks</a></li>
+</ul>
+</div>
+</div></div><div class="linebreak"></div>
+	</div></div>
+
+
+<div class="linebreak"></div>
+
+
+<div class="linebreak"></div>
+	<div class="section" id="currenciesRail">
+<div class="sectionContent">
+<div class="module inline">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/currencies">
+					Currencies</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<ul>
+	<li><a href="/article/2014/04/29/ukraine-crisis-usa-technology-idUSL6N0NL2PW20140429"  >Russian diplomat says U.S. curbs on high-tech exports will be a blow - report</a>
+</li>
+		<!--Property passed to loop has zero elements--></ul>
+</div>
+		</div>
+		<div class="module">
+
+		<div class="moduleBody">
+		<table cellspacing="0" cellpadding="0" width="100%" class="dataTable dataTableMD">
+<tbody class="dataSmall">
+
+		<tr>
+		<th class="left">Currency</th>
+				<th class="data"></th>
+		</tr>
+    <tr class="">
+		<td><a href="/finance/currencies">UK &#163;</a></td>
+				<td class="data">
+					inUSD =1.6800</td>
+			</tr>
+		<tr class="stripe">
+		<td><a href="/finance/currencies">Euro</a></td>
+				<td class="data">
+					inUSD =1.3867</td>
+			</tr>
+		<tr class="">
+		<td><a href="/finance/currencies">&#165;en</a></td>
+				<td class="data">
+					inUSD =0.0097</td>
+			</tr>
+		</tbody>
+</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+	</div></div>
+
+
+<div class="module inline">
+
+		<div class="moduleHeader">
+				<h3>
+					<a href="/finance/commodities">
+					Commodities</a>
+					</h3>
+			</div>
+		<div class="moduleBody">
+		<ul>
+	<li><a href="/article/2014/04/29/markets-precious-idUSL3N0NL0JX20140429"  >PRECIOUS-Gold below $1,300, strong US data offsets Ukraine tensions</a>
+</li>
+		<li><a href="/article/2014/04/11/oil-opec-idUSL6N0N324E20140411"  >Oil market expected to stay balanced for rest of year - OPEC</a>
+</li>
+		</ul>
+</div>
+		</div>
+		<div class="module">
+
+		<div class="moduleBody">
+		<table cellspacing="1" cellpadding="0" width="100%" class="dataTable">
+    <tr class="dataSlick">
+		<th>Symbol</th>
+		<th class='data'>Last</th>
+		<th class='data'>Net Change</th>
+	</tr>
+    <tbody class="dataSmall">
+		<tr class="stripe">
+			<td>
+				BRENT CRUDE JUL1</td>
+            <td class="data">&#36;108.71</td>
+            <td class="data">&#36;0.59</td>
+            </tr>
+		<tr class="stripe">
+			<td>
+				100 OZ GOLD MAR4</td>
+            <td class="data">&#36;1,289.50</td>
+            <td class="data">&#36;-9.20</td>
+            </tr>
+		</tbody>
+</table>
+</div>
+		</div>
+		<div class="linebreak"></div>
+
+
+<div class="ad" id="mpulow">
+
+		<script language="javascript" type="text/javascript">
+
+		  var adsrc = 'us.reuters/bizfinance/markets/indices;' + 'type=mpulow;sz=300x250;tile=3;' + '';
+		  adsrc = TR.createDFPUrl(adsrc);
+		  if ( typeof(AD_TRACKER) != 'undefined' ) {
+		     adsrc = AD_TRACKER.processAdSrcType(adsrc);
+		  }
+
+
+		  if ((typeof (hideAllAds) == 'undefined' || hideAllAds == false) && (typeof (AD_TRACKER) == 'undefined' || AD_TRACKER.isAdHidden('mpulow') == false) &&
+		      (typeof (hideAd_13520930) == 'undefined' || hideAd_13520930 == false)) {
+              if (typeof (TR) !== "undefined") {
+                 TR.writeDFPURL("http://ad.doubleclick.net/N4735792/adj/" + adsrc);
+              }
+		  }
+
+		  </script>
+
+		<noscript>
+		    <a href="http://ad.doubleclick.net/N4735792/jump/us.reuters/bizfinance/markets/indices;type=mpulow;sz=300x250;tile=3;ord=1398?" target="_blank">
+		      <img src="http://ad.doubleclick.net/N4735792/ad/us.reuters/bizfinance/markets/indices;type=mpulow;sz=300x250;tile=3;ord=1398?" width="300" height="250" border="0" alt="">
+		    </a>
+		</noscript>
+
+		</div>
+
+		<div class="linebreak"></div>
+
+
+<div class="linebreak"></div>
+	</div>
+
+</div>
+
+</div>
+</div>
+<div class="section">
+	<div class="sectionContent">
+<div class="sectionColumns">
+
+<div class="gridPanel grid12">
+<div id="footerTopicTarget"></div><div id="footerTopics">
+<div class="sectionRelatedTopics">
+
+	<ul><h3>Related Topics: </h3>
+	<li><a href="/finance/markets">Global Markets</a></li><li><a href="/finance/global-market-data">Market Data</a></li><li><a href="/finance/stocks">Stocks</a></li><li><a href="/finance/currencies">Currencies</a></li><li><a href="/finance/commodities">Commodities</a></li><li><span class="hrefClone seeMoreTopics" onclick="Reuters.section.seeAllTopics(this);" id="moreTopicsLink">More topics</span></li></ul>
+</div>
+
+	<div id="moreRelatedTopics1">
+            <div id="moreRelatedTopicsContent">
+               <h3>Topics also related to Commodities:</h3>
+               <ul>
+             	<li><a href="http://stockscreener.us.reuters.com/Stock/US/Index?quickscreen=gaarp">Stock Screener</a></li>
+				<li><a href="https://commerce.us.reuters.com/login/pages/login/portfolioLogin.do?go=http://portfolio.us.reuters.com/US/overview.asp&go_withoutlogin=http://portfolio.us.reuters.com/US/public/index.asp">Portfolio</a></li>
+				<li><a href="https://commerce.us.reuters.com/login/pages/login/portfolioLogin.do?go=http://funds.us.reuters.com/US/overview.asp&go_withoutlogin=%20http://funds.us.reuters.com/US/overview.asp">Funds</a></li>
+				</ul>
+            </div>
+        </div>
+	</div>
+<div class="section" id="topSections">
+<div class="sectionContent">
+<link href="/resources_v2/css/rcom-topsections.css" rel="stylesheet" />
+<div id="topSectionsLoader"></div>
+<script language="javascript">Reuters.utils.replaceContent("topSectionsLoader", "/assets/sharedModuleLoader?view=RSM-US-Top-Sections-2", null, null);</script><div class="linebreak"></div>
+	</div></div>
+
+
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="section bleeding" id="footerHead">
+	<div class="sectionContent">
+<div id="footerHeader"><div class="columnLeft"><div class="logo"><div id="footerLogo"><a href="/">&nbsp;</a></div></div></div><div class="columnLeft">	<div id="editionsFooter" class="panel editions">
+			<ul id="editionSwitchFooter" class="editionSwitch">
+				<li>
+					<div class="currentEditionTitle">Edition:</div>
+					<div class="currentEdition">U.S.</div>
+					<div class="editionArrow"></div>
+					<ul>
+						<li><a href="http://ara.reuters.com">Arabic</a></li>
+						<li><a href="http://ar.reuters.com">Argentina</a></li>
+						<li><a href="http://br.reuters.com">Brazil</a></li>
+						<li><a href="http://ca.reuters.com">Canada</a></li>
+						<li><a href="http://cn.reuters.com">China</a></li>
+						<li><a href="http://fr.reuters.com">France</a></li>
+						<li><a href="http://de.reuters.com">Germany</a></li>
+						<li><a href="http://in.reuters.com">India</a></li>
+						<li><a href="http://it.reuters.com">Italy</a></li>
+						<li><a href="http://jp.reuters.com">Japan</a></li>
+						<li><a href="http://lta.reuters.com">Latin America</a></li>
+						<li><a href="http://mx.reuters.com">Mexico</a></li>
+					    <li><a href="http://ru.reuters.com">Russia</a></li>
+						<li><a href="http://es.reuters.com">Spain</a></li>
+						<li><a href="http://uk.reuters.com">United Kingdom</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+<script type="text/javascript">
+if(Reuters.info.edition == "BETAUS") {
+	$("#editionSwitchFooter .currentEdition").text('U.S.');
+} else {
+	$("#editionSwitchFooter .currentEdition").text(Reuters.info.edition);
+}
+</script></div><div class="columnRight"><div id="topLink"><a href="#top"><p>Back to top</p></a></div></div></div><div class="sectionColumns">
+
+<div class="column1">
+</div>
+
+<div class="column2">
+</div>
+
+<div class="column3">
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="section bleeding" id="footer">
+	<div class="sectionContent">
+<div class="sectionColumns">
+
+<div class="gridPanel grid12">
+<div class="columnLeft"><div class="gridPanel grid12">
+<span class="footerparent">Reuters.com</span>
+<ul>
+	<li class="h-links"><a href="http://www.reuters.com/finance">Business</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/finance/markets">Markets</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/news/world">World</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/news/politics">Politics</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/news/technology">Technology</a></li>
+	<li class="h-links"><a href="http://blogs.reuters.com/us/">Opinion</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/finance/personal-finance">Money</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/news/pictures">Pictures</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/news/video">Videos</a></li>
+	<li class="h-linkend"><a href="http://www.reuters.com/assets/siteindex">Site Index</a></li>
+</ul>
+
+
+
+</div></div><div class="columnLeft"><div class="gridPanel grid12"><span class="footerparent"><a href="http://newsandinsight.thomsonreuters.com/Legal/" target="_blank">Legal</a></span>
+<ul>
+	<li class="h-links"><a href="http://newsandinsight.thomsonreuters.com/Legal/Bankruptcy/" target="_blank" onclick="dcsMultiTrack('DCS.dcssip','newsandinsight.thomsonreuters.com','DCS.dcsuri','/Legal/Bankruptcy/','WT.ti','Offsite: newsandinsight.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://newsandinsight.thomsonreuters.com/Legal/Bankruptcy/');">Bankruptcy Law</a></li>
+	<li class="h-links"><a href="http://newsandinsight.thomsonreuters.com/Legal/CA/" target="_blank" onclick="dcsMultiTrack('DCS.dcssip','newsandinsight.thomsonreuters.com','DCS.dcsuri','/Legal/CA/','WT.ti','Offsite: newsandinsight.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://newsandinsight.thomsonreuters.com/Legal/CA/');">California Legal</a></li>
+	<li class="h-links"><a href="http://newsandinsight.thomsonreuters.com/Legal/NY/" target="_blank" onclick="dcsMultiTrack('DCS.dcssip','newsandinsight.thomsonreuters.com','DCS.dcsuri','/Legal/NY/','WT.ti','Offsite: newsandinsight.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://newsandinsight.thomsonreuters.com/Legal/NY/');">New York Legal</a></li>
+	<li class="h-linkend"><a href="http://newsandinsight.thomsonreuters.com/Legal/Securities/" target="_blank" onclick="dcsMultiTrack('DCS.dcssip','newsandinsight.thomsonreuters.com','DCS.dcsuri','/Legal/Securities/','WT.ti','Offsite: newsandinsight.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://newsandinsight.thomsonreuters.com/Legal/Securities/');">Securities Law</a></li>
+</ul></div></div><div class="columnLeft"><div class="gridPanel grid12"><span class="footerparent">Support & Contact</span>
+<ul>
+	<li class="h-links"><a href="http://reuters.zendesk.com">Support</a></li>
+	<li class="h-linkend"><a href="http://reuters.zendesk.com/anonymous_requests/new">Corrections</a></li>
+</ul>
+</div></div><div class="columnLeft"><div id="footer-utilities" class="gridPanel grid12"></div></div><div class="columnLeft"><div class="gridPanel grid12">
+<span class="footerparent">Connect with Reuters</span>
+<ul>
+<li id="foot-twitter"><a href="http://www.twitter.com/reuters">Twitter</a>&nbsp;&nbsp;</li>
+<li id="foot-facebook"><a href="http://www.facebook.com/Reuters">Facebook</a>&nbsp;&nbsp;</li>
+<li id="foot-linkedin"><a href="http://www.linkedin.com/today/reuters.com">LinkedIn</a>&nbsp;&nbsp;</li>
+<li id="foot-rssfeed"><a href="http://www.reuters.com/tools/rss">RSS</a>&nbsp;&nbsp;</li>
+<li id="foot-podcasts"><a href="http://www.reuters.com/tools/podcasts">Podcast</a>&nbsp;&nbsp;</li>
+<li id="foot-newsletters"><a href="https://commerce.us.reuters.com/profile/pages/newsletter/begin.do">Newsletters</a>&nbsp;&nbsp;</li>
+<li id="foot-mobile"><a href="http://www.reuters.com/tools/mobile">Mobile</a></li>
+</ul>
+</div></div><div class="columnLeft"><div class="gridPanel grid12"><span class="footerparent">About</span>
+<ul>
+	<li class="h-links"><a href="http://www.reuters.com/privacy-policy">Privacy Policy</a></li>
+	<li class="h-links"><a href="http://www.reuters.com/terms-of-use">Terms of Use</a></li>
+	 <li class="h-links"><a href="http://static.reuters.com/resources_v2/images/media_guide_01_08_13.pdf" target="_blank">Advertise With Us</a></li>
+         <li class="h-links" id="evidon-footer"><a id="_bapw-link" href="#" target="_blank"><img id="_bapw-icon" border="0" src="http://cdn.betrad.com/pub/icon1.png" /><span id="evidon-text">AdChoices</span></a></li>
+	<li class="h-linkend" id="footer-endrow"><a href="http://thomsonreuters.com/copyright/">Copyright</a></li>
+</ul>
+<script>/**/(function(){var g=285,i=1237,a=false,h=document,j=h.getElementById("_bapw-link"),e=(h.location.protocol=="https:"),f=(e?"https":"http")+"://",c=f+(e?"a248.e.akamai.net/betterad.download.akamai.com/91609":"cdn.betrad.com")+"/pub/";function b(k){var d=new Image();d.src=f+"l.betrad.com/pub/p.gif?pid="+g+"&ocid="+i+"&i"+k+"=1&r="+Math.random()}h.getElementById("_bapw-icon").src=c+"icon1.png";j.onmouseover=function(){if(/#$/.test(j.href)){j.href="http://info.evidon.com/pub_info/"+g+"?v=1"}};j.onclick=function(){var k=window._bap_p_overrides;function d(n,q){var o=h.getElementsByTagName("head")[0]||h.documentElement,m=a,l=h.createElement("script");function p(){l.onload=l.onreadystatechange=null;o.removeChild(l);q()}l.src=n;l.onreadystatechange=function(){if(!m&&(this.readyState=="loaded"||this.readyState=="complete")){m=true;p()}};l.onload=p;o.insertBefore(l,o.firstChild)}if(k&&k.hasOwnProperty(g)){if(k[g].new_window){b("c");return true}}this.onclick="return "+a;d(f+"ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",function(){d(c+"pub2.js",function(){BAPW.i(j,{pid:g,ocid:i})})});return a};b("i")}());/**/</script>
+</div></div><div id="tr-intro" class="gridPanel grid12"><div id="tr-description"><img src="/resources_v2/images/tr-source-txt.gif" border="0" /></div></div><div class="linebreak"></div>
+	<div id="tr-logo" class="gridPanel grid12"><a href="http://www.thomsonreuters.com/"><div id="tr-footer">&nbsp;</div></a></div><div class="linebreak"></div>
+	<div id="tr-info" class="gridPanel grid12"><div class="tr-products">
+<div id="tr-eikon">
+<div class="tr-header1"><a href="http://thomsonreuters.com/products_services/financial/eikon/" onclick="dcsMultiTrack('DCS.dcssip','thomsonreuterseikon.com','DCS.dcsuri','/','WT.ti','Offsite: thomsonreuterseikon.com','WT.dl','24','WT.z_offsite','http://thomsonreuterseikon.com/');"></a></div>
+<div class="tr-descr">Our Flagship financial information platform incorporating Reuters Insider</div>
+</div>
+
+<div id="tr-elektron">
+<div class="tr-header1"><a href="http://thomsonreuters.com/products_services/financial/financial_products/a-z/elektron/" onclick="dcsMultiTrack('DCS.dcssip','www.pehub.com','DCS.dcsuri','/','WT.ti','Offsite: www.pehub.com','WT.dl','24','WT.z_offsite','http://www.pehub.com/');"OnClick="dcsMultiTrack('DCS.dcssip','thomsonreuters.com','DCS.dcsuri','/','WT.ti','Offsite: thomsonreuters.com','WT.dl','24','WT.z_offsite','http://thomsonreuters.com/');"></a></div>
+<div class="tr-descr">An ultra-low latency infrastructure for electronic trading and data distribution</div>
+</div>
+
+<div id="tr-accelus">
+<div class="tr-header1"><a href="http://www.accelus.thomsonreuters.com/" onclick="dcsMultiTrack('DCS.dcssip','www.accelus.thomsonreuters.com','DCS.dcsuri','/','WT.ti','Offsite: www.accelus.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://www.accelus.thomsonreuters.com/');"></a></div>
+<div class="tr-descr">A connected approach to governance, risk and compliance</div>
+</div>
+
+<div id="tr-westlaw">
+<div class="tr-header3"><a href="http://west.thomson.com/westlawnext/default.aspx" onclick="dcsMultiTrack('DCS.dcssip','west.thomson.com','DCS.dcsuri','/westlawnext/default.aspx','WT.ti','Offsite: west.thomson.com','WT.dl','24','WT.z_offsite','http://west.thomson.com/westlawnext/default.aspx');"></a></div>
+<div class="tr-descr">Our next generation legal research platform</div>
+</div>
+
+<div id="tr-onesource">
+<div class="tr-header1"><a href="http://onesource.thomsonreuters.com/" onclick="dcsMultiTrack('DCS.dcssip','onesource.thomsonreuters.com','DCS.dcsuri','/','WT.ti','Offsite: onesource.thomsonreuters.com','WT.dl','24','WT.z_offsite','http://onesource.thomsonreuters.com/');"></a></div>
+<div class="tr-descr">Our global tax workstation</div>
+</div>
+
+<div id="tr-linklist">
+<ul>
+<li class="tr-descr"><a href="http://thomsonreuters.com/">Thomsonreuters.com</a></li>
+<li class="tr-descr"><a href="http://thomsonreuters.com/about/">About Thomson Reuters</a></li>
+<li class="tr-descr"><a href="http://ir.thomsonreuters.com">Investor Relations</a></li>
+<li class="tr-descr"><a href="http://careers.thomsonreuters.com/">Careers</a></li>
+<li class="tr-descr"><a href="http://thomsonreuters.com/about/contact_us/">Contact Us</a></li>
+</ul>
+</div>
+
+</div></div><div class="linebreak"></div>
+	</div>
+
+</div>
+
+<div id="disclaimer"><p><a href="http://www.thomsonreuters.com">Thomson Reuters</a> is the world's largest international multimedia news agency, providing <a href="http://www.reuters.com/finance/markets/us">investing news</a>, <a href="http://www.reuters.com/news/world">world news</a>, <a href="http://www.reuters.com/finance">business news</a>, <a href="http://www.reuters.com/news/technology">technology news</a>, headline news, <a href="http://www.reuters.com/finance/smallBusiness">small business news</a>, news alerts, <a href="http://www.reuters.com/finance/personal-finance">personal finance</a>, <a href="http://www.reuters.com/finance/stocks">stock market</a>, and <a href="http://funds.us.reuters.com/US/overview.asp">mutual funds information</a> available on Reuters.com, <a href="http://www.reuters.com/news/video">video</a>, <a href="http://www.reuters.com/tools/mobile">mobile</a>, and interactive television platforms. Thomson Reuters journalists are subject to an <a href="http://handbook.reuters.com">Editorial Handbook</a> which requires fair presentation and disclosure of relevant interests.</p>
+
+<p>NYSE and AMEX quotes delayed by at least 20 minutes. Nasdaq delayed by at least 15 minutes. For a complete <a href="http://www.reuters.com/info/disclaimer" target="_blank">list of exchanges and delays, please click here</a>.</p></div><div id="Footer1"></div><img src="http://www.bizographics.com/collect/?fmt=gif&url=reuters.com&pid=501" width="1" height="1" border="0" alt="">
+<div class="linebreak"></div>
+	</div>
+</div>
+
+
+</div>
+
+<SCRIPT TYPE="text/javascript">
+document.write("<SCR"+"IPT TYPE='text/javascript' SRC='" + "http" + (window.location.protocol.indexOf('https:')==0?'s':'') + "://js.revsci.net/gateway/gw.js?csid=I07714' CHARSET='ISO-8859-1'"+"><\/SCR"+"IPT>");
+</SCRIPT>
+
+<script type="text/javascript">
+<!--
+      I07714.DM_cat("us.reuters > bizfinance > markets > indices");
+      I07714.DM_tag();
+//-->
+</SCRIPT><!-- Begin comScore Tag -->
+<noscript>
+    <img src="http://b.scorecardresearch.com/p?c1=2&c2=6035630&cv=2.0&cj=1" />
+</noscript>
+<!-- End comScore Tag --><META name="DCSext.rChannel" content="Finance">
+<META name="DCSext.rCountry" content="BETAUS">
+<META name="WT.cg_n" content="Finance - Markets">
+<META name="WT.cg_s" content="Indices">
+<META name="DCSext.DartZone" content="us.reuters/bizfinance/markets/indices">
+<script type="text/javascript">
+var loginCookieValue =  YAHOO.util.Cookie.get("login");
+if(loginCookieValue != null && loginCookieValue != ''){
+
+	loginMeta = document.createElement('META');
+	loginMeta.name = 'WT.z_li';
+
+	var customerId = YAHOO.util.Cookie.get("customerId");
+	var socialLoginProvider = YAHOO.util.Cookie.get("socialLoginProvider");
+	if(customerId != null && customerId != '' && socialLoginProvider != null && socialLoginProvider != ''){
+		socialLoginProvider = socialLoginProvider.toLowerCase();
+		if(socialLoginProvider == 'google'){
+			loginMeta.content = "2";
+		} else if(socialLoginProvider == 'facebook'){
+			loginMeta.content = "3";
+		} else if(socialLoginProvider == 'linkedin'){
+			loginMeta.content = "4";
+		} else if(socialLoginProvider=='aol'){
+			loginMeta.content = "5";
+		} else if(socialLoginProvider=='twitter'){
+			loginMeta.content = "6";
+		} else if(socialLoginProvider=='myspace'){
+			loginMeta.content = "7";
+		} else if(socialLoginProvider=='yahoo'){
+			loginMeta.content = "8";
+		}
+	} else {
+		loginMeta.content = "1";
+	}
+
+	document.getElementsByTagName('head')[0].appendChild(loginMeta);
+   }
+
+var registeredCookieValue =  YAHOO.util.Cookie.get("ruus");
+
+if(registeredCookieValue != null && registeredCookieValue != 'undefined' && registeredCookieValue != ''){
+	registeredMeta = document.createElement('META');
+	registeredMeta.name = "WT.z_registered";
+	registeredMeta.content = encodeURIComponent(registeredCookieValue);
+	document.getElementsByTagName('head')[0].appendChild(registeredMeta);
+}
+
+</script>
+<META name="DCSext.ContentChannel"  content="Markets - Indices">
+
+		<META name="DCSext.ContentType"  content="Finance Topic">
+    <!-- START OF SmartSource Data Collector TAG -->
+<!-- Copyright (c) 1996-2009 WebTrends Inc.  All rights reserved. -->
+<!-- Version: 8.6.0 -->
+<!-- Tag Builder Version: 2.1.0  -->
+<!-- Created: 2/9/2009 17:21:12 -->
+
+<script src="http://s4.reutersmedia.net/resources_v2/js/webtrends.js" type="text/javascript"></script>
+   <script type="text/javascript">
+var _tag=new WebTrends();
+_tag.dcsGetId();
+</script>
+<script type="text/javascript">
+setModuleImpressionTracking();
+_tag.dcsCollect();
+</script>
+<noscript>
+<div><img alt="DCSIMG" id="DCSIMG" width="1" height="1" src="http://statse.webtrendslive.com/dcsncwimc10000kzgoor3wv9x_3f2v/njs.gif?dcsuri=/nojavascript&amp;WT.js=No&amp;WT.tv=8.6.0"/></div>
+</noscript>
+<!-- END OF SmartSource Data Collector TAG -->
+
+
+<!-- Begin BlueKai Tag Latest -->
+<iframe name="__bkframe" height="0" width="0" frameborder="0" src="javascript:void(0)"></iframe>
+<script type="text/javascript" src="//www.bkrtx.com/js/bk-coretag.js"></script>
+
+    <script>
+    var bkcat = YAHOO.util.Cookie.get('bkcatid');
+  // if (bkcat) {
+ //       TR.log('3. Using cached bkcatid as ' + bkcat);
+ //       }
+    function saveCategories(data) {
+        // Don't release to production without the JSON2 shim
+        //YAHOO.util.Cookie.set('bkcatid', JSON.stringify(data))
+        //TR.log('3. Persisting bkcatid as ' + JSON.stringify(data));
+         //TR.saveBluekaiCookie(data);
+        }
+    bk_use_first_party = true;
+    bk_callback = 'saveCategories';
+
+    try {
+
+        var bkSocialLogin = (typeof socialLoginProvider != 'undefined' ? socialLoginProvider : '');
+        var bkReferrer = (typeof document.referrer.split('/')[2] != 'undefined' ? document.referrer.split('/')[2] : '');
+        var bkLoginCookieValue = (typeof loginCookieValue != 'undefined' ? loginCookieValue : '');
+        var bkSearchVal = (typeof document.location.search != 'undefined' ? document.location.search : '');
+        var bkRegVal = (typeof registeredCookieValue != 'undefined' ? registeredCookieValue : '');
+
+        var bkWTFPCCookie = typeof YAHOO.util.Cookie.get('WT_FPC') != 'undefined' ? YAHOO.util.Cookie.get('WT_FPC') : '';
+
+        bkWTFPCCookieArr = bkWTFPCCookie ? bkWTFPCCookie.split('=') : '';
+        bkWTFPCCookieKeyArr = typeof bkWTFPCCookieArr[1] !== 'undefined' ?  bkWTFPCCookieArr[1].split(':') : 'undefined';
+        bkWTFPCCookieKey = bkWTFPCCookieKeyArr[0];
+
+        //Get Meta Values from Cookie
+        var bkMetaArray = document.getElementsByTagName('meta');
+        for (var i = 0; i < bkMetaArray.length; i++) {
+        if (bkMetaArray[i].getAttribute('name')) {
+        if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.rChannel') > -1) {
+        bk_addPageCtx('rch', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.rCountry') > -1) {
+        bk_addPageCtx('rco', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('WT.cg_n') > -1) {
+        bk_addPageCtx('wcntn', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('WT.cg_s') > -1) {
+        bk_addPageCtx('wcnts', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.ContentChannel') > -1) {
+        bk_addPageCtx('cc', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.ContentType') > -1) {
+        bk_addPageCtx('cnt', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.PageNumber') > -1) {
+        bk_addPageCtx('pn', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.PageTotal') > -1) {
+        bk_addPageCtx('pt', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.VideoType') > -1) {
+        bk_addPageCtx('vt', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.rAuthor') > -1) {
+        bk_addPageCtx('aut', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.Comments') > -1) {
+        bk_addPageCtx('com', bkMetaArray[i].getAttribute('content'));
+        }
+    if (bkMetaArray[i].getAttribute('name').indexOf('DCSext.DartZone') > -1) {
+        var bkZoneArray = bkMetaArray[i].getAttribute('content').split('/');
+        for (var z = 0; z < bkZoneArray.length; z++) {
+        var bkHint = 'z' + z;
+        bk_addPageCtx(bkHint, bkZoneArray[z]);
+        }
+    }
+    }
+    }
+
+    bk_addPageCtx('wtc', bkWTFPCCookieKey);
+    bk_addPageCtx('log', bkLoginCookieValue);
+    bk_addPageCtx('soc', bkSocialLogin);
+    bk_addPageCtx('hsh', bkRegVal);
+    bk_addPageCtx('ref', bkReferrer);
+    bk_addPageCtx('sea', bkSearchVal);
+    bk_doJSTag(4972, 10);
+
+    } catch (e) {}
+    </script>
+<!-- End BlueKai Tag -->
+<script>
+$(document).ready(function() {
+
+$('#bannerStrip .ad div.GoogleActiveViewClass img').addClass('c131');
+
+
+});
+
+
+</script><div class="linebreak"></div>
+
+
+</body>
+</html>

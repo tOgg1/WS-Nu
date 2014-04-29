@@ -7,6 +7,7 @@ import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.brw_2.NotificationBroker;
+import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationManager;
 
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -23,6 +24,7 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
     protected boolean demandRegistered;
     protected boolean cacheMessages;
 
+    protected PublisherRegistrationManager registrationManager;
 
     protected AbstractNotificationBroker() {
         super();
@@ -38,6 +40,14 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
 
     public void setCacheMessages(boolean cacheMessages) {
         this.cacheMessages = cacheMessages;
+    }
+
+    public void clearRegistrationManager(){
+        registrationManager = null;
+    }
+
+    public void setRegistrationManager(PublisherRegistrationManager registrationManager) {
+        this.registrationManager = registrationManager;
     }
 
     public static class PublisherHandle {
