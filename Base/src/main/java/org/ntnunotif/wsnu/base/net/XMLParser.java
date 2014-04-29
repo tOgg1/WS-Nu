@@ -389,6 +389,11 @@ public class XMLParser {
 
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);
+
+                    if (namespaceContext.getNamespaceURI(prefix) != null) {
+                        Log.w("XMLParser.WSStreamFilter", "A namespace prefix was overwritten! The namespace context" +
+                                " may be compromised! " + prefix);
+                    }
                     namespaceContext.put(prefix, reader.getNamespaceURI(i));
                 }
 
