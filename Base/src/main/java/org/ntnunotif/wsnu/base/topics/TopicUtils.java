@@ -393,6 +393,12 @@ public class TopicUtils {
         element.setAttributeNodeNS(topicAttr);
     }
 
+    /**
+     * Forces a node to not be a topic node. That is, if it previously had the wnst:topic attribute set, this attribute
+     * is set to <code>false</code>. If it did not have this attribute set, the method does nothing.
+     *
+     * @param node the {@link org.w3c.dom.Node} to change
+     */
     public static void forceNonTopicNode(Node node) {
         Log.d("TopicUtils", "forceNonTopicNode called");
 
@@ -506,6 +512,13 @@ public class TopicUtils {
         throw new TopicExpressionDialectUnknownFault("desc", faultType);
     }
 
+    /**
+     * Will build and throw a {@link org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault}.
+     *
+     * @param lang the language message has {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setLang(String)}
+     * @param desc the description, {@link org.oasis_open.docs.wsrf.bf_2.BaseFaultType.Description#setValue(String)}
+     * @throws MultipleTopicsSpecifiedFault the exception is thrown
+     */
     public static void throwMultipleTopicsSpecifiedFault(String lang, String desc) throws MultipleTopicsSpecifiedFault {
         Log.d("TopicUtils", "Throwing MultipleTopicsSpecifiedFault: " + desc);
 
@@ -525,6 +538,12 @@ public class TopicUtils {
         throw new MultipleTopicsSpecifiedFault(desc, faultType);
     }
 
+    /**
+     * Checks if the given {@link java.lang.String} is a valid NCName.
+     *
+     * @param ncName the <code>String</code> to check
+     * @return <code>true</code> if this is a NCName. <code>false</code> otherwise.
+     */
     public static boolean isNCName(String ncName) {
         Log.d("TopicUtils", "isNCName called on: " + ncName);
 
@@ -541,6 +560,12 @@ public class TopicUtils {
         return true;
     }
 
+    /**
+     * Checks if the given <code>char</code> is acceptable as a start letter of a NCName.
+     *
+     * @param c the <code>char</code> to check
+     * @return <code>true</code> if it is acceptable. <code>false</code> otherwise.
+     */
     public static boolean isNCStartChar(char c) {
         // Upper case
         if (c >= 'A' && c <= 'Z')
@@ -552,6 +577,13 @@ public class TopicUtils {
         return c == '_';
     }
 
+    /**
+     * Checks if the given <code>char</code> is allowed in NCNames. This includes both start characters and mid- word
+     * characters.
+     *
+     * @param c the <code>char</code> to check
+     * @return <code>true</code> if it is acceptable. <code>false</code> otherwise.
+     */
     public static boolean isNCChar(char c) {
         // hyphen and punctuation
         if (c == '-' || c == '.')
@@ -560,6 +592,13 @@ public class TopicUtils {
         return (c >= '0' && c <= '9') || isNCStartChar(c);
     }
 
+    /**
+     * Translates the topic, given as a list of {@link javax.xml.namespace.QName}s to a easy read variation. It is
+     * represented as multiple <code>{Namespace}:local</code> separated by <code>/</code>.
+     *
+     * @param topic the topic to represent as a {@link java.lang.String}
+     * @return the <code>String</code> representation of the topic
+     */
     public static String topicToString(List<QName> topic) {
         Log.d("TopicUtils", "topicToString called");
 
@@ -575,6 +614,16 @@ public class TopicUtils {
         return returnString;
     }
 
+    /**
+     * Translates a list of {@link javax.xml.namespace.QName} to a
+     * {@link org.oasis_open.docs.wsn.b_2.TopicExpressionType}. The dialect chosen for the
+     * <code>TopicExpressionType</code> will be either the dialect for simple or concrete topic. The choice depends on
+     * how many <code>QName</code>s is in the list. 1 <code>QName</code> results in simple dialect. More results in
+     * concrete.
+     *
+     * @param topic the topic represented as a list of QNames
+     * @return the topic represented by a <code>TopicExpressionType</code>
+     */
     public static TopicExpressionType translateQNameListTopicToTopicExpression(List<QName> topic) {
 
         Log.d("TopicUtils", "translateQNameListTopicToTopicExpression called");

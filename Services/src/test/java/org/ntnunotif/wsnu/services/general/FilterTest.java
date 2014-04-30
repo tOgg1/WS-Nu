@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.general;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -18,7 +19,6 @@ import org.w3._2001._12.soap_envelope.Envelope;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -35,9 +35,9 @@ public class FilterTest {
     private static InternalMessage subscribeInternalMessage;
     private static FilterType filterType;
     private static Notify notifySource;
-    private static NamespaceContext notifyContext;
+    private static NuNamespaceContextResolver notifyContext;
     private static FilterType allFilters;
-    private static NamespaceContext filterContext;
+    private static NuNamespaceContextResolver filterContext;
 
     private static FilterSupport defaultFilterSupport;
 
@@ -57,11 +57,11 @@ public class FilterTest {
         Body b = element.getValue().getBody();
         filterType = ((Subscribe)b.getAny().get(0)).getFilter();
         InternalMessage internalMessage = XMLParser.parse(FilterTest.class.getResourceAsStream(largeNotifyLocationRes));
-        notifyContext = internalMessage.getRequestInformation().getNamespaceContext();
+        notifyContext = internalMessage.getRequestInformation().getNamespaceContextResolver();
         notifySource = (Notify)internalMessage.getMessage();
 
         internalMessage= XMLParser.parse(FilterTest.class.getResourceAsStream(allFilterLocationRes));
-        filterContext = internalMessage.getRequestInformation().getNamespaceContext();
+        filterContext = internalMessage.getRequestInformation().getNamespaceContextResolver();
         allFilters = (FilterType)((JAXBElement)internalMessage.getMessage()).getValue();
     }
 
@@ -277,7 +277,7 @@ public class FilterTest {
         // Filters 17 is unsupported
         JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(16);
 
-        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext.resolveNamespaceContext(filter1.getValue()));
         Assert.assertFalse("Claimed to support ProducerProperties filter", supported);
     }
 
@@ -286,28 +286,28 @@ public class FilterTest {
         // Filters 18 is topic filter with unknown dialect
         JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(17);
 
-        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext.resolveNamespaceContext(filter1.getValue()));
     }
     @Test(expected = InvalidTopicExpressionFault.class)
     public void testIllegalFilter3() throws Exception {
         // Filters 19 is topic filter with expression that do not fit dialect
         JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(18);
 
-        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext.resolveNamespaceContext(filter1.getValue()));
     }
     @Test(expected = InvalidMessageContentExpressionFault.class)
     public void testIllegalFilter4() throws Exception {
         // Filters 20 is message filter unknown dialect
         JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(19);
 
-        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext.resolveNamespaceContext(filter1.getValue()));
     }
     @Test
     public void testIllegalFilter5() throws Exception {
         // Filters 21 is message filter not boolean
         JAXBElement filter1 = (JAXBElement)allFilters.getAny().get(20);
 
-        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext);
+        boolean supported = defaultFilterSupport.supportsFilter(filter1.getName(), filter1.getValue(), filterContext.resolveNamespaceContext(filter1.getValue()));
         Assert.assertTrue("The filter should be supported, but never evaluate to true", supported);
 
         // Check result of computations:

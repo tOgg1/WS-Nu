@@ -158,56 +158,56 @@ public class TopicValidatorTest {
 
     @Test
     public void testSimpleLegalCase() throws Exception{
-        NamespaceContext namespaceContext = simpleLegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)simpleLegalMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = simpleLegalMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         Assert.assertTrue("Simple legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
     }
 
     @Test(expected = InvalidTopicExpressionFault.class)
     public void testSimpleIllegalCase() throws Exception{
-        NamespaceContext namespaceContext = simpleIllegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)simpleIllegalMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = simpleIllegalMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         TopicValidator.isLegalExpression(topicExpression, namespaceContext);
     }
 
     @Test
     public void testConcreteLegalCase() throws Exception{
-        NamespaceContext namespaceContext = concreteLegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)concreteLegalMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = concreteLegalMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         Assert.assertTrue("Concrete legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
     }
 
     @Test(expected = InvalidTopicExpressionFault.class)
     public void testConcreteIllegalCase() throws Exception{
-        NamespaceContext namespaceContext = concreteIllegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)concreteIllegalMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = concreteIllegalMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         TopicValidator.isLegalExpression(topicExpression, namespaceContext);
     }
 
     @Test
      public void testFullLegalSingleCase() throws Exception{
-        NamespaceContext namespaceContext = fullLegalSingleMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)fullLegalSingleMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = fullLegalSingleMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         Assert.assertTrue("Full, single legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
     }
 
     @Test
     public void testFullLegalMultipleCase() throws Exception{
-        NamespaceContext namespaceContext = fullLegalMultipleMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)fullLegalMultipleMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = fullLegalMultipleMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         Assert.assertTrue("full, multiple legal not accepted", TopicValidator.isLegalExpression(topicExpression, namespaceContext));
     }
 
     @Test(expected = InvalidTopicExpressionFault.class)
     public void testFullIllegalCase() throws Exception{
-        NamespaceContext namespaceContext = fullIllegalMsg.getRequestInformation().getNamespaceContext();
         TopicExpressionType topicExpression = ((GetCurrentMessage)fullIllegalMsg.getMessage()).getTopic();
+        NamespaceContext namespaceContext = fullIllegalMsg.getRequestInformation().getNamespaceContext(topicExpression);
 
         TopicValidator.isLegalExpression(topicExpression, namespaceContext);
     }
@@ -218,7 +218,9 @@ public class TopicValidatorTest {
         // Simple
         List<QName> qNameList = TopicValidator.evaluateTopicExpressionToQName(
                 ((GetCurrentMessage)simpleLegalMsg.getMessage()).getTopic(),
-                simpleLegalMsg.getRequestInformation().getNamespaceContext()
+                simpleLegalMsg.getRequestInformation().getNamespaceContext(
+                        ((GetCurrentMessage)simpleLegalMsg.getMessage()).getTopic()
+                )
         );
 
         Assert.assertNotNull("Simple was evaluated to null", qNameList);
@@ -227,7 +229,9 @@ public class TopicValidatorTest {
         // Concrete
         qNameList = TopicValidator.evaluateTopicExpressionToQName(
                 ((GetCurrentMessage)concreteLegalMsg.getMessage()).getTopic(),
-                concreteLegalMsg.getRequestInformation().getNamespaceContext()
+                concreteLegalMsg.getRequestInformation().getNamespaceContext(
+                        ((GetCurrentMessage)concreteLegalMsg.getMessage()).getTopic()
+                )
         );
 
         Assert.assertNotNull("Concrete was evaluated to null", qNameList);
@@ -236,7 +240,9 @@ public class TopicValidatorTest {
         // full
         qNameList = TopicValidator.evaluateTopicExpressionToQName(
                 ((GetCurrentMessage)fullLegalSingleMsg.getMessage()).getTopic(),
-                fullLegalSingleMsg.getRequestInformation().getNamespaceContext()
+                fullLegalSingleMsg.getRequestInformation().getNamespaceContext(
+                        ((GetCurrentMessage)fullLegalSingleMsg.getMessage()).getTopic()
+                )
         );
 
         Assert.assertNotNull("Full was evaluated to null", qNameList);
@@ -247,19 +253,25 @@ public class TopicValidatorTest {
     public void testExpressionsMultipleFull() throws Exception{
         TopicValidator.evaluateTopicExpressionToQName(
                 ((GetCurrentMessage)fullLegalMultipleMsg.getMessage()).getTopic(),
-                fullLegalMultipleMsg.getRequestInformation().getNamespaceContext()
+                fullLegalMultipleMsg.getRequestInformation().getNamespaceContext(
+                        ((GetCurrentMessage)fullLegalMultipleMsg.getMessage()).getTopic()
+                )
         );
     }
 
     @Test
     public void testGetIntersectionNull() throws Exception{
-        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(xPathFalse, topicSet, xPathFalMsg.getRequestInformation().getNamespaceContext()));
+        Assert.assertNull("Intersection was not empty!", TopicValidator.getIntersection(
+                xPathFalse, topicSet, xPathFalMsg.getRequestInformation().getNamespaceContext(xPathFalse))
+        );
     }
 
     @Test
     public void testGetIntersectionOne() throws Exception{
         // Do calculation
-        TopicSetType ret = TopicValidator.getIntersection(xPathSingleHit, topicSet, xPathSinMsg.getRequestInformation().getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(
+                xPathSingleHit, topicSet, xPathSinMsg.getRequestInformation().getNamespaceContext(xPathSingleHit)
+        );
         // Convert to more easily readable format
         List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, true);
         Assert.assertNotNull("TopicValidator returned null!", ret);
@@ -280,7 +292,9 @@ public class TopicValidatorTest {
     @Test
     public void testGetIntersectionTwo() throws Exception{
         // Do calculation
-        TopicSetType ret = TopicValidator.getIntersection(xPathMultipleHits, topicSet, xPathMulMsg.getRequestInformation().getNamespaceContext());
+        TopicSetType ret = TopicValidator.getIntersection(
+                xPathMultipleHits, topicSet, xPathMulMsg.getRequestInformation().getNamespaceContext(xPathMultipleHits)
+        );
         // Convert to more easily readable format
         List<List<QName>> retAsQNameList = TopicUtils.topicSetToQNameList(ret, true);
         Assert.assertNotNull("TopicValidator returned null!", ret);
@@ -311,7 +325,10 @@ public class TopicValidatorTest {
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)
     public void testIllegalExpressionDialectIntersection() throws Exception {
-        TopicValidator.getIntersection(illegalExpressionDialect, topicSet, illExprDiaMsg.getRequestInformation().getNamespaceContext());
+        TopicValidator.getIntersection(
+                illegalExpressionDialect, topicSet,
+                illExprDiaMsg.getRequestInformation().getNamespaceContext(illegalExpressionDialect)
+        );
     }
 
     @Test(expected = TopicExpressionDialectUnknownFault.class)

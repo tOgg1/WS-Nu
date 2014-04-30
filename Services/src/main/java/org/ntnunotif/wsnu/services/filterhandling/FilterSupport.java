@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
 import com.google.common.collect.ImmutableMap;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -30,7 +31,7 @@ public class FilterSupport {
 
         private final ImmutableMap<QName, Object> filters;
 
-        public final NamespaceContext namespaceContext;
+        public final NuNamespaceContextResolver namespaceContextResolver;
 
         /**
          * Run once on class load to initialize class correctly
@@ -53,9 +54,9 @@ public class FilterSupport {
             DEFAULT_FILTER_SUPPORT = new SubscriptionInfo(defaults, null);
         }
 
-        public SubscriptionInfo(Map<QName, Object> filtersIncluded, NamespaceContext namespaceContext) {
+        public SubscriptionInfo(Map<QName, Object> filtersIncluded, NuNamespaceContextResolver namespaceContextResolver) {
             this.filters = ImmutableMap.copyOf(filtersIncluded);
-            this.namespaceContext = namespaceContext;
+            this.namespaceContextResolver = namespaceContextResolver;
         }
 
         public boolean usesFilter(QName filterName) {
@@ -118,15 +119,16 @@ public class FilterSupport {
     }
 
     public Notify evaluateNotifyToSubscription(Notify notify, FilterSupport.SubscriptionInfo subscriptionInfo,
-                                               NamespaceContext namespaceContext) {
+                                               NuNamespaceContextResolver namespaceContextResolver) {
         Log.d("FilterSupport", "Evaluating notify with number of messages: " + notify.getNotificationMessage().size());
         // Tries not to destroy source Notify
         Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
 
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
         for (QName fName : subscriptionInfo.getFilterSet()) {
-            returnValue = evaluatorMap.get(fName).evaluate(returnValue, namespaceContext,
-                    subscriptionInfo.getFilter(fName), subscriptionInfo.namespaceContext);
+            Object filter = subscriptionInfo.getFilter(fName);
+            returnValue = evaluatorMap.get(fName).evaluate(returnValue, namespaceContextResolver,
+                    filter, subscriptionInfo.namespaceContextResolver.resolveNamespaceContext(filter));
         }
 
         Log.d("FilterSupport", "Returning evaluated notifies: " +

@@ -1,12 +1,17 @@
 package org.ntnunotif.wsnu.base.util;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
+import org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo;
+
 import javax.xml.namespace.NamespaceContext;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Class containing meta-information about a request. Primarily used in an InternalMessage
+ *
  * @author Tormod Haugland
- * Created by tormod on 24.03.14.
+ *         Created by tormod on 24.03.14.
  */
 public class RequestInformation {
 
@@ -16,10 +21,11 @@ public class RequestInformation {
     private String _requestURL;
     private Map<String, String[]> _parameters;
     private int _httpStatus;
+    private NuNamespaceContextResolver _namespaceContextResolver;
+    private List<NuParseValidationEventInfo> _parseValidationEventInfos;
 
 
     public RequestInformation() {
-
     }
 
     public RequestInformation(NamespaceContext _context, String _endpointReference, String _requestURL, Map<String, String[]> parameters) {
@@ -37,12 +43,58 @@ public class RequestInformation {
         this._parameters = _parameters;
     }
 
+    /**
+     * This method is deprecated, and ONLY available for backward compatibility. Please use <code>getNamespaceContext(Object)</code> instead.
+     *
+     * @return a non guaranteed namespace context
+     * @deprecated use getNamespaceContext(Object) instead
+     */
+    @Deprecated
     public NamespaceContext getNamespaceContext() {
         return _namespaceContext;
     }
 
+    /**
+     * @param _context the non-guaranteed context
+     * @deprecated use setNamespaceContextResolver(NuNamespaceContextResolver) instead
+     */
+    @Deprecated
     public void setNamespaceContext(NamespaceContext _context) {
         this._namespaceContext = _context;
+    }
+
+    /**
+     * Sets the object resolving namespaces.
+     *
+     * @param resolver the object resolving namespaces
+     */
+    public void setNamespaceContextResolver(NuNamespaceContextResolver resolver) {
+        _namespaceContextResolver = resolver;
+    }
+
+    /**
+     * Gets the object resolving namespaces.
+     *
+     * @return the object resolving namespaces
+     */
+    public NuNamespaceContextResolver getNamespaceContextResolver() {
+        return _namespaceContextResolver;
+    }
+
+    /**
+     * Gets the namespace for this object. If the context resolver is set, the namespace context will be correct. No
+     * guarantees are provided if it is not.
+     *
+     * @param object the object to resolve the namespace for
+     * @return the namespace context for this object, or <code>null</code> if the object was not registered with the resolver
+     */
+    public NamespaceContext getNamespaceContext(Object object) {
+
+        if (_namespaceContextResolver == null) {
+            return _namespaceContext;
+        }
+
+        return _namespaceContextResolver.resolveNamespaceContext(object);
     }
 
     public String getEndpointReference() {
@@ -67,5 +119,25 @@ public class RequestInformation {
 
     public void setHttpStatus(int httpStatus) {
         this._httpStatus = httpStatus;
+    }
+
+    /**
+     * Gets the parse {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to the request. If
+     * schema validation is turned on, this will return <code>null</code>.
+     *
+     * @return the {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to this request or
+     * <code>null</code> if schema validation is turned on.
+     */
+    public List<NuParseValidationEventInfo> getParseValidationEventInfos() {
+        return _parseValidationEventInfos;
+    }
+
+    /**
+     * Sets the {@link org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo}s connected to the request
+     *
+     * @param parseValidationEventInfos the infos to set
+     */
+    public void setParseValidationEventInfos(List<NuParseValidationEventInfo> parseValidationEventInfos) {
+        this._parseValidationEventInfos = parseValidationEventInfos;
     }
 }

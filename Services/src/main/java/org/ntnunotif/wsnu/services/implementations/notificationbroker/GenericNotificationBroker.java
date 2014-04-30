@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -177,7 +178,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
     @Override
     @WebMethod(exclude = true)
-    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
 
         // See if we have the current recipient registered, and if message is cached
         if (!subscriptions.containsKey(recipient))
@@ -190,12 +191,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         SubscriptionHandle subscriptionHandle = subscriptions.get(recipient);
 
         // Delegate filtering to filter support
-        return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContext);
+        return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContextResolver);
     }
 
     @Override
     @WebMethod(exclude = true)
-    public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
+    public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
 
         // Check if we should cache message
         if (cacheMessages) {
@@ -208,7 +209,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
                     try {
 
-                        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
+                        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContextResolver.resolveNamespaceContext(topic));
                         String topicName = TopicUtils.topicToString(topicQNames);
                         latestMessages.put(topicName, messageHolderType);
 
@@ -226,7 +227,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             }
         }
         // Super type can do the rest
-        super.sendNotification(notify, namespaceContext);
+        super.sendNotification(notify, namespaceContextResolver);
     }
 
     @Override
@@ -242,7 +243,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         Log.d("GenericNotificationBroker", "Got new subscription request");
 
         // Remember the namespace context
-        NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
+        //NamespaceContext namespaceContextResolver = _connection.getRequestInformation().getNamespaceContext();
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
@@ -268,6 +269,9 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
                 if (o instanceof JAXBElement) {
                     JAXBElement filter = (JAXBElement) o;
+
+                    // Get the na,espace context for this filter
+                    NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext(filter.getValue());
 
                     // Filter legality checks
                     if (filterSupport != null &&
@@ -337,7 +341,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         /* Set up the subscription */
         // create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
-                namespaceContext);
+                _connection.getRequestInformation().getNamespaceContextResolver());
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
@@ -376,7 +380,8 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
             UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
 
-        NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
+        //NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
+        NuNamespaceContextResolver namespaceContextResolver = _connection.getRequestInformation().getNamespaceContextResolver();
 
         W3CEndpointReference publisherEndpoint = registerPublisherRequest.getPublisherReference();
 
@@ -396,7 +401,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         for (TopicExpressionType topic : topics) {
             try {
-                if(!TopicValidator.isLegalExpression(topic, namespaceContext)){
+                if(!TopicValidator.isLegalExpression(topic, namespaceContextResolver.resolveNamespaceContext(topic))){
                     ServiceUtilities.throwTopicNotSupportedFault("en", "Expression given is not a legal topicexpression");
                 }
             } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
@@ -450,7 +455,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
-        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext());
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
         String topicName = TopicUtils.topicToString(topicQNames);
 
         // Find latest message on this topic

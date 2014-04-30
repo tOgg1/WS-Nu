@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
@@ -48,10 +49,10 @@ public interface FilterEvaluator {
      * altered.
      *
      * @param notify        the <code>Notify</code> to evaluate. The argument may be <code>null</code>, and may be altered
-     * @param notifyContext The {@link javax.xml.namespace.NamespaceContext} of the <code>Notify</code>
+     * @param notifyContextResolver The {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver} of the <code>Notify</code>
      * @param filter        the filter to evaluate with
      * @param filterContext The {@link javax.xml.namespace.NamespaceContext} of the filter
      * @return a <code>Notify</code> element containing all accepted Notifications. <code>null</code> if none was found.
      */
-    public Notify evaluate(Notify notify, NamespaceContext notifyContext, Object filter, NamespaceContext filterContext);
+    public Notify evaluate(Notify notify, NuNamespaceContextResolver notifyContextResolver, Object filter, NamespaceContext filterContext);
 }

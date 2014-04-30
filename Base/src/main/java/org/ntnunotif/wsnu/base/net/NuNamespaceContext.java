@@ -12,6 +12,12 @@ public class NuNamespaceContext implements NamespaceContext {
 
     private Map<String, String> table = new HashMap<>();
 
+    public NuNamespaceContext() {}
+
+    public NuNamespaceContext(NuNamespaceContext original) {
+        this.table.putAll(original.table);
+    }
+
     public synchronized void put(String prefix, String nameSpace) {
         table.put(prefix, nameSpace);
     }
@@ -38,5 +44,10 @@ public class NuNamespaceContext implements NamespaceContext {
             outString += "\n" + e.getKey() + "\t:\t" + e.getValue();
         }
         return  outString;
+    }
+
+    @Override
+    public NuNamespaceContext clone() {
+        return new NuNamespaceContext(this);
     }
 }

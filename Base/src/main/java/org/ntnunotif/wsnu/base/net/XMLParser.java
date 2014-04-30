@@ -6,6 +6,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
+import javax.xml.namespace.QName;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * The <code>XMLParser</code> is a static tool utility for parsing XML documents to and from Java objects.
@@ -247,6 +249,35 @@ public class XMLParser {
     }
 
     /**
+     * Attempts to parse the given {@link org.ntnunotif.wsnu.base.util.InternalMessage}.
+     *
+     * @param internalMessage a container for the request to parse
+     * @return the internal message given as argument, with filled in additional request information
+     * @throws JAXBException if no way of parsing the request is found, or something else fails.
+     */
+    public static void parse(InternalMessage internalMessage) throws JAXBException {
+        Log.d("XMLParser", "Parsing message from InternalMessage");
+        Object message = internalMessage.getMessage();
+        InternalMessage parsedMessage = null;
+        if (message instanceof InputStream) {
+            parsedMessage = parse((InputStream) message);
+        } else if (message instanceof XMLStreamReader) {
+            parsedMessage = parse((XMLStreamReader) message);
+        }
+
+        if (parsedMessage == null) {
+            Log.e("XMLParser", "Could not unmarshall object of class" + message.getClass());
+            throw new JAXBException("No way of unmarshalling " + message.getClass() + " 0found");
+        }
+
+        internalMessage.setMessage(parsedMessage.getMessage());
+
+        internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
+        internalMessage.getRequestInformation().setNamespaceContextResolver(parsedMessage.getRequestInformation().getNamespaceContextResolver());
+        internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+    }
+
+    /**
      * Parses the {@link javax.xml.stream.XMLStreamReader}, and returns the parsed tree structure
      *
      * @param xmlStreamReader The {@link javax.xml.stream.XMLStreamReader} to parse.
@@ -267,7 +298,25 @@ public class XMLParser {
         }
         try {
             Unmarshaller unmarshaller = getUnmarshaller();
+            NuRequestInformationValidationEventHandler validationEventHandler = null;
+
+            if (_skippingSchemaValidation) {
+                validationEventHandler = new NuRequestInformationValidationEventHandler(filter);
+                unmarshaller.setEventHandler(validationEventHandler);
+            }
+
+            unmarshaller.setListener(new NuUnmarshalListener(filter.contextResolver));
+
             InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, unmarshaller.unmarshal(xmlStreamReader));
+
+            if (validationEventHandler != null) {
+                msg.getRequestInformation().setParseValidationEventInfos(validationEventHandler.parseValidationEventInfos);
+            }
+
+            // Set the namespace resolver
+            msg.getRequestInformation().setNamespaceContextResolver(filter.contextResolver);
+
+            // Kept for backward compatibility
             msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
             return msg;
         } catch (JAXBException e) {
@@ -292,7 +341,7 @@ public class XMLParser {
     /**
      * Tells if parser is set to skip validation against schemas or not.
      *
-     * @return
+     * @return <code>true</code> if schema validation is skipped. <code>false</code> otherwise.
      */
     public static boolean isSkippingSchemaValidation() {
         return _skippingSchemaValidation;
@@ -336,15 +385,34 @@ public class XMLParser {
      * Stream filter that keeps track of namespaces during parsing from xml.
      */
     private class WSStreamFilter implements StreamFilter {
+
+        NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
         NuNamespaceContext namespaceContext = new NuNamespaceContext();
+        Stack<QName> elementPath = new Stack<>();
+        XMLStreamReader reader;
 
         @Override
         public boolean accept(XMLStreamReader reader) {
+            this.reader = reader;
+
             if (reader.isStartElement()) {
+                contextResolver.openScope();
+                elementPath.push(reader.getName());
+
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);
+
+                    if (namespaceContext.getNamespaceURI(prefix) != null) {
+                        Log.w("XMLParser.WSStreamFilter", "A namespace context prefix was defined multiple times. " +
+                                "Namespaces must be resolved pr object to contain all prefix bindings");
+                    }
                     namespaceContext.put(prefix, reader.getNamespaceURI(i));
+                    contextResolver.putNamespaceBinding(prefix, reader.getNamespaceURI(i));
                 }
+
+            } else if (reader.isEndElement()) {
+                contextResolver.closeScope();
+                elementPath.pop();
             }
             return true;
         }
@@ -377,6 +445,52 @@ public class XMLParser {
                     " warning " : "n error") + " with message " + event.getMessage() + " occurred under parsing " +
                     "(severity level " + event.getSeverity() + ")");
             return true;
+        }
+    }
+
+    /**
+     * A {@link javax.xml.bind.ValidationEventHandler} used when schema validation is turned off to log validation errors.
+     */
+    private static class NuRequestInformationValidationEventHandler implements ValidationEventHandler {
+
+        final WSStreamFilter filter;
+        final List<NuParseValidationEventInfo> parseValidationEventInfos = new ArrayList<>();
+
+        NuRequestInformationValidationEventHandler(WSStreamFilter filter) {
+            this.filter = filter;
+        }
+
+        @Override
+        public boolean handleEvent(ValidationEvent event) {
+
+            @SuppressWarnings("unchecked")
+            Stack<QName> path = (Stack<QName>) filter.elementPath.clone();
+            boolean isStartElement = filter.reader.isStartElement();
+            boolean isEndElement = filter.reader.isEndElement();
+            int eventType = filter.reader.getEventType();
+            QName currentName = isStartElement || isEndElement ? filter.reader.getName() : null;
+
+            NuParseValidationEventInfo info = new NuParseValidationEventInfo(event, event.getSeverity(), currentName,
+                    path, eventType, isStartElement, isEndElement);
+
+            parseValidationEventInfos.add(info);
+
+            Log.d("XMLParser.NuRequestInformationValidationEventHandler", "Validation event logged: " + event.toString());
+            return true;
+        }
+    }
+
+    private static class NuUnmarshalListener extends Unmarshaller.Listener {
+
+        NuNamespaceContextResolver resolver;
+
+        NuUnmarshalListener(NuNamespaceContextResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public void beforeUnmarshal(Object target, Object parent) {
+            resolver.registerObjectWithCurrentNamespaceScope(target);
         }
     }
 }
