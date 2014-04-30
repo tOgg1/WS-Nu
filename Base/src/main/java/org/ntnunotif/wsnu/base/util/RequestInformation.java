@@ -25,7 +25,8 @@ public class RequestInformation {
     private List<NuParseValidationEventInfo> _parseValidationEventInfos;
 
 
-    public RequestInformation() {}
+    public RequestInformation() {
+    }
 
     public RequestInformation(NamespaceContext _context, String _endpointReference, String _requestURL, Map<String, String[]> parameters) {
         this._namespaceContext = _context;
@@ -43,6 +44,8 @@ public class RequestInformation {
     }
 
     /**
+     * This method is deprecated, and ONLY available for backward compatibility. Please use <code>getNamespaceContext(Object)</code> instead.
+     *
      * @return a non guaranteed namespace context
      * @deprecated use getNamespaceContext(Object) instead
      */

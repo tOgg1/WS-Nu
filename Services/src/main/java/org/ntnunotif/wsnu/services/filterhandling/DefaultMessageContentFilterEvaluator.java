@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -86,7 +87,7 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
     }
 
     @Override
-    public Notify evaluate(Notify notify, NamespaceContext notifyContext, Object filter, NamespaceContext filterContext) {
+    public Notify evaluate(Notify notify, NuNamespaceContextResolver notifyContextResolver, Object filter, NamespaceContext filterContext) {
         // Fast check if we can return directly
         if (notify == null)
             return null;

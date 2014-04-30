@@ -3,6 +3,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 import org.junit.BeforeClass;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -10,7 +11,6 @@ import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
 import javax.jws.WebParam;
-import javax.xml.namespace.NamespaceContext;
 import java.util.Collection;
 
 import static junit.framework.TestCase.assertTrue;
@@ -41,7 +41,7 @@ public class AbstractNotificationProducerTest {
             }
 
             @Override
-            protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+            protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContext) {
                 return null;
             }
 

@@ -1,7 +1,7 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -16,7 +16,6 @@ import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import javax.jws.WebMethod;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -31,7 +30,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer, SubscriptionChangedListener {
 
     protected Notify currentMessage;
-    protected NamespaceContext currentMessageNamespaceContext;
+    protected NuNamespaceContextResolver currentMessageNamespaceContextResolver;
     protected AbstractSubscriptionManager manager;
     protected boolean usesManager;
 
@@ -105,12 +104,12 @@ public abstract class AbstractNotificationProducer extends WebService implements
      *
      * @param recipient        the recipient to ask
      * @param notify           the {@link org.oasis_open.docs.wsn.b_2.Notify} that should be filtered for sending
-     * @param namespaceContext the {@link javax.xml.namespace.NamespaceContext} of the {@link org.oasis_open.docs.wsn.b_2.Notify}
+     * @param namespaceContextResolver the {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver} of the {@link org.oasis_open.docs.wsn.b_2.Notify}
      * @return the filtered {@link org.oasis_open.docs.wsn.b_2.Notify} element to send to this recipient, or
      * <code>null</code> if no message should be sent
      */
     @WebMethod(exclude = true)
-    protected abstract Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext);
+    protected abstract Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver);
 
     /**
      * Will try to send the {@link org.oasis_open.docs.wsn.b_2.Notify} to the
@@ -139,10 +138,10 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * Sends a notification to the endpoints. NamespaceContext is the context of the Notification.
      *
      * @param notify           the {@link org.oasis_open.docs.wsn.b_2.Notify} to send
-     * @param namespaceContext the {@link javax.xml.namespace.NamespaceContext} of the notify
+     * @param namespaceContextResolver the {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver} of the notify
      */
     @WebMethod(exclude = true)
-    public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
+    public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
         ObjectFactory factory = new ObjectFactory();
 
         if (_hub == null) {
@@ -153,13 +152,13 @@ public abstract class AbstractNotificationProducer extends WebService implements
 
         // Remember current message with context
         currentMessage = notify;
-        currentMessageNamespaceContext = namespaceContext;
+        currentMessageNamespaceContextResolver = namespaceContextResolver;
 
         // For all valid recipients
         for (String recipient : this.getAllRecipients()) {
 
             // Filter do filter handling, if any
-            Notify toSend = getRecipientFilteredNotify(recipient, notify, namespaceContext);
+            Notify toSend = getRecipientFilteredNotify(recipient, notify, namespaceContextResolver);
 
             // If any message was left to send, send it
             if (toSend != null) {
@@ -177,7 +176,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify) {
-        sendNotification(notify, new NuNamespaceContext());
+        sendNotification(notify, new NuNamespaceContextResolver());
     }
 
     /**
@@ -201,7 +200,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public void sendNotification(InputStream iStream) throws JAXBException {
         InternalMessage internalMessage = XMLParser.parse(iStream);
         this.sendNotification((Notify) internalMessage.getMessage(),
-                internalMessage.getRequestInformation().getNamespaceContext());
+                internalMessage.getRequestInformation().getNamespaceContextResolver());
     }
 
     @WebMethod(exclude = true)

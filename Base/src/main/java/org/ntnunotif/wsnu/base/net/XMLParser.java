@@ -274,7 +274,7 @@ public class XMLParser {
 
         internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
         internalMessage.getRequestInformation().setNamespaceContextResolver(parsedMessage.getRequestInformation().getNamespaceContextResolver());
-        internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
+        //internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
     }
 
     /**

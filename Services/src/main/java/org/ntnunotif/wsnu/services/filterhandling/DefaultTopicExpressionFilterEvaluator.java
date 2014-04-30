@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.filterhandling;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -40,7 +41,7 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
     }
 
     @Override
-    public Notify evaluate(Notify notify, NamespaceContext notifyContext, Object filter, NamespaceContext filterContext) {
+    public Notify evaluate(Notify notify, NuNamespaceContextResolver notifyContextResolver, Object filter, NamespaceContext filterContext) {
         // Fast check if we can return directly
         if (notify == null)
             return null;
@@ -67,7 +68,9 @@ public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
             }
 
             try {
-                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(topicExpression, notifyContext);
+                List<QName> topicAsQNameList = TopicValidator.evaluateTopicExpressionToQName(
+                        topicExpression, notifyContextResolver.resolveNamespaceContext(topicExpression)
+                );
                 Log.d("DefaultTopicExpressionFilterEvaluator", "Notify TopicExpression was topic: " + topicAsQNameList.toString());
                 List<List<QName>> topic = new ArrayList<>();
                 topic.add(topicAsQNameList);

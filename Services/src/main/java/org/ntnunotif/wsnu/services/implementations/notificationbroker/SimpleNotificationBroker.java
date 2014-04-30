@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
@@ -21,10 +22,11 @@ import javax.jws.WebResult;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
-import java.util.*;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 /** Simple broker that stores publishers and subscriptions in hashmaps.
  * Created by tormod on 26.03.14.
@@ -50,7 +52,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
-    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
         return null;
     }
 

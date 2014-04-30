@@ -4,6 +4,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
 import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
@@ -22,7 +23,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
@@ -182,7 +182,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     @Override
     @WebMethod(exclude = true)
-    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NamespaceContext namespaceContext) {
+    protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
 
         // See if we have the current recipient registered, and if message is cached
         if (!subscriptions.containsKey(recipient))
@@ -195,12 +195,12 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         SubscriptionHandle subscriptionHandle = subscriptions.get(recipient);
 
         // Delegate filtering to filter support
-        return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContext);
+        return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContextResolver);
     }
 
     @Override
     @WebMethod(exclude = true)
-    public void sendNotification(Notify notify, NamespaceContext namespaceContext) {
+    public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
 
         // Check if we should cache message
         if (cacheMessages) {
@@ -213,7 +213,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
                     try {
 
-                        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
+                        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContextResolver.resolveNamespaceContext(topic));
                         String topicName = TopicUtils.topicToString(topicQNames);
                         latestMessages.put(topicName, messageHolderType);
 
@@ -231,7 +231,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             }
         }
         // Super type can do the rest
-        super.sendNotification(notify, namespaceContext);
+        super.sendNotification(notify, namespaceContextResolver);
     }
 
     @Override
@@ -247,7 +247,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         Log.d("GenericNotificationProducer", "Got new subscription request");
 
         // Remember the namespace context
-        NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
+        //NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
+        NuNamespaceContextResolver namespaceContextResolver = _connection.getRequestInformation().getNamespaceContextResolver();
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
@@ -273,10 +274,11 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
                 if (o instanceof JAXBElement) {
                     JAXBElement filter = (JAXBElement) o;
+                    Object fi = filter.getValue();
 
                     // Filter legality checks
                     if (filterSupport != null &&
-                            filterSupport.supportsFilter(filter.getName(), filter.getValue(), namespaceContext)) {
+                            filterSupport.supportsFilter(filter.getName(), fi, namespaceContextResolver.resolveNamespaceContext(fi))) {
 
                         QName fName = filter.getName();
 
@@ -342,7 +344,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         /* Set up the subscription */
         // create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
-                namespaceContext);
+                namespaceContextResolver);
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
@@ -376,7 +378,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
-        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext());
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
         String topicName = TopicUtils.topicToString(topicQNames);
 
         // Find latest message on this topic
