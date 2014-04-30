@@ -54,7 +54,6 @@ public class Utilities {
      * @return
      */
     //TODO: Implement everything
-    //TODO: Remove, this is not used?
     public static InputStream convertUnknownToInputStream(Object message) {
 
         /* Are we dealing with a string?*/
