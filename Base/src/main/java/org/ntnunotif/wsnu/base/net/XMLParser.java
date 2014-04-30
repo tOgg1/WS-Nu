@@ -298,10 +298,14 @@ public class XMLParser {
         try {
             Unmarshaller unmarshaller = getUnmarshaller();
             NuRequestInformationValidationEventHandler validationEventHandler = null;
+
             if (_skippingSchemaValidation) {
                 validationEventHandler = new NuRequestInformationValidationEventHandler(filter);
                 unmarshaller.setEventHandler(validationEventHandler);
             }
+
+            unmarshaller.setListener(new NuUnmarshalListener(filter.contextResolver));
+
             InternalMessage msg = new InternalMessage(InternalMessage.STATUS_OK, unmarshaller.unmarshal(xmlStreamReader));
 
             if (validationEventHandler != null) {
@@ -332,7 +336,7 @@ public class XMLParser {
     /**
      * Tells if parser is set to skip validation against schemas or not.
      *
-     * @return
+     * @return <code>true</code> if schema validation is skipped. <code>false</code> otherwise.
      */
     public static boolean isSkippingSchemaValidation() {
         return _skippingSchemaValidation;
@@ -376,6 +380,7 @@ public class XMLParser {
      * Stream filter that keeps track of namespaces during parsing from xml.
      */
     private class WSStreamFilter implements StreamFilter {
+        NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
         NuNamespaceContext namespaceContext = new NuNamespaceContext();
         Stack<QName> elementPath = new Stack<>();
         XMLStreamReader reader;
@@ -385,19 +390,22 @@ public class XMLParser {
             this.reader = reader;
 
             if (reader.isStartElement()) {
+                contextResolver.openScope();
                 elementPath.push(reader.getName());
 
                 for (int i = 0; i < reader.getNamespaceCount(); i++) {
                     String prefix = reader.getNamespacePrefix(i);
 
                     if (namespaceContext.getNamespaceURI(prefix) != null) {
-                        Log.w("XMLParser.WSStreamFilter", "A namespace prefix was overwritten! The namespace context" +
-                                " may be compromised! " + prefix);
+                        Log.w("XMLParser.WSStreamFilter", "A namespace context prefix was defined multiple times. " +
+                                "Namespaces must be resolved pr object to contain all prefix bindings");
                     }
                     namespaceContext.put(prefix, reader.getNamespaceURI(i));
+                    contextResolver.putNamespaceBinding(prefix, reader.getNamespaceURI(i));
                 }
 
             } else if (reader.isEndElement()) {
+                contextResolver.closeScope();
                 elementPath.pop();
             }
             return true;
@@ -462,6 +470,20 @@ public class XMLParser {
 
             Log.d("XMLParser.NuRequestInformationValidationEventHandler", "Validation event logged: " + event.toString());
             return true;
+        }
+    }
+
+    private static class NuUnmarshalListener extends Unmarshaller.Listener {
+
+        NuNamespaceContextResolver resolver;
+
+        NuUnmarshalListener(NuNamespaceContextResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public void beforeUnmarshal(Object target, Object parent) {
+            resolver.registerObjectWithCurrentNamespaceScope(target);
         }
     }
 }
