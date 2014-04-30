@@ -20,11 +20,10 @@ import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault;
 import org.oasis_open.docs.wsn.bw_2.*;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 
-import javax.jws.Oneway;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
+import javax.jws.*;
+import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -37,6 +36,9 @@ import java.util.*;
 /**
  * Created by tormod on 06.04.14.
  */
+@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "NotificationBroker")
+@XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
+@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class GenericNotificationBroker extends AbstractNotificationBroker {
 
     protected Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
@@ -475,6 +477,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
+    @WebMethod(exclude = true)
     public SoapForwardingHub quickBuild(String endpointReference) {
         try {
             // Ensure the application server is stopped.
@@ -549,6 +552,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
+    @WebMethod(exclude = true)
     public void publisherChanged(PublisherRegistrationEvent event) {
 
     }

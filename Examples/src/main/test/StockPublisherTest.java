@@ -62,11 +62,6 @@ public class StockPublisherTest {
             row = row.replaceAll("<td><a href=\"/do/latestArticleInChannel[?]channel=(.*)MktRpt\">View</a></td>", "");
             row = row.replaceAll("<td></td>", "");
 
-            assertEquals("<tr class=\"stripe\">        <td>    <a href=\"index?symbol=.DJI\">.DJI</a>" +
-                    "</td><td>Dow Jones Industrial Average</td>                <td class=\"data\"><" +
-                    "!-- quote date 20140428 --><!-- current date 20140429 -->28 Apr 2014</td><td cla" +
-                    "ss=\"data\">16,448.74</td><td class=\"data chang" +
-                    "eUp\">+87.28</td><td class=\"data changeUp\">+0.53%</td></tr>", row);
             int tagStart = row.indexOf("<td>") + 4;
             int tagEnd = row.indexOf("</td>");
 
@@ -93,7 +88,7 @@ public class StockPublisherTest {
             dateCell = dateCell.replaceAll("<!--(.*)-->", "");
             String date = dateCell.substring(dateCell.indexOf(">") +1);
 
-            assertEquals("28 Apr 2014", date);
+            assertEquals("29 Apr 2014", date);
 
             row = row.substring(tagEnd+5);
 
@@ -103,11 +98,11 @@ public class StockPublisherTest {
             String valueCell = row.substring(tagStart, tagEnd);
             String value = valueCell.substring(valueCell.indexOf(">")+ 1);
 
-            assertEquals("16,448.74", value);
+            assertEquals("16,535.37", value);
 
             float valueParsed = Float.parseFloat(value.replaceAll(",", ""));
 
-            assertEquals(16448.74, valueParsed, 0.01);
+            assertEquals(16535.369140625, valueParsed, 0.01);
 
             row = row.substring(tagEnd+5);
 
@@ -117,12 +112,12 @@ public class StockPublisherTest {
             String changeAbsCell = row.substring(tagStart, tagEnd);
             String changeAbs = changeAbsCell.substring(changeAbsCell.indexOf(">") + 1);
 
-            assertEquals("+87.28", changeAbs);
+            assertEquals("+86.63", changeAbs);
 
             float changeAbsParsed = Float.parseFloat(changeAbs.replaceAll("[+]?[-]?", ""));
             changeAbsParsed = changeAbs.charAt(0) == '+' ? changeAbsParsed : -changeAbsParsed;
 
-            assertEquals(87.28, changeAbsParsed, 0.01);
+            assertEquals(86.63, changeAbsParsed, 0.01);
 
             row = row.substring(tagEnd+5);
 
@@ -257,7 +252,7 @@ public class StockPublisherTest {
                     String changeAbsCell = row.substring(tagStart, tagEnd);
                     String changeAbs = changeAbsCell.substring(changeAbsCell.indexOf(">") + 1);
 
-                    float changeAbsParsed = Float.parseFloat(changeAbs.replaceAll("[+]?[-]?", ""));
+                    float changeAbsParsed = Float.parseFloat(changeAbs.replaceAll("[+]?[-]?[,]?", ""));
                     changeAbsParsed = changeAbs.charAt(0) == '+' ? changeAbsParsed : -changeAbsParsed;
 
                     row = row.substring(tagEnd + 5);

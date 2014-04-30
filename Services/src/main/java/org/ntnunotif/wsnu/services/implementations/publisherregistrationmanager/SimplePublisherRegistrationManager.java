@@ -1,5 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
@@ -30,6 +31,13 @@ import java.util.Map;
 public class SimplePublisherRegistrationManager extends AbstractPublisherRegistrationManager {
 
     private HashMap<String, Long> _publishers;
+
+    public SimplePublisherRegistrationManager() {
+    }
+
+    public SimplePublisherRegistrationManager(Hub hub) {
+        super(hub);
+    }
 
     @Override
     @WebMethod(exclude = true)

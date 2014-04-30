@@ -88,7 +88,9 @@ public abstract class AbstractPublisherRegistrationManager extends WebService im
      */
     private void resetScheduler()
     {
-        _task.cancel(false);
+        if(_task != null){
+            _task.cancel(false);
+        }
         _task = _scheduler.scheduleAtFixedRate(this, 0, this._scheduleInterval, TimeUnit.SECONDS);
     }
 

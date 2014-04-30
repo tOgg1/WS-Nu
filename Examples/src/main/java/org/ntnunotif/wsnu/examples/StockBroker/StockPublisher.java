@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.examples.StockBroker;
 
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
+import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -11,7 +12,9 @@ import org.oasis_open.docs.wsn.b_2.Notify;
 import org.xmlsoap.schemas.soap.envelope.Body;
 import org.xmlsoap.schemas.soap.envelope.Envelope;
 import org.xmlsoap.schemas.soap.envelope.Header;
+import org.xmlsoap.schemas.soap.envelope.ObjectFactory;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -24,6 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /** Stock publisher example code.
  * This is a publisher that is publishing changes in stock-indexes.
@@ -78,13 +83,16 @@ public class StockPublisher {
      * Helper method to generate a soap envelope
      * @return
      */
-    public static Envelope generateEnvelope(){
+    public static javax.xml.bind.JAXBElement<Envelope> generateEnvelope(Object content){
+        ObjectFactory soapFactory = new ObjectFactory();
         Envelope envelope = new Envelope();
         Body body = new Body();
         Header header = new Header();
+        body.getAny().add(content);
         envelope.setBody(body);
         envelope.setHeader(header);
-        return envelope;
+
+        return soapFactory.createEnvelope(envelope);
     }
 
     /**
@@ -110,7 +118,7 @@ public class StockPublisher {
     /**
      * Reference to our broker
      */
-    private String brokerReference = "151.236.10.120:8080";
+    private String brokerReference = "http://151.236.10.120:8080";
 
     /**
      * The constructor, initializing the inputmanager and sending a PublisherRegi
@@ -130,6 +138,7 @@ public class StockPublisher {
      * Start the StockPublisher. This starts the scheduler.
      */
     public void start() {
+        resgisterWithBroker("151.236.10.120:8080");
         task = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -155,24 +164,44 @@ public class StockPublisher {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
             registerPublisher.setInitialTerminationTime(calendar);
 
+            JAXBElement<Envelope> envelope = generateEnvelope(registerPublisher);
 
+            InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
+            InternalMessage message = new InternalMessage(STATUS_OK|STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+
+            // Set address
+            RequestInformation requestInformation = new RequestInformation();
+            requestInformation.setEndpointReference(brokerReference);
+            message.setRequestInformation(requestInformation);
+
+
+            InternalMessage returnMessage = server.sendMessage(message);
+
+            if((returnMessage.statusCode & STATUS_OK) > 0){
+                Log.e("StockPublisher", "Something went wrong at the broker");
+            }
+            Log.d("StockPublisher", "Succesfully registered with broker");
         } catch (DatatypeConfigurationException e) {
             System.exit(1);
         }
-
     }
 
     public void sendUpdatedStock(StockChanged stockChanged){
         Notify notify = ServiceUtilities.createNotify(stockChanged, brokerReference, ApplicationServer.getURI());
 
-        Envelope envelope = generateEnvelope();
-        envelope.getBody().getAny().add(notify);
+        JAXBElement<Envelope> envelope = generateEnvelope(notify);
 
         InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
-        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK| InternalMessage.STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+        InternalMessage message = new InternalMessage(STATUS_OK| STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+
+        // Set address
+        RequestInformation requestInformation = new RequestInformation();
+        requestInformation.setEndpointReference(brokerReference);
+        message.setRequestInformation(requestInformation);
 
         InternalMessage returnMessage = server.sendMessage(message);
-        if(returnMessage.statusCode != InternalMessage.STATUS_OK){
+
+        if((returnMessage.statusCode & STATUS_OK) > 0){
             Log.e("StockPublisher", "Something went wrong at the broker...");
         }
     }
@@ -181,7 +210,8 @@ public class StockPublisher {
      * Does the actual update logic.
      */
     public void update(){
-        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK, null);
+        Log.d("StockPublisher", "Updating");
+        InternalMessage message = new InternalMessage(STATUS_OK, null);
 
         RequestInformation info = new RequestInformation();
         info.setEndpointReference("http://www.reuters.com/finance/markets/indices");
@@ -191,12 +221,15 @@ public class StockPublisher {
         Object responseMessage = response.getMessage();
 
         String webPage = (String) responseMessage;
+        Log.d("StockPublisher", "Got response with length: " + webPage.length());
 
         ArrayList<StockChanged> stocks = getStocks(webPage);
+        Log.d("StockPublisher", "Parsed to " + stocks.size() + " stocks");
 
         for (StockChanged stock : stocks) {
             String symbol = stock.getSymbol();
             if(!storedStocks.containsKey(symbol)){
+                System.out.println("Registered new stock: " + symbol);
                 storedStocks.put(symbol, stock);
                 sendUpdatedStock(stock);
             } else {
@@ -303,7 +336,7 @@ public class StockPublisher {
                     String changeAbsCell = row.substring(tagStart, tagEnd);
                     String changeAbs = changeAbsCell.substring(changeAbsCell.indexOf(">") + 1);
 
-                    float changeAbsParsed = Float.parseFloat(changeAbs.replaceAll("[+]?[-]?", ""));
+                    float changeAbsParsed = Float.parseFloat(changeAbs.replaceAll("[+]?[-]?[,]?", ""));
                     changeAbsParsed = changeAbs.charAt(0) == '+' ? changeAbsParsed : -changeAbsParsed;
 
                     row = row.substring(tagEnd + 5);
@@ -314,7 +347,7 @@ public class StockPublisher {
                     String changeRelCell = row.substring(tagStart, tagEnd);
                     String changeRel = changeRelCell.substring(changeRelCell.indexOf(">") + 1);
 
-                    float changeRelParsed = Float.parseFloat(changeRel.replaceAll("[+]?[-]?", "").replaceAll("%", ""));
+                    float changeRelParsed = Float.parseFloat(changeRel.replaceAll("[+]?[-]?[,]?", "").replaceAll("%", ""));
                     changeRelParsed = changeRel.charAt(0) == '+' ? changeRelParsed : -changeRelParsed;
 
                     org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged stockChanged = new StockChanged();
@@ -338,6 +371,7 @@ public class StockPublisher {
     }
 
     public static void main(String[] args) {
+        XMLParser.registerReturnObjectPackageWithObjectFactory("org.ntnunotif.wsnu.examples.StockBroker.generated");
         StockPublisher publisher = null;
         try {
             publisher = new StockPublisher();

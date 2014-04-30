@@ -1,10 +1,8 @@
 package org.ntnunotif.wsnu.services.implementations.notificationproducer;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 
 /**
@@ -63,7 +61,7 @@ public class GenericNotificationProducerTest {
         // TODO
     }
 */
-    @Test
+/*    @Test
     public void testQuickBuild() throws Exception {
         SoapForwardingHub defaultHub  = defaultProducer.quickBuild("default");
         SoapForwardingHub noFilterHub = noFilterProducer.quickBuild("no_filter");
@@ -72,5 +70,5 @@ public class GenericNotificationProducerTest {
         Assert.assertNotNull("Default hub was null", defaultHub);
         Assert.assertNotNull("No filter hub was null", noFilterHub);
         Assert.assertNotNull("No filter and no cache hub was null", noFilterNoCacheHub);
-    }
+    }*/
 }
