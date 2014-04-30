@@ -273,6 +273,7 @@ public class XMLParser {
         internalMessage.setMessage(parsedMessage.getMessage());
 
         internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
+        internalMessage.getRequestInformation().setNamespaceContextResolver(parsedMessage.getRequestInformation().getNamespaceContextResolver());
         internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
     }
 
@@ -312,6 +313,10 @@ public class XMLParser {
                 msg.getRequestInformation().setParseValidationEventInfos(validationEventHandler.parseValidationEventInfos);
             }
 
+            // Set the namespace resolver
+            msg.getRequestInformation().setNamespaceContextResolver(filter.contextResolver);
+
+            // Kept for backward compatibility
             msg.getRequestInformation().setNamespaceContext(filter.getNamespaceContext());
             return msg;
         } catch (JAXBException e) {
@@ -380,6 +385,7 @@ public class XMLParser {
      * Stream filter that keeps track of namespaces during parsing from xml.
      */
     private class WSStreamFilter implements StreamFilter {
+
         NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
         NuNamespaceContext namespaceContext = new NuNamespaceContext();
         Stack<QName> elementPath = new Stack<>();
@@ -457,6 +463,7 @@ public class XMLParser {
         @Override
         public boolean handleEvent(ValidationEvent event) {
 
+            @SuppressWarnings("unchecked")
             Stack<QName> path = (Stack<QName>) filter.elementPath.clone();
             boolean isStartElement = filter.reader.isStartElement();
             boolean isEndElement = filter.reader.isEndElement();

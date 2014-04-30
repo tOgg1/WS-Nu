@@ -21,13 +21,11 @@ public class RequestInformation {
     private String _requestURL;
     private Map<String, String[]> _parameters;
     private int _httpStatus;
-
+    private NuNamespaceContextResolver _namespaceContextResolver;
     private List<NuParseValidationEventInfo> _parseValidationEventInfos;
 
 
-    public RequestInformation() {
-
-    }
+    public RequestInformation() {}
 
     public RequestInformation(NamespaceContext _context, String _endpointReference, String _requestURL, Map<String, String[]> parameters) {
         this._namespaceContext = _context;
@@ -45,8 +43,8 @@ public class RequestInformation {
     }
 
     /**
-     * @deprecated use getNamespaceContext(Object) instead
      * @return a non guaranteed namespace context
+     * @deprecated use getNamespaceContext(Object) instead
      */
     @Deprecated
     public NamespaceContext getNamespaceContext() {
@@ -54,21 +52,46 @@ public class RequestInformation {
     }
 
     /**
-     * @deprecated use setNamespaceContextResolver(NuNamespaceContextResolver) instead
      * @param _context the non-guaranteed context
+     * @deprecated use setNamespaceContextResolver(NuNamespaceContextResolver) instead
      */
     @Deprecated
     public void setNamespaceContext(NamespaceContext _context) {
         this._namespaceContext = _context;
     }
 
+    /**
+     * Sets the object resolving namespaces.
+     *
+     * @param resolver the object resolving namespaces
+     */
     public void setNamespaceContextResolver(NuNamespaceContextResolver resolver) {
-        // TODO
+        _namespaceContextResolver = resolver;
     }
 
+    /**
+     * Gets the object resolving namespaces.
+     *
+     * @return the object resolving namespaces
+     */
+    public NuNamespaceContextResolver getNamespaceContextResolver() {
+        return _namespaceContextResolver;
+    }
+
+    /**
+     * Gets the namespace for this object. If the context resolver is set, the namespace context will be correct. No
+     * guarantees are provided if it is not.
+     *
+     * @param object the object to resolve the namespace for
+     * @return the namespace context for this object, or <code>null</code> if the object was not registered with the resolver
+     */
     public NamespaceContext getNamespaceContext(Object object) {
-        // TODO
-        return _namespaceContext;
+
+        if (_namespaceContextResolver == null) {
+            return _namespaceContext;
+        }
+
+        return _namespaceContextResolver.resolveNamespaceContext(object);
     }
 
     public String getEndpointReference() {
