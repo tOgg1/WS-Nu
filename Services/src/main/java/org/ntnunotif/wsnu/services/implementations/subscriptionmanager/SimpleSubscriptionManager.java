@@ -30,12 +30,19 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     private HashMap<String, Long> _subscriptions;
 
     /**
-     * Constructor.
+     * Empty constructor doing nothing.
+     */
+    public SimpleSubscriptionManager() {
+        _subscriptions = new HashMap<>();
+    }
+
+    /**
+     * Constructor taking a hub as an argument
      * @param hub
      */
     public SimpleSubscriptionManager(Hub hub) {
         super(hub);
-        _subscriptions = new HashMap<String, Long>();
+        _subscriptions = new HashMap<>();
     }
 
     @Override

@@ -340,12 +340,15 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         builder.address(getEndpointReference() + "" + subscriptionEndpoint);
 
         response.setSubscriptionReference(builder.build());
+        try {
 
         /* Set up the subscription */
-        // create subscription info
-        FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
-                namespaceContextResolver);
+            // create subscription info
+            FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
+                    namespaceContextResolver);
+
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
@@ -354,7 +357,9 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         }
 
         Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
-
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return response;
     }
 

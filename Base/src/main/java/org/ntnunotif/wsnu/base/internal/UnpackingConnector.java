@@ -144,7 +144,7 @@ public class UnpackingConnector extends WebServiceConnector {
                                 e.printStackTrace();
                                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
                             } catch (InvocationTargetException e) {
-                                Log.d("UnpackingConnector", "Caught exception at the web service");
+                                Log.d("UnpackingConnector", "Caught exception at the web service " + e.getCause().getClass() + " | " + e.getMessage());
                                 return new InternalMessage(STATUS_FAULT|STATUS_EXCEPTION_SHOULD_BE_HANDLED, e.getTargetException());
                             }
                         }else{

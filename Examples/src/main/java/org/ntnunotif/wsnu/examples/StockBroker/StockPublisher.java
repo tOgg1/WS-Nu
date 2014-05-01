@@ -28,7 +28,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_MESSAGE_IS_INPUTSTREAM;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 
 /** Stock publisher example code.
  * This is a publisher that is publishing changes in stock-indexes.
@@ -118,7 +120,7 @@ public class StockPublisher {
     /**
      * Reference to our broker
      */
-    private String brokerReference = "http://151.236.10.120:8080";
+    private String brokerReference = "http://151.236.10.120:8080/myBroker";
 
     /**
      * The constructor, initializing the inputmanager and sending a PublisherRegi
@@ -167,7 +169,7 @@ public class StockPublisher {
             JAXBElement<Envelope> envelope = generateEnvelope(registerPublisher);
 
             InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
-            InternalMessage message = new InternalMessage(STATUS_OK|STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+            InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
 
             // Set address
             RequestInformation requestInformation = new RequestInformation();
@@ -192,7 +194,8 @@ public class StockPublisher {
         JAXBElement<Envelope> envelope = generateEnvelope(notify);
 
         InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
-        InternalMessage message = new InternalMessage(STATUS_OK| STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
+
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE| STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
 
         // Set address
         RequestInformation requestInformation = new RequestInformation();

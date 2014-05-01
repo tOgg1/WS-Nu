@@ -32,7 +32,7 @@ public abstract class WebService {
     /**
      *
      */
-    public ObjectFactory baseFactory;
+    public ObjectFactory baseFactory = new ObjectFactory();
 
     /**
      * Reference to the connected hub

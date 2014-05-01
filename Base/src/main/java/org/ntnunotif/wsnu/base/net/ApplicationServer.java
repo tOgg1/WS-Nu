@@ -315,7 +315,7 @@ public class ApplicationServer{
                         Log.e("ApplicationServer", "No content was found to send");
                         return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                     }
-                    Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
+                    Log.d("ApplicationServer", "Sending message with content to " + requestInformation.getEndpointReference());
                     request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
                     ContentResponse response = request.send();
                     return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
