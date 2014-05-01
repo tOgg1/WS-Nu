@@ -55,7 +55,11 @@ public class FilterSupport {
         }
 
         public SubscriptionInfo(Map<QName, Object> filtersIncluded, NuNamespaceContextResolver namespaceContextResolver) {
-            this.filters = ImmutableMap.copyOf(filtersIncluded);
+            if (filtersIncluded == null) {
+                this.filters = ImmutableMap.of();
+            } else {
+                this.filters = ImmutableMap.copyOf(filtersIncluded);
+            }
             this.namespaceContextResolver = namespaceContextResolver;
         }
 
