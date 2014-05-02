@@ -75,7 +75,7 @@ public class SimpleSubscriptionManagerTest{
         manager.addSubscriber(subscription, System.currentTimeMillis());
 
         // Test with requestURL
-        request = client.newRequest("http://"+requestUrl);
+        request = client.newRequest(requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_unsubscribe.xml")));
 
@@ -94,7 +94,7 @@ public class SimpleSubscriptionManagerTest{
         client.setFollowRedirects(false);
         client.start();
 
-        Request request = client.newRequest("http://"+requestUrl);
+        Request request = client.newRequest(requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_unsubscribe.xml")));
 
@@ -114,7 +114,7 @@ public class SimpleSubscriptionManagerTest{
         client.setFollowRedirects(false);
         client.start();
 
-        Request request = client.newRequest("http://"+requestUrl);
+        Request request = client.newRequest(requestUrl);
         request.method(HttpMethod.POST);
         request.content(new InputStreamContentProvider(getClass().getResourceAsStream("/server_test_renew.xml")));
 

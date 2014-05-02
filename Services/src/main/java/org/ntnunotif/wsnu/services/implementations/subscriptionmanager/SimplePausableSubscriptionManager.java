@@ -14,6 +14,9 @@ import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +24,9 @@ import java.util.Map;
 /**
  * Created by tormod on 23.04.14.
  */
+@WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "PausableSubscriptionManager")
+@XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
+@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class SimplePausableSubscriptionManager extends AbstractPausableSubscriptionManager {
 
     private HashMap<String, Long> _subscriptions = new HashMap<>();
