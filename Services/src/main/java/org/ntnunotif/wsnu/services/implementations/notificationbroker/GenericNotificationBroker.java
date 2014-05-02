@@ -179,6 +179,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     @Override
+    protected String getEndpointReferenceOfRecipient(String subscriptionKey) {
+        return subscriptions.get(subscriptionKey).endpointTerminationTuple.endpoint;
+    }
+
+    @Override
     @WebMethod(exclude = true)
     protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
 

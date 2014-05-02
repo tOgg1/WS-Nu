@@ -112,6 +112,13 @@ public abstract class AbstractNotificationProducer extends WebService implements
     protected abstract Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver);
 
     /**
+     * Takes in a subscription key and returns the endpoint reference of this subscription.
+     *
+     * @return The endpoint reference, or null if the subscription does not exist.
+     */
+    @WebMethod(exclude = true)
+    protected abstract String getEndpointReferenceOfRecipient(String subscriptionKey);
+    /**
      * Will try to send the {@link org.oasis_open.docs.wsn.b_2.Notify} to the
      * {@link javax.xml.ws.wsaddressing.W3CEndpointReference} indicated.
      *
@@ -163,7 +170,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
             // If any message was left to send, send it
             if (toSend != null) {
                 InternalMessage outMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET, toSend);
-                outMessage.getRequestInformation().setEndpointReference(recipient);
+                outMessage.getRequestInformation().setEndpointReference(getEndpointReferenceOfRecipient(recipient));
                 _hub.acceptLocalMessage(outMessage);
             }
         }

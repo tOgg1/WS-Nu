@@ -42,7 +42,7 @@ public class GenericNotificationBrokerTest {
         listener = new ConsumerListener() {
             @Override
             public void notify(NotificationEvent event) {
-                flag = false;
+                flag = true;
             }
         };
 
@@ -92,7 +92,7 @@ public class GenericNotificationBrokerTest {
         assertTrue((message.statusCode & STATUS_OK) > 0);
 
         producer.sendNotification(ServiceUtilities.createNotify(
-                new JAXBElement<>(new QName("http://tormod.haugland.com"), String.class, "Hey"),
+                new JAXBElement<>(new QName("lol"), String.class, "Hey"),
                 "127.0.0.1:8080/myBroker"));
         Thread.sleep(100);
         assertTrue(flag);

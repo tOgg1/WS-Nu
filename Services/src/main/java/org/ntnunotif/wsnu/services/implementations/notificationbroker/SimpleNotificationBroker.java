@@ -64,6 +64,11 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         this.sendNotification(notify);
     }
 
+    @Override
+    protected String getEndpointReferenceOfRecipient(String subscriptionKey) {
+        return _subscriptions.get(subscriptionKey).endpoint;
+    }
+
     /**
      * Register a publisher. This implementation does not take into account topics, and will never throw TopicNotSupportededFault.
      * @param registerPublisherRequest

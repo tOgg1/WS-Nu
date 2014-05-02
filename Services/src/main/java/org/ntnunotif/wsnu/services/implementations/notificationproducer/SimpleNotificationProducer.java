@@ -68,6 +68,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
     }
 
     @Override
+    protected String getEndpointReferenceOfRecipient(String subscriptionKey) {
+        return _subscriptions.get(subscriptionKey).endpoint;
+    }
+
+    @Override
     @WebMethod(exclude = true)
     protected Collection<String> getAllRecipients() {
         // Something to remember which ones should be filtered out

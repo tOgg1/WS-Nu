@@ -37,4 +37,9 @@ public class WebServiceConnectorTest {
         two = new UnpackingConnector(consumer);
         three = new UnpackingConnector(new WebServiceWithoutEndPoint());
     }
+
+    @Test
+    public void testQuickBuild() throws Exception {
+
+    }
 }

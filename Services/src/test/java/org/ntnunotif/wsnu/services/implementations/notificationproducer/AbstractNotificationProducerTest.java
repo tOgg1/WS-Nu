@@ -56,6 +56,11 @@ public class AbstractNotificationProducerTest {
             }
 
             @Override
+            protected String getEndpointReferenceOfRecipient(String subscriptionKey) {
+                return null;
+            }
+
+            @Override
             public void subscriptionChanged(SubscriptionEvent event) {
 
             }

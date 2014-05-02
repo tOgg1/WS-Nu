@@ -351,6 +351,15 @@ public abstract class WebService {
         }
     }
 
+    public void quickBuild(String endpointReference, Hub hub){
+        _hub = hub;
+        this.setEndpointReference(endpointReference);
+
+        UnpackingConnector connector = new UnpackingConnector(this);
+        hub.registerService(connector);
+        _connection = connector;
+    }
+
     /**
      * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed
      * to it's constructor. This function catches {@link java.lang.reflect.InvocationTargetException} and any other {@link java.lang.Exception}.

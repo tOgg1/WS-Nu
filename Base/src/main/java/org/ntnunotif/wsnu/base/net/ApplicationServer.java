@@ -295,6 +295,7 @@ public class ApplicationServer{
 
         /* Create the actual http-request*/
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
+        System.out.println(requestInformation.getEndpointReference());
 
         /* Try to send the message */
         try{
@@ -316,6 +317,7 @@ public class ApplicationServer{
                         return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                     }
                     Log.d("ApplicationServer", "Sending message with content to " + requestInformation.getEndpointReference());
+                    System.out.println(message.getMessage());
                     request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
                     ContentResponse response = request.send();
                     return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
@@ -472,6 +474,6 @@ public class ApplicationServer{
     }
 
     public static String getURI(){
-        return _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() > -1 ? _singleton._server.getURI().getPort() : 8080);
+        return "http://" + _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() > -1 ? _singleton._server.getURI().getPort() : 8080);
     }
 }
