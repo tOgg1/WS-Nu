@@ -343,7 +343,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        builder.address(getEndpointReference() + "" + subscriptionEndpoint);
+        builder.address(subscriptionEndpoint);
 
         response.setSubscriptionReference(builder.build());
         try {
@@ -385,10 +385,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                                             "and therefore does not support the getCurrentMessage interface");
         }
 
-        //if (filterSupport == null || filterSupport.getFilterEvaluator(topicExpressionQName).is)
-
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
+
+        if(askedFor == null) {
+            ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
+        }
+
         List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
         String topicName = TopicUtils.topicToString(topicQNames);
 

@@ -15,6 +15,8 @@ public class StockConsumer implements ConsumerListener {
 
     public StockConsumer() {
         consumer = new NotificationConsumer();
+        consumer.quickBuild("myConsumer");
+        consumer.sendSubscriptionRequest("151.236.216.174:8080/stockBroker");
     }
 
     @Override

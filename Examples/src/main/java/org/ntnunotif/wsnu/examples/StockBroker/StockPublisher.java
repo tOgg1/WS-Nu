@@ -19,18 +19,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_MESSAGE_IS_INPUTSTREAM;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /** Stock publisher example code.
  * This is a publisher that is publishing changes in stock-indexes.
@@ -120,7 +115,7 @@ public class StockPublisher {
     /**
      * Reference to our broker
      */
-    private String brokerReference = "http://151.236.10.120:8080/myBroker";
+    private String brokerReference = "http://151.236.216.174:8080/myBroker";
 
     /**
      * The constructor, initializing the inputmanager and sending a PublisherRegi
@@ -161,8 +156,13 @@ public class StockPublisher {
     public void resgisterWithBroker(String endpoint){
         org.oasis_open.docs.wsn.br_2.RegisterPublisher registerPublisher = new org.oasis_open.docs.wsn.br_2.RegisterPublisher();
         registerPublisher.setDemand(false);
+        // Change to your ip
+        registerPublisher.setPublisherReference(ServiceUtilities.buildW3CEndpointReference("37.200.14.9"));
         try {
-            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            Date date = new Date();
+            date.setTime(System.currentTimeMillis() + 86400*365);
+            GregorianCalendar now = new GregorianCalendar();
+            now.setTime(date);
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
             registerPublisher.setInitialTerminationTime(calendar);
 
@@ -176,13 +176,13 @@ public class StockPublisher {
             requestInformation.setEndpointReference(brokerReference);
             message.setRequestInformation(requestInformation);
 
-
             InternalMessage returnMessage = server.sendMessage(message);
 
-            if((returnMessage.statusCode & STATUS_OK) > 0){
+            if((returnMessage.statusCode & STATUS_OK) == 0){
                 Log.e("StockPublisher", "Something went wrong at the broker");
             }
             Log.d("StockPublisher", "Succesfully registered with broker");
+            System.out.println(returnMessage.getMessage());
         } catch (DatatypeConfigurationException e) {
             System.exit(1);
         }
@@ -204,8 +204,8 @@ public class StockPublisher {
 
         InternalMessage returnMessage = server.sendMessage(message);
 
-        if((returnMessage.statusCode & STATUS_OK) > 0){
-            Log.e("StockPublisher", "Something went wrong at the broker...");
+        if((returnMessage.statusCode & STATUS_OK) == 0){
+            Log.e("StockPublisher", "Something went wrong at the broker..." + returnMessage.getMessage());
         }
     }
 

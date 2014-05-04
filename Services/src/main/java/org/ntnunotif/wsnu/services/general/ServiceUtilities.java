@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
  */
 public class ServiceUtilities {
 
+    private static W3CEndpointReferenceBuilder w3CEndpointReferenceBuilder = new W3CEndpointReferenceBuilder();
 
     public static final class EndpointTerminationTuple{
         public final String endpoint;
@@ -693,6 +694,11 @@ public class ServiceUtilities {
 
     }
 
+    public static W3CEndpointReference buildW3CEndpointReference(String endpoint){
+        w3CEndpointReferenceBuilder.address(endpoint);
+        return w3CEndpointReferenceBuilder.build();
+    }
+
     /**
      * Filters out a url's address in an endpointreference. Note that this functon does not check if the uri is valid, as long as it matches the following regex:
      * [[^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/]]
@@ -1125,6 +1131,17 @@ public class ServiceUtilities {
 
         throw new ResumeFailedFault(description, faultType);
     }
+
+    public static void throwInvalidTopicExpressionFault(String language, String description) throws InvalidTopicExpressionFault {
+        InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+
+        throw new InvalidTopicExpressionFault(description, faultType);
+    }
+
 
     public static InternalMessage sendRequest(String url) throws Exception{
         InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK, null);

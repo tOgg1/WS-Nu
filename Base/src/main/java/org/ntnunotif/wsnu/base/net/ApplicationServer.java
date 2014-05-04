@@ -302,7 +302,7 @@ public class ApplicationServer{
             /* Raw request */
             if((message.statusCode & STATUS_HAS_MESSAGE) == 0){
                 request.method(HttpMethod.GET);
-                Log.d("ApplicationServer", "Sending message to " + requestInformation.getEndpointReference());
+                Log.d("ApplicationServer", "Sending message without content to " + requestInformation.getEndpointReference());
                 ContentResponse response = request.send();
                 return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
             }else{
@@ -317,10 +317,13 @@ public class ApplicationServer{
                         return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                     }
                     Log.d("ApplicationServer", "Sending message with content to " + requestInformation.getEndpointReference());
-                    System.out.println(message.getMessage());
                     request.content(new InputStreamContentProvider((InputStream) message.getMessage()), "application/soap+xml;charset/utf-8");
                     ContentResponse response = request.send();
-                    return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
+                    if(response.getStatus() != HttpStatus.OK_200){
+                        return new InternalMessage(STATUS_FAULT|STATUS_HAS_MESSAGE, response.getContentAsString());
+                    } else {
+                        return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, response.getContentAsString());
+                    }
                 }
             }
         }catch(ClassCastException e){

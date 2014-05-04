@@ -341,7 +341,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        builder.address(getEndpointReference() + "" + subscriptionEndpoint);
+        builder.address(subscriptionEndpoint);
 
         response.setSubscriptionReference(builder.build());
 
@@ -437,7 +437,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         RegisterPublisherResponse response = new RegisterPublisherResponse();
 
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        builder.address(getEndpointReference() +""+ subscriptionEndpoint);
+        builder.address(subscriptionEndpoint);
 
         response.setConsumerReference(builder.build());
         response.setPublisherRegistrationReference(publisherEndpoint);
@@ -460,9 +460,16 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     getCurrentMessageRequest.getTopic().getContent());
         }
 
+        Log.d("GenericNotificationBroker", "Accepted getCurrentMessage");
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
+
+        if(askedFor == null) {
+            ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
+        }
+
         List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
+
         String topicName = TopicUtils.topicToString(topicQNames);
 
         // Find latest message on this topic
@@ -472,7 +479,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             Log.d("GenericNotificationBroker", "Was asked for current message on a topic that was not sent");
             ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
             return null;
-
         } else {
             GetCurrentMessageResponse response = new GetCurrentMessageResponse();
             // TODO check out if this should be the content of the response

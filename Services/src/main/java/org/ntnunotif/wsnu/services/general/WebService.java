@@ -4,14 +4,21 @@ import org.ntnunotif.wsnu.base.internal.*;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.*;
 import org.oasis_open.docs.wsn.b_2.*;
+import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
+import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
@@ -83,6 +90,16 @@ public abstract class WebService {
      */
     public String getEndpointReference() {
         return endpointReference;
+    }
+
+    /**
+     * Retrieves the endpointreference of the Web Service in the form of a {@link javax.xml.ws.wsaddressing.W3CEndpointReference} object.
+     * @return
+     */
+    public W3CEndpointReference getEndpointReferenceAsW3C() {
+        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        builder.address(endpointReference);
+        return builder.build();
     }
 
     /**
@@ -286,6 +303,50 @@ public abstract class WebService {
         ResumeSubscription resumeSubscription = new ResumeSubscription();
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, resumeSubscription);
         message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
+        return _hub.acceptLocalMessage(message);
+    }
+
+    public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint, long terminationTime, boolean demand){
+        RegisterPublisher registerPublisher = new RegisterPublisher();
+        registerPublisher.setPublisherReference(getEndpointReferenceAsW3C());
+        registerPublisher.setDemand(demand);
+        try {
+            GregorianCalendar now = new GregorianCalendar();
+            now.setTime(new Date(terminationTime));
+            XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
+            registerPublisher.setInitialTerminationTime(calendar);
+        } catch (DatatypeConfigurationException e) {
+            Log.e("WebService", "Something went wrong while creating XMLGregoriancalendar");
+        }
+        InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, registerPublisher);
+        outMessage.getRequestInformation().setEndpointReference(brokerEndpoint);
+        return _hub.acceptLocalMessage(outMessage);
+    }
+
+
+    public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint) {
+        return sendPublisherRegistrationRequest(brokerEndpoint, System.currentTimeMillis()+86400, false);
+    }
+
+    public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint, String date, boolean demand) {
+        try {
+            long rawDate = ServiceUtilities.interpretTerminationTime(date);
+            return sendPublisherRegistrationRequest(brokerEndpoint, rawDate, demand);
+        } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
+                    Log.e("WebService", "Could not parse date");
+            return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INTERNAL_ERROR, null);
+        }
+    }
+
+    public InternalMessage sendGetCurrentMessage(String endpoint, TopicExpressionType topic){
+        GetCurrentMessage getCurrentMessage = new GetCurrentMessage();
+        getCurrentMessage.setTopic(topic);
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, getCurrentMessage);
+
+        RequestInformation requestInformation = new RequestInformation();
+        requestInformation.setEndpointReference(endpoint);
+        message.setRequestInformation(requestInformation);
+
         return _hub.acceptLocalMessage(message);
     }
 
