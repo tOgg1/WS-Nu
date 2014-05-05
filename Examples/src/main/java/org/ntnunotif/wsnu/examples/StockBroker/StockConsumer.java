@@ -11,8 +11,10 @@ import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,18 +23,21 @@ import java.util.List;
  */
 public class StockConsumer implements ConsumerListener {
 
-    private NotificationConsumer consumer;
+    private final NotificationConsumer consumer;
     private HashMap<String, StockPanel> stocks;
 
     private JFrame frame;
-    private GridLayout layout;
-    private ScrollPane scrollPane;
+    private GridBagLayout layout;
+    private GridBagConstraints gb;
+    private JScrollPane scrollPane;
     private JPanel mainPanel;
+    private JPanel backgroundPanel;
 
     private Image background;
 
     public StockConsumer() {
         stocks = new HashMap<>();
+        consumer = new NotificationConsumer();
     }
 
     public void initInterface(){
@@ -41,9 +46,11 @@ public class StockConsumer implements ConsumerListener {
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setResizable(false);
 
-        layout = new GridLayout(0, 4);
-        layout.setHgap(5);
-        layout.setVgap(5);
+        layout = new GridBagLayout();
+
+        gb = new GridBagConstraints();
+        gb.anchor = GridBagConstraints.CENTER;
+        gb.insets = new Insets(10, 10, 10, 10);
 
         try {
             background = ImageIO.read(getClass().getResourceAsStream("/background_consumer.png"));
@@ -55,15 +62,26 @@ public class StockConsumer implements ConsumerListener {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-
                 g.drawImage(StockConsumer.this.background, 0, 0, null);
+
+                for (int i = 600; i < mainPanel.getHeight(); i+=600) {
+                    g.drawImage(StockConsumer.this.background, 0, i, null);
+                }
             }
         };
 
+        EmptyBorder border = new EmptyBorder(15, 15, 15, 15);
+
         mainPanel.setLayout(layout);
 
-        scrollPane = new ScrollPane();
-        scrollPane.add(mainPanel);
+        mainPanel.setBackground(new Color(0,0,0,0));
+        mainPanel.setBorder(border);
+
+        scrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //scrollPane.setBackground(new Color(0,0,0,0));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        //backgroundPanel.add(scrollPane);
 
         frame.getContentPane().add(scrollPane);
         frame.pack();
@@ -71,7 +89,6 @@ public class StockConsumer implements ConsumerListener {
     }
 
     public void initWebservice(){
-        consumer = new NotificationConsumer();
         consumer.addConsumerListener(this);
         consumer.quickBuild("stockConsumer");
         consumer.forceEndpointReference("http://"+ServiceUtilities.getExternalIp() + ":8080/stockConsumer");
@@ -88,7 +105,15 @@ public class StockConsumer implements ConsumerListener {
     public void addStock(StockChanged stock){
         StockPanel panel = new StockPanel(stock);
         stocks.put(stock.getSymbol(), panel);
-        mainPanel.add(panel);
+
+        gb.gridx = (stocks.size()-1) % 3;
+        gb.gridy = (int) Math.floor((stocks.size()-1) / 3);
+
+        System.out.println("x:" + gb.gridx);
+        System.out.println("y:" + gb.gridy);
+
+        mainPanel.add(panel, gb);
+        mainPanel.repaint();
     }
 
     public void updateStock(StockChanged stock) {
@@ -120,32 +145,54 @@ public class StockConsumer implements ConsumerListener {
 
     private static class StockPanel extends JPanel {
 
-        public static final int WIDTH = 200;
-        public static final int HEIGHT = 100;
+        public static final int WIDTH = 230;
+        public static final int HEIGHT = 95;
 
         private StockChanged stock;
-        private JLabel name, value, changed, date;
+        private JLabel symbol, name, value, changed, date;
+
+        private static DecimalFormat format = new DecimalFormat("##.##");
+        private static GridBagConstraints gb  = new GridBagConstraints();
 
         public StockPanel(StockChanged stock) {
-            this.setLayout(new GridLayout(4,1));
+            this.setLayout(new GridBagLayout());
+            this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+            this.setSize(WIDTH, HEIGHT);
+            this.setBackground(new Color(46, 46, 46, 200));
 
+            symbol = new JLabel();
             name = new JLabel();
             value = new JLabel();
             changed = new JLabel();
             date = new JLabel();
 
-            name.setFont(new Font("Verdana", Font.BOLD, 15));
-            value.setFont(new Font("Verdana", Font.BOLD, 10));
-            changed.setFont(new Font("Verdana", Font.BOLD, 10));
-            date.setFont(new Font("Verdana", Font.BOLD, 12));
+            symbol.setFont(new Font("Sans", Font.BOLD, 11));
+            name.setFont(new Font("Sans", Font.BOLD, 12));
+            value.setFont(new Font("Sans", Font.BOLD, 10));
+            changed.setFont(new Font("Sans", Font.BOLD, 10));
+            date.setFont(new Font("Sans", Font.BOLD, 11));
 
-            name.setForeground(new Color(33, 33, 33));
-            value.setForeground(new Color(33, 33, 33));
+            symbol.setForeground(new Color(208, 208, 208));
+            name.setForeground(new Color(208, 208, 208));
+            value.setForeground(new Color(208, 208, 208));
+            date.setForeground(new Color(208, 208, 208));
 
-            this.add(name);
-            this.add(value);
-            this.add(changed);
-            this.add(date);
+            gb.gridx = 1;
+            gb.gridy = 1;
+            gb.gridwidth = 1;
+            gb.insets = new Insets(0,3, 0, 3);
+            gb.anchor = GridBagConstraints.CENTER;
+
+            //this.add(symbol, gb);
+            gb.gridx = 1;
+            this.add(name, gb);
+            gb.gridy = 2;
+            gb.gridx = 1;
+            this.add(value, gb);
+            gb.gridy = 3;
+            this.add(changed, gb);
+            gb.gridy = 4;
+            this.add(date, gb);
 
             updateStock(stock);
         }
@@ -153,12 +200,28 @@ public class StockConsumer implements ConsumerListener {
         public void updateStock(StockChanged stock){
             this.stock = stock;
 
-            name.setText(stock.getSymbol() + ":" + stock.getName());
-            value.setText(Float.toString(stock.getValue()));
+            //symbol.setText("Symbol: " + stock.getSymbol());
+            name.setText(stock.getName() + " (" + stock.getSymbol()+")");
 
-            String posStr = stock.getChangeAbsolute() > 0 ? "+" : "-";
+            boolean isPositive = stock.getChangeAbsolute() > 0 ? true : false;
+            String posStr = stock.getChangeAbsolute() > 0 ? "+" : "";
 
-            changed.setText(Float.toString(stock.getChangeAbsolute()) + "(" + stock.getChangeRelative());
+            String changedText = "Change: " + posStr + format.format(stock.getChangeAbsolute()) + "(" + posStr + format.format(stock.getChangeRelative()) + "%)";
+
+            Color changedColor;
+            if(isPositive) {
+                changedColor = new Color(39, 141, 39);
+            } else {
+                changedColor = new Color(141, 39, 39);
+            }
+
+            value.setText("Value: " + format.format(stock.getValue()));
+            value.setForeground(changedColor);
+
+            changed.setText(changedText);
+            changed.setForeground(changedColor);
+
+            date.setText("Last changed: " + stock.getLastChange());
 
             this.repaint();
         }
@@ -178,8 +241,8 @@ public class StockConsumer implements ConsumerListener {
         XMLParser.registerReturnObjectPackageWithObjectFactory("org.ntnunotif.wsnu.examples.StockBroker.generated");
 
         // Initialize the consumer
-        StockConsumer consumer = new StockConsumer();
+        final StockConsumer consumer = new StockConsumer();
         consumer.initInterface();
-        //consumer.initWebService();
+        consumer.initWebservice();
     }
 }
