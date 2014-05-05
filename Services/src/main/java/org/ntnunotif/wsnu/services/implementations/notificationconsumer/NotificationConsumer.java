@@ -1,9 +1,6 @@
 package org.ntnunotif.wsnu.services.implementations.notificationconsumer;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
-import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEventSupport;
@@ -66,32 +63,5 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
         message.getRequestInformation().setEndpointReference(address);
         InternalMessage returnMessage = _hub.acceptLocalMessage(message);
         return returnMessage;
-    }
-
-    //@Override
-    @WebMethod(exclude = true)
-    public SoapForwardingHub quickBuild(String endpointReference) {
-        try{
-            // Ensure the application server is stopped.
-            ApplicationServer.getInstance().stop();
-
-            SoapForwardingHub hub = new SoapForwardingHub();
-            _hub = hub;
-
-            this.setEndpointReference(endpointReference);
-
-            // Start the application server with this hub
-            ApplicationServer.getInstance().start(hub);
-
-            /* Most reasonable and simple connector for a consumer */
-            UnpackingConnector connector = new UnpackingConnector(this);
-            hub.registerService(connector);
-            _connection = connector;
-
-            return hub;
-        }catch(Exception e){
-            e.printStackTrace();
-            throw new RuntimeException("Could not quickBuild consumer: " + e.getMessage());
-        }
     }
 }

@@ -397,10 +397,10 @@ public abstract class WebService {
             SoapForwardingHub hub = new SoapForwardingHub();
             _hub = hub;
 
+            this.setEndpointReference(endpointReference);
+
             // Start the application server with this hub
             ApplicationServer.getInstance().start(hub);
-
-            this.setEndpointReference(endpointReference);
 
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
