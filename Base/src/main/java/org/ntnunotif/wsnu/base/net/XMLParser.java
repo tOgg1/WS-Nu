@@ -255,6 +255,7 @@ public class XMLParser {
      * @return the internal message given as argument, with filled in additional request information
      * @throws JAXBException if no way of parsing the request is found, or something else fails.
      */
+    @SuppressWarnings( "deprecation" )
     public static void parse(InternalMessage internalMessage) throws JAXBException {
         Log.d("XMLParser", "Parsing message from InternalMessage");
         Object message = internalMessage.getMessage();
@@ -274,6 +275,7 @@ public class XMLParser {
 
         internalMessage.getRequestInformation().setParseValidationEventInfos(parsedMessage.getRequestInformation().getParseValidationEventInfos());
         internalMessage.getRequestInformation().setNamespaceContextResolver(parsedMessage.getRequestInformation().getNamespaceContextResolver());
+        // Kept for backward compatibility
         internalMessage.getRequestInformation().setNamespaceContext(parsedMessage.getRequestInformation().getNamespaceContext());
     }
 
@@ -284,6 +286,7 @@ public class XMLParser {
      * @return The apropriate object.
      * @throws JAXBException {@link javax.xml.bind.JAXBContext#newInstance(String, ClassLoader)}
      */
+    @SuppressWarnings( "deprecation" )
     public static InternalMessage parse(XMLStreamReader xmlStreamReader) throws JAXBException {
         Log.d("XMLParser", "Parsing message from XMLStreamReader");
         XMLParser p = new XMLParser();

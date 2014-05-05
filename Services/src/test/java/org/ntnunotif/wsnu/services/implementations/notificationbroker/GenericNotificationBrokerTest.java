@@ -82,7 +82,6 @@ public class GenericNotificationBrokerTest {
     @Test
     public void testSubscribe() throws Exception {
         InternalMessage message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080");
-        System.out.println(message.getMessage());
         assertTrue((message.statusCode & STATUS_OK) > 0);
     }
 
@@ -122,7 +121,6 @@ public class GenericNotificationBrokerTest {
         type.setDialect("http://www.w3.org/TR/1999/REC-xpath-19991116");
         type.getContent().add("lololol");
         InternalMessage curMessage = consumer.sendGetCurrentMessage("http://127.0.0.1:8080/myBroker/", type);
-        System.out.println(curMessage.getMessage());
 
     }
 }

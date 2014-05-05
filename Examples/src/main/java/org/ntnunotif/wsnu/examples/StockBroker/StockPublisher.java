@@ -135,7 +135,7 @@ public class StockPublisher {
      * Start the StockPublisher. This starts the scheduler.
      */
     public void start() {
-        resgisterWithBroker("151.236.10.120:8080");
+        resgisterWithBroker("151.236.216.174:8080");
         task = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -157,7 +157,7 @@ public class StockPublisher {
         org.oasis_open.docs.wsn.br_2.RegisterPublisher registerPublisher = new org.oasis_open.docs.wsn.br_2.RegisterPublisher();
         registerPublisher.setDemand(false);
         // Change to your ip
-        registerPublisher.setPublisherReference(ServiceUtilities.buildW3CEndpointReference("37.200.14.9"));
+        registerPublisher.setPublisherReference(ServiceUtilities.buildW3CEndpointReference("151.236.10.120:8080"));
         try {
             Date date = new Date();
             date.setTime(System.currentTimeMillis() + 86400*365);

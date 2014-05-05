@@ -210,7 +210,7 @@ public class ServiceUtilitiesTest {
     }
 
     @Test
-    public void testFilterendpointReference() throws Exception{
+    public void testFilterendpointReference() throws Exception {
         String endpoint_1 = "http://tormod.haugland.com/lol";
         String endpoint_2 = "http://tormod.no/hei";
         String endpoint_3 = "http://127.0.0.1:8080/hei";
@@ -225,5 +225,11 @@ public class ServiceUtilitiesTest {
         assertEquals("hei", filtered_2);
         assertEquals("hei", filtered_3);
         assertEquals("tormod/webservice/lol", filtered_4);
+    }
+
+    @Test
+    public void testGetExternalUrl() throws Exception {
+        String extIp = ServiceUtilities.getExternalIp();
+        System.out.println(extIp);
     }
 }

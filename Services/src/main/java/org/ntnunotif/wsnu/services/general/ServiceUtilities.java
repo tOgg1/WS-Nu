@@ -1,9 +1,11 @@
 package org.ntnunotif.wsnu.services.general;
 
+import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.Utilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
 import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
@@ -14,6 +16,7 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.trmd.ntsh.NothingToSeeHere;
+import org.w3c.dom.Node;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,11 +34,15 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
  *
@@ -709,6 +716,24 @@ public class ServiceUtilities {
         return endpointReference.replaceAll("^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/", "");
     }
 
+    /**
+     * Fetches the external ip through amazonaw's utility. Note that this method may break at any given point, do not use
+     * for essential functionality
+     * @return Your external ip
+     */
+    public static String getExternalIp() {
+        try {
+            URL url = new URL("http://checkip.amazonaws.com/");
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            return in.readLine();
+        } catch (MalformedURLException e) {
+            // This will determininstically never happen
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public static<T> T[] createArrayOfEquals(T t, int length){
         T ts[] = (T[]) Array.newInstance(t.getClass(), length);
 
@@ -917,7 +942,6 @@ public class ServiceUtilities {
         type.getDescription().add(desc);
 
         throw new PublisherRegistrationFailedFault(description, type);
-
     }
 
     public static void throwResourceUnknownFault(String language, String description) throws ResourceUnknownFault {
@@ -1144,10 +1168,22 @@ public class ServiceUtilities {
 
 
     public static InternalMessage sendRequest(String url) throws Exception{
-        InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK, null);
+        InternalMessage message = new InternalMessage(STATUS_OK, null);
         RequestInformation requestInformation = new RequestInformation();
         requestInformation.setEndpointReference(url);
         message.setRequestInformation(requestInformation);
         return ApplicationServer.getInstance().sendMessage(message);
+    }
+
+    public static InternalMessage sendNode(String endpoint, Node node, Hub hub){
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, null);
+
+        RequestInformation requestInformation = new RequestInformation();
+        requestInformation.setEndpointReference(endpoint);
+        message.setRequestInformation(requestInformation);
+
+        message.setMessage(Utilities.convertUnknownToInputStream(node));
+
+        return hub.acceptLocalMessage(message);
     }
 }

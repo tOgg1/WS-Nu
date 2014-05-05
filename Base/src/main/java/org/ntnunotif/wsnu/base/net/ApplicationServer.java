@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -330,8 +331,10 @@ public class ApplicationServer{
             Log.e("ApplicationServer.sendMessage", "The message contained something else than an inputStream." +
                     "Please convert your message to an InputStream before calling this method.");
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
-        }catch(Exception e){
-            e.printStackTrace();
+        }catch(Exception e) {
+            if(e instanceof ConnectException){
+                Log.e("ApplicationServer.sendMessage", "Unable to establish connection: " + e.getMessage());
+            }
             return new InternalMessage(STATUS_FAULT_INTERNAL_ERROR, null);
         }
     }
