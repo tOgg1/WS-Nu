@@ -2,6 +2,7 @@ package org.ntnunotif.wsnu.services.general;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -231,5 +232,17 @@ public class ServiceUtilitiesTest {
     public void testGetExternalUrl() throws Exception {
         String extIp = ServiceUtilities.getExternalIp();
         System.out.println(extIp);
+    }
+
+    @Test
+    public void testSendNode() throws Exception {
+        //TODO
+    }
+
+    @Test
+    public void testSendString() throws Exception {
+        String string = "iarhgaerhg89a3hg893awgh8934gh893a4gh89a3wy4gh89a3gh";
+        SoapForwardingHub hub = new SoapForwardingHub();
+        ServiceUtilities.sendStringInSoap("http://127.0.0.1:8080", string, hub);
     }
 }

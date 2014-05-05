@@ -17,10 +17,13 @@ import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.trmd.ntsh.NothingToSeeHere;
 import org.w3c.dom.Node;
+import org.xmlsoap.schemas.soap.envelope.*;
+import org.xmlsoap.schemas.soap.envelope.ObjectFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -1182,7 +1185,26 @@ public class ServiceUtilities {
         requestInformation.setEndpointReference(endpoint);
         message.setRequestInformation(requestInformation);
 
-        message.setMessage(Utilities.convertUnknownToInputStream(node));
+        JAXBElement<Node> element = new JAXBElement<Node>(new QName(node.getNodeName()), (Class)node.getClass(), node);
+        message.setMessage(Utilities.convertUnknownToInputStream(node.getOwnerDocument()));
+
+        return hub.acceptLocalMessage(message);
+    }
+
+    public static InternalMessage sendStringInSoap(String endpoint, String content, Hub hub){
+        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, null);
+
+        RequestInformation requestInformation = new RequestInformation();
+        requestInformation.setEndpointReference(endpoint);
+        message.setRequestInformation(requestInformation);
+
+        org.xmlsoap.schemas.soap.envelope.ObjectFactory f = new ObjectFactory();
+
+        Envelope envelope = new Envelope();
+        Body body = new Body();
+        body.getAny().add(content);
+        envelope.setBody(body);
+        message.setMessage(f.createEnvelope(envelope));
 
         return hub.acceptLocalMessage(message);
     }
