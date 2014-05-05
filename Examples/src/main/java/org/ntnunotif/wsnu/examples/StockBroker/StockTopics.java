@@ -16,9 +16,9 @@ public class StockTopics {
     public static final String STOCK_TOPIC_NAMESPACE = "http://www.sitronte.com/wsn/topics/examples/stocks";
 
     public static final String AFRICAN_STOCK_LOCAL_NAME = "Africa";
-    public static final String AMERICAN_STOCK_LOCAL_NAME = "Africa";
-    public static final String ASIAN_STOCK_LOCAL_NAME = "Africa";
-    public static final String EUROPEAN_STOCK_LOCAL_NAME = "Africa";
+    public static final String AMERICAN_STOCK_LOCAL_NAME = "America";
+    public static final String ASIAN_STOCK_LOCAL_NAME = "Asia";
+    public static final String EUROPEAN_STOCK_LOCAL_NAME = "Europa";
 
     private static final String DEFAULT_NAMESPACE = "stockns";
 
