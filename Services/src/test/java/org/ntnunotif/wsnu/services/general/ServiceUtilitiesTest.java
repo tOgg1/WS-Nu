@@ -8,7 +8,10 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.w3._2001._12.soap_envelope.Envelope;
 import org.w3._2001._12.soap_envelope.ObjectFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileOutputStream;
@@ -236,13 +239,15 @@ public class ServiceUtilitiesTest {
 
     @Test
     public void testSendNode() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testSendString() throws Exception {
-        String string = "iarhgaerhg89a3hg893awgh8934gh893a4gh89a3wy4gh89a3gh";
         SoapForwardingHub hub = new SoapForwardingHub();
-        ServiceUtilities.sendStringInSoap("http://127.0.0.1:8080", string, hub);
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        Document document = factory.newDocumentBuilder().newDocument();
+        Element element = document.createElementNS("http://example.org", "example");
+
+        document.appendChild(element);
+
+        ServiceUtilities.sendNode("http://127.0.0.1:8080", element, hub);
     }
 }

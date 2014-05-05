@@ -5,7 +5,6 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
-import org.ntnunotif.wsnu.base.util.Utilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
 import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
@@ -17,13 +16,10 @@ import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
 import org.trmd.ntsh.NothingToSeeHere;
 import org.w3c.dom.Node;
-import org.xmlsoap.schemas.soap.envelope.*;
-import org.xmlsoap.schemas.soap.envelope.ObjectFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -45,7 +41,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_HAS_MESSAGE;
+import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 
 /**
  *
@@ -1179,32 +1176,13 @@ public class ServiceUtilities {
     }
 
     public static InternalMessage sendNode(String endpoint, Node node, Hub hub){
-        InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, null);
-
-        RequestInformation requestInformation = new RequestInformation();
-        requestInformation.setEndpointReference(endpoint);
-        message.setRequestInformation(requestInformation);
-
-        JAXBElement<Node> element = new JAXBElement<Node>(new QName(node.getNodeName()), (Class)node.getClass(), node);
-        message.setMessage(Utilities.convertUnknownToInputStream(node.getOwnerDocument()));
-
-        return hub.acceptLocalMessage(message);
-    }
-
-    public static InternalMessage sendStringInSoap(String endpoint, String content, Hub hub){
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, null);
 
         RequestInformation requestInformation = new RequestInformation();
         requestInformation.setEndpointReference(endpoint);
         message.setRequestInformation(requestInformation);
 
-        org.xmlsoap.schemas.soap.envelope.ObjectFactory f = new ObjectFactory();
-
-        Envelope envelope = new Envelope();
-        Body body = new Body();
-        body.getAny().add(content);
-        envelope.setBody(body);
-        message.setMessage(f.createEnvelope(envelope));
+        message.setMessage(node);
 
         return hub.acceptLocalMessage(message);
     }
