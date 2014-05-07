@@ -19,27 +19,39 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Example consumer. The StockConsumer implements a NotificationConsumer interface to receive
+ * {@link org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged} objects.
+ *
+ * Uses the {@link javax.swing} library to implement a graphical user interface.
+ *
  * Created by tormod on 29.04.14.
  */
 public class StockConsumer implements ConsumerListener {
 
+
+    // The actual NotificationConsumer interface. Note that we have declared it final to avoid
+    // having it removed from context and cleaned up from the garbage collector.
     private final NotificationConsumer consumer;
+
+    // A HashMap of our stocks.
     private HashMap<String, StockPanel> stocks;
 
+    // Gui-Objects
     private JFrame frame;
     private GridBagLayout layout;
     private GridBagConstraints gb;
     private JScrollPane scrollPane;
     private JPanel mainPanel;
     private JPanel backgroundPanel;
-
     private Image background;
 
+    // Initializing relevant objects
     public StockConsumer() {
         stocks = new HashMap<>();
         consumer = new NotificationConsumer();
     }
 
+    // Initialize interface. For more information, see http://docs.oracle.com/javase/tutorial/uiswing/
     public void initInterface(){
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,12 +100,24 @@ public class StockConsumer implements ConsumerListener {
         frame.setVisible(true);
     }
 
+    // Initialize the Web Service
     public void initWebservice(){
+        // This class is a ConsumerListener, meaning any notification received by our NotificationConsumer-interface
+        // will be forwarded here. This given we register "this" as a consumerlistener with the NotificationConsumer.
         consumer.addConsumerListener(this);
-        consumer.quickBuild("stockConsumer");
-        consumer.forceEndpointReference("http://"+ServiceUtilities.getExternalIp() + ":8080/stockConsumer");
-        consumer.sendSubscriptionRequest("http://151.236.216.174:8080/stockBroker");
 
+        // This method builds the Hub, ApplicationServer and a Connector. It then adds the NotificationConsumer to the consumer
+        // and registers the service with the hub. TL;DR: This method does everything for you.
+        consumer.quickBuild("stockConsumer");
+
+        // This is a "hack", allowing us to set the endpoint-reference to our external-ip. This should ideally be set in the
+        // ApplicationServer config. But this would be hard to generalize for an example-code.
+        consumer.forceEndpointReference("http://"+ServiceUtilities.getExternalIp() + ":8080/stockConsumer");
+
+        // We send a subscription-request to our broker. This ip needs to be changed to the IP of your broker.
+        consumer.sendSubscriptionRequest("http://127.0.0.1:8080/stockBroker");
+
+        // Sets up an inputmanager, see the JavaDocs for how to use this.
         ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
         try {
             inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
@@ -102,6 +126,7 @@ public class StockConsumer implements ConsumerListener {
         }
     }
 
+    // Adds a stock to the GUI.
     public void addStock(StockChanged stock){
         StockPanel panel = new StockPanel(stock);
         stocks.put(stock.getSymbol(), panel);
@@ -116,26 +141,38 @@ public class StockConsumer implements ConsumerListener {
         mainPanel.repaint();
     }
 
+    // Update our StockPanel
     public void updateStock(StockChanged stock) {
         stocks.get(stock.getSymbol()).updateStock(stock);
     }
 
-    // Update stocks
+    // This method is the implemented method from ConsumerListener. Whenever a NotificationConsumer receives a
+    // Notify, it sends this event to every ConsumerListener listening.
     @Override
     public void notify(NotificationEvent event) {
+        // Get all the NotificationMessage objects contained in the Notify. In this example the count of NotificationMessages
+        // will always be 1.
         List<NotificationMessageHolderType.Message> messages = event.getMessage();
 
+        // Loop over all NotificationMessages
         for (NotificationMessageHolderType.Message message : messages) {
+
+            // Fetch the message content
             Object potentialStock = message.getAny();
 
+            // If the contained message actually is a potentialStock.
             if(potentialStock instanceof StockChanged) {
                 StockChanged stock = (StockChanged)potentialStock;
 
+                // Have we already got the stock? If yes, send and update ...
                 if(stocks.containsKey(stock.getSymbol())){
                     updateStock(stock);
+                // .. if not, add a new stock
                 } else {
                     addStock(stock);
                 }
+
+            // We don't want to handle anything else than a StockChanged
             } else {
                 Log.w("StockConsumer", "Received an object that was not a StockChanged");
                 continue;
@@ -143,6 +180,7 @@ public class StockConsumer implements ConsumerListener {
         }
     }
 
+    // The StockPanel. As before, see the swing documentation for specifics.
     private static class StockPanel extends JPanel {
 
         public static final int WIDTH = 230;
@@ -197,6 +235,7 @@ public class StockConsumer implements ConsumerListener {
             updateStock(stock);
         }
 
+        // Update the stock
         public void updateStock(StockChanged stock){
             this.stock = stock;
 
@@ -237,11 +276,12 @@ public class StockConsumer implements ConsumerListener {
         Log.setEnableWarnings(true);
         Log.setEnableErrors(true);
 
-        // Register our StockChanged object
+        // Register our StockChanged object. This is paramount if we want our Parser to be able to handle the StockChanged
+        // objects.
         XMLParser.registerReturnObjectPackageWithObjectFactory("org.ntnunotif.wsnu.examples.StockBroker.generated");
 
         // Initialize the consumer
-        final StockConsumer consumer = new StockConsumer();
+        StockConsumer consumer = new StockConsumer();
         consumer.initInterface();
         consumer.initWebservice();
     }
