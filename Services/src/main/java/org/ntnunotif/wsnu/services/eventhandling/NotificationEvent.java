@@ -12,12 +12,17 @@ import java.util.EventObject;
 import java.util.List;
 
 /**
- * Created by tormod on 3/13/14.
+ * This class contains a Notify object received by NotificationConsumer.
+ *
+ * This is the main object passed into the {@link org.ntnunotif.wsnu.services.eventhandling.ConsumerListener#notify(NotificationEvent)}
+ * method.
+ *
+ * This class also contains a timestamp of when the event occured. As well as any request information. E.g. the ip of the producer sending
+ * the notification.
  */
-//TODO: What more methods do we need?
-public final class NotificationEvent extends EventObject{
+public final class NotificationEvent extends EventObject {
 
-    private Notify _notification;
+    private Notify _notify;
     private RequestInformation _requestInformation;
     private Calendar _timestamp = Calendar.getInstance();
 
@@ -25,39 +30,43 @@ public final class NotificationEvent extends EventObject{
      * Creates an event with source, content and request information
      *
      * @param source the source where this event occurred
-     * @param _notification the content of the event
+     * @param notify the content of the event
      * @param requestInformation information about the request
      */
-    public NotificationEvent(Object source, Notify _notification, RequestInformation requestInformation) {
+    public NotificationEvent(Object source, Notify notify, RequestInformation requestInformation) {
         super(source);
-        this._notification = _notification;
-        this._requestInformation = requestInformation;
+        _notify = notify;
+        _requestInformation = requestInformation;
     }
 
     /**
      * Creates an event with source and content
      *
      * @param source the source where this event occurred
-     * @param _notification the content of the event
+     * @param notify the content of the event
      */
-    public NotificationEvent(Object source, Notify _notification) {
+    public NotificationEvent(Object source, Notify notify) {
         super(source);
-        this._notification = _notification;
+        _notify = notify;
     }
 
     /**
-     * Get the raw data of Notify-message
+     * Get the raw data of Notify-message.
+     *
+     * @return The actual Notify object. Not to be confused with uses of the word raw in the WS-N specification.
      */
     public Notify getRaw(){
-        return _notification;
+        return _notify;
     }
 
     /**
-     * Get the content in XML-form.
+     * Get the content in XML-form. The notify will be attempted unmarshalled by the XMLParser.
+     *
+     * @return A string representing the notify in XML-form.
      */
     public String getXML() throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        XMLParser.writeObjectToStream(_notification, outputStream);
+        XMLParser.writeObjectToStream(_notify, outputStream);
 
         byte[] bytes = outputStream.toByteArray();
 
@@ -66,10 +75,11 @@ public final class NotificationEvent extends EventObject{
 
     /**
      * Extract and return the message from the notification
-     * @return
+     *
+     * @return A list of {@link org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType} objects.
      */
     public List<NotificationMessageHolderType.Message> getMessage(){
-        List<NotificationMessageHolderType> messageHolderType = _notification.getNotificationMessage();
+        List<NotificationMessageHolderType> messageHolderType = _notify.getNotificationMessage();
 
         List<NotificationMessageHolderType.Message> messages = new ArrayList<>();
         for(NotificationMessageHolderType notificationMessageHolderType : messageHolderType){
@@ -80,6 +90,7 @@ public final class NotificationEvent extends EventObject{
 
     /**
      * Gets the request information, if it was available when event occurred
+     *
      * @return the {@link org.ntnunotif.wsnu.base.util.RequestInformation} belonging to this event, or <code>null</code>
      * if it is not available
      */
@@ -89,6 +100,7 @@ public final class NotificationEvent extends EventObject{
 
     /**
      * The timestamp when this event occurred
+     *
      * @return timestamp of the event
      */
     public Calendar getTimestamp() {

@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class to make <code>NotificationEvent</code> dispatching easier, centralized and equal all over
- * Created by Inge on 28.03.2014.
+ * Helper class to make <code>NotificationEvent</code> dispatching easier, centralized and equal all over.
  */
 public class NotificationEventSupport {
     /**

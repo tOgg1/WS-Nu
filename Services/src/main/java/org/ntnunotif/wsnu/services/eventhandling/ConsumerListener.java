@@ -7,7 +7,8 @@ import java.util.EventListener;
  * @author Tormod Haugland
  * Created by tormod on 3/13/14.
  */
-public interface ConsumerListener extends EventListener{
+public interface ConsumerListener extends EventListener {
+
     /**
      * Passes the notification-event forward.
      * @param event
