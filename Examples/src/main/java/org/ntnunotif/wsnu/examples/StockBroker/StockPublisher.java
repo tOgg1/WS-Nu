@@ -32,7 +32,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  *
  * This is a publisher that is publishing changes in stock-indexes.
  * It is listening to changes at http://www.reuters.com/finance/markets/indices.
- * When a change has been found, it sends its result to a NotificationBroker
+ * When a change has been found, it sends its result to a NotificationBroker.
  */
 public class StockPublisher {
 
