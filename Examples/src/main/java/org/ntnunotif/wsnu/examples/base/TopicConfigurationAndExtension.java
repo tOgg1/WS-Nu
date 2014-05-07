@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.examples.general;
+package org.ntnunotif.wsnu.examples.base;
 
 import org.ntnunotif.wsnu.base.topics.TopicExpressionEvaluatorInterface;
 import org.ntnunotif.wsnu.base.topics.TopicUtils;
@@ -128,7 +128,7 @@ public class TopicConfigurationAndExtension implements TopicExpressionEvaluatorI
     @Override
     public boolean isExpressionPermittedInNamespace(TopicExpressionType expression, TopicNamespaceType namespace) throws
             TopicExpressionDialectUnknownFault, InvalidTopicExpressionFault {
-        
+
         // this method is only used in namespace resolution, and is not normally used in the current version of WS-Nu
         throw new UnsupportedOperationException("Namespace resolution not supported");
     }

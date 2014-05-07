@@ -1,4 +1,4 @@
-package org.ntnunotif.wsnu.examples.general;
+package org.ntnunotif.wsnu.examples.base;
 
 import org.ntnunotif.wsnu.base.net.NuNamespaceContext;
 import org.ntnunotif.wsnu.base.topics.*;
