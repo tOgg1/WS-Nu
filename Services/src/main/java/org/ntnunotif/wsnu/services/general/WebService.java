@@ -700,8 +700,9 @@ public abstract class WebService {
     public boolean setWsdlLocation(String wsdlLocation) {
         File file = new File(wsdlLocation);
 
-        if(!file.isFile())
+        if(!file.isFile()) {
             return false;
+        }
 
         this.wsdlLocation = wsdlLocation;
         return true;

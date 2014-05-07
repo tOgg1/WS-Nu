@@ -31,6 +31,13 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.*;
 
 /**
+ * The generic NotificationBroker implementation.
+ *
+ * Implements all aspects of the NotificiationBroker-specification through the WS-Nu base.
+ * This implementation stores subscriptions and publishers in HashMaps.
+ *
+ * @see {@link org.ntnunotif.wsnu.services.implementations.notificationbroker.AbstractNotificationBroker}.
+ *
  * Created by tormod on 06.04.14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "NotificationBroker")
@@ -38,19 +45,39 @@ import java.util.*;
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class GenericNotificationBroker extends AbstractNotificationBroker {
 
+    /**
+     * HashMap of subscriptions.
+     */
     protected Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
+
+    /**
+     * HashMap of publishers.
+     */
     protected Map<String, PublisherHandle> publishers = new HashMap<>();
 
+    /**
+     * HashMap of latestMessages.
+     */
     private final Map<String, NotificationMessageHolderType>  latestMessages = new HashMap<>();
 
+    /**
+     * FilterSupport variable.
+     */
     private final FilterSupport filterSupport;
 
+    /**
+     * Default constructor. Adds filtersupport and enables caching of messages.
+     */
     public GenericNotificationBroker() {
         Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
 
+    /**
+     * Constructor taking a variable indicating whether filters should be supported or not.
+     * @param supportFilters
+     */
     public GenericNotificationBroker(boolean supportFilters) {
         if (supportFilters) {
             Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
@@ -62,6 +89,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         cacheMessages = true;
     }
 
+    /**
+     * Constructor taking two variables: one indicating whether filters should be supported or not. And
+     * another indicating whether caching of messages should be supported.
+     * @param supportFilters
+     * @param cacheMessages
+     */
     public GenericNotificationBroker(boolean supportFilters, boolean cacheMessages) {
         if (supportFilters) {
             if (cacheMessages) {
@@ -83,6 +116,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Constructor taking two variables: One is a {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} object.
+     * And the other is a variable indicating whether caching of messages should be supported.
+     * @param filterSupport
+     * @param cacheMessages
+     */
     public GenericNotificationBroker(FilterSupport filterSupport, boolean cacheMessages) {
         if (cacheMessages){
             Log.d("GenericNotificationBroker", "Created new with custom filter support and GetCurrentMessage allowed");
@@ -94,6 +133,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Constructor taking a hub as a parameter, sending it up to {@link org.ntnunotif.wsnu.services.implementations.notificationbroker.AbstractNotificationBroker}.
+     * Also creates default filtersupport and sets cachemessages to true.
+     * @param hub
+     */
     public GenericNotificationBroker(Hub hub) {
         this._hub = hub;
         Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
@@ -101,6 +145,9 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         cacheMessages = true;
     }
 
+    /**
+
+    */
     public GenericNotificationBroker(Hub hub, boolean supportFilters) {
         this._hub = hub;
         if (supportFilters) {
@@ -146,12 +193,24 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Checks if the subscription-key is already registered with this broker. This is the case if either
+     * the broker has a subscription or a publisher with the key. This is to ensure no duplicates.
+     * @param key The key. Usually this would be a ntsh or SHA-1 hash.
+     * @return
+     */
     @Override
     @WebMethod(exclude = true)
     public boolean keyExists(String key) {
-        return subscriptions.containsKey(key);
+        return subscriptions.containsKey(key) || publishers.containsKey(key);
     }
 
+    /**
+     * Get all subscriptions that are eligible to receive notifications.
+     * </p>
+     * This method will also remove expired subscriptions.
+     * @return A collection of endpoint references.
+     */
     @Override
     @WebMethod(exclude = true)
     protected Collection<String> getAllRecipients() {
@@ -174,6 +233,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         return subscriptions.keySet();
     }
+
 
     @Override
     protected String getEndpointReferenceOfRecipient(String subscriptionKey) {
@@ -234,6 +294,25 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         super.sendNotification(notify, namespaceContextResolver);
     }
 
+    /**
+     * The Subscribe request message as defined by the WS-N specification.
+     *
+     * More information can be found at <href>http://docs.oasis-open.org/wsn/wsn-ws_base_notification-1.3-spec-os.htm#_Toc133735624</href>
+     * @param subscribeRequest A {@link org.oasis_open.docs.wsn.b_2.Subscribe} object.
+     * @return A {@link org.oasis_open.docs.wsn.b_2.SubscribeResponse} if the subscription was added successfully.
+     * @throws NotifyMessageNotSupportedFault Never.
+     * @throws UnrecognizedPolicyRequestFault Never, policies will not be added until 2.0.
+     * @throws TopicExpressionDialectUnknownFault  If the topic expression was not valid.
+     * @throws ResourceUnknownFault Never, WS-Resources is not added as of 0.3
+     * @throws InvalidTopicExpressionFault If any topic expression added was invalid.
+     * @throws UnsupportedPolicyRequestFault Never, policies will not be added until 2.0
+     * @throws InvalidFilterFault If the filter was invalid.
+     * @throws InvalidProducerPropertiesExpressionFault Never.
+     * @throws UnacceptableInitialTerminationTimeFault If the subscription termination time was invalid.
+     * @throws SubscribeCreationFailedFault If any internal or general fault occured during the processing of a subscription request.
+     * @throws TopicNotSupportedFault If the topic in some way is unknown or unsupported.
+     * @throws InvalidMessageContentExpressionFault Never.
+     */
     @Override
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
@@ -355,7 +434,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         return response;
     }
 
-
+    /**
+     * Implementation of the NotificationBroker's notify. This method does nothing but forward the notify by calling
+     * {@link #sendNotification(org.oasis_open.docs.wsn.b_2.Notify)}
+     * @param notify The Notify object.
+     */
     @Override
     @Oneway
     @WebMethod(operationName = "Notify")
@@ -365,15 +448,20 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     /**
-     * Register a publisher. This implementation does not take into account topics, and will never throw TopicNotSupportededFault.
-     * @param registerPublisherRequest
-     * @return
-     * @throws InvalidTopicExpressionFault
-     * @throws PublisherRegistrationFailedFault
-     * @throws ResourceUnknownFault
-     * @throws PublisherRegistrationRejectedFault
-     * @throws UnacceptableInitialTerminationTimeFault
-     * @throws TopicNotSupportedFault
+     * An implementation of the WS-N specification's RegisterPublisher.
+     *
+     * The implementation is designed to conform fully to the specification. Any specific can be found at
+     *
+     * <href>http://docs.oasis-open.org/wsn/wsn-ws_brokered_notification-1.3-spec-os.htm#_Toc133294203</href>
+     *
+     * @param registerPublisherRequest The register publisher object
+     * @return A RegisterPublisherResponse containing the endpoint of the registration.
+     * @throws InvalidTopicExpressionFault If topic expression dialect is unknown.
+     * @throws PublisherRegistrationFailedFault This can be thrown in a number of circumstances. If any general internal error occurs, this is thrown.
+     * @throws ResourceUnknownFault Never thrown as of version 0.4.
+     * @throws PublisherRegistrationRejectedFault Never thrown. A {@link org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault} is always thrown instead.
+     * @throws UnacceptableInitialTerminationTimeFault If the termination time was invalid
+     * @throws TopicNotSupportedFault If the Topic given is not a supported topic expression.
      */
     @Override
     @WebResult(name = "RegisterPublisherResponse", targetNamespace = "http://docs.oasis-open.org/wsn/br-2", partName = "RegisterPublisherResponse")
@@ -409,7 +497,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     ServiceUtilities.throwTopicNotSupportedFault("en", "Expression given is not a legal topicexpression");
                 }
             } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                topicExpressionDialectUnknownFault.printStackTrace();
+                ServiceUtilities.throwInvalidTopicExpressionFault("en", "TopicExpressionDialect unknown");
             }
         }
 
@@ -441,6 +529,20 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         return response;
     }
 
+    /**
+     * Implementation of {@link org.oasis_open.docs.wsn.b_2.GetCurrentMessage}.
+     *
+     * This message will always fault unless {@link #cacheMessages} is true.
+     *
+     * @param getCurrentMessageRequest The request object
+     * @return A {@link org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse} object with the latest message on the request topic.
+     * @throws InvalidTopicExpressionFault Thrown either if the topic is invalid, or if no topic is given.
+     * @throws TopicExpressionDialectUnknownFault Thrown if the topic expression uses a dialect not known
+     * @throws MultipleTopicsSpecifiedFault Never thrown due to the nature of the {@link org.oasis_open.docs.wsn.b_2.GetCurrentMessage} object.
+     * @throws ResourceUnknownFault Never thrown as of version 0.4, as WS-Resources is not implemented.
+     * @throws NoCurrentMessageOnTopicFault If no message is listed on the current topic.
+     * @throws TopicNotSupportedFault Never thrown as of version 0.3.
+     */
     @Override
     @WebResult(name = "GetCurrentMessageResponse", targetNamespace = "http://docs.oasis-open.org/wsn/b-2",
             partName = "GetCurrentMessageResponse")
@@ -484,6 +586,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
     }
 
+    /**
+     * If we have any publisher that uses demand-based publishing, this method will be called when we have no subscriptions
+     * and need to send a pause-request to the relevant publishers.
+     */
     @WebMethod(exclude = true)
     public void pauseDemandPublishers(){
         for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
@@ -493,6 +599,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
     }
 
+    /**
+     * If we have any publisher that uses demand-based publishing, this method will be called when we have gone from having no subscriptions.
+     * to having one or more subscriptions, and need to continue our publishers.
+     */
     @WebMethod(exclude = true)
     public void resumeDemandPublishers(){
         for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
@@ -502,6 +612,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
     }
 
+    /**
+     * Method implemented through {@link org.ntnunotif.wsnu.services.eventhandling.SubscriptionChangedListener}.
+     * This method performs relevant tasks when a subscription is changed, such as removing subscriptions and pause
+     * demand-based publishers.
+     * @param event
+     */
     @Override
     @WebMethod(exclude=true)
     public void subscriptionChanged(SubscriptionEvent event) {
@@ -528,14 +644,26 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                 }
                 return;
             default:
+
             case RENEW:
                 return;
         }
     }
 
+
+    /**
+     * Method implemented through {@link org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent}.
+     * This method performs relevant tasks when a publisher registration is changed. Currently this is only removing publishers
+     * on destruction.
+     * @param event The event-object containing information regarding the actual change.
+     */
     @Override
     @WebMethod(exclude = true)
     public void publisherChanged(PublisherRegistrationEvent event) {
 
+        switch(event.getType()){
+            case DESTROYED:
+                publishers.remove(event.getRegistrationReference());
+        }
     }
 }
