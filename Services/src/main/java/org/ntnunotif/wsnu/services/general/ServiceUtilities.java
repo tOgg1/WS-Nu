@@ -1167,6 +1167,16 @@ public class ServiceUtilities {
     }
 
 
+    public static void throwResourceNotDestroyed(String language, String description) throws ResourceNotDestroyedFault {
+        ResourceNotDestroyedFaultType faultType = new ResourceNotDestroyedFaultType();
+        BaseFaultType.Description desc = new BaseFaultType.Description();
+        desc.setLang(language);
+        desc.setValue(description);
+        faultType.getDescription().add(desc);
+
+        throw new ResourceNotDestroyedFault(description, faultType);
+    }
+
     public static InternalMessage sendRequest(String url) throws Exception{
         InternalMessage message = new InternalMessage(STATUS_OK, null);
         RequestInformation requestInformation = new RequestInformation();

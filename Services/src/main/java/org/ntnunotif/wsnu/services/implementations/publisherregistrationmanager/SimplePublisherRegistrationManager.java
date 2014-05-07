@@ -70,11 +70,16 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
     /**
      * This method implements the {@link org.oasis_open.docs.wsn.brw_2.PublisherRegistrationManager}'s DestroyRegistration.
      *
-     * The method is supposed to implement the
-     * @param destroyRegistrationRequest
-     * @return
-     * @throws ResourceNotDestroyedFault
-     * @throws ResourceUnknownFault
+     * The method conforms to the standard. Thus, any specifics can be found at
+     * <href>http://docs.oasis-open.org/wsn/wsn-ws_brokered_notification-1.3-spec-os.htm#_Toc133294203</href>.
+     *
+     * Note that the subscription-reference is contained in the request-url.
+     *
+     * @param destroyRegistrationRequest The parsed object.
+     * @return The DestryoRegistrationtResponse if everything went fine.
+     * @throws ResourceNotDestroyedFault This is thrown if either the publisher-reference is ill-formatted,
+     * or does not represent an existing publisher registration
+     * @throws ResourceUnknownFault As of 0.3 this is never thrown as WS-Resources is not implemented
      */
     @Override
     @WebResult(name = "DestroyRegistrationResponse", targetNamespace = "http://docs.oasis-open.org/wsn/br-2", partName = "DestroyRegistrationResponse")
@@ -98,9 +103,9 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
                     _publishers.remove(subRef);
                     return new DestroyRegistrationResponse();
                 }
-                ServiceUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
+                ServiceUtilities.throwResourceNotDestroyed("en", "Ill-formated subscription-parameter");
             } else if(entry.getValue().length == 0){
-                ServiceUtilities.throwResourceUnknownFault("en", "Subscription-parameter is missing value");
+                ServiceUtilities.throwResourceNotDestroyed("en", "Subscription-parameter is missing value");
             }
 
             String subRef = entry.getValue()[0];
@@ -109,7 +114,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
             if(!_publishers.containsKey(subRef)){
                 Log.d("SimplePublishersRegistrationManager", "Subscription not found");
                 Log.d("SimplePublishersRegistrationManager", "Expected: " + subRef);
-                ServiceUtilities.throwResourceUnknownFault("en", "Subscription not found.");
+                ServiceUtilities.throwResourceNotDestroyed("en", "Subscription not found.");
             }
 
             Log.d("SimplePublishersRegistrationManager", "Removed subscription");
@@ -119,7 +124,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
 
             return new DestroyRegistrationResponse();
         }
-        ServiceUtilities.throwResourceUnknownFault("en", "The registration was not found as any parameter" +
+        ServiceUtilities.throwResourceNotDestroyed("en", "The registration was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?publisherregistration=registrationkey");
         return null;
@@ -128,7 +133,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
     @Override
     @WebMethod(exclude = true)
     public void update() {
-
+        
     }
 }
 
