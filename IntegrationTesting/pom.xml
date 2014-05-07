@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.ntnunotif.wsnu</groupId>
         <artifactId>WS-Nu</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
 
   <artifactId>IntegrationTesting</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.3</version>
   <packaging>jar</packaging>
 
   <name>IntegrationTesting</name>
@@ -62,12 +61,12 @@
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Base</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
+          <version>0.3</version>
       </dependency>
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Services</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
+          <version>0.3</version>
       </dependency>
   </dependencies>
 </project>
