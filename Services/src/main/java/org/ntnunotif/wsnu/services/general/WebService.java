@@ -7,7 +7,6 @@ import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -24,25 +23,24 @@ import java.util.Map;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
- * The parent of all web services implemented in this module. The main functionality of this class is storing an _endpointReference,
- * holding a reference to the hub (must be supplemented in any implementation class' constructor) as well as some utility methods.
- * @author Tormod Haugland
- * Created by tormod on 23.03.14.
+ * Base class for all Web Services implemented by WS-Nu. Can also serve as a base-class for any other base
  */
 public abstract class WebService {
 
     /**
-     * Contentmanagers for pure requests.
+     * ContentManagers to filter file-requests. See {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}
+     * for more information.
      */
     protected ArrayList<ServiceUtilities.ContentManager> _contentManagers;
 
     /**
-     *
+     * BaseFactory to create relevant objects.
      */
+    //TODO: This should be removed, and generalized.
     public ObjectFactory baseFactory = new ObjectFactory();
 
     /**
-     * Reference to the connected hub
+     * Reference to the connected hub.
      */
     protected Hub _hub;
 
@@ -54,12 +52,6 @@ public abstract class WebService {
     }
 
     /**
-     * Reference to the connection of this Web Service.
-     */
-    @Connection
-    protected ServiceConnection _connection;
-
-    /**
      * Constructor taking a hub as a parameter.
      * @param _hub
      */
@@ -68,24 +60,30 @@ public abstract class WebService {
     }
 
     /**
-     * The actual endpointreference of this Web Service.
+     * Reference to the connection of this Web Service. This variable carries the ServiceConnection
+     */
+    @Connection
+    protected ServiceConnection _connection;
+
+    /**
+     * The full endpointreference of this webservice. This would typically be
      */
     @EndpointReference
     protected String endpointReference;
 
     /**
      * The short version of the endpointReference. If the endpoint reference is 133.371.337.133/endpoint,
-     * this value would be endpoint
+     * this value would be endpoint.
      */
     protected String pureEndpointReference;
 
     /**
-     * The location of this webservices wsdl-file
+     * The location of the Web Service's wsdl-file. This should be a path relative to execution-path of the program.
      */
     protected String wsdlLocation;
 
     /**
-     * Retrieves the endpointreference of the Web Service.
+     * Retrieves the endpoint reference of the Web Service.
      * @return
      */
     public String getEndpointReference() {
@@ -93,8 +91,7 @@ public abstract class WebService {
     }
 
     /**
-     * Retrieves the endpointreference of the Web Service in the form of a {@link javax.xml.ws.wsaddressing.W3CEndpointReference} object.
-     * @return
+     * @return the endpoint reference of the Web Service in the form of a {@link javax.xml.ws.wsaddressing.W3CEndpointReference} object.
      */
     public W3CEndpointReference getEndpointReferenceAsW3C() {
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
@@ -103,15 +100,19 @@ public abstract class WebService {
     }
 
     /**
-     * Sets the endpointreference of this hub. Note that this function fetches the Applicationserver's listening IP
-     * (if several IP's are listed, the applicationserver chooses which to return. If you need a specific one, please call {@link }
-     * {@link #forceEndpointReference(String)} ) and append the endpointreference to it.
-     * Thus, if you want to give a web service the endpoint reference http://serverurl.domain/myWebService,
+     * Sets the endpointreference of this hub. Note that this function fetches the {@link org.ntnunotif.wsnu.base.internal.Hub} listening IP
+     * If several IP's are listed, the Hub chooses which to return. The method called for this operation is {@link org.ntnunotif.wsnu.base.internal.Hub#getInetAdress()}
+     * If you need a specific address, please call {@link #forceEndpointReference(String)} ).
+     *</p>
+     * Thus with this method, if you want to give a web service the endpoint reference http://serverurl.domain/myWebService,
      * you only have to pass in "myWebService".
+     *</p>
+     * If the method receives a full url. It will redirect the request to {@link #forceEndpointReference(String)}.
+     *</p>
      *
-     * @param endpointReference
-     * @throws java.lang.IllegalArgumentException if the argument contains a backslash
-     * @throws java.lang.IllegalStateException if hub is not set
+     * @param endpointReference The endpoint reference request for this Web Service.
+     * @throws {@link java.lang.IllegalArgumentException} if the argument contains a backslash.
+     * @throws {@link java.lang.IllegalStateException} if hub is not set.
      */
     public void setEndpointReference(String endpointReference) {
         if(endpointReference.contains("\\")){
@@ -144,14 +145,19 @@ public abstract class WebService {
     }
 
     /**
-     * Forces the endpoint reference to the endpointreference set.
+     * Forces the endpoint reference. The difference between this method and {@link #setEndpointReference(String)},
+     * is that while the setEndpoitnReference appends the passed in argument to the connected {@link org.ntnunotif.wsnu.base.internal.Hub}'s
+     * IP, this method forces the endpoint reference to be whatever passed in. E.g. if the passed in argument is "http://lol.com", the actual
+     * endpoint reference variable will be set as "http://lol.com".
      *
-     * @param endpointReference
-     * @throws java.lang.IllegalStateException if the {@link org.ntnunotif.wsnu.base.internal.ServiceConnection} is not set
+     * A warning message will be shown if the {@link #_connection} variable is null on calling this message.
+     *
+     * @param endpointReference A valid url for this Web Service. Passing in a bad address can cause undefined behaviour.
      */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
         this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
+
         if(_connection == null) {
             Log.w("WebService", "Tried to force an endpoint reference for a null connector.");
             return;
@@ -160,25 +166,41 @@ public abstract class WebService {
     }
 
     /**
-     * Setter for the hub. Does nothing special.
-     * @return
+     * Getter for the hub. Does nothing special.
+     * @return The connected {@link org.ntnunotif.wsnu.base.internal.Hub}
      */
     public Hub getHub() {
         return _hub;
     }
 
     /**
-     * Getter for the hub. Does nothing special.
-     * @param _hub
+     * Setter for the hub. Does nothing special.
+     * @param _hub A {@link org.ntnunotif.wsnu.base.internal.Hub}.
      */
     public void setHub(Hub _hub) {
         this._hub = _hub;
     }
 
     /**
-     * The default AcceptRequest method of a WebService. This handles requests by looking for matching files, and nothing more.
-     * If specific requests, in particular with parameters, needs to be handled, this method should then be overrided.
-     * @return
+     * The default AcceptRequest method of a WebService. This method accepts what we call "raw"-requests. These are
+     * http-requests containing no content.
+     * </p>
+     * This implementation will look for a ?wsdl parameter. If not found, it will try and retrieve a file at the
+     * location specified.
+     * </p>
+     * Example: Say our web service is located at
+     * <code>http://server.com/endpoint</code>,
+     * and the following request is received:
+     * <code>http://server.com/endpoint/some/folder/file.txt</code>
+     * </p>
+     *
+     * If the file some/folder/file.txt exists, path being relative to where execution folder of the Web Service,
+     * the file is returned as a string.
+     *
+     * See {@link org.ntnunotif.wsnu.base.internal.WebServiceConnector#acceptRequest(org.ntnunotif.wsnu.base.util.InternalMessage)}
+     * for more information regarding how requests are handled.
+     *
+     * @return An InternalMessage containing possible content.
      */
     public InternalMessage acceptRequest(){
         RequestInformation requestInformation = _connection.getRequestInformation();
@@ -234,10 +256,28 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * Helper function to send a request to an address. The entirity of this function is:
+     *
+     * <code>
+     *      return sendRequest(address + request);
+     * </code>
+     *
+     * The method called is the overloaded {@link #sendRequest(String)}.
+     *
+     * @param address The destination address. E.g. http://example.com/webService
+     * @param request The request. This can be any valid url-request. I.e. ?recipe=fa23fabfd&AmIHungry=Yes&WouldIRatherEatThanWriteJavaDoc=Yes
+     * @return The content received from the server, if any. The InternalMessage will also contain a {@link org.ntnunotif.wsnu.base.util.RequestInformation} object
+     */
     public InternalMessage sendRequest(String address, String request){
         return sendRequest(address + request);
     }
 
+    /**
+     * Helper function to send a request to an address.
+     * @param requestUri The actual request-url. E.g. http://example.com/webService?EvenMoreHungryNow=Yes
+     * @return The content received from the server, if any. The InternalMessage will also contain a {@link org.ntnunotif.wsnu.base.util.RequestInformation} object
+     */
     public InternalMessage sendRequest(String requestUri){
         InternalMessage outMessage = new InternalMessage(STATUS_OK, null);
         RequestInformation info = new RequestInformation();
@@ -247,15 +287,15 @@ public abstract class WebService {
     }
 
     /**
-     * Sends a subscriptionrequest with a termination time of one day (default hardcoded value, if anything else is wanted,
-     * call {@link #sendSubscriptionRequest(String, String)}.
-     * @param address
-     * @return
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
      */
     public InternalMessage sendSubscriptionRequest(String address){
         return sendSubscriptionRequest(address, "P1D");
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendSubscriptionRequest(String address, String terminationTime){
         Subscribe subscribe = new Subscribe();
 
@@ -272,6 +312,9 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendUnsubscribeRequest(String subscriptionEndpoint){
         Unsubscribe unsubscribe = new Unsubscribe();
 
@@ -280,10 +323,16 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendRenewRequest(String subscriptionEndpoint){
         return sendRenewRequest(subscriptionEndpoint, "P1D");
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendRenewRequest(String subscriptionEndpoint, String terminationTime){
         Renew renew = new Renew();
         renew.setTerminationTime(terminationTime);
@@ -292,6 +341,9 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendPauseRequest(String subscriptionEndpoint){
         PauseSubscription pauseSubscription = new PauseSubscription();
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, pauseSubscription);
@@ -299,6 +351,9 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendResumeRequest(String subscriptionEndpoint){
         ResumeSubscription resumeSubscription = new ResumeSubscription();
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, resumeSubscription);
@@ -306,6 +361,9 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint, long terminationTime, boolean demand){
         RegisterPublisher registerPublisher = new RegisterPublisher();
         registerPublisher.setPublisherReference(getEndpointReferenceAsW3C());
@@ -324,10 +382,16 @@ public abstract class WebService {
     }
 
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint) {
         return sendPublisherRegistrationRequest(brokerEndpoint, System.currentTimeMillis()+86400, false);
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint, String date, boolean demand) {
         try {
             long rawDate = ServiceUtilities.interpretTerminationTime(date);
@@ -338,6 +402,9 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * JavaDoc missing until this method is moved, see the issue <href>https://github.com/tOgg1/WS-Nu/issues/10</href>
+     */
     public InternalMessage sendGetCurrentMessage(String endpoint, TopicExpressionType topic){
         GetCurrentMessage getCurrentMessage = new GetCurrentMessage();
         getCurrentMessage.setTopic(topic);
@@ -350,6 +417,11 @@ public abstract class WebService {
         return _hub.acceptLocalMessage(message);
     }
 
+    /**
+     * Fetches a remote wsdl-file. The method expects a valid endpoint reference, and then attaches a "?wsdl"
+     * parameter to it.
+     * @return The wsdl-file in the form of a string if the wsdl file is found. If not, null is returned.
+     */
     public String fetchRemoteWsdl(String endpoint){
         String uri = endpoint + "?wsdl";
         InternalMessage returnMessage = sendRequest(uri);
@@ -386,8 +458,20 @@ public abstract class WebService {
     }
 
     /**
-     * Quickbuilds an implementing Web Service.
-     * @return The hub connected to the built Web Service
+     * Quick builds this Web Service along with the rest of the system. The order this is done in, is:
+     *
+     * <ol>
+     *     <li>Create a {@link org.ntnunotif.wsnu.base.internal.SoapForwardingHub}</li>
+     *     <li>Set endpoint reference</li>
+     *     <li>Start the {@link org.ntnunotif.wsnu.base.net.ApplicationServer}</li>
+     *     <li>Create an {@link org.ntnunotif.wsnu.base.internal.UnpackingConnector} with this Web Service attached</li>
+     *     <li>Register the connector at the Hub</li>
+     * </ol>
+     *
+     * If another Connector is needed, either call {@link #quickBuild(Class, Object...)} or manually do all of the above.
+     * @see {@link #quickBuild(Class, Object...)}
+     * @see {@link #quickBuild(String, org.ntnunotif.wsnu.base.internal.Hub)}
+     * @return The Hub connected to the built Web Service
      */
     public SoapForwardingHub quickBuild(String endpointReference) {
         try {
@@ -412,6 +496,21 @@ public abstract class WebService {
         }
     }
 
+    /**
+     * Quick builds this web service. As it takes in a Hub, this method assumes that most of the system
+     * is already built. This method does the following:
+     *
+     * <ol>
+     *     <li>Sets the endpoint reference</li>
+     *     <li>Create an {@link org.ntnunotif.wsnu.base.internal.UnpackingConnector} with this Web Service attached</li>
+     *     <li>Register the connector at the Hub</li>
+     * </ol>
+     *
+     * If another Connector is needed, either call {@link #quickBuild(Class, Object...)} or manually do all of the above.
+     * @see {@link #quickBuild(String)}
+     * @see {@link #quickBuild(Class, Object...)}
+     * @return The Hub connected to the built Web Service
+     */
     public void quickBuild(String endpointReference, Hub hub){
         _hub = hub;
         this.setEndpointReference(endpointReference);
@@ -422,15 +521,19 @@ public abstract class WebService {
     }
 
     /**
-     * Quickbuilds a Web Service. This function takes as arguments the class of the connector and the arguments to passed
+     * Quick Builds this Web Service.
+     *
+     * Note that it is assumed that the constructor takes this Web Service as its first argument.
+     *
+     * This method takes as arguments the class of the connector and the arguments to passed
      * to it's constructor. This function catches {@link java.lang.reflect.InvocationTargetException} and any other {@link java.lang.Exception}.
      * By doing this it it stops the hub from constructing and throws an IllegalArgumentException.
-     * @param connectorClass
-     * @param args
-     * @return
-     * @throws UnsupportedDataTypeException
+     *
+     * @param connectorClass The class of the wanted {@link org.ntnunotif.wsnu.base.internal.WebServiceConnector}
+     * @param args All extra arguments
+     * @return The Hub connected to the built Web Service
      */
-    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) throws UnsupportedDataTypeException {
+    public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) {
         SoapForwardingHub hub = null;
         try {
             hub = new SoapForwardingHub();
@@ -482,16 +585,16 @@ public abstract class WebService {
     }
 
     /**
-     * Adds a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
-     * @param manager
+     * Adds a content manager.
+     * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      */
     public void addContentManager(ServiceUtilities.ContentManager manager){
         _contentManagers.add(manager);
     }
 
     /**
-     * Removes a {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
-     * @param manager
+     * Removes a content manager.
+     * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      */
     public void removeContentManger(ServiceUtilities.ContentManager manager){
         _contentManagers.remove(manager);
@@ -505,11 +608,18 @@ public abstract class WebService {
     }
 
     /**
-     * Generate WSDL/XSD schemas.
+     * Generate WSDL/XSD schemas for this Web Service. If successful, it puts these files in a folder endpointReferenceOfYourService/
+     * The way it generates the files is with the command ""wsgen -cp "yourClassPath" -d "endpointReferenceFolder" -wsdl "classOfYourWebService""
+     * This requires that the system it runs on has a JDK installed. As wsgen is not included in any JRE.
+     * </p>
+     *
+     * Note that the use of this method should be limited. It is not modifiable, and it is as easy running this command in
+     * a terminal yourself.
+     *
+     * @throws java.lang.Exception Throws any exception it encounters. If anything goes wrong, this method will do nothing to try harder.
+     *
      */
     public void generateWSDLandXSDSchemas() throws Exception {
-
-        //TODO: Add support for windows-commandline
 
         if(endpointReference == null){
             throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");
@@ -574,13 +684,17 @@ public abstract class WebService {
 
     }
 
+    /**
+     * Get the location of the wsdl-file.
+     * @return The relative path of the wsdl-file.
+     */
     public String getWsdlLocation() {
         return wsdlLocation;
     }
 
     /**
      * Sets the location of the wsdl files associated with this Web Service.
-     * @param wsdlLocation
+     * @param wsdlLocation The relative path of the wsdl location.
      * @return True if the file was found, false if not.
      */
     public boolean setWsdlLocation(String wsdlLocation) {
@@ -593,10 +707,20 @@ public abstract class WebService {
         return true;
     }
 
+    /**
+     * @return The {@link org.ntnunotif.wsnu.base.internal.ServiceConnection} connected to this Web Service.
+     */
     public ServiceConnection getConnection() {
         return _connection;
     }
 
+    /**
+     * Set the {@link org.ntnunotif.wsnu.base.internal.ServiceConnection} connected to this Web Service.
+     *
+     * If this method is called without explicit invocations of {@link org.ntnunotif.wsnu.base.internal.Hub#registerService(org.ntnunotif.wsnu.base.internal.ServiceConnection)}
+     * (i.e. if the connection is not registered with the Hub), and possibly deleting old connections, occurance of undefined behaviour is possible.
+     * @param connection
+     */
     public void setConnection(ServiceConnection connection) {
         this._connection = connection;
     }
