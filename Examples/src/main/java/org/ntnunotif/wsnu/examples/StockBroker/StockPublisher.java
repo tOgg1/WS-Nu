@@ -27,59 +27,48 @@ import java.util.concurrent.TimeUnit;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
-/** Stock publisher example code.
+/**
+ * Stock publisher example code.
+ *
  * This is a publisher that is publishing changes in stock-indexes.
  * It is listening to changes at http://www.reuters.com/finance/markets/indices.
- * When a change has been found, it sends its result to a NotificationBroker at 151.236.10.120
+ * When a change has been found, it sends its result to a NotificationBroker.
  */
 public class StockPublisher {
 
-     /*
-     The reference to the ApplicationServer, so we can send requests out in to the internet
-     */
+    // The reference to the ApplicationServer, so we can send requests out in to the internet
     static ApplicationServer server;
 
-    /*
-     * Start the applicationserver without a connected hub. We dont need to accept any request (note that this will
-     * return 404 to any request being sent here).
-     */
+     // Start the applicationserver without a connected hub. We don't need to accept any request (note that this will
+     // return 404 to any request being sent here).
     static{
         try {
+            // Get the ApplicationServer-singleton
             server = ApplicationServer.getInstance();
+
+            // This is a method that starts the server without a hub.
             server.startNoHub();
         } catch (Exception e) {
             System.exit(1);
         }
     }
 
-    /**
-     * Helper method to check if two Stocks are equal
-     * @param one
-     * @param two
-     * @return
-     */
+
+    // Helper method to check if two Stocks are equal
     public static boolean equals(StockChanged one, StockChanged two){
         return one.getName().equals(two.getName()) && one.getSymbol().equals(two.getSymbol()) &&
                one.getLastChange().equals(two.getLastChange()) && assertFloat(one.getChangeAbsolute(), two.getChangeAbsolute()) &&
                assertFloat(one.getChangeAbsolute(), two.getChangeAbsolute()) && assertFloat(one.getValue(), two.getValue());
     }
 
-    /**
-     * Helper method to assert equality between floats
-     * @param one
-     * @param two
-     * @return
-     */
+    // Helper method to assert equality between floats
     public static boolean assertFloat(float one, float two){
         float absEps = 1e-4f;
         float relEps = 1e-5f;
         return (Math.abs(one - two) < absEps) && (1 - (one/two) < relEps);
     }
 
-    /**
-     * Helper method to generate a soap envelope
-     * @return
-     */
+    // Helper method to generate a soap envelope
     public static javax.xml.bind.JAXBElement<Envelope> generateEnvelope(Object content){
         ObjectFactory soapFactory = new ObjectFactory();
         Envelope envelope = new Envelope();
@@ -92,48 +81,38 @@ public class StockPublisher {
         return soapFactory.createEnvelope(envelope);
     }
 
-    /**
-     * A helper-class to assist us with inputmanaging, in case we want to do any console-work.
-     */
+
+    // A helper-class to assist us with inputmanaging, in case we want to do any console-work.
     private ServiceUtilities.InputManager inputManager;
 
-    /**
-     * The scheduler to schedule a regular fetch of data.
-     */
+    // The scheduler to schedule a regular fetch of data.
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    /**
-     * A reference to the scheduled task, so we can cancel it if we want
-     */
+
+    // A reference to the scheduled task, so we can cancel it if we want
     private ScheduledFuture<?> task;
 
-    /**
-     * A hashmap storing our known stocks. This so we can detect a change (we dont want to send anything when there isnt a change)
-     */
+
+    // A hashmap storing our known stocks. This so we can detect a change (we dont want to send anything when there isnt a change)
     private HashMap<String, StockChanged> storedStocks = new HashMap<String, StockChanged>();
 
-    /**
-     * Reference to our broker
-     */
+    // Reference to our broker
     private String brokerReference = "http://151.236.216.174:8080/myBroker";
 
-    /**
-     * The constructor, initializing the inputmanager and sending a PublisherRegi
-     * @throws Exception
-     */
-    public StockPublisher() throws Exception {
-        inputManager = new ServiceUtilities.InputManager();
+    public StockPublisher() {
+        // Initialize the inputManager
+        try{
+            inputManager = new ServiceUtilities.InputManager();
+            inputManager.addMethodReroute("update", "update", false, this.getClass().getMethod("update", null), this);
+            inputManager.start();
+        }catch(NoSuchMethodException e){
+            // Do nothing
+        }
 
-        /*
-         * Take notice to this method. It adds a reroute for an input "update" to the method "update" in this class.
-         */
-        inputManager.addMethodReroute("update", "update", false, this.getClass().getMethod("update", null), this);
-        inputManager.start();
     }
 
-    /**
-     * Start the StockPublisher. This starts the scheduler.
-     */
+
+    // Start the scheduler.
     public void start() {
         resgisterWithBroker("151.236.216.174:8080");
         task = scheduler.scheduleAtFixedRate(new Runnable() {
@@ -144,21 +123,28 @@ public class StockPublisher {
         }, 0, 10, TimeUnit.MINUTES);
     }
 
-    /**
-     * Stop the StockPublisher. This stops the scheduler.
-     */
+    // Stop the scheduler.
     public void stop() {
         if(task != null){
             task.cancel(false);
         }
     }
 
-    public void resgisterWithBroker(String endpoint){
+    // This method registers this publisher with the NotificationBroker
+    public void resgisterWithBroker(String endpoint) {
+
+        // Create the actual registerPublisher object
         org.oasis_open.docs.wsn.br_2.RegisterPublisher registerPublisher = new org.oasis_open.docs.wsn.br_2.RegisterPublisher();
+
+        // We don't want to enforce demand-based publishing
         registerPublisher.setDemand(false);
-        // Change to your ip
-        registerPublisher.setPublisherReference(ServiceUtilities.buildW3CEndpointReference("151.236.10.120:8080"));
+
+        // The reference of this publisher. This needs to be changed to your relevant IP-address.
+        registerPublisher.setPublisherReference(ServiceUtilities.buildW3CEndpointReference("127.0.0.1:8080"));
         try {
+            // Create relevant information
+
+            // Set the expiration date one year from now... just in case.
             Date date = new Date();
             date.setTime(System.currentTimeMillis() + 86400*365);
             GregorianCalendar now = new GregorianCalendar();
@@ -166,76 +152,99 @@ public class StockPublisher {
             XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
             registerPublisher.setInitialTerminationTime(calendar);
 
+            // Create a Soap envelope and add our registerPublisher to it. Note that functionality like this will
+            // be moved to ServiceUtilities with the release of 0.4
             JAXBElement<Envelope> envelope = generateEnvelope(registerPublisher);
 
+            // Create an InputStream
             InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
             InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
 
-            // Set address
+            // Set the broker address. How this actually works is specified in the technical specification. But a quick recap:
+            // The ApplicationServer peeks into the InternalMessage it receives and looks for the RequestInformations endpoint-
+            // reference, and then sends
             RequestInformation requestInformation = new RequestInformation();
             requestInformation.setEndpointReference(brokerReference);
             message.setRequestInformation(requestInformation);
 
+            // Send the message through the server. We here don't operate with a hub, so we send it directly to the server.
             InternalMessage returnMessage = server.sendMessage(message);
 
-            if((returnMessage.statusCode & STATUS_OK) == 0){
+            // If the returnMessage's state is not flagged as OK, something went wrong at the broker.
+            if((returnMessage.statusCode & STATUS_OK) == 0) {
                 Log.e("StockPublisher", "Something went wrong at the broker");
             }
             Log.d("StockPublisher", "Succesfully registered with broker");
+            // Print the return message for debugging purposes
             System.out.println(returnMessage.getMessage());
         } catch (DatatypeConfigurationException e) {
             System.exit(1);
         }
     }
 
+    // Publish and updatedStock
     public void sendUpdatedStock(StockChanged stockChanged){
+        // Create the actual notify. Note that the third argument is the producerreference, which we in this scenario set to
+        // the ip of the applicationserver
         Notify notify = ServiceUtilities.createNotify(stockChanged, brokerReference, ApplicationServer.getURI());
 
+        // Create the soap envelope
         JAXBElement<Envelope> envelope = generateEnvelope(notify);
 
+        // Convert the envelope to an inputstream
         InputStream inputStream = Utilities.convertUnknownToInputStream(envelope);
 
+        // Create the internalmessages
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE| STATUS_MESSAGE_IS_INPUTSTREAM, inputStream);
 
-        // Set address
+        // Set address. See previous method for more information
         RequestInformation requestInformation = new RequestInformation();
         requestInformation.setEndpointReference(brokerReference);
         message.setRequestInformation(requestInformation);
 
+        // Send the message through the server. We here don't operate with a hub, so we send it directly to the server.
         InternalMessage returnMessage = server.sendMessage(message);
 
+        // If the returnMessage's state is not flagged as OK, something went wrong at the broker.
         if((returnMessage.statusCode & STATUS_OK) == 0){
             Log.e("StockPublisher", "Something went wrong at the broker..." + returnMessage.getMessage());
         }
     }
 
-    /**
-     * Does the actual update logic.
-     */
+    // Does the actual update logic.
     public void update(){
         Log.d("StockPublisher", "Updating");
+
+        // Send the request to the reuters.com page
         InternalMessage message = new InternalMessage(STATUS_OK, null);
 
         RequestInformation info = new RequestInformation();
         info.setEndpointReference("http://www.reuters.com/finance/markets/indices");
         message.setRequestInformation(info);
 
+        // Send the message
         InternalMessage response = server.sendMessage(message);
         Object responseMessage = response.getMessage();
 
+        // Our webpage comes back as a string
         String webPage = (String) responseMessage;
         Log.d("StockPublisher", "Got response with length: " + webPage.length());
 
+        // Parse the webpage
         ArrayList<StockChanged> stocks = getStocks(webPage);
         Log.d("StockPublisher", "Parsed to " + stocks.size() + " stocks");
 
+        // Loop over the stocks and figure out if we have new stocks, or updated stocks
         for (StockChanged stock : stocks) {
             String symbol = stock.getSymbol();
+            // We have a new stock
             if(!storedStocks.containsKey(symbol)){
                 System.out.println("Registered new stock: " + symbol);
                 storedStocks.put(symbol, stock);
                 sendUpdatedStock(stock);
+            // We already have the stock
             } else {
+                // If our stock has updated
                 if(!equals(storedStocks.get(symbol), stock)){
                     sendUpdatedStock(stock);
                     storedStocks.put(symbol, stock);
@@ -244,9 +253,8 @@ public class StockPublisher {
         }
     }
 
-    /**
-     * Fetches all stocks
-     */
+    // Parses the stocks. The below will not be documented. It is essentially a sequential search parser finding the relevant
+    // information from the reuters.com webpage
     public ArrayList<StockChanged> getStocks(String webPage){
         ArrayList<StockChanged> stocks = new ArrayList<StockChanged>();
 
@@ -374,14 +382,21 @@ public class StockPublisher {
     }
 
     public static void main(String[] args) {
+        // Do some initialization.
+        //
+        // Make sure we are logging everything, and writing to log file.
+        Log.initLogFile();
+        Log.setEnableDebug(true);
+        Log.setEnableWarnings(true);
+        Log.setEnableErrors(true);
+
+        // Register our StockChanged object. This is paramount if we want our Parser to be able to handle the StockChanged
+        // objects.
         XMLParser.registerReturnObjectPackageWithObjectFactory("org.ntnunotif.wsnu.examples.StockBroker.generated");
+
+        // Start our publisher
         StockPublisher publisher = null;
-        try {
-            publisher = new StockPublisher();
-            publisher.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        publisher = new StockPublisher();
+        publisher.start();
     }
 }

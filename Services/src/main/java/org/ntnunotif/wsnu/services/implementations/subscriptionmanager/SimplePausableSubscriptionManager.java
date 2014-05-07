@@ -53,20 +53,25 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
     @Override
     @WebMethod(exclude = true)
     public void update() {
+
         long timeNow = System.currentTimeMillis();
         Log.d("SimpleSubscriptionManager", "Updating");
         synchronized(_subscriptions){
+            ArrayList<String> toBeRemoved = new ArrayList<>();
             for(Map.Entry<String, Long> entry : _subscriptions.entrySet()){
+
+                if(_pausedSubscriptions.contains(entry.getKey())){
+                    _pausedSubscriptions.remove(entry.getKey());
+                }
+
                 /* The subscription is expired */
                 if(entry.getValue().longValue() > timeNow){
-                    _subscriptions.remove(entry.getKey());
-
-                    if(_pausedSubscriptions.contains(entry.getKey())){
-                        _pausedSubscriptions.remove(entry.getKey());
-                    }
-
-                    fireSubscriptionChanged(entry.getKey(), SubscriptionEvent.Type.UNSUBSCRIBE);
+                    toBeRemoved.add(entry.getKey());
                 }
+            }
+
+            for (String s : toBeRemoved) {
+                _subscriptions.remove(s);
             }
         }
     }
