@@ -14,6 +14,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,12 +71,17 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
         long timeNow = System.currentTimeMillis();
         Log.d("SimpleSubscriptionManager", "Updating");
         synchronized(_subscriptions){
+            ArrayList<String> toBeRemoved = new ArrayList<>();
             for(Map.Entry<String, Long> entry : _subscriptions.entrySet()){
 
                 /* The subscription is expired */
                 if(entry.getValue().longValue() > timeNow){
-                    _subscriptions.remove(entry.getKey());
+                    toBeRemoved.add(entry.getKey());
                 }
+            }
+
+            for (String s : toBeRemoved) {
+                _subscriptions.remove(s);
             }
         }
     }

@@ -16,6 +16,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,10 +131,28 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
         return null;
     }
 
+    /**
+     * Updates the publisher registrations. Removes any registration that is outdated.
+     */
     @Override
     @WebMethod(exclude = true)
     public void update() {
-        
+        long timeNow = System.currentTimeMillis();
+        Log.d("SimplePublisherRegistrationtManager", "Updating");
+        synchronized(_publishers){
+            ArrayList<String> toBeRemoved = new ArrayList<>();
+            for(Map.Entry<String, Long> entry : _publishers.entrySet()){
+
+                /* The subscription is expired */
+                if(entry.getValue().longValue() > timeNow){
+                    toBeRemoved.add(entry.getKey());
+                }
+            }
+
+            for (String s : toBeRemoved) {
+                _publishers.remove(s);
+            }
+        }
     }
 }
 
