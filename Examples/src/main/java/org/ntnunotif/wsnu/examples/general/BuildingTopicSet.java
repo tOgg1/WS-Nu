@@ -18,16 +18,16 @@ import java.util.List;
  */
 public class BuildingTopicSet {
 
-    public static final String topicNamespace1 = "http://example.com/topic/ns1";
-    public static final String topicNamespace2 = "http://example.com/topic/second_namespace";
+    public static final String TOPIC_NAMESPACE_1 = "http://example.com/topic/ns1";
+    public static final String TOPIC_NAMESPACE_2 = "http://example.com/topic/second_namespace";
 
-    public static final String rootTopic1 = "root_topic_1";
-    public static final String rootTopic2 = "root_topic_2";
+    public static final String ROOT_TOPIC_1 = "root_topic_1";
+    public static final String ROOT_TOPIC_2 = "root_topic_2";
 
-    public static final String childTopic1 = "child_topic_1";
-    public static final String childTopic2 = "child_topic_2";
+    public static final String CHILD_TOPIC_1 = "child_topic_1";
+    public static final String CHILD_TOPIC_2 = "child_topic_2";
 
-    public static final String nonTopicNode = "non-topic";
+    public static final String NON_TOPIC = "non-topic";
 
     public static void main(String[] args) {
 
@@ -81,39 +81,39 @@ public class BuildingTopicSet {
 
         List<QName> firstTopicList = new ArrayList<>();
         // When building undocumented sets, it is legal to add topics which are not defined in any specific namespace.
-        firstTopicList.add(new QName(rootTopic1));
+        firstTopicList.add(new QName(ROOT_TOPIC_1));
         // This list now represents a complete topic. We can build longer lists that represent single topics
 
         // Longer lists represents single topics as well. They may be emerging from the ad-hoc topics, namespaced root
         // topics, or just empty nodes representing a path to the topic. Let us create some.
         List<QName> secondTopicList = new ArrayList<>();
-        secondTopicList.add(new QName(rootTopic1));
-        secondTopicList.add(new QName(nonTopicNode));
-        secondTopicList.add(new QName(childTopic1));
+        secondTopicList.add(new QName(ROOT_TOPIC_1));
+        secondTopicList.add(new QName(NON_TOPIC));
+        secondTopicList.add(new QName(CHILD_TOPIC_1));
 
         List<QName> thirdTopicList = new ArrayList<>();
-        thirdTopicList.add(new QName(topicNamespace1, rootTopic1));
+        thirdTopicList.add(new QName(TOPIC_NAMESPACE_1, ROOT_TOPIC_1));
 
         List<QName> fourthTopicList = new ArrayList<>();
-        fourthTopicList.add(new QName(topicNamespace1, rootTopic2));
+        fourthTopicList.add(new QName(TOPIC_NAMESPACE_1, ROOT_TOPIC_2));
 
         List<QName> fifthTopicList = new ArrayList<>();
-        fifthTopicList.add(new QName(topicNamespace1, nonTopicNode));
-        fifthTopicList.add(new QName(topicNamespace1, childTopic1));
+        fifthTopicList.add(new QName(TOPIC_NAMESPACE_1, NON_TOPIC));
+        fifthTopicList.add(new QName(TOPIC_NAMESPACE_1, CHILD_TOPIC_1));
 
         List<QName> sixthTopicList = new ArrayList<>();
-        sixthTopicList.add(new QName(topicNamespace1, nonTopicNode));
-        sixthTopicList.add(new QName(topicNamespace1, childTopic2));
+        sixthTopicList.add(new QName(TOPIC_NAMESPACE_1, NON_TOPIC));
+        sixthTopicList.add(new QName(TOPIC_NAMESPACE_1, CHILD_TOPIC_2));
 
         List<QName> seventhTopicList = new ArrayList<>();
-        seventhTopicList.add(new QName(topicNamespace2, rootTopic1));
+        seventhTopicList.add(new QName(TOPIC_NAMESPACE_2, ROOT_TOPIC_1));
 
         // We can extend a topic with children that even are from a different namespace
         List<QName> eightTopicList = new ArrayList<>();
-        eightTopicList.add(new QName(topicNamespace2, rootTopic1));
-        eightTopicList.add(new QName(topicNamespace1, childTopic1));
-        eightTopicList.add(new QName(nonTopicNode));
-        eightTopicList.add(new QName(topicNamespace2, childTopic1));
+        eightTopicList.add(new QName(TOPIC_NAMESPACE_2, ROOT_TOPIC_1));
+        eightTopicList.add(new QName(TOPIC_NAMESPACE_1, CHILD_TOPIC_1));
+        eightTopicList.add(new QName(NON_TOPIC));
+        eightTopicList.add(new QName(TOPIC_NAMESPACE_2, CHILD_TOPIC_1));
 
 
         // After this we have two ways we can go to create the topic set. Let us start at the most complex way.
