@@ -127,7 +127,7 @@ public class QueryingTopicSet {
 
         // Querying with an illegal expression should force the evaluator to cast an exception
         try {
-            TopicSetType resultSet = TopicValidator.getIntersection(illegalConcreteExpressionType, topicSetType, namespaceContext);
+            TopicValidator.getIntersection(illegalConcreteExpressionType, topicSetType, namespaceContext);
             System.err.println("There should be cast an exception before this line");
         } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
             System.err.println("Concrete dialect should be known to the evaluator");
