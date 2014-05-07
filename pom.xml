@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
@@ -8,7 +8,7 @@
 
     <groupId>org.ntnunotif.wsnu</groupId>
     <artifactId>WS-Nu</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -21,7 +21,7 @@
         <connection>scm:git:git@github.com:tOgg1/WS-Nu.git</connection>
         <url>scm:git:git@github.com:tOgg1/WS-Nu.git</url>
         <developerConnection>scm:git:git@github.com:tOgg1/WS-Nu.git</developerConnection>
-      <tag>WS-Nu-0.3</tag>
+      <tag>HEAD</tag>
   </scm>
     <build>
         <plugins>

@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.ntnunotif.wsnu</groupId>
         <artifactId>WS-Nu</artifactId>
-        <version>0.3</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
   <artifactId>Examples</artifactId>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Examples</name>
@@ -61,13 +61,13 @@
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Base</artifactId>
-          <version>0.3</version>
+          <version>0.4-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Services</artifactId>
-          <version>0.3</version>
+          <version>0.4-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>
   </dependencies>

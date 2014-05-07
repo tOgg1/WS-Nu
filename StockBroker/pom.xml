@@ -3,7 +3,7 @@
     <parent>
         <artifactId>Examples</artifactId>
         <groupId>org.ntnunotif.wsnu</groupId>
-        <version>0.3</version>
+        <version>0.4-SNAPSHOT</version>
         <relativePath>../Examples/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

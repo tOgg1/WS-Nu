@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.ntnunotif.wsnu</groupId>
         <artifactId>WS-Nu</artifactId>
-        <version>0.3</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
   <artifactId>IntegrationTesting</artifactId>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>IntegrationTesting</name>
@@ -61,12 +61,12 @@
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Base</artifactId>
-          <version>0.3</version>
+          <version>0.4-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
           <artifactId>Services</artifactId>
-          <version>0.3</version>
+          <version>0.4-SNAPSHOT</version>
       </dependency>
   </dependencies>
 </project>
