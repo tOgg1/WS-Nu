@@ -8,11 +8,14 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,24 +79,40 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                 boolean bothNSisNull = topic.getNamespaceURI() == null ||
                         topic.getNamespaceURI().equals(XMLConstants.NULL_NS_URI);
                 bothNSisNull = bothNSisNull && (nodeNS == null || nodeNS.equals(XMLConstants.NULL_NS_URI));
-                if (bothNSisNull) {
-                    if (topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
-                        retVal.getAny().add(node);
-                        break;
-                    }
-                } else {
-                    String topicNS = topic.getNamespaceURI();
-                    // Ensure topicNS does not end with /
 
-                    if (topicNS != null && topicNS.length() != 0 && (topicNS.charAt(topicNS.length() - 1) == '/' || topicNS.charAt(topicNS.length() - 1) == ':')) {
-                        topicNS = topicNS.substring(0, topicNS.length()-1);
-                    }
+                try {
+                    Node addNode = null;
+                    // The returned set should only contain a single topic node with only non-topic parents
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    Document owner = factory.newDocumentBuilder().newDocument();
+                    Element firstChild = owner.createElement("SetRoot");
 
-                    if (topicNS != null && topicNS.equals(nodeNS) &&
-                            topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
-                        retVal.getAny().add(node);
-                        break;
+                    if (bothNSisNull) {
+                        if (topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
+                            addNode = owner.importNode(node, false);
+                            firstChild.appendChild(addNode);
+                            retVal.getAny().add(addNode);
+                            break;
+                        }
+                    } else {
+                        String topicNS = topic.getNamespaceURI();
+                        // Ensure topicNS does not end with /
+
+                        if (topicNS != null && topicNS.length() != 0 && (topicNS.charAt(topicNS.length() - 1) == '/' || topicNS.charAt(topicNS.length() - 1) == ':')) {
+                            topicNS = topicNS.substring(0, topicNS.length() - 1);
+                        }
+
+                        if (topicNS != null && topicNS.equals(nodeNS) &&
+                                topic.getLocalPart().equals(nodeName) && TopicUtils.isTopic(node)) {
+                            addNode = owner.importNode(node, false);
+                            firstChild.appendChild(addNode);
+                            retVal.getAny().add(addNode);
+                            break;
+                        }
                     }
+                } catch (Exception e) {
+                    Log.e("SimpleEvaluator", "Could not create a document factory");
                 }
             }
         }

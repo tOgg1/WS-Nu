@@ -8,11 +8,14 @@ import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
 import org.oasis_open.docs.wsn.t_1.TopicNamespaceType;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 import org.oasis_open.docs.wsn.t_1.TopicType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,9 +110,31 @@ public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
                         // if topicNumber now is equal to size, we have found the correct node. If this is a topic,
                         // return set with this node. Only one node can be found with concrete dialect
                         if (topicNumber == topic.size() && TopicUtils.isTopic(node)) {
-                            TopicSetType returnSet = new TopicSetType();
-                            returnSet.getAny().add(node);
-                            return returnSet;
+                            try {
+                                TopicSetType returnSet = new TopicSetType();
+
+                                // The returned set should only contain a single topic node with only non-topic parents
+                                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                                factory.setNamespaceAware(true);
+                                Document owner = factory.newDocumentBuilder().newDocument();
+                                Element firstChild = owner.createElement("SetRoot");
+                                Node previousElement = owner.importNode(node, false);
+
+                                while (node != null && node.getParentNode() != null && node.getParentNode().getParentNode() != null) {
+                                    node = node.getParentNode();
+                                    Node currentElement = owner.importNode(node, false);
+                                    TopicUtils.forceNonTopicNode(currentElement);
+                                    currentElement.appendChild(previousElement);
+                                    previousElement = currentElement;
+                                }
+
+                                firstChild.appendChild(previousElement);
+
+                                returnSet.getAny().add(previousElement);
+                                return returnSet;
+                            } catch (Exception e) {
+                                Log.e("ConcreteEvaluator", "intersection with concrete dialect failed " + e.getMessage());
+                            }
                         }
                     }
                 }
