@@ -509,7 +509,7 @@ public class TopicUtils {
         description.setLang(lang);
         description.setValue(desc);
         faultType.getDescription().add(description);
-        throw new TopicExpressionDialectUnknownFault("desc", faultType);
+        throw new TopicExpressionDialectUnknownFault(desc, faultType);
     }
 
     /**

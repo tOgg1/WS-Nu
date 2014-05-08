@@ -1,12 +1,19 @@
 package org.ntnunotif.wsnu.examples.services;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.topics.SimpleEvaluator;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.DefaultTopicExpressionFilterEvaluator;
 import org.ntnunotif.wsnu.services.filterhandling.FilterEvaluator;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
+import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An example on how to use the basic functionality in FilterSupport
@@ -48,6 +55,80 @@ public class FilterSupportUse {
         topicExpressionFilter.setDialect(SimpleEvaluator.dialectURI);
         topicExpressionFilter.getContent().add("ns:root");
 
-        // TODO Finish
+        // Setting up a namespace context resolver for the filter
+        NuNamespaceContextResolver filterResolver = new NuNamespaceContextResolver();
+        filterResolver.openScope();
+        filterResolver.putNamespaceBinding("ns", "http://www.example.com");
+        filterResolver.registerObjectWithCurrentNamespaceScope(topicExpressionFilter);
+        filterResolver.closeScope();
+
+        // Creating a Notify
+        Notify notify = new Notify();
+        // Creating two messages for the notify
+        NotificationMessageHolderType.Message message1 = new NotificationMessageHolderType.Message();
+        NotificationMessageHolderType.Message message2 = new NotificationMessageHolderType.Message();
+
+        message1.setAny("some content");
+        message2.setAny("some content");
+
+        NotificationMessageHolderType messageHolderType1 = new NotificationMessageHolderType();
+        NotificationMessageHolderType messageHolderType2 = new NotificationMessageHolderType();
+
+        messageHolderType1.setMessage(message1);
+        messageHolderType2.setMessage(message2);
+
+        TopicExpressionType topic1 = new TopicExpressionType();
+        topic1.setDialect(SimpleEvaluator.dialectURI);
+        topic1.getContent().add("ns1:root");
+
+        TopicExpressionType topic2 = new TopicExpressionType();
+        topic2.setDialect(SimpleEvaluator.dialectURI);
+        topic2.getContent().add("ns2:root");
+
+        messageHolderType1.setTopic(topic1);
+        messageHolderType2.setTopic(topic2);
+
+        // adding the messages to the notify
+        notify.getNotificationMessage().add(messageHolderType1);
+        notify.getNotificationMessage().add(messageHolderType2);
+
+        // Set up the necessary context for the notify
+        NuNamespaceContextResolver notifyContext = new NuNamespaceContextResolver();
+        notifyContext.openScope();
+        notifyContext.putNamespaceBinding("ns1", "http://www.example.com");
+        notifyContext.putNamespaceBinding("ns2", "http://www.example.com/fail");
+        notifyContext.registerObjectWithCurrentNamespaceScope(topic1);
+        notifyContext.registerObjectWithCurrentNamespaceScope(topic2);
+
+        // Show that there are actually two messages in the notify
+        if (notify.getNotificationMessage().size() != 2) {
+            System.err.println("There were not two messages here");
+        }
+
+        // And now, to demonstrate how you evaluate, create a subscription info to be used
+        // A map showing which filters we should evaluate with
+        Map<QName, Object> filterMap = new HashMap<>();
+        // The filterMap must map the qualified name of the filter to the filter
+        filterMap.put(new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression"), topicExpressionFilter);
+
+        FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filterMap, filterResolver);
+
+        // The notify we created may now be filtered with the filter we created
+        Notify filteredNotify = filterSupport.evaluateNotifyToSubscription(notify, subscriptionInfo, notifyContext);
+
+        // The notify now only contains one message
+        if (filteredNotify.getNotificationMessage().size() != 1) {
+            System.err.println("The messages was not filtered");
+        }
+
+        // If is not the same notify:
+        if (notify == filteredNotify) {
+            System.err.println("The notifies was the same object");
+        }
+
+        // They do not contain the same amount of messages
+        if (notify.getNotificationMessage().size() == filteredNotify.getNotificationMessage().size()) {
+            System.err.println("The notifies contained the same amount of messages");
+        }
     }
 }
