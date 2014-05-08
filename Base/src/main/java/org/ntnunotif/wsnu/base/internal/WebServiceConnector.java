@@ -184,7 +184,7 @@ public abstract class WebServiceConnector implements ServiceConnection{
             } catch (InvocationTargetException e) {
                 e.getTargetException().printStackTrace();
                 Log.e("WebServiceConnector", "Some exception happened at the remotely invoked acceptRequest method: " + e.getTargetException().getMessage());
-                return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INVALID_DESTINATION, null);
+                return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
             }
         }
     }

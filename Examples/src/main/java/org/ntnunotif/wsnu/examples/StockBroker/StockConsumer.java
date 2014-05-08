@@ -115,7 +115,7 @@ public class StockConsumer implements ConsumerListener {
         consumer.forceEndpointReference("http://"+ServiceUtilities.getExternalIp() + ":8080/stockConsumer");
 
         // We send a subscription-request to our broker. This ip needs to be changed to the IP of your broker.
-        consumer.sendSubscriptionRequest("http://127.0.0.1:8080/stockBroker");
+        consumer.sendSubscriptionRequest("http://151.236.216.174:8080/stockBroker");
 
         // Sets up an inputmanager, see the JavaDocs for how to use this.
         ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();

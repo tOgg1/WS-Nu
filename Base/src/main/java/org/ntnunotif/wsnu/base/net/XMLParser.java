@@ -239,6 +239,7 @@ public class XMLParser {
         Log.d("XMLParser", "Parsing message from InputStream");
         XMLInputFactory factory = XMLInputFactory.newFactory();
         try {
+            factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);
             XMLStreamReader streamReader = factory.createXMLStreamReader(inputStream);
             return parse(streamReader);
         } catch (XMLStreamException e) {
