@@ -4,7 +4,6 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.internal.MappingConnector;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
 
-import javax.activation.UnsupportedDataTypeException;
 import java.util.HashMap;
 
 /**
@@ -27,13 +26,13 @@ public class SimpleProducerWithMappingConnector {
         methodMaps.put("Subscribe", "subscribe");
         methodMaps.put("Envelope", "acceptSoapMessage");
 
-        try {
+        //try {
             /* Adds a MappingConnector by passing in its class and its (extra arguments) in quickBuild */
             hub = producer.quickBuild(MappingConnector.class, methodMaps);
             System.out.println("WORKS");
-        } catch (UnsupportedDataTypeException e) {
-            e.printStackTrace();
-        }
+        //} catch (UnsupportedDataTypeException e) {
+        //    e.printStackTrace();
+        //}
         System.out.println(hub);
     }
 
