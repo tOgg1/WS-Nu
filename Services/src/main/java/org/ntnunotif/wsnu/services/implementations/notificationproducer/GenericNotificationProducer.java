@@ -26,14 +26,15 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.*;
 
 /**
- * Created by Inge on 31.03.2014.
+ * A <code>GenericNotificationProducer</code> has the ability to register subscriptions with filters. It can cache the
+ * latest messages it has sent (one message per topic). It can be configured to do all this, just one thing or none.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
 public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     private static final QName topicExpressionQName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
 
-    private final Map<String, NotificationMessageHolderType>  latestMessages = new HashMap<>();
+    private final Map<String, NotificationMessageHolderType> latestMessages = new HashMap<>();
 
     private final FilterSupport filterSupport;
 
@@ -41,12 +42,22 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     private Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which caches messages and has default filter support (filter
+     * on topic and message content).
+     */
     public GenericNotificationProducer() {
         Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which caches messages and may have default filter support
+     * (filter on topic and message content).
+     *
+     * @param supportFilters if this producer should have default filter support.
+     */
     public GenericNotificationProducer(boolean supportFilters) {
         if (supportFilters) {
             Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
@@ -58,6 +69,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         cacheMessages = true;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which may cache messages and may have default filter support
+     * (filter on topic and message content).
+     *
+     * @param supportFilters if this producer should have default filter support.
+     * @param cacheMessages  if this producer should cache the latest messages on a topic
+     */
     public GenericNotificationProducer(boolean supportFilters, boolean cacheMessages) {
         if (supportFilters) {
             if (cacheMessages) {
@@ -79,6 +97,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which may cache messages and supports the filters
+     * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
+     *
+     * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
+     * @param cacheMessages if this producer should cache the latest messages on a topic
+     */
     public GenericNotificationProducer(FilterSupport filterSupport, boolean cacheMessages) {
         if (cacheMessages)
             Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage allowed");
@@ -89,6 +114,12 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which caches messages and has default filter support (filter
+     * on topic and message content).
+     *
+     * @param hub the hub this producer should be connected to after startup
+     */
     public GenericNotificationProducer(Hub hub) {
         this._hub = hub;
         Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
@@ -96,6 +127,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         cacheMessages = true;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which caches messages and may have default filter support
+     * (filter on topic and message content).
+     *
+     * @param hub            the hub this producer should be connected to after startup
+     * @param supportFilters if this producer should have default filter support.
+     */
     public GenericNotificationProducer(Hub hub, boolean supportFilters) {
         this._hub = hub;
         if (supportFilters) {
@@ -108,6 +146,14 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         cacheMessages = true;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which may cache messages and may have default filter support
+     * (filter on topic and message content).
+     *
+     * @param hub            the hub this producer should be connected to after startup
+     * @param supportFilters if this producer should have default filter support.
+     * @param cacheMessages  if this producer should cache the latest messages on a topic
+     */
     public GenericNotificationProducer(Hub hub, boolean supportFilters, boolean cacheMessages) {
         this._hub = hub;
         if (supportFilters) {
@@ -130,6 +176,14 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         this.cacheMessages = cacheMessages;
     }
 
+    /**
+     * Creates a <code>GenericNotificationProducer</code> which may cache messages and supports the filters
+     * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
+     *
+     * @param hub           the hub this producer should be connected to after startup
+     * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
+     * @param cacheMessages if this producer should cache the latest messages on a topic
+     */
     public GenericNotificationProducer(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
         this._hub = hub;
         if (cacheMessages)
@@ -163,14 +217,14 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         }
 
         // Remove keys
-        for (String key: removeKeyList)
+        for (String key : removeKeyList)
             subscriptions.remove(key);
 
         ArrayList<String> returnList = new ArrayList<>();
 
         // Filter out the paused subscriptions
         for (Map.Entry<String, SubscriptionHandle> entry : subscriptions.entrySet()) {
-            if(!entry.getValue().isPaused){
+            if (!entry.getValue().isPaused) {
                 returnList.add(entry.getKey());
             }
         }
@@ -350,17 +404,17 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
                     namespaceContextResolver);
 
-        ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
 
-        endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
-        subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
+            endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
+            subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
-        if(usesManager){
-            manager.addSubscriber(newSubscriptionKey, terminationTime);
-        }
+            if (usesManager) {
+                manager.addSubscriber(newSubscriptionKey, terminationTime);
+            }
 
-        Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
-        }catch(Exception e){
+            Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
@@ -379,13 +433,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         if (!cacheMessages) {
             Log.w("GenericNotificationProducer", "Someone tried to get current message when caching is disabled");
             ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "This producer does not cache messages, " +
-                                            "and therefore does not support the getCurrentMessage interface");
+                    "and therefore does not support the getCurrentMessage interface");
         }
 
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
 
-        if(askedFor == null) {
+        if (askedFor == null) {
             ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
         }
 
@@ -408,18 +462,19 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         }
     }
 
+    @Override
     public void subscriptionChanged(SubscriptionEvent event) {
         SubscriptionHandle handle;
-        switch(event.getType()){
+        switch (event.getType()) {
             case PAUSE:
                 handle = subscriptions.get(event.getSubscriptionReference());
-                if(handle != null){
+                if (handle != null) {
                     handle.isPaused = true;
                 }
                 return;
             case RESUME:
                 handle = subscriptions.get(event.getSubscriptionReference());
-                if(handle != null){
+                if (handle != null) {
                     handle.isPaused = false;
                 }
                 return;
