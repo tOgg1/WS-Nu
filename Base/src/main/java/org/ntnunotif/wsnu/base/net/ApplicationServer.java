@@ -351,7 +351,8 @@ public class ApplicationServer{
         }
 
         /**
-         * Handles an httpRequest.
+         * Handles a HttpRequest. Derived function from {@link org.eclipse.jetty.server.handler.AbstractHandler}
+         *
          * @param s
          * @param request
          * @param httpServletRequest

@@ -29,6 +29,7 @@ import java.util.HashMap;
 /** Simple broker that stores publishers and subscriptions in hashmaps.
  * Created by tormod on 26.03.14.
  */
+@Deprecated
 public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
     private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions = new HashMap<>();

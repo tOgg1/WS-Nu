@@ -32,6 +32,7 @@ import java.util.HashMap;
  *         Created by tormod on 23.03.14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
+@Deprecated
 public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
     private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;

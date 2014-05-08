@@ -240,6 +240,13 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         return subscriptions.get(subscriptionKey).endpointTerminationTuple.endpoint;
     }
 
+    /**
+     * Takes a notify
+     * @param recipient        the recipient to ask
+     * @param notify           the {@link org.oasis_open.docs.wsn.b_2.Notify} that should be filtered for sending
+     * @param namespaceContextResolver the {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver} of the {@link org.oasis_open.docs.wsn.b_2.Notify}
+     * @return
+     */
     @Override
     @WebMethod(exclude = true)
     protected Notify getRecipientFilteredNotify(String recipient, Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
@@ -258,6 +265,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         return filterSupport.evaluateNotifyToSubscription(notify, subscriptionHandle.subscriptionInfo, namespaceContextResolver);
     }
 
+    /**
+     * Sends a notification.
+     * @param notify The {@link org.oasis_open.docs.wsn.b_2.Notify} to send
+     * @param namespaceContextResolver the {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver} of the notify
+     */
     @Override
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
@@ -660,7 +672,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     @Override
     @WebMethod(exclude = true)
     public void publisherChanged(PublisherRegistrationEvent event) {
-
         switch(event.getType()){
             case DESTROYED:
                 publishers.remove(event.getRegistrationReference());
