@@ -1,6 +1,7 @@
 package org.ntnunotif.wsnu.examples.services;
 
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
+import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.filterhandling.FilterEvaluator;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
@@ -26,6 +27,10 @@ public class FilterSupportExtension implements FilterEvaluator{
     private static final String PHONY_FILTER_ONLY_ACCEPTABLE_CONTENT = "PhonyFilter";
 
     public static void main(String[] args) {
+        // Disable logging
+        Log.setEnableDebug(false);
+        Log.setEnableWarnings(false);
+        Log.setEnableErrors(false);
 
         // The WS-Nu implementation supports filtering on TopicExpressions and MessageContent. This filtering is done
         // in accordance with the OASIS-WS Notification specification. However one might wish to extend this
