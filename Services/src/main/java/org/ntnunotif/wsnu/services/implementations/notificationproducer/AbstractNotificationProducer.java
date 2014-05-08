@@ -219,8 +219,10 @@ public abstract class AbstractNotificationProducer extends WebService implements
 
     @WebMethod(exclude = true)
     public void clearSubscriptionManager() {
+        if (manager != null) {
+            this.manager.removeSubscriptionChangedListener(this);
+        }
         this.manager = null;
-        this.manager.removeSubscriptionChangedListener(this);
         this.usesManager = false;
     }
 
