@@ -1,9 +1,16 @@
 package org.ntnunotif.wsnu.examples.base;
 
+import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
+import org.ntnunotif.wsnu.base.net.NuParseValidationEventInfo;
 import org.ntnunotif.wsnu.base.net.XMLParser;
+import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.base.util.RequestInformation;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEvent;
+import javax.xml.namespace.NamespaceContext;
+import java.util.List;
 
 /**
  * An example showing how the parser may be configured to do what is needed.
@@ -58,6 +65,57 @@ public class XMLParserConfigurationAndUsage {
 
 
         // --- !!! USAGE !!! ---
-        // TODO
+        //
+        // To parse a XML formatted message, you need to give the parser either an InputStream or a XMLStreamReader.
+        // The stream may be packed within an InternalMessage, where namespace context and other request information
+        // will be updated.
+        //
+        // All three parse commands will return or modify an InternalMessage. To see how it may be used:
+        try {
+
+            // parse an InputStream:
+            InternalMessage message = XMLParser.parse(System.in);
+
+            // parse an InputStream wrapped in an InternalMessage
+            message = new InternalMessage(
+                    InternalMessage.STATUS_HAS_MESSAGE | InternalMessage.STATUS_MESSAGE_IS_INPUTSTREAM, System.in
+            );
+            XMLParser.parse(message);
+
+            // To see status og the parsed object:
+            int status = message.statusCode;
+            // this may be compared with different flags, eg.
+            if ((status & (InternalMessage.STATUS_HAS_MESSAGE | InternalMessage.STATUS_FAULT)) != 0) {
+                // we now know the message either has a message, or it is a fault message
+                System.out.println("either fault or has message");
+            }
+
+            // To get the parsed object
+            Object o = message.getMessage();
+            // This object may be an instance of a JAXBElement, or it may be an instance of a class marked as XMLRoot
+
+            // Additional information gathered during parsing is stored within the RequestInformation
+            RequestInformation information = message.getRequestInformation();
+            // This information object contains information about all namespaces for all object that is parsed.
+            NuNamespaceContextResolver resolver = information.getNamespaceContextResolver();
+            // or simply (for root element, same call for all objects in parsed tree, with the object you need the
+            // context for used as argument)
+            NamespaceContext context = information.getNamespaceContext(o);
+            // If schema validation is turned off, information about events that may have compromised the parsing can be
+            // found by
+            List<NuParseValidationEventInfo> infoList = information.getParseValidationEventInfos();
+            // To see more about the NuParseValidationEventInfo object, look it up in the JavaDoc
+
+
+            // To write an object as XML, run
+            XMLParser.writeObjectToStream(o, System.out);
+            // This will not format the XML, only write it directly to stream. If schema validation is turned on, the
+            // object that is to be written is also checked for schema compliance.
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        // It can be noted that by use of our connectors, e.g. UnpackingConnector, the request information for a parsed
+        // object may be retrieved from the connector.
     }
 }
