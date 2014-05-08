@@ -6,7 +6,6 @@ import javax.xml.namespace.NamespaceContext;
 
 /**
  * Shows how to use a {@link org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver}.
- * Created by Inge on 30.04.2014.
  */
 public class NuNamespaceContextResolverUsage {
 

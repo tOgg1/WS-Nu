@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * An example showing how the parser may be configured to do what is needed.
- * Created by Inge on 07.05.2014.
  */
 public class XMLParserConfigurationAndUsage {
 

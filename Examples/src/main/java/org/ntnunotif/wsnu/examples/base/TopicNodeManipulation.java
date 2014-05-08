@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * A short example on the built in functions for topic node manipulations
- * Created by Inge on 07.05.2014.
  */
 public class TopicNodeManipulation {
 

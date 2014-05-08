@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * An example showing how topic validation may be configured.
- * Created by Inge on 07.05.2014.
  */
 public class TopicConfigurationAndExtension implements TopicExpressionEvaluatorInterface {
 

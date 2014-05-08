@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * This is an example on how one can build a {@link org.oasis_open.docs.wsn.t_1.TopicSetType}, in code, representing a set of topics as described in OASIS WS-Topics 1.3 specification.
- * Created by Inge on 07.05.2014.
  */
 public class BuildingTopicSet {
 

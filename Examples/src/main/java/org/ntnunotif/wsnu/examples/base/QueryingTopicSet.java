@@ -13,7 +13,6 @@ import java.util.List;
 
 /**
  * This example shows how you can use the topic sets to query against. This example code is dependent on the example code in BuildingTopicSet.
- * Created by Inge on 07.05.2014.
  */
 public class QueryingTopicSet {
     public static final String NAMESPACE_PREFIX_1 = "tns1";
