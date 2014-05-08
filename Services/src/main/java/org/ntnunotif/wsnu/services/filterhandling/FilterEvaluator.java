@@ -12,7 +12,6 @@ import javax.xml.namespace.QName;
 /**
  * The <code>FilterEvaluator</code> represents an {@link java.lang.Object} that is capable of determining if a specific
  * filter should allow a message, that is a {@link Notify} <code>Object</code> through.
- * Created by Inge on 01.04.2014.
  */
 public interface FilterEvaluator {
     /**

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 01.04.2014.
+ * The default evaluator used for topic expression filters used in WS-Nu.
  */
 public class DefaultTopicExpressionFilterEvaluator implements FilterEvaluator {
     private static final QName fName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");

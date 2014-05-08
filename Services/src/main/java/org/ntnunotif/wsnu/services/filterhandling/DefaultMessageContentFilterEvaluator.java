@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.*;
 
 /**
- * Created by Inge on 01.04.2014.
+ * The default evaluator for message content filters used in WS-Nu
  */
 public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
     private static final QName fName = new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent", "wsnt");
