@@ -10,12 +10,16 @@ import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
+import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
+import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
 import javax.jws.WebMethod;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -150,6 +154,24 @@ public abstract class AbstractNotificationProducer extends WebService implements
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
         ObjectFactory factory = new ObjectFactory();
+
+        // bind namespaces to topics
+        for (NotificationMessageHolderType holderType : notify.getNotificationMessage()) {
+
+            TopicExpressionType topic = holderType.getTopic();
+
+            if (holderType.getTopic() != null) {
+                NuNamespaceContextResolver.NuResolvedNamespaceContext context = namespaceContextResolver.resolveNamespaceContext(topic);
+
+                for (String prefix : context.getAllPrefixes()) {
+                    // check if this is the default xmlns attribute
+                    if (!prefix.equals(XMLConstants.XMLNS_ATTRIBUTE)) {
+                        // add namespace context to the expression node
+                        topic.getOtherAttributes().put(new QName("xmlns:" + prefix), context.getNamespaceURI(prefix));
+                    }
+                }
+            }
+        }
 
         if (hub == null) {
             Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
