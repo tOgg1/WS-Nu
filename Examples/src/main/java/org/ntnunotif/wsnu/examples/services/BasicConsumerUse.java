@@ -44,57 +44,8 @@ public class BasicConsumerUse {
         SoapForwardingHub hub = notificationConsumer.quickBuild(endpoint);
 
         // Well, at this point, the consumer can receive notifies. But nothing happens to them. To change this, we need
-        // to add a listeners that listens for notifies. Let us make a anonymous inner class that listens to these
-        // events.
-        notificationConsumer.addConsumerListener(new ConsumerListener() {
-
-            @Override
-            public void notify(NotificationEvent event) {
-                // Here we can do anything with the event. Or nothing if we choose to. To just show we got a message:
-                System.out.println("Received notify!");
-                System.out.println("\tNumber of messages in the notify: " + event.getMessage().size());
-
-                // !!! --- THE FOLLOWING CODE IS OPTIONAL, AND ONLY SERVES AS REFERENCE FOR MORE ADVANCED USE --- !!!
-
-                // To do something more interesting, loop through the messages received, and write out which topics
-                // they were on (if any).
-                for (NotificationMessageHolderType holderType : event.getRaw().getNotificationMessage()) {
-
-                    TopicExpressionType topic = holderType.getTopic();
-
-                    if (topic == null) {
-                        // this message did not have a topic
-                        System.out.println("\tNO TOPIC on this message");
-                    } else {
-                        // Print out the topic
-                        try {
-
-                            // The event holds the request information, which stores the context it stands in
-                            NamespaceContext namespaceContext = event.getRequestInformation().getNamespaceContext(topic);
-                            // The context is needed to understand which topic it was
-                            List<QName> topicAsList = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
-
-                            // A topic may be represented as a String
-                            String topicAsString = TopicUtils.topicToString(topicAsList);
-                            // And printed for our convenience
-                            System.out.println("\tTOPIC: " + topicAsString);
-
-                        } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                            // We could not understand the expression
-                            System.out.println("\tWARNING a message with not understandable topic was received");
-                        } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
-                            // The topic expression was evaluated to mean more than one topic
-                            System.out.println("\tWARNING a message with multiple topics was received");
-                        } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                            // We did not understand the dialect of the topic given
-                            System.out.println("\tWARNING a message with an unknown dialect was presented");
-                        }
-                    }
-                }
-
-                // !!! --- END OF OPTIONAL CODE --- !!!
-            }
-        });
+        // to add a listeners that listens for notifies. Let us make a class that listens to these events.
+        notificationConsumer.addConsumerListener(new SimpleConsumerListener());
 
         // Well this is all well. But we still do not receive any notifies. The reason behind this is of course that no
         // producers knows we exists, and therefore do not know that we wish to receive any messages.
@@ -114,5 +65,58 @@ public class BasicConsumerUse {
 
         // And we should now get the notifies, if the producer existed
         System.exit(0);
+    }
+
+    /**
+     * A class implementing a Consumer listener. It writes out when it receives notifies, how many messages was in that
+     * notify and if there was a topic connected to that notify.
+     */
+    public static class SimpleConsumerListener implements ConsumerListener {
+        @Override
+        public void notify(NotificationEvent event) {
+            // Here we can do anything with the event. Or nothing if we choose to. To just show we got a message:
+            System.out.println("Received notify!");
+            System.out.println("\tNumber of messages in the notify: " + event.getMessage().size());
+
+            // !!! --- THE FOLLOWING CODE IS OPTIONAL, AND ONLY SERVES AS REFERENCE FOR MORE ADVANCED USE --- !!!
+
+            // To do something more interesting, loop through the messages received, and write out which topics
+            // they were on (if any).
+            for (NotificationMessageHolderType holderType : event.getRaw().getNotificationMessage()) {
+
+                TopicExpressionType topic = holderType.getTopic();
+
+                if (topic == null) {
+                    // this message did not have a topic
+                    System.out.println("\tNO TOPIC on this message");
+                } else {
+                    // Print out the topic
+                    try {
+
+                        // The event holds the request information, which stores the context it stands in
+                        NamespaceContext namespaceContext = event.getRequestInformation().getNamespaceContext(topic);
+                        // The context is needed to understand which topic it was
+                        List<QName> topicAsList = TopicValidator.evaluateTopicExpressionToQName(topic, namespaceContext);
+
+                        // A topic may be represented as a String
+                        String topicAsString = TopicUtils.topicToString(topicAsList);
+                        // And printed for our convenience
+                        System.out.println("\tTOPIC: " + topicAsString);
+
+                    } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
+                        // We could not understand the expression
+                        System.out.println("\tWARNING a message with not understandable topic was received");
+                    } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
+                        // The topic expression was evaluated to mean more than one topic
+                        System.out.println("\tWARNING a message with multiple topics was received");
+                    } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
+                        // We did not understand the dialect of the topic given
+                        System.out.println("\tWARNING a message with an unknown dialect was presented");
+                    }
+                }
+            }
+
+            // !!! --- END OF OPTIONAL CODE --- !!!
+        }
     }
 }
