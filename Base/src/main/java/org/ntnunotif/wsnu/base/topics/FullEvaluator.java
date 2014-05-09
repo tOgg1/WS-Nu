@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 21.03.2014.
+ * A <code>FullEvaluator</code> is an evaluator that support the full dialect, defined by OASIS WS-Topics 1.3
  */
 public class FullEvaluator implements TopicExpressionEvaluatorInterface {
     /**
@@ -106,6 +106,15 @@ public class FullEvaluator implements TopicExpressionEvaluatorInterface {
         return true;
     }
 
+    /**
+     * Tries to evaluate a expression, which is assumed to follow the full dialect, to a single TopicExpression.
+     *
+     * @param expression the expression to evaluate
+     * @param context    the context the expression was found in
+     * @return A topic represented as a list of QNames
+     * @throws InvalidTopicExpressionFault  if the expression is malformed in any way
+     * @throws MultipleTopicsSpecifiedFault if the expression contains any wildcards
+     */
     public static List<QName> evaluateFullTopicExpressionToQNameList(String expression, NamespaceContext context)
             throws InvalidTopicExpressionFault, MultipleTopicsSpecifiedFault {
 

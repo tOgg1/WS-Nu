@@ -4,7 +4,8 @@ import javax.xml.namespace.NamespaceContext;
 import java.util.*;
 
 /**
- * Created by Inge on 29.04.2014.
+ * The <code>NuNamespaceContextResolver</code> is a class able to resolve object specific
+ * {@link javax.xml.namespace.NamespaceContext}s.
  */
 public class NuNamespaceContextResolver {
 

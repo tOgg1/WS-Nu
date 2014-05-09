@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by Inge on 10.03.14.
+ * A <code>XPathEvaluator</code> is an evaluator that support the xpath dialect, defined by OASIS WS-Topics 1.3
  */
 public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
 
@@ -104,6 +104,15 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
         }
     }
 
+    /**
+     * Gets the intersection between an expression interpreted as a XPath expression, and a TopicSet
+     *
+     * @param expression the expression in xpath dialect
+     * @param setType    the set to intersect with
+     * @param context    the context the expression stood in
+     * @return the intersection between the set and the expression
+     * @throws InvalidTopicExpressionFault if the expression is malformed in any way
+     */
     public static TopicSetType getXpathIntersection(String expression, TopicSetType setType, NamespaceContext context)
             throws InvalidTopicExpressionFault {
 
@@ -128,7 +137,7 @@ public class XPathEvaluator implements TopicExpressionEvaluatorInterface {
         // For every object in topicSet, try to evaluate it against expression and store result.
         int returnCount = 0;
         TopicSetType returnSet = new TopicSetType();
-        for (Object o: setType.getAny()) {
+        for (Object o : setType.getAny()) {
 
             try {
                 // Evaluate expression

@@ -253,7 +253,6 @@ public class XMLParser {
      * Attempts to parse the given {@link org.ntnunotif.wsnu.base.util.InternalMessage}.
      *
      * @param internalMessage a container for the request to parse
-     * @return the internal message given as argument, with filled in additional request information
      * @throws JAXBException if no way of parsing the request is found, or something else fails.
      */
     @SuppressWarnings( "deprecation" )

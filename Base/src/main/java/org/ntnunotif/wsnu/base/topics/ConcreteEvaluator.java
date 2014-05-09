@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 21.03.2014.
+ * A <code>ConcreteEvaluator</code> is an evaluator that support the concrete dialect, defined by OASIS WS-Topics 1.3
  */
 public class ConcreteEvaluator implements TopicExpressionEvaluatorInterface {
     /**

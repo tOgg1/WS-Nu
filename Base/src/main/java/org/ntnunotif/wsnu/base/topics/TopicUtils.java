@@ -22,7 +22,6 @@ import java.util.*;
  * Helper methods to use with topics. Should comply to OASIS standard wsn-ws_topics-1.3-spec-os.
  *
  * @author Inge Edward Halsaunet
- *         Created by Inge on 13.03.14.
  */
 public class TopicUtils {
 

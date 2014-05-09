@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 21.03.2014.
+ * A <code>SimpleEvaluator</code> is an evaluator that support the simple dialect, defined by OASIS WS-Topics 1.3
  */
 public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
     /**

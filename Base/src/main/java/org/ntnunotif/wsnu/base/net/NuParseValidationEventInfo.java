@@ -5,7 +5,7 @@ import javax.xml.namespace.QName;
 import java.util.Stack;
 
 /**
- * Created by Inge on 28.04.2014.
+ * The <code>NuParseValidationEventInfo</code> is a wrapper class for information about validation events.
  */
 public class NuParseValidationEventInfo {
     /**

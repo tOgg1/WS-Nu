@@ -6,18 +6,35 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Created by Inge on 14.03.14.
+ * A <code>NuNamespaceContext</code> is a very simple {@link javax.xml.namespace.NamespaceContext} which support only
+ * prefix to namespace resolution. It is backed up by a {@link java.util.HashMap}
  */
 public class NuNamespaceContext implements NamespaceContext {
 
     private Map<String, String> table = new HashMap<>();
 
-    public NuNamespaceContext() {}
+    /**
+     * Creates an empty context (no bindings)
+     */
+    public NuNamespaceContext() {
+    }
 
+    /**
+     * Creates a copy of the original context. The exact same bindings are retained in the new one, but changes in one
+     * after creation does not reflect on its counterpart.
+     *
+     * @param original the context to copy
+     */
     public NuNamespaceContext(NuNamespaceContext original) {
         this.table.putAll(original.table);
     }
 
+    /**
+     * Binds a prefix to a namespace
+     *
+     * @param prefix    the prefix to bind
+     * @param nameSpace the namespace to bind
+     */
     public synchronized void put(String prefix, String nameSpace) {
         table.put(prefix, nameSpace);
     }
@@ -40,10 +57,10 @@ public class NuNamespaceContext implements NamespaceContext {
     @Override
     public String toString() {
         String outString = NuNamespaceContext.class.toString();
-        for (Map.Entry e: table.entrySet()) {
+        for (Map.Entry e : table.entrySet()) {
             outString += "\n" + e.getKey() + "\t:\t" + e.getValue();
         }
-        return  outString;
+        return outString;
     }
 
     @Override
