@@ -19,7 +19,7 @@ import javax.xml.namespace.QName;
 import java.util.List;
 
 /**
- * A very simple example showing just haw easy a consumer may be built.
+ * A very simple example showing just how easy a consumer may be built.
  */
 public class BasicConsumerUse {
 
@@ -54,6 +54,7 @@ public class BasicConsumerUse {
                 System.out.println("Received notify!");
                 System.out.println("\tNumber of messages in the notify: " + event.getMessage().size());
 
+                // !!! --- THE FOLLOWING CODE IS OPTIONAL, AND ONLY SERVES AS REFERENCE FOR MORE ADVANCED USE --- !!!
 
                 // To do something more interesting, loop through the messages received, and write out which topics
                 // they were on (if any).
@@ -90,6 +91,8 @@ public class BasicConsumerUse {
                         }
                     }
                 }
+
+                // !!! --- END OF OPTIONAL CODE --- !!!
             }
         });
 
