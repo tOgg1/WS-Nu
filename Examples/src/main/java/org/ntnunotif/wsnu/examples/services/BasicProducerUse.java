@@ -9,11 +9,19 @@ import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * A very simple example showing just how easy a producer may be built.
  */
 public class BasicProducerUse {
+    // Prefix and namespace used in topics
+    public static final String prefix = "ens";
+    public static final String namespace = "http://www.example.com/producerns";
 
     public static void main(String[] args) {
         // Disable logging
@@ -54,9 +62,6 @@ public class BasicProducerUse {
      * @return a notify with its context
      */
     public static NotifyWithContext buildNotifyWithContext() {
-        // Prefix and namespace used in topics
-        final String prefix = "ens";
-        final String namespace = "http://www.example.com/producerns";
 
         // Create a contextResolver, and fill it with the namespace bindings used in the notify
         NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
@@ -73,8 +78,16 @@ public class BasicProducerUse {
             NotificationMessageHolderType.Message message = factory.createNotificationMessageHolderTypeMessage();
             NotificationMessageHolderType messageHolderType = factory.createNotificationMessageHolderType();
 
-            // Set message context
-            message.setAny("message " + i);
+            // create message content
+            try {
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                Document document = documentBuilderFactory.newDocumentBuilder().newDocument();
+                Element element = document.createElement("message");
+                element.setTextContent("Message " + i);
+                message.setAny(element);
+            } catch (ParserConfigurationException e) {
+                System.err.println("failed to build message");
+            }
 
             // Set holders message
             messageHolderType.setMessage(message);
