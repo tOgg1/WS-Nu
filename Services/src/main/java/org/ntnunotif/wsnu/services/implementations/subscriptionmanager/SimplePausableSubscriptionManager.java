@@ -85,7 +85,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         ResumeSubscription resumeSubscriptionRequest
     )
     throws ResourceUnknownFault, ResumeFailedFault {
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
             if(!entry.getKey().equals("subscription")){
@@ -139,7 +139,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         PauseSubscription pauseSubscriptionRequest
     )
     throws ResourceUnknownFault, PauseFailedFault {
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
             if(!entry.getKey().equals("subscription")){
@@ -201,7 +201,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
     )
     throws ResourceUnknownFault, UnableToDestroySubscriptionFault {
         Log.d("SimpleSubscriptionManager", "Received unsubscribe request");
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
             if(!entry.getKey().equals("subscription")){
@@ -258,7 +258,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             Renew renewRequest)
             throws ResourceUnknownFault, UnacceptableTerminationTimeFault {
 
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         Log.d("SimpleSubscriptionManager", "Received renew request");
         /* Find the subscription tag */

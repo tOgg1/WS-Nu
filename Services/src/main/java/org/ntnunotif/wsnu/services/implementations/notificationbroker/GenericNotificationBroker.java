@@ -139,7 +139,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
      * @param hub
      */
     public GenericNotificationBroker(Hub hub) {
-        this._hub = hub;
+        this.hub = hub;
         Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
@@ -149,7 +149,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
     */
     public GenericNotificationBroker(Hub hub, boolean supportFilters) {
-        this._hub = hub;
+        this.hub = hub;
         if (supportFilters) {
             Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
@@ -161,7 +161,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     public GenericNotificationBroker(Hub hub, boolean supportFilters, boolean cacheMessages) {
-        this._hub = hub;
+        this.hub = hub;
         if (supportFilters) {
             if (cacheMessages) {
                 Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
@@ -183,7 +183,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     }
 
     public GenericNotificationBroker(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
-        this._hub = hub;
+        this.hub = hub;
         if (cacheMessages)
             Log.d("GenericNotificationBroker", "Created new with hub, custom filter support and GetCurrentMessage allowed");
         else
@@ -338,7 +338,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         Log.d("GenericNotificationBroker", "Got new subscription request");
 
         // Remember the namespace context
-        //NamespaceContext namespaceContextResolver = _connection.getRequestInformation().getNamespaceContext();
+        //NamespaceContext namespaceContextResolver = connection.getRequestInformation().getNamespaceContext();
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
@@ -366,7 +366,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     JAXBElement filter = (JAXBElement) o;
 
                     // Get the na,espace context for this filter
-                    NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext(filter.getValue());
+                    NamespaceContext namespaceContext = connection.getRequestInformation().getNamespaceContext(filter.getValue());
 
                     // Filter legality checks
                     if (filterSupport != null &&
@@ -436,7 +436,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         /* Set up the subscription */
         // create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
-                _connection.getRequestInformation().getNamespaceContextResolver());
+                connection.getRequestInformation().getNamespaceContextResolver());
         ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
         endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
@@ -484,8 +484,8 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
             UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
 
-        //NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
-        NuNamespaceContextResolver namespaceContextResolver = _connection.getRequestInformation().getNamespaceContextResolver();
+        //NamespaceContext namespaceContext = connection.getRequestInformation().getNamespaceContext();
+        NuNamespaceContextResolver namespaceContextResolver = connection.getRequestInformation().getNamespaceContextResolver();
 
         W3CEndpointReference publisherEndpoint = registerPublisherRequest.getPublisherReference();
 
@@ -579,7 +579,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
         }
 
-        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, connection.getRequestInformation().getNamespaceContext(askedFor));
 
         String topicName = TopicUtils.topicToString(topicQNames);
 
