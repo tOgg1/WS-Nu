@@ -17,7 +17,7 @@ public class NuNamespaceContextResolver {
      * @param object the object to resolve context for
      * @return a valid {@link javax.xml.namespace.NamespaceContext} if the object is known to this resolver. <code>null</code> otherwise.
      */
-    public NamespaceContext resolveNamespaceContext(Object object) {
+    public NuResolvedNamespaceContext resolveNamespaceContext(Object object) {
         if (scopeLevelBindingsMap.containsKey(object)) {
             return new NuResolvedNamespaceContext(scopeLevelBindingsMap.get(object));
         }
@@ -88,14 +88,27 @@ public class NuNamespaceContextResolver {
     }
 
     /**
-     * Private class representing the actual namespaces that are returned.
+     * public class representing the actual namespaces that are returned.
      */
-    private static class NuResolvedNamespaceContext implements NamespaceContext {
+    public static class NuResolvedNamespaceContext implements NamespaceContext {
 
         final ScopeLevelBindings scopeSource;
 
         NuResolvedNamespaceContext(ScopeLevelBindings scopeSource) {
             this.scopeSource = scopeSource;
+        }
+
+        public Set<String> getAllPrefixes() {
+            Set<String> prefixes = new HashSet<>();
+
+            ScopeLevelBindings scopeLevel = scopeSource;
+            while (scopeLevel != null) {
+                if (scopeLevel.bindings != null) {
+                    prefixes.addAll(scopeLevel.bindings.keySet());
+                }
+                scopeLevel = scopeLevel.parent;
+            }
+            return prefixes;
         }
 
         @Override
