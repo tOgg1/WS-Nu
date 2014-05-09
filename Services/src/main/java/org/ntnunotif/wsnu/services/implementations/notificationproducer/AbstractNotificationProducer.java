@@ -163,6 +163,10 @@ public abstract class AbstractNotificationProducer extends WebService implements
             if (holderType.getTopic() != null) {
                 NuNamespaceContextResolver.NuResolvedNamespaceContext context = namespaceContextResolver.resolveNamespaceContext(topic);
 
+                if (context == null) {
+                    continue;
+                }
+
                 for (String prefix : context.getAllPrefixes()) {
                     // check if this is the default xmlns attribute
                     if (!prefix.equals(XMLConstants.XMLNS_ATTRIBUTE)) {
