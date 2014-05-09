@@ -91,7 +91,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
         DestroyRegistration destroyRegistrationRequest
     ) throws ResourceNotDestroyedFault, ResourceUnknownFault {
         Log.d("SimplePublishersRegistrationManager", "Received DestroyRegistration request");
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
             if(!entry.getKey().equals("publisherregistration")){

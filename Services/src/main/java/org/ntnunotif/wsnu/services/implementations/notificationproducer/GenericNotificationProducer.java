@@ -121,7 +121,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
      * @param hub the hub this producer should be connected to after startup
      */
     public GenericNotificationProducer(Hub hub) {
-        this._hub = hub;
+        this.hub = hub;
         Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
@@ -135,7 +135,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
      * @param supportFilters if this producer should have default filter support.
      */
     public GenericNotificationProducer(Hub hub, boolean supportFilters) {
-        this._hub = hub;
+        this.hub = hub;
         if (supportFilters) {
             Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
@@ -155,7 +155,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
      * @param cacheMessages  if this producer should cache the latest messages on a topic
      */
     public GenericNotificationProducer(Hub hub, boolean supportFilters, boolean cacheMessages) {
-        this._hub = hub;
+        this.hub = hub;
         if (supportFilters) {
             if (cacheMessages) {
                 Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
@@ -185,7 +185,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
      * @param cacheMessages if this producer should cache the latest messages on a topic
      */
     public GenericNotificationProducer(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
-        this._hub = hub;
+        this.hub = hub;
         if (cacheMessages)
             Log.d("GenericNotificationProducer", "Created new with hub, custom filter support and GetCurrentMessage allowed");
         else
@@ -304,8 +304,8 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         Log.d("GenericNotificationProducer", "Got new subscription request");
 
         // Remember the namespace context
-        //NamespaceContext namespaceContext = _connection.getRequestInformation().getNamespaceContext();
-        NuNamespaceContextResolver namespaceContextResolver = _connection.getRequestInformation().getNamespaceContextResolver();
+        //NamespaceContext namespaceContext = connection.getRequestInformation().getNamespaceContext();
+        NuNamespaceContextResolver namespaceContextResolver = connection.getRequestInformation().getNamespaceContextResolver();
 
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
@@ -443,7 +443,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
         }
 
-        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, _connection.getRequestInformation().getNamespaceContext(askedFor));
+        List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, connection.getRequestInformation().getNamespaceContext(askedFor));
         String topicName = TopicUtils.topicToString(topicQNames);
 
         // Find latest message on this topic

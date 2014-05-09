@@ -31,7 +31,7 @@ public abstract class WebService {
      * ContentManagers to filter file-requests. See {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}
      * for more information.
      */
-    protected ArrayList<ServiceUtilities.ContentManager> _contentManagers;
+    protected ArrayList<ServiceUtilities.ContentManager> contentManagers;
 
     /**
      * BaseFactory to create relevant objects.
@@ -42,28 +42,28 @@ public abstract class WebService {
     /**
      * Reference to the connected hub.
      */
-    protected Hub _hub;
+    protected Hub hub;
 
     /**
      * Default constructor.
      */
     protected WebService(){
-        _contentManagers = new ArrayList<>();
+        contentManagers = new ArrayList<>();
     }
 
     /**
      * Constructor taking a hub as a parameter.
-     * @param _hub
+     * @param hub
      */
-    protected WebService(Hub _hub) {
-        this._hub = _hub;
+    protected WebService(Hub hub) {
+        this.hub = hub;
     }
 
     /**
      * Reference to the connection of this Web Service. This variable carries the ServiceConnection
      */
     @Connection
-    protected ServiceConnection _connection;
+    protected ServiceConnection connection;
 
     /**
      * The full endpointreference of this webservice. This would typically be
@@ -124,7 +124,7 @@ public abstract class WebService {
             return;
         }
 
-        if(_hub == null){
+        if(hub == null){
             String errorMessage = "Hub is not set for this Web Service, please set the hub, " +
                     "(i.e by calling quickBuild) before using this method. You can also force " +
                     "the reference by calling forceEndpointReference";
@@ -132,16 +132,16 @@ public abstract class WebService {
             throw new IllegalStateException(errorMessage);
         }
 
-        if (_connection == null) {
+        if (connection == null) {
             Log.d("WebService", "Connection is not set for this Web Service. Endpoint reference is meaningless if " +
                     "there is no way this service can accept messages, so to use it, set up a connection.");
         }
 
         this.pureEndpointReference = endpointReference;
-        this.endpointReference = _hub.getInetAdress() + "/" + endpointReference;
+        this.endpointReference = hub.getInetAdress() + "/" + endpointReference;
 
-        if (_connection != null)
-            _connection.endpointUpdated(this.endpointReference);
+        if (connection != null)
+            connection.endpointUpdated(this.endpointReference);
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class WebService {
      * IP, this method forces the endpoint reference to be whatever passed in. E.g. if the passed in argument is "http://lol.com", the actual
      * endpoint reference variable will be set as "http://lol.com".
      *
-     * A warning message will be shown if the {@link #_connection} variable is null on calling this message.
+     * A warning message will be shown if the {@link #connection} variable is null on calling this message.
      *
      * @param endpointReference A valid url for this Web Service. Passing in a bad address can cause undefined behaviour.
      */
@@ -158,11 +158,11 @@ public abstract class WebService {
         this.endpointReference = endpointReference;
         this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
 
-        if(_connection == null) {
+        if(connection == null) {
             Log.w("WebService", "Tried to force an endpoint reference for a null connector.");
             return;
         }
-        _connection.endpointUpdated(endpointReference);
+        connection.endpointUpdated(endpointReference);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class WebService {
      * @return The connected {@link org.ntnunotif.wsnu.base.internal.Hub}
      */
     public Hub getHub() {
-        return _hub;
+        return hub;
     }
 
     /**
@@ -178,7 +178,7 @@ public abstract class WebService {
      * @param _hub A {@link org.ntnunotif.wsnu.base.internal.Hub}.
      */
     public void setHub(Hub _hub) {
-        this._hub = _hub;
+        this.hub = _hub;
     }
 
     /**
@@ -203,7 +203,7 @@ public abstract class WebService {
      * @return An InternalMessage containing possible content.
      */
     public InternalMessage acceptRequest(){
-        RequestInformation requestInformation = _connection.getRequestInformation();
+        RequestInformation requestInformation = connection.getRequestInformation();
 
         String uri = requestInformation.getRequestURL();
         Log.d("WebService", "Request accepted: " + uri);
@@ -239,7 +239,7 @@ public abstract class WebService {
 
         uri = uri.replaceAll("^/", "");
 
-        for (ServiceUtilities.ContentManager contentManager : _contentManagers) {
+        for (ServiceUtilities.ContentManager contentManager : contentManagers) {
             if(!contentManager.accepts(uri)){
                 Log.d("WebService", "Webservice did not accept uri" + uri + "\n on the basis of content.");
                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_ACCESS_NOT_ALLOWED, null);
@@ -283,7 +283,7 @@ public abstract class WebService {
         RequestInformation info = new RequestInformation();
         info.setEndpointReference(requestUri);
         outMessage.setRequestInformation(info);
-        return _hub.acceptLocalMessage(outMessage);
+        return hub.acceptLocalMessage(outMessage);
     }
 
     /**
@@ -309,7 +309,7 @@ public abstract class WebService {
 
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
         message.getRequestInformation().setEndpointReference(address);
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -320,7 +320,7 @@ public abstract class WebService {
 
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, unsubscribe);
         message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -338,7 +338,7 @@ public abstract class WebService {
         renew.setTerminationTime(terminationTime);
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, renew);
         message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -348,7 +348,7 @@ public abstract class WebService {
         PauseSubscription pauseSubscription = new PauseSubscription();
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, pauseSubscription);
         message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -358,7 +358,7 @@ public abstract class WebService {
         ResumeSubscription resumeSubscription = new ResumeSubscription();
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, resumeSubscription);
         message.getRequestInformation().setEndpointReference(subscriptionEndpoint);
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -378,7 +378,7 @@ public abstract class WebService {
         }
         InternalMessage outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, registerPublisher);
         outMessage.getRequestInformation().setEndpointReference(brokerEndpoint);
-        return _hub.acceptLocalMessage(outMessage);
+        return hub.acceptLocalMessage(outMessage);
     }
 
 
@@ -414,7 +414,7 @@ public abstract class WebService {
         requestInformation.setEndpointReference(endpoint);
         message.setRequestInformation(requestInformation);
 
-        return _hub.acceptLocalMessage(message);
+        return hub.acceptLocalMessage(message);
     }
 
     /**
@@ -479,7 +479,7 @@ public abstract class WebService {
             ApplicationServer.getInstance().stop();
 
             SoapForwardingHub hub = new SoapForwardingHub();
-            _hub = hub;
+            this.hub = hub;
 
             this.setEndpointReference(endpointReference);
 
@@ -488,7 +488,7 @@ public abstract class WebService {
 
             UnpackingConnector connector = new UnpackingConnector(this);
             hub.registerService(connector);
-            _connection = connector;
+            connection = connector;
 
             return hub;
         } catch (Exception e) {
@@ -512,12 +512,12 @@ public abstract class WebService {
      * @return The Hub connected to the built Web Service
      */
     public void quickBuild(String endpointReference, Hub hub){
-        _hub = hub;
+        this.hub = hub;
         this.setEndpointReference(endpointReference);
 
         UnpackingConnector connector = new UnpackingConnector(this);
         hub.registerService(connector);
-        _connection = connector;
+        connection = connector;
     }
 
     /**
@@ -570,8 +570,8 @@ public abstract class WebService {
 
             WebServiceConnector connector = (WebServiceConnector) relevantConstructor.newInstance(newArgs);
             hub.registerService(connector);
-            _connection = connector;
-            _hub = hub;
+            connection = connector;
+            this.hub = hub;
             return hub;
         }catch(InvocationTargetException e){
             Throwable t = e.getCause();
@@ -589,7 +589,7 @@ public abstract class WebService {
      * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      */
     public void addContentManager(ServiceUtilities.ContentManager manager){
-        _contentManagers.add(manager);
+        contentManagers.add(manager);
     }
 
     /**
@@ -597,14 +597,14 @@ public abstract class WebService {
      * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
      */
     public void removeContentManger(ServiceUtilities.ContentManager manager){
-        _contentManagers.remove(manager);
+        contentManagers.remove(manager);
     }
 
     /**
      * Clears all {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}'s.
      */
     public void clearContentManagers(){
-        _contentManagers.clear();
+        contentManagers.clear();
     }
 
     /**
@@ -712,7 +712,7 @@ public abstract class WebService {
      * @return The {@link org.ntnunotif.wsnu.base.internal.ServiceConnection} connected to this Web Service.
      */
     public ServiceConnection getConnection() {
-        return _connection;
+        return connection;
     }
 
     /**
@@ -723,6 +723,6 @@ public abstract class WebService {
      * @param connection
      */
     public void setConnection(ServiceConnection connection) {
-        this._connection = connection;
+        this.connection = connection;
     }
 }

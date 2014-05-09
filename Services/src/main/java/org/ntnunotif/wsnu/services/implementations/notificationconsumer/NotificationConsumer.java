@@ -36,7 +36,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
      */
     public NotificationConsumer(Hub hub) {
         super(hub);
-        _hub = hub;
+        this.hub = hub;
     }
 
 
@@ -44,7 +44,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     @WebMethod(operationName = "Notify")
     public void notify(@WebParam(partName = "Notify", name = "Notify", targetNamespace = "http://docs.oasis-open.org/wsn/b-2")
                            Notify notify) {
-        _eventSupport.fireNotificationEvent(notify, _connection.getRequestInformation());
+        _eventSupport.fireNotificationEvent(notify, connection.getRequestInformation());
     }
 
     @WebMethod(exclude = true)
@@ -61,7 +61,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     public InternalMessage sendSubscriptionRequest(Subscribe subscriptionRequest, String address){
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscriptionRequest);
         message.getRequestInformation().setEndpointReference(address);
-        InternalMessage returnMessage = _hub.acceptLocalMessage(message);
+        InternalMessage returnMessage = hub.acceptLocalMessage(message);
         return returnMessage;
     }
 }

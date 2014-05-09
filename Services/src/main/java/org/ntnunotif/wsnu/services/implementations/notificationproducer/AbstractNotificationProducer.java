@@ -128,7 +128,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     @WebMethod(exclude = true)
     public void sendSingleNotify(Notify notify, W3CEndpointReference w3CEndpointReference) throws IllegalAccessException {
-        if (_hub == null) {
+        if (hub == null) {
             Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
                     " consider running this before sending messages");
             return;
@@ -138,7 +138,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
         InternalMessage outMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET, notify);
         outMessage.getRequestInformation().setEndpointReference(ServiceUtilities.getAddress(w3CEndpointReference));
         Log.d("AbstractNotificationProducer", "Forwarding Notify");
-        _hub.acceptLocalMessage(outMessage);
+        hub.acceptLocalMessage(outMessage);
     }
 
     /**
@@ -151,7 +151,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
         ObjectFactory factory = new ObjectFactory();
 
-        if (_hub == null) {
+        if (hub == null) {
             Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
                     " consider running this before sending messages");
             return;
@@ -171,7 +171,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
             if (toSend != null) {
                 InternalMessage outMessage = new InternalMessage(STATUS_OK | STATUS_HAS_MESSAGE | STATUS_ENDPOINTREF_IS_SET, toSend);
                 outMessage.getRequestInformation().setEndpointReference(getEndpointReferenceOfRecipient(recipient));
-                _hub.acceptLocalMessage(outMessage);
+                hub.acceptLocalMessage(outMessage);
             }
         }
     }
