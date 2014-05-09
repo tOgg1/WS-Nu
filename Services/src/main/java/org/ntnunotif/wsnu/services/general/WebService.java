@@ -182,7 +182,7 @@ public abstract class WebService {
     }
 
     /**
-     * The default AcceptRequest method of a WebService. This method accepts what we call "raw"-requests. These are
+     * The default AcceptRequest method of a WebService. This method accepts what we call pure-requests. These are
      * http-requests containing no content.
      * </p>
      * This implementation will look for a ?wsdl parameter. If not found, it will try and retrieve a file at the
@@ -194,7 +194,7 @@ public abstract class WebService {
      * <code>http://server.com/endpoint/some/folder/file.txt</code>
      * </p>
      *
-     * If the file some/folder/file.txt exists, path being relative to where execution folder of the Web Service,
+     * If the file some/folder/file.txt exists, path being relative to the execution folder of the Web Service,
      * the file is returned as a string.
      *
      * See {@link org.ntnunotif.wsnu.base.internal.WebServiceConnector#acceptRequest(org.ntnunotif.wsnu.base.util.InternalMessage)}
