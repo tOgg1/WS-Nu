@@ -13,7 +13,6 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.ntnunotif.wsnu.base.internal.Hub;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
@@ -154,13 +153,13 @@ public class ApplicationServer{
      * Start the http-server.
      * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
-    public void start(SoapForwardingHub soapForwardingHub) throws Exception{
+    public void start(Hub hub) throws Exception{
         if(_isRunning) {
             return;
         }
 
         _isRunning = true;
-        _parentHub = soapForwardingHub;
+        _parentHub = hub;
         _client = new HttpClient();
         _client.setFollowRedirects(false);
         _client.start();

@@ -55,6 +55,9 @@ public class AdvancedConsumerConnector extends WebService implements ServiceConn
         // On receiving a message from the hub, we assume it is parsed, and try to cast it to a Notify somehow.
         // If this does not work, we exit with a fault
 
+        // Set the requestinformation in case we need it.
+        requestInformation = message.getRequestInformation();
+
         try{
             // Lets check if it is a standard envelope
             if(message.getMessage() instanceof Envelope){
