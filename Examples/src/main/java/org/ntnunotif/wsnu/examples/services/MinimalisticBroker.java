@@ -7,7 +7,7 @@ import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNot
  * Example showing very basic use of the NotificationBroker. This example will not go detailed into how
  * filters etc. are created. This information can be found in {@link org.ntnunotif.wsnu.examples.services.BasicProducerUse}.
  */
-public class BasicBrokerUse {
+public class MinimalisticBroker {
 
     private GenericNotificationBroker broker;
 
@@ -17,7 +17,7 @@ public class BasicBrokerUse {
     /**
      * We can do everything needed in the constructor
      */
-    public BasicBrokerUse() {
+    public MinimalisticBroker() {
         // Instantiate the broker
         broker = new GenericNotificationBroker();
 

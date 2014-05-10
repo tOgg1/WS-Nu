@@ -26,10 +26,13 @@ public class ProducerWithSubscriptionManager {
 
         // We are using a pausable subscription manager here. A regular one could be added in the same fashion
         manager = new SimplePausableSubscriptionManager();
+        // This makes our manager update itself every 60 seconds, checking for expired subscriptions
+        manager.setScheduleInterval(60);
 
         // Quick build the Web services, thus initializing the entire system
         myHub = producer.quickBuild(producerEndpoint);
         manager.quickBuild(managerEndpoint, myHub);
+
 
         // This is the crucial part, we have to add the manager to the producer. If not, the producer
         // will not be able to receive events when a subscription is changed at the manager
@@ -38,6 +41,4 @@ public class ProducerWithSubscriptionManager {
         // And we are done really. Obviously you can at this stage start creating filters and similar voodoo. But this will
         // not be covered here.
     }
-
-
 }
