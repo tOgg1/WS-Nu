@@ -4,7 +4,7 @@ import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
 /**
- * Created by tormod on 10.05.14.
+ * Example of using ContentManagers to filter content.
  */
 public class WebServiceWithContentManager {
 
@@ -43,7 +43,7 @@ public class WebServiceWithContentManager {
         // Finally, lets add a complicated regex that filters out any request url that ends with 6 or more numbers
         exclusiveManager.addRegex("(.*)[0-9]{6,}$");
 
-        // Lets add our mangers to our Web Service
+        // Lets add our mangers to our Web Service, just so we are aware of how its done.
         consumer.addContentManager(inclusiveManager);
         consumer.addContentManager(exclusiveManager);
 
@@ -66,6 +66,7 @@ public class WebServiceWithContentManager {
         final String testFive = endpointReference + "/freesexmoneysexmoney3434moneysexsex";
         final String testSix = endpointReference + "/moneyfree";
 
+        // Check if our strings are accepted by all of our content managers
         boolean testOneRes = exclusiveManager.accepts(testOne) && inclusiveManager.accepts(testOne);
         boolean testTwoRes = exclusiveManager.accepts(testTwo) && inclusiveManager.accepts(testTwo);
         boolean testThreeRes = exclusiveManager.accepts(testThree) && inclusiveManager.accepts(testThree);
@@ -83,7 +84,6 @@ public class WebServiceWithContentManager {
 
         // Should return true, it starts with both free and contains money
         System.out.println(testTwoRes);
-
 
         if(!testTwoRes){
             throw new RuntimeException();
@@ -110,14 +110,12 @@ public class WebServiceWithContentManager {
             throw new RuntimeException();
         }
 
-
         // Should return false, does not start with free
         System.out.println(testSixRes);
 
         if(!testSixRes){
             throw new RuntimeException();
         }
-
 
     }
 
@@ -126,6 +124,4 @@ public class WebServiceWithContentManager {
         webService.addContentManagers();
         webService.runTest();
     }
-
-
 }
