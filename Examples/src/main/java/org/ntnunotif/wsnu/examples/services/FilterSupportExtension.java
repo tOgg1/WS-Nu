@@ -138,7 +138,10 @@ public class FilterSupportExtension implements FilterEvaluator{
             // Get the actual message
             NotificationMessageHolderType.Message message = messageHolder.getMessage();
 
+            // And on basis this is a phony filter, this is possible:
             // Check if the message is a String, if not, this should be removed (simple filter -> simple message)
+            // Actually the getAny() would return a Node, simple Strings are not allowed as the message.
+            // It must be a tagged object
             if (!(message.getAny() instanceof String)) {
                 // Remove an post decrement counter.
                 holderTypeList.remove(i--);
