@@ -40,7 +40,6 @@ public class AdvancedConsumerHub extends WebService implements Hub, Notification
         }
     }
 
-
     /**
      * Implementation of NotificationConsumer's notify.
      */

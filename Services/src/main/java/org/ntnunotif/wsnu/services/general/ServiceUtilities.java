@@ -94,6 +94,7 @@ public class ServiceUtilities {
      * An inputmanager instance keeps several hashmaps containing information about <b>Method rerouting</b>. I.e. commands
      * that are to be rerouted to certain methods. If such a command is registered to stdin, the method registered for rerouting
      * on this command will be called.
+     *
      * Any other command will be run as a terminal command on the local operating system.
      *
      */
@@ -358,7 +359,7 @@ public class ServiceUtilities {
          * @return
          */
         public boolean accepts(String request){
-            request = request.replaceAll("^"+serviceEndpoint, "");
+            request = request.replaceAll("^"+serviceEndpoint+"/?", "");
 
             /* Check regex */
             for(String contentLimitation : regexLimitations) {
@@ -376,7 +377,7 @@ public class ServiceUtilities {
 
             /* Check count */
             for (Map.Entry<String, Integer> stringIntegerEntry : countLimitations.entrySet()) {
-                if(request.split(stringIntegerEntry.getKey()).length >= stringIntegerEntry.getValue()+1){
+                if(request.split(stringIntegerEntry.getKey()).length >= stringIntegerEntry.getValue()){
                     return inclusive;
                 }
             }
