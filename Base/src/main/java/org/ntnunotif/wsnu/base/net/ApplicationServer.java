@@ -295,7 +295,6 @@ public class ApplicationServer{
 
         /* Create the actual http-request*/
         org.eclipse.jetty.client.api.Request request = _client.newRequest(requestInformation.getEndpointReference());
-        System.out.println(requestInformation.getEndpointReference());
 
         /* Try to send the message */
         try{

@@ -35,6 +35,9 @@ public class MinimalisticConsumer implements ConsumerListener {
         // so we are not very likely to get any messages. See the BasicConsumerUse for a slightly more advanced example
     }
 
+    /**
+     * The implemented method from the ConsumerListener interface
+     */
     @Override
     public void notify(NotificationEvent event) {
         System.out.println("I got a notify!");
