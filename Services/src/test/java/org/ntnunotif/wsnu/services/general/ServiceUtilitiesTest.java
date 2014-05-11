@@ -38,7 +38,7 @@ import java.io.FileOutputStream;
 import static junit.framework.TestCase.*;
 
 /**
- * Created by tormod on 24.03.14.
+ * Test for the class {@link org.ntnunotif.wsnu.services.general.ServiceUtilities}
  */
 public class ServiceUtilitiesTest {
 
@@ -253,7 +253,7 @@ public class ServiceUtilitiesTest {
     @Test
     public void testGetExternalUrl() throws Exception {
         String extIp = ServiceUtilities.getExternalIp();
-        System.out.println(extIp);
+        // System.out.println(extIp);
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.ntnunotif.wsnu.base.util.Utilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
 import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
@@ -396,7 +397,9 @@ public class ServiceUtilities {
 
             /* Check count */
             for (Map.Entry<String, Integer> stringIntegerEntry : countLimitations.entrySet()) {
-                if(request.split(stringIntegerEntry.getKey()).length >= stringIntegerEntry.getValue()){
+                System.out.println("got:" + request.split(stringIntegerEntry.getKey()).length + " has: " + stringIntegerEntry.getValue());
+
+                if(Utilities.countOccurences(request, stringIntegerEntry.getKey()) > stringIntegerEntry.getValue()){
                     return inclusive;
                 }
             }
