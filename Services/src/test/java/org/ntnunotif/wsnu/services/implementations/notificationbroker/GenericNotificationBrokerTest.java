@@ -138,7 +138,7 @@ public class GenericNotificationBrokerTest {
 
         TopicExpressionType type = new TopicExpressionType();
         type.setDialect("http://www.w3.org/TR/1999/REC-xpath-19991116");
-        type.getContent().add("lololol");
+        type.getContent().add("sometopic");
         InternalMessage curMessage = consumer.sendGetCurrentMessage("http://127.0.0.1:8080/myBroker/", type);
 
     }

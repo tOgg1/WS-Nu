@@ -58,6 +58,7 @@ public class MappingConnectorTest {
         connector = new MappingConnector(service, methodNames);
     }
 
+    
     public void tearDown() throws Exception {
 
     }
