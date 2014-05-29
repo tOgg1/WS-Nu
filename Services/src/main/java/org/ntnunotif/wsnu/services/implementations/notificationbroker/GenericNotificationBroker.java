@@ -372,6 +372,8 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
+        Log.initLogFile();
+        Log.setWriteToFile(true);
         FilterType filters = subscribeRequest.getFilter();
 
         Map<QName, Object> filtersPresent = null;

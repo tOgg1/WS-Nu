@@ -19,7 +19,10 @@
 
 package org.ntnunotif.wsnu.base.internal;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.w3._2001._12.soap_envelope.Body;
@@ -44,8 +47,7 @@ public class MappingConnectorTest {
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
-
+    public static void setUpClass() throws Exception {
         Log.setEnableDebug(false);
         Log.setEnableWarnings(false);
         Log.setEnableErrors(false);
@@ -58,11 +60,12 @@ public class MappingConnectorTest {
         connector = new MappingConnector(service, methodNames);
     }
 
-    
-    public void tearDown() throws Exception {
-
+    @AfterClass
+    public static void tearDown() throws Exception {
+        ApplicationServer.getInstance().stop();
     }
 
+    @Test
     public void testAcceptMessage() throws Exception {
 
         Envelope env = new Envelope();
