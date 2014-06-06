@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.ntnunotif.wsnu</groupId>
-        <artifactId>WS-Nu</artifactId>
+        <artifactId>wsnu</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
@@ -57,13 +57,13 @@
   <dependencies>
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
-          <artifactId>Base</artifactId>
+          <artifactId>wsnu-base</artifactId>
           <version>0.4-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>
       <dependency>
           <groupId>org.ntnunotif.wsnu</groupId>
-          <artifactId>Services</artifactId>
+          <artifactId>wsnu-services</artifactId>
           <version>0.4-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>

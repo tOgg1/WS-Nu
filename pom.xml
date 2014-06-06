@@ -7,7 +7,7 @@
     </properties>
 
     <groupId>org.ntnunotif.wsnu</groupId>
-    <artifactId>WS-Nu</artifactId>
+    <artifactId>wsnu</artifactId>
     <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
