@@ -774,7 +774,7 @@ public class ServiceUtilities {
      * @return
      */
     public static boolean isValidDomainUrl(String address){
-        return address.matches("^https?://([a-zA-Z0-9])+[.](.*)");
+        return address.matches("^https?://(([a-z0-9])+[.])*([a-z][a-z0-9-]*[a-z0-9])(.*)");
     }
 
     /**

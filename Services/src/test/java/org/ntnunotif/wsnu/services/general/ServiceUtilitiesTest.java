@@ -269,6 +269,21 @@ public class ServiceUtilitiesTest {
     }
 
     @Test
+    public void testDomain() throws Exception {
+        String domainUrlLegal_one = "http://tormod.haugland.com";
+        String domainUrlLegal_two = "https://catz.com/cheezeburger";
+
+        String domainUrlIllegal_one = "http://[2001:db8:85a3::8a2e:370:7334]";
+        String domainUrlIllegal_two = "http://127.0.0.1";
+
+        assertTrue(ServiceUtilities.isValidDomainUrl(domainUrlLegal_one));
+        assertTrue(ServiceUtilities.isValidDomainUrl(domainUrlLegal_two));
+
+        assertFalse(ServiceUtilities.isValidDomainUrl(domainUrlIllegal_one));
+        assertFalse(ServiceUtilities.isValidDomainUrl(domainUrlIllegal_two));
+    }
+
+    @Test
     public void testStripUrl() throws Exception {
         String preIpv6 = "http://[2001:db8:85a3::8a2e:370:7334]:8080/erg";
         String preIpv4 = "https://126.0.0.1/lol";
@@ -288,4 +303,6 @@ public class ServiceUtilitiesTest {
         assertEquals("http:///test", postDomain_one);
         assertEquals("/test", postDomain_two);
     }
+
+
 }
