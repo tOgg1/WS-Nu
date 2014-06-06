@@ -12,23 +12,23 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>Base</module>
-        <module>Examples</module>
-        <module>Services</module>
+      <module>Base</module>
+      <module>Examples</module>
+      <module>Services</module>
     </modules>
     <scm>
-        <connection>scm:git:git@github.com:tOgg1/WS-Nu.git</connection>
-        <url>scm:git:git@github.com:tOgg1/WS-Nu.git</url>
-        <developerConnection>scm:git:git@github.com:tOgg1/WS-Nu.git</developerConnection>
+      <connection>scm:git:git@github.com:tOgg1/WS-Nu.git</connection>
+      <url>scm:git:git@github.com:tOgg1/WS-Nu.git</url>
+      <developerConnection>scm:git:git@github.com:tOgg1/WS-Nu.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5</version>
-            </plugin>
-        </plugins>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+      </plugins>
     </build>
 </project>

@@ -119,7 +119,7 @@ public class StockPublisher {
     private HashMap<String, StockChanged> storedStocks = new HashMap<String, StockChanged>();
 
     // Reference to our broker
-    private String brokerReference = "http://151.236.216.174:8080/myBroker";
+    private String brokerReference = "http://127.0.0.1:8080/myBroker";
 
     public StockPublisher() {
         // Initialize the inputManager
@@ -136,7 +136,7 @@ public class StockPublisher {
 
     // Start the scheduler.
     public void start() {
-        resgisterWithBroker("151.236.216.174:8080");
+        resgisterWithBroker("127.0.0.1:8080");
         task = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {

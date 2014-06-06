@@ -6,7 +6,7 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-  <artifactId>Base</artifactId>
+  <artifactId>wsnu-base</artifactId>
   <version>0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
