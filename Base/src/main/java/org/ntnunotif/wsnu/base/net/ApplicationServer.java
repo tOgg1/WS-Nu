@@ -239,11 +239,20 @@ public class ApplicationServer{
         _server.stop();
         _serverThread.join();
 
-        Resource resource = Resource.newSystemResource(_configFile);
-        XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
-        _server = (Server)config.configure();
+        if(useConfigFile){
+            Resource resource = Resource.newSystemResource(_configFile);
 
-        _server.setHandler(new HttpHandler());
+            XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+            _server = (Server)config.configure();
+
+            _handler = new HttpHandler();
+            _server.setHandler(_handler);
+        }else{
+            _server = new Server();
+            _handler = new HttpHandler();
+            _server.setHandler(_handler);
+        }
+
         _serverThread.start();
     }
 
@@ -253,6 +262,7 @@ public class ApplicationServer{
         if(!f.isFile()) {
             throw new IllegalArgumentException("Path pointed is not a file");
         }
+
         _configFile = pathToConfigFile;
     }
 
@@ -497,7 +507,11 @@ public class ApplicationServer{
         }
     }
 
+    //TODO: Fix a better system
     public static String getURI(){
+        if(_singleton._server.getURI() == null){
+            return "http://0.0.0.0:8080";
+        }
         return "http://" + _singleton._server.getURI().getHost()+ ":" + (_singleton._server.getURI().getPort() > -1 ? _singleton._server.getURI().getPort() : 8080);
     }
 }

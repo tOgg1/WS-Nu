@@ -511,6 +511,7 @@ public abstract class WebService {
 
             return hub;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Unable to quickbuild: " + e.getMessage());
         }
     }
