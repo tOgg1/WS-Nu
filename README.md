@@ -1,5 +1,4 @@
 # WS-Nu
-==============================
 
 WS-Nu is an implementation of Oasis' WS-Notification specification, built around a rigid Web Service base.
 
