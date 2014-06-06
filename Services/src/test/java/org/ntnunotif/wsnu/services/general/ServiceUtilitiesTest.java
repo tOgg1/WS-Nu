@@ -35,6 +35,8 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileOutputStream;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.*;
 
 /**
@@ -81,53 +83,6 @@ public class ServiceUtilitiesTest {
     }
 
     @Test
-    public void testRegexOne() throws Exception{
-        String test = "P1D";
-        assertTrue(test.matches("^(-P|P)[0-9]D"));
-        assertTrue(test.matches("^(-P|P)([0-9]D)?"));
-        test = "P10Y5D";
-        assertTrue(test.matches("^(-P|P)([0-9]+Y)?([0-9]+D)?"));
-        assertTrue(test.matches("^(-P|P)(([0-9]+Y)?([0-9]+D)?)?(?:(T([0-9]+H)))?"));
-        test = "P10YT5H";
-        assertTrue(test.matches("^(-P|P)(([0-9]+Y)?([0-9]+D)?)?(?:(T([0-9]+H)))?"));
-        test = "PT354H";
-        assertTrue(test.matches("^(-P|P)(([0-9]+Y)?([0-9]+D)?)?(?:(T([0-9]+H)))?"));
-    }
-
-    @Test
-    public void testRegexTwo() throws Exception{
-        String faultNameOne = "FaultInfo";
-        String faultNameTwo = "getFaultInfo";
-        String faultNameThree = "fault";
-        String faultNameFour = "GiveFault";
-        String faultNameFive = "info";
-        String faultNameSix = "verylongmethodnamethatdoesinfacthaveinfoinit";
-        String faultNameSeven= "anotherverylongmetodnamebutthisdoesnothavethewordortheotherwordwhatwasitfault?initahfuck";
-        String faultNameEight = "thisdoesnotcontainanythingwelike";
-
-        String regex = ".*((([Ff][Aa][Uu][Ll][Tt])|([Ii][Nn][Ff][Oo]))+).*";
-
-        boolean matchesOne = faultNameOne.matches(regex);
-        boolean matchesTwo = faultNameTwo.matches(regex);
-        boolean matchesThree = faultNameThree.matches(regex);
-        boolean matchesFour = faultNameFour.matches(regex);
-        boolean matchesFive = faultNameFive.matches(regex);
-        boolean matchesSix = faultNameSix.matches(regex);
-        boolean matchesSeven = faultNameSeven.matches(regex);
-        boolean matchesEight = faultNameEight.matches(regex);
-
-        assertTrue(matchesOne);
-        assertTrue(matchesTwo);
-        assertTrue(matchesThree);
-        assertTrue(matchesFour);
-        assertTrue(matchesFive);
-        assertTrue(matchesSix);
-        assertTrue(matchesSeven);
-        assertFalse(matchesEight);
-
-    }
-
-    @Test
     public void testExtractXsdDur() throws Exception{
         String test="PT5H";
         long lol = ServiceUtilities.extractXsdDuration(test);
@@ -143,18 +98,6 @@ public class ServiceUtilitiesTest {
     public void testExtractDateTime() throws Exception {
         String test = "2014-08-02T11:50:00";
         long lol = ServiceUtilities.extractXsdDatetime(test);
-    }
-
-    @Test
-    public void testInterpretTerminationTime() throws Exception {
-        String testOne = "2014-08-02T11:50:00";
-        String testTwo = "P1DT1H";
-
-        Log.d("ServiceUtilitiesTest", testOne);
-        Log.d("ServiceUtilitiesTest", testTwo);
-
-        assertTrue(testOne != null);
-        assertTrue(testTwo != null);
     }
 
     @Test
@@ -268,5 +211,81 @@ public class ServiceUtilitiesTest {
         document.appendChild(element);
 
         ServiceUtilities.sendNode("http://127.0.0.1:8080", element, hub);
+    }
+
+    @Test
+    public void testPlainIPv4AndIPv6() throws Exception {
+        String legalIPv6_one = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+        String legalIPv6_two = "[2001:db8:85a3:0:0:8a2e:370:7334]";
+        String legalIPv6_three = "2001:db8:85a3::8a2e:370:7334";
+        String legalIPv6_four = "::";
+        String legalIPv6_five = "::1";
+        String legalIPv6_six = "::ffff:127.0.0.1";
+
+        String legalIPv4_one = "127.0.0.1";
+        String legalIPv4_two = "255.255.0.0";
+
+        String illegalIPv6_one = "2001:0db8:85a3:0000:0000:8a2e:0370";
+        String illegalIPv6_two = "2001:0db8:85a3:0000:0000:8h2e:0370:0232";
+
+        String illegalIPv4_one = "126.256.0.1";
+        String illegalIPv4_two = "0.0.3";
+        String illegalIPv4_three = "12.1.3.41.4";
+
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_one));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_two));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_three));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_four));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_five));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_six));
+
+        assertTrue(ServiceUtilities.isValidIpv4Address(legalIPv4_one));
+        assertTrue(ServiceUtilities.isValidIpv4Address(legalIPv4_two));
+
+        assertFalse(ServiceUtilities.isValidIpv6Address(illegalIPv6_one));
+        assertFalse(ServiceUtilities.isValidIpv6Address(illegalIPv6_two));
+
+        assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_one));
+        assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_two));
+        assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_three));
+
+    }
+
+    @Test
+    public void testIPv4AndIPv6WithHttpAndPrefix() throws Exception {
+        String legalIPv6_one = "http://[2001:db8:85a3::8a2e:370:7334]";
+        String legalIPv6_two = "http://2001:db8:85a3::8a2e:370:7334/test/example/folder";
+        String legalIPv6_three = "2001:db8:85a3::8a2e:370:7334/lol";
+
+        String legalIPv4_one = "http://127.0.0.1";
+        String legalIPv4_two = "http://121.32.32.122/lol/test";
+
+        assertTrue(ServiceUtilities.isValidIpv4Address(legalIPv4_one));
+        assertTrue(ServiceUtilities.isValidIpv4Address(legalIPv4_two));
+
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_one));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_two));
+        assertTrue(ServiceUtilities.isValidIpv6Address(legalIPv6_three));
+    }
+
+    @Test
+    public void testStripUrl() throws Exception {
+        String preIpv6 = "http://[2001:db8:85a3::8a2e:370:7334]:8080/erg";
+        String preIpv4 = "https://126.0.0.1/lol";
+        String preDomain = "http://example.com/test";
+
+        String postIpv6_one = ServiceUtilities.stripOfHost(preIpv6);
+        String postIpv4_one = ServiceUtilities.stripOfHost(preIpv4);
+        String postIpv6_two = ServiceUtilities.stripUrlOfProtocolAndHost(preIpv6);
+        String postIpv4_two = ServiceUtilities.stripUrlOfProtocolAndHost(preIpv4);
+        String postDomain_one = ServiceUtilities.stripOfHost(preDomain);
+        String postDomain_two = ServiceUtilities.stripUrlOfProtocolAndHost(preDomain);
+
+        assertEquals("http:///erg", postIpv6_one);
+        assertEquals("/erg", postIpv6_two);
+        assertEquals("https:///lol", postIpv4_one);
+        assertEquals("/lol", postIpv4_two);
+        assertEquals("http:///test", postDomain_one);
+        assertEquals("/test", postDomain_two);
     }
 }

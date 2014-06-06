@@ -750,13 +750,139 @@ public class ServiceUtilities {
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             return in.readLine();
         } catch (MalformedURLException e) {
-            // This will determininstically never happen
+            // This will deterministically never happen
             return null;
         } catch (IOException e) {
             return null;
         }
     }
 
+    /**
+     * Checks if an address ia a valid url, i.e. either a domain-url or an url with a literal ip-address.
+     * Does this by calling {@link #isValidDomainUrl(String)} and {@link #isValidInetAddress(String)}.
+     * @param address
+     * @return
+     */
+    public static boolean isValidUrl(String address){
+        return isValidDomainUrl(address) || (address.matches("^https?//(.*)") && isValidInetAddress(address));
+    }
+
+    /**
+     * Checks if an address is a valid Domain-url, i.e. an url of the type
+     * http://someDomain.com/hey
+     * @param address
+     * @return
+     */
+    public static boolean isValidDomainUrl(String address){
+        return address.matches("^https?://([a-zA-Z0-9])+[.](.*)");
+    }
+
+    /**
+     * Checks if an address ia a valid IPv6 or IPv4 address.
+     * Does this by calling {@link #isValidIpv4Address(String)} and {@link #isValidIpv6Address(String)},
+     * in sequence with a logical OR.
+     * @param address
+     * @return
+     */
+    public static boolean isValidInetAddress(String address){
+        return isValidIpv4Address(address) || isValidIpv6Address(address);
+    }
+
+    /**
+     * Checks if an address is a valid IPv4 address.
+     * Note that the method will strip the address for any http-protocol prefix or directory suffix.
+     * E.g. http://1337.133.713.371/lol will be evaluated after
+     * http:// and /lol is stripped.
+     * @param address The address to be evaluated
+     * @return True if the address is a valid IPv4 address
+     */
+    public static boolean isValidIpv4Address(String address){
+        address = address.replaceAll("^https?://", "");
+        address = address.split("/")[0];
+        return address.matches("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+    }
+
+    /**
+     * Checks if an address is a valid IPv6 address.
+     * Note that the method will strip the address for any http-protocol or directory suffix.
+     * E.g. http://2342:abcd:2342:abcd:2342:abcd:2342:abcd/lol will be evaluated after
+     * http:// and /lol is stripped.
+     * All credit to David M. Syzdek at StackOverflow:
+     * <href>http://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses)</href>
+     * @param address The address to be evaluated
+     * @return True if the address is a valid IPv6 address
+     */
+    public static boolean isValidIpv6Address(String address){
+        address = address.replaceAll("^https?://", "");
+        address = address.split("/")[0];
+        return address.matches("\\[?(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|" +
+                "([0-9a-fA-F]{1,4}:){1,7}:|" +
+                "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|" +
+                "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|" +
+                "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|" +
+                "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|" +
+                "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|" +
+                "[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|" +
+                ":((:[0-9a-fA-F]{1,4}){1,7}|:)|" +
+                "fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|" +
+                "::(ffff(:0{1,4}){0,1}:){0,1}" +
+                "((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}" +
+                "(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])" +
+                "|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]?");
+    }
+
+    /**
+     * Take an URL and strip of protocol and host. E.g. if the url http://example.com/exampleFolder was
+     * passed in, the string '/exampleFolder' will be returned. Any url consisting only of its protocol and host will return the empty string
+     * @param address
+     * @return
+     */
+    public static String stripUrlOfProtocolAndHost(String address) {
+        String suffix = "";
+
+        // 7 is the last possible location of the protocol slashes
+        if(address.lastIndexOf("/") > 7){
+            suffix = address.substring(address.lastIndexOf("/"));
+        }
+
+        return suffix;
+    }
+
+    /**
+     * Take an URL and strip of host. E.g. if the address passed in is http://127.0.0.1/hey, http:///hey will be returned.
+     * @param address
+     * @return
+     */
+    public static String stripOfHost(String address) {
+        String prefix = "", suffix = "";
+
+        if(address.matches("^https?://(.*)")){
+            prefix = address.substring(0, address.indexOf("/")+2);
+        }
+
+        if(address.lastIndexOf("/") > 8){
+            suffix = address.substring(address.lastIndexOf("/"));
+        }
+
+        return prefix + suffix;
+    }
+
+    /**
+     * Strip an url of its http(s) protocol prefix.
+     * @param address
+     * @return
+     */
+    public static String stripUrlOfProtocol(String address) {
+        return address.replaceAll("https?//", "");
+    }
+
+    /**
+     * Helper method that creates an array filled with with the same element of type {@link T}, of length 'length'.
+     * @param t The value which the array is to be filled with.
+     * @param length The length of the array.
+     * @param <T> The parameter type
+     * @return An as specified above.
+     */
     public static<T> T[] createArrayOfEquals(T t, int length){
         T ts[] = (T[]) Array.newInstance(t.getClass(), length);
 
@@ -766,6 +892,16 @@ public class ServiceUtilities {
         return ts;
     }
 
+    /**
+     * Creates a {@link org.oasis_open.docs.wsn.b_2.Notify}-object.
+     * @param messageCount The count of {@link org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType}, i.e. NotificationMessages.
+     * @param messageContent The content of all messages. Must be of same length as the messageCount parameter.
+     * @param endpoint The endpoint's of all messages. Must be of same length as the messageCount parameter.
+     * @param producerReference The reference to the producer of the NotificationMessages. Must be of same length as the messageCount parameter.
+     * @param topic The topics for each message. Must be of same length as the messageCount parameter.
+     * @param any Anything else. Must be of same length as the messageCount parameter.
+     * @return A {@link org.oasis_open.docs.wsn.b_2.Notify} object.
+     */
     public static Notify createNotify(int messageCount, @Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String[] producerReference, @Nonnull TopicExpressionType[] topic, @Nullable Object[] any){
 
         if(messageCount <= 0){
@@ -832,18 +968,46 @@ public class ServiceUtilities {
 
     /* ===== Single message functions ==== */
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable String producerReference, @Nullable TopicExpressionType topic){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, new TopicExpressionType[]{topic}, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable TopicExpressionType topic){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null,  new TopicExpressionType[]{topic}, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint, @Nullable String producerReference){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, new String[]{producerReference}, null, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object messageContent, @Nonnull String endpoint){
         return createNotify(1, new Object[]{messageContent}, new String[]{endpoint}, null, null, null);
     }
@@ -852,18 +1016,46 @@ public class ServiceUtilities {
 
     /* ===== Multiple message functions */
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint){
         return createNotify(messageContent.length, messageContent, endpoint, null, null, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String producerReference[]){
         return createNotify(messageContent.length, messageContent, endpoint, producerReference, null, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable  TopicExpressionType topic[]){
         return createNotify(messageContent.length, messageContent, endpoint, null, topic, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String[] endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
         return createNotify(messageContent.length, messageContent, endpoint, producerReference, topic, null);
     }
@@ -871,18 +1063,46 @@ public class ServiceUtilities {
 
     /* ===== Multiple message functions with single endpointreference ===== */
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, null, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable String producerReference[]){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, null, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable  TopicExpressionType topic[]){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), null, topic, null);
     }
 
+    /**
+     * See {@link #createNotify(int, Object[], String[], String[], org.oasis_open.docs.wsn.b_2.TopicExpressionType[], Object[])}
+     * @param messageContent
+     * @param endpoint
+     * @param producerReference
+     * @param topic
+     * @return
+     */
     public static Notify createNotify(@Nonnull Object[] messageContent, @Nonnull String endpoint, @Nullable String producerReference[], @Nullable TopicExpressionType[] topic){
         return createNotify(messageContent.length, messageContent, createArrayOfEquals(endpoint, messageContent.length), producerReference, topic, null);
     }
@@ -908,6 +1128,13 @@ public class ServiceUtilities {
         return returnValue;
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws UnacceptableInitialTerminationTimeFault
+     */
     public static void throwUnacceptableInitialTerminationTimeFault(String language, String description) throws UnacceptableInitialTerminationTimeFault{
         UnacceptableInitialTerminationTimeFaultType type = new UnacceptableInitialTerminationTimeFaultType();
         try {
@@ -927,6 +1154,12 @@ public class ServiceUtilities {
         throw new UnacceptableInitialTerminationTimeFault(description, type);
     }
 
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws UnacceptableTerminationTimeFault
+     */
     public static void throwUnacceptableTerminationTimeFault(String language, String description) throws UnacceptableTerminationTimeFault {
         UnacceptableTerminationTimeFaultType type = new UnacceptableTerminationTimeFaultType();
 
@@ -948,6 +1181,13 @@ public class ServiceUtilities {
         throw new UnacceptableTerminationTimeFault(description, type);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws PublisherRegistrationFailedFault
+     */
     public static void throwPublisherRegistrationFailedFault(String language, String description) throws PublisherRegistrationFailedFault {
         PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
         try {
@@ -967,6 +1207,13 @@ public class ServiceUtilities {
         throw new PublisherRegistrationFailedFault(description, type);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws ResourceUnknownFault
+     */
     public static void throwResourceUnknownFault(String language, String description) throws ResourceUnknownFault {
         ResourceUnknownFaultType type = new ResourceUnknownFaultType();
         try {
@@ -987,6 +1234,13 @@ public class ServiceUtilities {
         throw new ResourceUnknownFault(description, type);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws UnableToDestroySubscriptionFault
+     */
     public static void throwUnableToDestroySubscriptionFault(String language, String description) throws UnableToDestroySubscriptionFault {
         UnableToDestroySubscriptionFaultType type = new UnableToDestroySubscriptionFaultType();
         try {
@@ -1007,6 +1261,13 @@ public class ServiceUtilities {
         throw new UnableToDestroySubscriptionFault(description, type);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws SubscribeCreationFailedFault
+     */
     public static void throwSubscribeCreationFailedFault(String language, String description) throws SubscribeCreationFailedFault {
         SubscribeCreationFailedFaultType type = new SubscribeCreationFailedFaultType();
         try {
@@ -1027,6 +1288,13 @@ public class ServiceUtilities {
         throw new SubscribeCreationFailedFault(description, type);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws PublisherRegistrationFailedFault
+     */
     public static void throwPublisherRegistrationFault(String language, String description) throws PublisherRegistrationFailedFault {
         PublisherRegistrationFailedFaultType type = new PublisherRegistrationFailedFaultType();
         try {
@@ -1076,6 +1344,13 @@ public class ServiceUtilities {
         throw new InvalidFilterFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws InvalidMessageContentExpressionFault
+     */
     public static void throwInvalidMessageContentExpressionFault(String language, String description) throws
             InvalidMessageContentExpressionFault {
 
@@ -1122,6 +1397,13 @@ public class ServiceUtilities {
         }
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws NoCurrentMessageOnTopicFault
+     */
     public static void throwNoCurrentMessageOnTopicFault(String language, String description) throws NoCurrentMessageOnTopicFault {
         NoCurrentMessageOnTopicFaultType faultType = new NoCurrentMessageOnTopicFaultType();
         try {
@@ -1139,6 +1421,13 @@ public class ServiceUtilities {
         throw new NoCurrentMessageOnTopicFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws TopicNotSupportedFault
+     */
     public static void throwTopicNotSupportedFault(String language, String description) throws TopicNotSupportedFault{
         TopicNotSupportedFaultType faultType = new TopicNotSupportedFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1149,6 +1438,13 @@ public class ServiceUtilities {
         throw new TopicNotSupportedFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws ResourceNotDestroyedFault
+     */
     public static void throwResouceNotDestroyedFault(String language, String description) throws ResourceNotDestroyedFault{
         ResourceNotDestroyedFaultType faultType = new ResourceNotDestroyedFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1159,6 +1455,13 @@ public class ServiceUtilities {
         throw new ResourceNotDestroyedFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws PauseFailedFault
+     */
     public static void throwPauseFailedFault(String language, String description) throws PauseFailedFault {
         PauseFailedFaultType faultType = new PauseFailedFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1169,6 +1472,13 @@ public class ServiceUtilities {
         throw new PauseFailedFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws ResumeFailedFault
+     */
     public static void throwResumeFailedFault(String language, String description) throws ResumeFailedFault {
         ResumeFailedFaultType faultType = new ResumeFailedFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1179,6 +1489,13 @@ public class ServiceUtilities {
         throw new ResumeFailedFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws InvalidTopicExpressionFault
+     */
     public static void throwInvalidTopicExpressionFault(String language, String description) throws InvalidTopicExpressionFault {
         InvalidTopicExpressionFaultType faultType = new InvalidTopicExpressionFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1189,7 +1506,13 @@ public class ServiceUtilities {
         throw new InvalidTopicExpressionFault(description, faultType);
     }
 
-
+    //TODO
+    /**
+     *
+     * @param language
+     * @param description
+     * @throws ResourceNotDestroyedFault
+     */
     public static void throwResourceNotDestroyed(String language, String description) throws ResourceNotDestroyedFault {
         ResourceNotDestroyedFaultType faultType = new ResourceNotDestroyedFaultType();
         BaseFaultType.Description desc = new BaseFaultType.Description();
@@ -1200,6 +1523,13 @@ public class ServiceUtilities {
         throw new ResourceNotDestroyedFault(description, faultType);
     }
 
+    //TODO
+    /**
+     *
+     * @param url
+     * @return
+     * @throws Exception
+     */
     public static InternalMessage sendRequest(String url) throws Exception{
         InternalMessage message = new InternalMessage(STATUS_OK, null);
         RequestInformation requestInformation = new RequestInformation();
@@ -1208,6 +1538,14 @@ public class ServiceUtilities {
         return ApplicationServer.getInstance().sendMessage(message);
     }
 
+    //TODO
+    /**
+     *
+     * @param endpoint
+     * @param node
+     * @param hub
+     * @return
+     */
     public static InternalMessage sendNode(String endpoint, Node node, Hub hub){
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, null);
 
