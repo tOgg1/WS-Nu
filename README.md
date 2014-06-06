@@ -33,11 +33,8 @@ with the following additions to your pom-file:
 ```
     <dependency>
       <groupId>org.ntnunotif</groupId>
-      
-      <version>0.3.29</version>
-      # Or <version>0.4-SNAPSHOT</version> for the dev-build
-      
-      <artifactId>wsnu</artifactId>
+      <version>0.4-SNAPSHOT</version>
+      <artifactId>wsnu-services</artifactId>
       <scope>compile</scope>
     </dependency>
 ```
