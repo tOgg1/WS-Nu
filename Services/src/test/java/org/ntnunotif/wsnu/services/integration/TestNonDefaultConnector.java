@@ -1,10 +1,13 @@
 package org.ntnunotif.wsnu.services.integration;
 
+import org.eclipse.jetty.server.Connector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Created by tormod on 06.06.14.
@@ -33,5 +36,9 @@ public class TestNonDefaultConnector {
     @Test
     public void testQuickBuild() throws Exception {
         consumer.quickBuild("myConsumer");
+        Connector[] connectors = server.getServer().getConnectors();
+
+        assertTrue(connectors.length == 1);
+
     }
 }

@@ -307,6 +307,4 @@ public class ServiceUtilitiesTest {
         assertEquals("http:///test", postDomain_one);
         assertEquals("/test", postDomain_two);
     }
-
-
 }

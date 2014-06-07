@@ -69,7 +69,7 @@ public class ApplicationServer{
     /**
      * The server's connectors.
      */
-    private ArrayList<Connector> _connectors;
+    private ArrayList<Connector> _connectors = new ArrayList<>();
 
     /**
      * Jetty-http client.
@@ -106,25 +106,38 @@ public class ApplicationServer{
      */
     public static boolean useConfigFile = true;
 
+    /**
+     * Reference to our handler.
+     */
     private static AbstractHandler _handler;
 
     /**
      * As this class is a singleton no external instantiation is allowed.
      */
-    private ApplicationServer() throws Exception
-    {
-        if(useConfigFile){
-            Resource resource = Resource.newSystemResource(_configFile);
+    private ApplicationServer(){
+        init();
+    }
 
-            XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
-            _server = (Server)config.configure();
+    /**
+     * Inits the system by creating a new server and handler
+     */
+    private void init() {
+        try {
+            if (useConfigFile) {
+                Resource resource = Resource.newSystemResource(_configFile);
 
-            _handler = new HttpHandler();
-            _server.setHandler(_handler);
-        }else{
-            _server = new Server();
-            _handler = new HttpHandler();
-            _server.setHandler(_handler);
+                XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
+                _server = (Server) config.configure();
+
+                _handler = new HttpHandler();
+                _server.setHandler(_handler);
+            } else {
+                _server = new Server();
+                _handler = new HttpHandler();
+                _server.setHandler(_handler);
+            }
+        } catch(Exception e){
+            throw new RuntimeException("Server unable to start: " + e.getMessage());
         }
     }
 
@@ -185,6 +198,10 @@ public class ApplicationServer{
         _client.setFollowRedirects(false);
         _client.start();
 
+        for (Connector connector : _connectors) {
+            _server.addConnector(connector);
+        }
+
         /* Start server */
         try {
             _serverThread = new Thread(new Runnable() {
@@ -217,6 +234,10 @@ public class ApplicationServer{
         _client.setFollowRedirects(false);
         _client.start();
 
+        for (Connector connector : _connectors) {
+            _server.addConnector(connector);
+        }
+
        /* Start server */
         try {
             _serverThread = new Thread(new Runnable() {
@@ -238,24 +259,9 @@ public class ApplicationServer{
 
 
     public void restart() throws Exception{
-        _server.stop();
-        _serverThread.join();
-
-        if(useConfigFile){
-            Resource resource = Resource.newSystemResource(_configFile);
-
-            XmlConfiguration config = new XmlConfiguration(resource.getInputStream());
-            _server = (Server)config.configure();
-
-            _handler = new HttpHandler();
-            _server.setHandler(_handler);
-        }else{
-            _server = new Server();
-            _handler = new HttpHandler();
-            _server.setHandler(_handler);
-        }
-
-        _serverThread.start();
+        stop();
+        init();
+        start(_parentHub);
     }
 
     public static void setServerConfiguration(String pathToConfigFile) throws Exception{
@@ -276,10 +282,12 @@ public class ApplicationServer{
                     "Are you running as root? You shouldn't. Reroute port 80 to 8080 instead.");
         }
         connector.setPort(port);
+        _connectors.add(connector);
         _server.addConnector(connector);
     }
 
     public void addConnector(Connector connector){
+        _connectors.add(connector);
         this._server.addConnector(connector);
     }
 
