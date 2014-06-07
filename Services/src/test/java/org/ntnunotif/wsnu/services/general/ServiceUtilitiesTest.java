@@ -194,12 +194,6 @@ public class ServiceUtilitiesTest {
     }
 
     @Test
-    public void testGetExternalUrl() throws Exception {
-        String extIp = ServiceUtilities.getExternalIp();
-        // System.out.println(extIp);
-    }
-
-    @Test
     public void testSendNode() throws Exception {
         SoapForwardingHub hub = new SoapForwardingHub();
 
@@ -248,6 +242,16 @@ public class ServiceUtilitiesTest {
         assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_one));
         assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_two));
         assertFalse(ServiceUtilities.isValidIpv4Address(illegalIPv4_three));
+
+    }
+
+    @Test
+    public void testValidUrl() throws Exception {
+        String validUrl_one = "http://example.com";
+        String validUrl_two = "http://127.0.0.1:8080";
+
+        assertTrue(ServiceUtilities.isValidUrl(validUrl_one));
+        assertTrue(ServiceUtilities.isValidUrl(validUrl_two));
 
     }
 

@@ -764,7 +764,7 @@ public class ServiceUtilities {
      * @return
      */
     public static boolean isValidUrl(String address){
-        return isValidDomainUrl(address) || (address.matches("^https?//(.*)") && isValidInetAddress(address));
+        return isValidDomainUrl(address) || (address.matches("^https?://(.*)") && isValidInetAddress(address));
     }
 
     /**
@@ -785,7 +785,17 @@ public class ServiceUtilities {
      * @return
      */
     public static boolean isValidInetAddress(String address){
-        return isValidIpv4Address(address) || isValidIpv6Address(address);
+        // Strip of potential port
+        String ipv4Test = address.substring(0, address.lastIndexOf(":"));
+
+        if(isValidIpv4Address(ipv4Test)){
+            return true;
+        }
+
+        // Strip of potential port. If it is an url, and we have a port, we substring at the latest colon
+        String ipv6Test = address.contains("[") ? address.substring(0, address.lastIndexOf(":")) : address;
+
+        return isValidIpv6Address(ipv6Test);
     }
 
     /**
