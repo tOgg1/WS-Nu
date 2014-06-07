@@ -444,6 +444,7 @@ public class SoapForwardingHub implements Hub {
             if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
                 return connection;
             }
+
         }
         Log.d("SoapForwardingHub", "Found no matching connection for URL: " + endpoint);
         return null;
