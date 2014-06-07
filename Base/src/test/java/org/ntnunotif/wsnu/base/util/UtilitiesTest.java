@@ -19,7 +19,6 @@
 
 package org.ntnunotif.wsnu.base.util;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;
@@ -132,11 +131,18 @@ public class UtilitiesTest {
         String postDomain_one = Utilities.stripOfHost(preDomain);
         String postDomain_two = Utilities.stripUrlOfProtocolAndHost(preDomain);
 
-        Assert.assertEquals("http:///erg", postIpv6_one);
-        Assert.assertEquals("/erg", postIpv6_two);
-        Assert.assertEquals("https:///lol", postIpv4_one);
-        Assert.assertEquals("/lol", postIpv4_two);
-        Assert.assertEquals("http:///test", postDomain_one);
-        Assert.assertEquals("/test", postDomain_two);
+        assertEquals("http:///erg", postIpv6_one);
+        assertEquals("/erg", postIpv6_two);
+        assertEquals("https:///lol", postIpv4_one);
+        assertEquals("/lol", postIpv4_two);
+        assertEquals("http:///test", postDomain_one);
+        assertEquals("/test", postDomain_two);
+    }
+
+    @Test
+    public void testConnection(){
+        String endpoint = "/tormod/lol/?hello=23";
+        String connectionEndpoint = "http://126.0.0.1:8080/tormod/lol";
+        assertTrue(endpoint.matches(Utilities.stripUrlOfProtocolAndHost(connectionEndpoint) + "(.*)"));
     }
 }

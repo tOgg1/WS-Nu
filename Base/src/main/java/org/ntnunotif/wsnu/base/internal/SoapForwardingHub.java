@@ -441,7 +441,13 @@ public class SoapForwardingHub implements Hub {
                 continue;
             }
 
+            // Try to match the ip in one of two ways
+            // Is this first one strictly necessary?
             if(endpoint.matches("^/?" + connection.getServiceEndpoint().replaceAll("^"+getInetAdress(), "") +"(.*)?")){
+                return connection;
+            }
+
+            if(endpoint.matches("/?" + Utilities.stripUrlOfProtocolAndHost(connection.getServiceEndpoint()) + "(.*)")){
                 return connection;
             }
 

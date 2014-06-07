@@ -503,7 +503,7 @@ public class Utilities {
 
         // 7 is the last possible location of the protocol slashes
         if(address.lastIndexOf("/") > 7){
-            suffix = address.substring(address.lastIndexOf("/"));
+            suffix = address.substring(address.indexOf("/", 8));
         }
 
         return suffix;

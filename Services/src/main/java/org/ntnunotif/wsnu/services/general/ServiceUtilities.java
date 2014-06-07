@@ -731,10 +731,12 @@ public class ServiceUtilities {
 
     /**
      * Filters out a url's address in an endpointreference. Note that this functon does not check if the uri is valid, as long as it matches the following regex:
-     * [[^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/]]
+     * [[^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/]].
+     * This method is now deprecated, see {@link org.ntnunotif.wsnu.base.util.Utilities#stripUrlOfProtocolAndHost(String)}.
      * @param endpointReference
      * @return
      */
+    @Deprecated
     public static String filterEndpointReference(String endpointReference) {
         return endpointReference.replaceAll("^https?://[a-zA-Z0-9.:]+([.][a-zA-Z]+)?/", "");
     }
