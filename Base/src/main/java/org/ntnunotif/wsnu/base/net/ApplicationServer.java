@@ -153,10 +153,12 @@ public class ApplicationServer{
                 _server.stop();
             }
 
+            System.out.println("Hello1");
             if(_serverThread != null) {
                 _serverThread.join();
             }
 
+            System.out.println("Hello2");
             if(_parentHub != null) {
                 _parentHub = null;
             }
@@ -215,7 +217,7 @@ public class ApplicationServer{
         _client.setFollowRedirects(false);
         _client.start();
 
-               /* Start server */
+       /* Start server */
         try {
             _serverThread = new Thread(new Runnable() {
                 @Override

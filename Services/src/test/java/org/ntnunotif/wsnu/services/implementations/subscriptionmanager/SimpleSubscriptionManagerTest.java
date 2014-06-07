@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.internal.UnpackingConnector;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.SimpleNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
 
 import java.io.InputStream;
 
@@ -46,11 +46,11 @@ public class SimpleSubscriptionManagerTest{
     private static SoapForwardingHub hub;
     private static UnpackingConnector connector;
     private static SimpleSubscriptionManager manager;
-    private static SimpleNotificationProducer producer;
+    private static GenericNotificationProducer producer;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        producer = new SimpleNotificationProducer();
+        producer = new GenericNotificationProducer();
         hub = producer.quickBuild("simpleProducer");
 
         manager = new SimpleSubscriptionManager(hub);

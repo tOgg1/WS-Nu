@@ -14,6 +14,7 @@ public class ApplicationServerConfigTest {
 
     @BeforeClass
     public static void setUpClass(){
+        ApplicationServer.useConfigFile = false;
         try {
             server = ApplicationServer.getInstance();
         } catch (Exception e) {
@@ -23,18 +24,17 @@ public class ApplicationServerConfigTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception{
+        ApplicationServer.useConfigFile = true;
         ApplicationServer.getInstance().stop();
     }
 
     @Test
     public void testNonDefaultConnector() throws Exception {
-        ApplicationServer.useConfigFile = false;
 
         server.addStandardConnector("127.0.0.1", 8081);
 
         SoapForwardingHub hub = new SoapForwardingHub();
         server.start(hub);
-        Thread.sleep(10000);
     }
 
     @Test

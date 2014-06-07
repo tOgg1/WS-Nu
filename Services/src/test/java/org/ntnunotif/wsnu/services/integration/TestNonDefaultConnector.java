@@ -27,6 +27,7 @@ public class TestNonDefaultConnector {
     @AfterClass
     public static void tearDownClass() throws Exception {
         server.stop();
+        ApplicationServer.useConfigFile = true;
     }
 
     @Test
