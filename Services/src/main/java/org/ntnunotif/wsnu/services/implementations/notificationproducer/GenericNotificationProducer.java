@@ -310,6 +310,25 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         super.sendNotification(notify, namespaceContextResolver);
     }
 
+    /**
+     * The Subscribe request message as defined by the WS-N specification.
+     *
+     * More information can be found at <href>http://docs.oasis-open.org/wsn/wsn-ws_base_notification-1.3-spec-os.htm#_Toc133735624</href>
+     * @param subscribeRequest A {@link org.oasis_open.docs.wsn.b_2.Subscribe} object.
+     * @return A {@link org.oasis_open.docs.wsn.b_2.SubscribeResponse} if the subscription was added successfully.
+     * @throws NotifyMessageNotSupportedFault Never.
+     * @throws UnrecognizedPolicyRequestFault Never, policies will not be added until 2.0.
+     * @throws TopicExpressionDialectUnknownFault  If the topic expression was not valid.
+     * @throws ResourceUnknownFault Never, WS-Resources is not added as of 0.3
+     * @throws InvalidTopicExpressionFault If any topic expression added was invalid.
+     * @throws UnsupportedPolicyRequestFault Never, policies will not be added until 2.0
+     * @throws InvalidFilterFault If the filter was invalid.
+     * @throws InvalidProducerPropertiesExpressionFault Never.
+     * @throws UnacceptableInitialTerminationTimeFault If the subscription termination time was invalid.
+     * @throws SubscribeCreationFailedFault If any internal or general fault occured during the processing of a subscription request.
+     * @throws TopicNotSupportedFault If the topic in some way is unknown or unsupported.
+     * @throws InvalidMessageContentExpressionFault Never.
+     */
     @Override
     @WebMethod(operationName = "Subscribe")
     public SubscribeResponse subscribe(@WebParam(partName = "SubscribeRequest", name = "Subscribe",
@@ -332,10 +351,10 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
-        String endpointReference = null;
-        try {
-            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
-        } catch (IllegalAccessException e) {
+        String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
+
+        // EndpointReference is returned as "" from getAddress if something went wrong.
+        if(endpointReference.equals("")){
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 

@@ -106,12 +106,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             RegisterPublisher registerPublisherRequest)
     throws InvalidTopicExpressionFault, PublisherRegistrationFailedFault, ResourceUnknownFault, PublisherRegistrationRejectedFault,
            UnacceptableInitialTerminationTimeFault, TopicNotSupportedFault {
-        String endpointReference = null;
-        try {
-            endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
-        } catch (IllegalAccessException e) {
-            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Endpoint not recognizeable");
-        }
+        String endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
@@ -169,12 +164,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             throw new SubscribeCreationFailedFault("Missing EndpointReference");
         }
 
-        String endpointReference = null;
-        try {
-            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
-        } catch (IllegalAccessException e) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Could not understand endpoint reference.");
-        }
+        String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
 
         FilterType filter = subscribeRequest.getFilter();
 

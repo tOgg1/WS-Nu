@@ -30,7 +30,6 @@ public class ApplicationServerConfigTest {
 
     @Test
     public void testNonDefaultConnector() throws Exception {
-
         server.addStandardConnector("127.0.0.1", 8081);
 
         SoapForwardingHub hub = new SoapForwardingHub();

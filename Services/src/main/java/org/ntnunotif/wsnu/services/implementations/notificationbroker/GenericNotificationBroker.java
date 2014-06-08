@@ -365,10 +365,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
-        String endpointReference = null;
-        try {
-            endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
-        } catch (IllegalAccessException e) {
+        String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
+
+        // EndpointReference is returned as "" from getAddress if something went wrong.
+        if(endpointReference.equals("")){
             ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
@@ -514,10 +514,10 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Missing endpointreference");
         }
 
-        String endpointReference = null;
-        try {
-            endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
-        } catch (IllegalAccessException e) {
+        String endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
+
+        // EndpointReference is returned as "" from getAddress if something went wrong.
+        if(endpointReference.equals("")){
             ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Could not register publisher, failed to " +
                     "understand the endpoint reference");
         }
