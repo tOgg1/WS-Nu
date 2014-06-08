@@ -42,3 +42,34 @@ with the following additions to your pom-file:
 ## Documentation
 
 Further documentation can be found at [the ws-nu homepage](http://ws-nu.net).
+
+## Planned future releases
+
+### 2.0
+
+### 1.0
+
+### 0.4
+
+* Enhancements
+  * Services renamed(proposed naming below):
+    * GenericNotificationProducer -> NotificiationProducerImpl
+    * GenericNotificationBroker -> NotificationBrokerImpl
+    * NotificationConsumer -> NotificatonConsumerImpl
+  * ServiceUtilities separated into four new classes(propsed naming below):
+    * ExceptionUtilities
+    * HelperClasses
+    * ServiceUtilities
+    * WsnUtilities
+  * Full IPv6 support
+  * Support for complex header generation 
+  * All WS-N send messages have been moved from the WebService class to WsnUtilities
+* Major bug fixes
+  * WS-N messages should now be attached with a wsa:action-headers
+
+## Release log
+
+### 0.3 - first official release 
+
+* Basic primary functionality added
+
