@@ -462,16 +462,25 @@ public class ServiceUtilities {
             this.regexLimitations = regexLimitations;
         }
 
+        /**
+         * Set the count-limitations explicitly as a {@link java.util.HashMap}.
+         * @param containLimitations A {@link java.util.HashMap} of count-limiations.
+         */
         public void setContainLimitations(ArrayList<String> containLimitations) {
             this.containLimitations = containLimitations;
         }
 
+        /**
+         * Set the count-limitations explicitly as a {@link java.util.HashMap}.
+         * @param countLimitations A {@link java.util.HashMap} of count-limiations.
+         */
         public void setCountLimitations(HashMap<String, Integer> countLimitations) {
             this.countLimitations = countLimitations;
         }
     }
 
     /**
+     * Helper method.
      * Finds the first integer not covered by the list. E.g. if the list is [1 2 4 7] this method will return 3.
      * Or if the list is [1 3 5 2 4 5 8 7] the method will return 6.
      * @param list
@@ -489,10 +498,12 @@ public class ServiceUtilities {
     }
 
     /**
+     * Helper method.
      * Takes a list and checks if it has duplicates in it. E.g. if the list is [2 3 2] this method will return true.
-     * But if the list is [1 2 3 4 5 7 6] it will return false. Runs in O(n log(n))
-     * @param list
-     * @return
+     * But if the list is [1 2 3 4 5 7 6] it will return false. Runs in O(n log(n)). This method requires the
+     * elements of the {@link java.util.ArrayList} to be {@link java.lang.Comparable}.
+     * @param list A list of comparable objects.
+     * @return true if the list contains duplicates, false if not
      */
     public static boolean containsDuplicates(ArrayList<? extends Comparable> list){
         Collections.sort(list);
@@ -506,11 +517,13 @@ public class ServiceUtilities {
     }
 
     /**
-     * Takes a list of non-comparables and checks if it has duplicates. E.g if the list is [Car.blue Car.red Car.blue] it returns true.
+     * Helper method.
+     * Takes a list of elements which are not {@link java.lang.Comparable} and checks if it has duplicates. E.g if the list is [Car.blue Car.red Car.blue] it returns true.
      * But if the list is [Dinosaur.Tyrannosaurus Dinosaur.Brontosaurus Dinosaur.Pterodactyl] it returns false. Checks equality using the
-     * {@link #equals(Object)} function. Note that this method is O(n^2), use with care.
-     * @param list
-     * @return
+     * {@link #equals(Object)} function. Note that this method is O(n^2), use with care. If your elements are {@link java.lang.Comparable} you should use
+     * {@link #containsDuplicates(java.util.ArrayList)}.
+     * @param list A list of objects
+     * @return true if the list contains duplicates, false if not.
      */
     public static boolean containsDuplicatesNonComparable(ArrayList<Object> list){
         ArrayList<Object> oList = new ArrayList(list);
@@ -526,12 +539,13 @@ public class ServiceUtilities {
     }
 
     /**
-     * Checks if any of the integer elements of the list is larger than the size-1
-     * @param list
-     * @return
+     * Helper method.
+     * Checks if any elements in the list is larger than the argument passed in.
+     * @param list A list of integers.
+     * @param max The maximum specified.
+     * @return If any element of the list is larger than max, the method returns true, else false.
      */
     public static boolean hasElementsLargerThanSize(ArrayList<Integer> list, int max){
-
         for (Integer integer : list) {
             if(integer > max){
                 return true;
@@ -542,29 +556,39 @@ public class ServiceUtilities {
 
 
     /**
-     * Get termination from a time-string
-     * @param time
-     * @return
-     * @throws UnacceptableTerminationTimeFault
+     * Takes a termination-time string, represented either as XsdDuration or XsdDatetime, and returns it specified (end)date.
+     * @param time The termination-time string: either XsdDuration or XsdDatetime.
+     * @return The parsed termination time as a timestamp, long.
+     * @throws UnacceptableTerminationTimeFault If the passed in {@link java.lang.String} was not a valid XsdDuration or XsdDatetime
+     * time, or if some {@link java.lang.RuntimeException} occurred during the extraction. This can be caused by the {@link javax.xml.bind.DatatypeConverter}
+     * which is used to parse XsdDatetime.
      */
     public static long interpretTerminationTime(String time) throws UnacceptableTerminationTimeFault{
+        try{
 
-        /* Try XsdDuration first */
-        if(isXsdDuration(time)){
-            return extractXsdDuration(time);
-        }else if(isXsdDatetime(time)){
-            try{
+            /* Try XsdDuration first */
+            if(isXsdDuration(time)){
+                return extractXsdDuration(time);
+            }else if(isXsdDatetime(time)){
                 return extractXsdDatetime(time);
-            }catch(RuntimeException e){
-                throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, reason given: " + e.getMessage());
+            }else{
+                 /* Neither worked, send an unacceptableTerminationTimeFault*/
+                throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, could not translate: " + time);
             }
-        }else{
-             /* Neither worked, send an unacceptableTerminationTimeFault*/
-            throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, could not translate: " + time);
+        }catch(RuntimeException e){
+            throwUnacceptableTerminationTimeFault("en", "Could not interpret termination time, reason given: " + e.getMessage());
         }
-    return -1;
+
+        // Compiler pleasing
+        return -1;
     }
 
+    /**
+     * Extracts the endtime specified by a XsdDuration string. This method will return the duration specified, added on to
+     * the systems current local time.
+     * @param time The duration as specified by a XsdDuration string.
+     * @return A timestamp
+     */
     public static long extractXsdDuration(String time){
         Pattern years, months, days, hours, minutes, seconds;
         years = Pattern.compile("[0-9]+Y");
@@ -616,6 +640,11 @@ public class ServiceUtilities {
         return currentTimeStamp;
     }
 
+    /**
+     * Extracts the timestamp of a XsdDateTime string.
+     * @param string A XsdDatetime represented as a {@link java.lang.String}.
+     * @return A timestamp.
+     */
     public static long extractXsdDatetime(String string){
         return DatatypeConverter.parseDateTime(string).getTimeInMillis();
     }
@@ -639,7 +668,13 @@ public class ServiceUtilities {
         return time.matches("^(-P|P)((([0-9]+Y)?([0-9]+M)?([0-9]+D))?)?(?:(T([0-9]+H)?([0-9]+M)?([0-9]+S)?))?");
     }
 
-    public static String generateSHA1Key(String input) throws NoSuchAlgorithmException{
+    /**
+     * Generates a SHA1 hash from a string.
+     * @param input The string that is to be hashed.
+     * @return A SHA1 hash
+     * @throws NoSuchAlgorithmException If the SHA1 hash algorithm is not available on the system.
+     */
+    public static String generateSHA1Key(String input) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
         String hash = "";
@@ -661,8 +696,9 @@ public class ServiceUtilities {
 
     /**
      * This method is deprecated, please use {@link #getAddress(javax.xml.ws.wsaddressing.W3CEndpointReference)}
-     * instead.
+     * instead. The method will be removed with 1.0.
      */
+    //TODO: Remove with version 1.0
     @Deprecated
     public static String parseW3CEndpoint(String s) throws SubscribeCreationFailedFault{
         Pattern pattern = Pattern.compile("<(wsa:)?Address>[a-z0-9A-Z.: /\n]*</(wsa:)?Address>");
@@ -680,50 +716,66 @@ public class ServiceUtilities {
         }
     }
 
-    public static String getAddress(W3CEndpointReference endpoint) throws IllegalAccessException {
-        Log.d("ServiceUtilities", "Retrieving address from W3CEndpointReference");
-        Field field = null;
-        try {
-            field = endpoint.getClass().getDeclaredField("address");
-            field.setAccessible(true);
+    /**
+     * Tries to unwrap a {@link javax.xml.ws.wsaddressing.W3CEndpointReference} to a String. Does this by multiple application
+     * of reflection.
+     * @param endpoint The endpoint that is to be unwrapped.
+     * @return A string-representation of the endpoint reference
+     */
+    public static String getAddress(W3CEndpointReference endpoint) {
+        try{
+            Log.d("ServiceUtilities", "Retrieving address from W3CEndpointReference");
+            Field field = null;
+            try {
+                field = endpoint.getClass().getDeclaredField("address");
+                field.setAccessible(true);
 
-        } catch (NoSuchFieldException e) {
-            Log.w("ServiceUtilities", "getAddress did not find the field, trying harder");
-            for (Field sfield : endpoint.getClass().getDeclaredFields()) {
-                if(sfield.getName().matches("(.*)?[aA][dD][dD]?[rR]([eE][sS][sS])?") && sfield.getType().equals(String.class)){
-                    field = sfield;
-                    break;
+            } catch (NoSuchFieldException e) {
+                Log.w("ServiceUtilities", "getAddress did not find the field, trying harder");
+                for (Field sfield : endpoint.getClass().getDeclaredFields()) {
+                    if(sfield.getName().matches("(.*)?[aA][dD][dD]?[rR]([eE][sS][sS])?") && sfield.getType().equals(String.class)){
+                        field = sfield;
+                        break;
+                    }
+                }
+                if (field == null) {
+                    Log.e("ServiceUtilities", "getAddress did not find the field, returning blank String");
+                    return "";
                 }
             }
-            if (field == null) {
-                Log.e("ServiceUtilities", "getAddress did not find the field, returning blank String");
+
+            Log.d("ServiceUtilities", "getAddress found field address, accessing field");
+            field.setAccessible(true);
+            Object fieldInst = field.get(endpoint);
+
+            // If field was null, we should return empty address
+            if (fieldInst == null) {
+                Log.e("ServiceUtilities", "getAddress was called on endpoint with null address field, returning blank string");
                 return "";
             }
-        }
 
-        Log.d("ServiceUtilities", "getAddress found field address, accessing field");
-        field.setAccessible(true);
-        Object fieldInst = field.get(endpoint);
-
-        // If field was null, we should return empty address
-        if (fieldInst == null) {
-            Log.e("ServiceUtilities", "getAddress was called on endpoint with null address field, returning blank string");
+            try {
+                Log.d("ServiceUtilities", "getAddress found field address, finding uri");
+                Field uri = fieldInst.getClass().getDeclaredField("uri");
+                uri.setAccessible(true);
+                Log.d("ServiceUtilities", "getAddress found uri, casting and returning");
+                return (String)uri.get(fieldInst);
+            } catch (NoSuchFieldException e) {
+                Log.e("ServiceUtilities", "getAddress could not find actual uri, returning empty String");
+                return "";
+            }
+        } catch(IllegalAccessException e){
+            Log.e("ServiceUtilities", "getAddress was stopped by an IllegalAccessException, this should not happen. " +
+                  "Please contact at https://github.com/tOgg1/WS-Nu. Returning blank string");
             return "";
         }
-
-        try {
-            Log.d("ServiceUtilities", "getAddress found field address, finding uri");
-            Field uri = fieldInst.getClass().getDeclaredField("uri");
-            uri.setAccessible(true);
-            Log.d("ServiceUtilities", "getAddress found uri, casting and returning");
-            return (String)uri.get(fieldInst);
-        } catch (NoSuchFieldException e) {
-            Log.e("ServiceUtilities", "getAddress could not find actual uri, returning empty String");
-            return "";
-        }
-
     }
 
+    /**
+     * Builds a {@link javax.xml.ws.wsaddressing.W3CEndpointReference} from a String.
+     * @param endpoint
+     * @return
+     */
     public static W3CEndpointReference buildW3CEndpointReference(String endpoint){
         w3CEndpointReferenceBuilder.address(endpoint);
         return w3CEndpointReferenceBuilder.build();

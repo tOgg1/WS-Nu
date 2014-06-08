@@ -100,6 +100,8 @@ public class XMLParser {
      */
     private static boolean _skippingSchemaValidation = true;
 
+    private static boolean _formattedOutput = true;
+
     /**
      * Ensure schemas are parsed on load, if needed
      */
@@ -240,6 +242,11 @@ public class XMLParser {
                     Log.w("XMLParser", "Unable to create schemas, schema validation not performed");
                 } else {
                     marshaller.setSchema(schema);
+
+                    if(_formattedOutput) {
+                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                    }
+
                     marshaller.setEventHandler(new NuValidationEventHandler(_stopParsingAtSeverity));
                 }
             }
@@ -401,6 +408,14 @@ public class XMLParser {
      */
     public static void setStopParsingAtSeverity(int value) {
         _stopParsingAtSeverity = value;
+    }
+
+    public static boolean isFormattedOutput() {
+        return _formattedOutput;
+    }
+
+    public static void setFormattedOutput(boolean formattedOutput) {
+        XMLParser._formattedOutput = _formattedOutput;
     }
 
     /**
