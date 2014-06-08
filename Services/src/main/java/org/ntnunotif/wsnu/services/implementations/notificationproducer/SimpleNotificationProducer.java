@@ -22,6 +22,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.*;
@@ -53,7 +54,7 @@ import java.util.HashMap;
 @Deprecated
 public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
-    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions;
+    private HashMap<String, HelperClasses.EndpointTerminationTuple> _subscriptions;
 
     /**
      * Constructor taking a hub as the reference
@@ -96,7 +97,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
 
         // go through all recipients and remember which should be removed
         for (String key : _subscriptions.keySet()) {
-            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple = _subscriptions.get(key);
+            HelperClasses.EndpointTerminationTuple endpointTerminationTuple = _subscriptions.get(key);
             if (endpointTerminationTuple.termination < System.currentTimeMillis()) {
                 Log.d("SimpleNotificationProducer", "A subscription has been deemed too old: " + key);
                 removeKeyList.add(key);
@@ -204,7 +205,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         response.setSubscriptionReference(builder.build());
 
         /* Set up the subscription */
-        _subscriptions.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
+        _subscriptions.put(newSubscriptionKey, new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime));
         Log.d("SimpleNotificationProducer", "Added new subscription[" + newSubscriptionKey +"]: " + endpointReference);
 
         return response;

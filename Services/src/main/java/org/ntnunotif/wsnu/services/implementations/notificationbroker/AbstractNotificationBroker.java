@@ -22,7 +22,7 @@ package org.ntnunotif.wsnu.services.implementations.notificationbroker;
 
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherChangedListener;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.AbstractNotificationProducer;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.brw_2.NotificationBroker;
@@ -104,11 +104,11 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
      * a registration of a publisher.
      */
     public static class PublisherHandle {
-        public final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+        public final HelperClasses.EndpointTerminationTuple endpointTerminationTuple;
         public final List<TopicExpressionType> registeredTopics;
         public final boolean demand;
 
-        public PublisherHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple, List<TopicExpressionType> registeredTopics, boolean demand) {
+        public PublisherHandle(HelperClasses.EndpointTerminationTuple endpointTerminationTuple, List<TopicExpressionType> registeredTopics, boolean demand) {
             this.endpointTerminationTuple = endpointTerminationTuple;
             this.registeredTopics = registeredTopics;
             this.demand = demand;

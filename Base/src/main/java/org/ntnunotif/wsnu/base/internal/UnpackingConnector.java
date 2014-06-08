@@ -43,9 +43,8 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  */
 public class UnpackingConnector extends WebServiceConnector {
 
-    private Object _webService;
-    private Class _webServiceClass;
-    private HashMap<String, Method> _allowedMethods;
+    private final Object _webService;
+    private final HashMap<String, Method> _allowedMethods;
 
     /**
      * Default and only constructor, takes a webService as parameter. Finds all allowed methods.
@@ -53,11 +52,10 @@ public class UnpackingConnector extends WebServiceConnector {
     public UnpackingConnector(Object webService) {
         super(webService);
         this._webService = webService;
-        this._webServiceClass = this._webService.getClass();
         this._allowedMethods = new HashMap<>();
 
         /* Get all methods of this class */
-        Method[] methods = this._webServiceClass.getMethods();
+        Method[] methods = this._webService.getClass().getMethods();
 
         for(Method method : methods){
             Annotation[] annotations = method.getAnnotations();
@@ -67,14 +65,12 @@ public class UnpackingConnector extends WebServiceConnector {
                 if(annotation instanceof WebMethod){
                     WebMethod webMethod = (WebMethod)annotation;
                     /* If the method is to be excluded as a webmethod */
-                    if(webMethod.exclude() == true){
+                    if(webMethod.exclude()){
                         continue;
                     }
                     Log.d("UnpackingConnector", "Allowedmethod: " + ((WebMethod) annotation).operationName());
                     this._allowedMethods.put(webMethod.operationName(), method);
                     break;
-                }else{
-                    continue;
                 }
             }
         }
@@ -115,8 +111,12 @@ public class UnpackingConnector extends WebServiceConnector {
                 messages = body.getAny();
             } else if (potentialEnvelope instanceof org.xmlsoap.schemas.soap.envelope.Envelope) {
                 org.xmlsoap.schemas.soap.envelope.Envelope envelope = (org.xmlsoap.schemas.soap.envelope.Envelope) potentialEnvelope;
+                if(envelope == null) {
+                    return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
+                }
+
                 org.xmlsoap.schemas.soap.envelope.Body body = envelope.getBody();
-                if(body == null || envelope == null){
+                if(body == null) {
                     return new InternalMessage(STATUS_FAULT|STATUS_FAULT_INVALID_PAYLOAD, null);
                 }
                 messages = body.getAny();

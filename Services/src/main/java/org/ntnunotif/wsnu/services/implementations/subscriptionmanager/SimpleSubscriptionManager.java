@@ -48,7 +48,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
     /**
      * Hashmap of subscriptions
      */
-    private HashMap<String, Long> _subscriptions;
+    private final HashMap<String, Long> _subscriptions;
 
     /**
      * Empty constructor doing nothing.
@@ -95,7 +95,7 @@ public class SimpleSubscriptionManager extends AbstractSubscriptionManager {
             for(Map.Entry<String, Long> entry : _subscriptions.entrySet()){
 
                 /* The subscription is expired */
-                if(entry.getValue().longValue() > timeNow){
+                if(entry.getValue() > timeNow){
                     toBeRemoved.add(entry.getKey());
                 }
             }

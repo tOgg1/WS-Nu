@@ -157,7 +157,6 @@ public abstract class WebServiceConnector implements ServiceConnection {
         /* Look for _requestMethod */
         Method[] methods = webService.getClass().getMethods();
 
-        outer:
         for(Method method : methods) {
             if (method.getName().equals("acceptRequest")) {
                 _requestMethod = method;

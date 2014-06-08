@@ -42,15 +42,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by tormod on 23.04.14.
+ *
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "PausableSubscriptionManager")
 @XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class SimplePausableSubscriptionManager extends AbstractPausableSubscriptionManager {
 
-    private HashMap<String, Long> _subscriptions = new HashMap<>();
-    private ArrayList<String> _pausedSubscriptions = new ArrayList<>();
+    private final HashMap<String, Long> _subscriptions = new HashMap<>();
+    private final ArrayList<String> _pausedSubscriptions = new ArrayList<>();
 
     @Override
     @WebMethod(exclude = true)
@@ -85,7 +85,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
                 }
 
                 /* The subscription is expired */
-                if(entry.getValue().longValue() > timeNow){
+                if(entry.getValue() > timeNow){
                     toBeRemoved.add(entry.getKey());
                 }
             }

@@ -122,7 +122,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "CreationTime")
     public JAXBElement<XMLGregorianCalendar> createCreationTime(XMLGregorianCalendar value) {
-        return new JAXBElement<XMLGregorianCalendar>(_CreationTime_QNAME, XMLGregorianCalendar.class, null, value);
+        return new JAXBElement<>(_CreationTime_QNAME, XMLGregorianCalendar.class, null, value);
     }
 
     /**
@@ -131,7 +131,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "ConsumerReference")
     public JAXBElement<W3CEndpointReference> createConsumerReference(W3CEndpointReference value) {
-        return new JAXBElement<W3CEndpointReference>(_ConsumerReference_QNAME, W3CEndpointReference.class, null, value);
+        return new JAXBElement<>(_ConsumerReference_QNAME, W3CEndpointReference.class, null, value);
     }
 
     /**
@@ -140,7 +140,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "PublisherRegistrationRejectedFault")
     public JAXBElement<PublisherRegistrationRejectedFaultType> createPublisherRegistrationRejectedFault(PublisherRegistrationRejectedFaultType value) {
-        return new JAXBElement<PublisherRegistrationRejectedFaultType>(_PublisherRegistrationRejectedFault_QNAME, PublisherRegistrationRejectedFaultType.class, null, value);
+        return new JAXBElement<>(_PublisherRegistrationRejectedFault_QNAME, PublisherRegistrationRejectedFaultType.class, null, value);
     }
 
     /**
@@ -149,7 +149,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "PublisherRegistrationFailedFault")
     public JAXBElement<PublisherRegistrationFailedFaultType> createPublisherRegistrationFailedFault(PublisherRegistrationFailedFaultType value) {
-        return new JAXBElement<PublisherRegistrationFailedFaultType>(_PublisherRegistrationFailedFault_QNAME, PublisherRegistrationFailedFaultType.class, null, value);
+        return new JAXBElement<>(_PublisherRegistrationFailedFault_QNAME, PublisherRegistrationFailedFaultType.class, null, value);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "PublisherReference")
     public JAXBElement<W3CEndpointReference> createPublisherReference(W3CEndpointReference value) {
-        return new JAXBElement<W3CEndpointReference>(_PublisherReference_QNAME, W3CEndpointReference.class, null, value);
+        return new JAXBElement<>(_PublisherReference_QNAME, W3CEndpointReference.class, null, value);
     }
 
     /**
@@ -167,7 +167,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "Topic")
     public JAXBElement<TopicExpressionType> createTopic(TopicExpressionType value) {
-        return new JAXBElement<TopicExpressionType>(_Topic_QNAME, TopicExpressionType.class, null, value);
+        return new JAXBElement<>(_Topic_QNAME, TopicExpressionType.class, null, value);
     }
 
     /**
@@ -176,7 +176,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "Demand")
     public JAXBElement<Boolean> createDemand(Boolean value) {
-        return new JAXBElement<Boolean>(_Demand_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_Demand_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -185,7 +185,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "RequiresRegistration")
     public JAXBElement<Boolean> createRequiresRegistration(Boolean value) {
-        return new JAXBElement<Boolean>(_RequiresRegistration_QNAME, Boolean.class, null, value);
+        return new JAXBElement<>(_RequiresRegistration_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -194,7 +194,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/br-2", name = "ResourceNotDestroyedFault")
     public JAXBElement<ResourceNotDestroyedFaultType> createResourceNotDestroyedFault(ResourceNotDestroyedFaultType value) {
-        return new JAXBElement<ResourceNotDestroyedFaultType>(_ResourceNotDestroyedFault_QNAME, ResourceNotDestroyedFaultType.class, null, value);
+        return new JAXBElement<>(_ResourceNotDestroyedFault_QNAME, ResourceNotDestroyedFaultType.class, null, value);
     }
 
 }

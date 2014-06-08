@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 
 /**
- * Created by Inge on 08.04.2014.
+ *
  */
 public class GenericNotificationProducerTest {
 

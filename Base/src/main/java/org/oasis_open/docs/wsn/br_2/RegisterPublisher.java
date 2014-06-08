@@ -110,7 +110,7 @@ public class RegisterPublisher {
      */
     public List<TopicExpressionType> getTopic() {
         if (topic == null) {
-            topic = new ArrayList<TopicExpressionType>();
+            topic = new ArrayList<>();
         }
         return this.topic;
     }
@@ -188,7 +188,7 @@ public class RegisterPublisher {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

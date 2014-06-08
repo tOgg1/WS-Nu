@@ -19,7 +19,7 @@
 
 package org.ntnunotif.wsnu.examples.misc;
 
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 
 /**
  * Example of using the InputManager to handle inputs
@@ -29,14 +29,14 @@ public class InputManagerExample {
     // A variable we have for demonstrative value only.
     private boolean variableThatNeedsToBeSetFalseBeforeShutdown = true;
 
-    private ServiceUtilities.InputManager inputManager;
+    private HelperClasses.InputManager inputManager;
 
     public InputManagerExample() {
 
     }
 
     public void createInputManager(){
-        inputManager = new ServiceUtilities.InputManager();
+        inputManager = new HelperClasses.InputManager();
         try {
 
             // Create our first method-reroute, routing the command "exit --soft" to the handleCommandExit method
@@ -57,7 +57,7 @@ public class InputManagerExample {
             // The magic happens at the sixth argument. We have to specificy a list or array of [Integer, Object] tuples. The first index
             // says which index the parameter goes into. E.g. in a method(int a, int b), the parameter a has index 0 and the parameter b has index 1.
             // In our case we have on parameter, which is of type int, and goes into index 0.
-            inputManager.addMethodReroute("reroute2", "exit --hard(.*)", true, System.class.getMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
+            inputManager.addMethodReroute("reroute2", "exit --hard(.*)", true, System.class.getMethod("exit", Integer.TYPE), this, new HelperClasses.Tuple[]{new HelperClasses.Tuple(0, 0)});
 
             // Start the inputManager, you should now be able to exit the program in two ways.
             inputManager.start();

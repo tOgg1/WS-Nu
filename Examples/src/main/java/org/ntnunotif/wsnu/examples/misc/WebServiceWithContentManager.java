@@ -19,7 +19,7 @@
 
 package org.ntnunotif.wsnu.examples.misc;
 
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 
 /**
@@ -29,7 +29,7 @@ public class WebServiceWithContentManager {
 
     private NotificationConsumer consumer;
     private final String endpointReference = "http://example.org/myConsumer";
-    private ServiceUtilities.ContentManager inclusiveManager, exclusiveManager;
+    private HelperClasses.ContentManager inclusiveManager, exclusiveManager;
 
     public WebServiceWithContentManager() {
         consumer = new NotificationConsumer();
@@ -40,7 +40,7 @@ public class WebServiceWithContentManager {
      */
     public void addContentManagers() {
         // Our first content manager is an inclusive one, meaning it accepts all requests that matches any filter.
-        inclusiveManager = new ServiceUtilities.ContentManager(endpointReference);
+        inclusiveManager = new HelperClasses.ContentManager(endpointReference);
         inclusiveManager.setInclusive();
         // Lets add a match for the word "money"
         // After this, our content manager will accept any request with the word money in it.
@@ -50,7 +50,7 @@ public class WebServiceWithContentManager {
         inclusiveManager.addRegex("^free(.*)");
 
         // Lets add a content manager that excludes phrases we don't like
-        exclusiveManager = new ServiceUtilities.ContentManager(endpointReference);
+        exclusiveManager = new HelperClasses.ContentManager(endpointReference);
         exclusiveManager.setExclusive();
 
         // Lets filter out any containment of the word porn

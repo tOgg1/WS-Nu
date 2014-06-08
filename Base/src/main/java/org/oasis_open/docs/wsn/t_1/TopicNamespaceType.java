@@ -95,7 +95,7 @@ public class TopicNamespaceType
      */
     public List<TopicNamespaceType.Topic> getTopic() {
         if (topic == null) {
-            topic = new ArrayList<TopicNamespaceType.Topic>();
+            topic = new ArrayList<>();
         }
         return this.topic;
     }
@@ -125,7 +125,7 @@ public class TopicNamespaceType
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

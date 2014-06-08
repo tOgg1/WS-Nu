@@ -68,7 +68,7 @@ public class XMLParser {
     /**
      * classLoader is the default loader for java classes.
      */
-    private static ClassLoader classLoader = org.oasis_open.docs.wsn.b_2.ObjectFactory.class.getClassLoader();
+    private static final ClassLoader classLoader = org.oasis_open.docs.wsn.b_2.ObjectFactory.class.getClassLoader();
 
     /**
      * The schema that should be used in validation.
@@ -141,6 +141,7 @@ public class XMLParser {
      *                 {@link javax.xml.transform.stream.StreamSource}. For more information, see {@link javax.xml.transform.stream.StreamSource#StreamSource(java.lang.String)}
      * @throws JAXBException
      */
+    //TODO: Is JAXBException ever thrown?
     public static void registerSchemaLocation(String systemID) throws JAXBException {
         Log.d("XMLParser", "External schema location added");
         externalSchemaLocations.add(systemID);
@@ -415,7 +416,7 @@ public class XMLParser {
     }
 
     public static void setFormattedOutput(boolean formattedOutput) {
-        XMLParser._formattedOutput = _formattedOutput;
+        XMLParser._formattedOutput = formattedOutput;
     }
 
     /**
@@ -423,9 +424,9 @@ public class XMLParser {
      */
     private class WSStreamFilter implements StreamFilter {
 
-        NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
-        NuNamespaceContext namespaceContext = new NuNamespaceContext();
-        Stack<QName> elementPath = new Stack<>();
+        final NuNamespaceContextResolver contextResolver = new NuNamespaceContextResolver();
+        final NuNamespaceContext namespaceContext = new NuNamespaceContext();
+        final Stack<QName> elementPath = new Stack<>();
         XMLStreamReader reader;
 
         @Override
@@ -519,7 +520,7 @@ public class XMLParser {
 
     private static class NuUnmarshalListener extends Unmarshaller.Listener {
 
-        NuNamespaceContextResolver resolver;
+        final NuNamespaceContextResolver resolver;
 
         NuUnmarshalListener(NuNamespaceContextResolver resolver) {
             this.resolver = resolver;

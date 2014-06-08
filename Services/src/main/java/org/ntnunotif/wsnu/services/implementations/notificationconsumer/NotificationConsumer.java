@@ -43,7 +43,7 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     /**
      * Helper that deals with Notification events
      */
-    private NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
+    private final NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
 
 
     public NotificationConsumer() {
@@ -80,7 +80,6 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     public InternalMessage sendSubscriptionRequest(Subscribe subscriptionRequest, String address){
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscriptionRequest);
         message.getRequestInformation().setEndpointReference(address);
-        InternalMessage returnMessage = hub.acceptLocalMessage(message);
-        return returnMessage;
+        return hub.acceptLocalMessage(message);
     }
 }

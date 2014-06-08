@@ -104,7 +104,7 @@ public class PublisherRegistrationRP {
      */
     public List<TopicExpressionType> getTopic() {
         if (topic == null) {
-            topic = new ArrayList<TopicExpressionType>();
+            topic = new ArrayList<>();
         }
         return this.topic;
     }

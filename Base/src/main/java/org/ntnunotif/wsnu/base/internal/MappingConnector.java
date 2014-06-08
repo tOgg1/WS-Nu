@@ -33,7 +33,7 @@ import java.util.Map;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
- * Created by tormod on 25.03.14.
+ *
  */
 public class MappingConnector extends WebServiceConnector{
 
@@ -52,7 +52,7 @@ public class MappingConnector extends WebServiceConnector{
 
         super(webService);
         ArrayList<String> methodNames = new ArrayList<>();
-        _allowedMethods = new HashMap<String, Method>();
+        _allowedMethods = new HashMap<>();
 
         for(Method method : webService.getClass().getMethods()){
             _allowedMethods.put(method.getName(), method);
@@ -103,6 +103,7 @@ public class MappingConnector extends WebServiceConnector{
                 messages = new ArrayList<>();
             }
 
+            //TODO: Add support for multiple messages
             for(Object message : messages){
                 Class objectClass = message.getClass();
 

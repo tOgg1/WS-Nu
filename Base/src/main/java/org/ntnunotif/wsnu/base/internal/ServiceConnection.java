@@ -23,7 +23,7 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 
 /**
- * Created by tormod on 25.03.14.
+ *
  */
 public interface ServiceConnection {
 

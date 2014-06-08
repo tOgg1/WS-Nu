@@ -32,7 +32,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by tormod on 23.04.14.
+ *
  */
 public abstract class AbstractPublisherRegistrationManager extends WebService implements PublisherRegistrationManager, Runnable {
 
@@ -54,7 +54,7 @@ public abstract class AbstractPublisherRegistrationManager extends WebService im
     /**
      * Listeners listening for a changed
      */
-    private ArrayList<PublisherChangedListener> _listeners = new ArrayList<>();
+    private final ArrayList<PublisherChangedListener> _listeners = new ArrayList<>();
 
     /**
      * Constructor using the default schedule interval of 60 seconds

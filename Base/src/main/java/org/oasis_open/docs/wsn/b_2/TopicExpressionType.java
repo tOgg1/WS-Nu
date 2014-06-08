@@ -51,7 +51,7 @@ public class TopicExpressionType {
     @XmlSchemaType(name = "anyURI")
     protected String dialect;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the content property.
@@ -79,7 +79,7 @@ public class TopicExpressionType {
      */
     public List<Object> getContent() {
         if (content == null) {
-            content = new ArrayList<Object>();
+            content = new ArrayList<>();
         }
         return this.content;
     }

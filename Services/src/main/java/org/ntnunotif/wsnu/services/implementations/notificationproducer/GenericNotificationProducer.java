@@ -26,6 +26,7 @@ import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -60,7 +61,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
     private final boolean cacheMessages;
 
-    private Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
+    private final Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
     /**
      * Creates a <code>GenericNotificationProducer</code> which caches messages and has default filter support (filter
@@ -229,7 +230,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         // go through all recipients and remember which should be removed
         for (String key : subscriptions.keySet()) {
-            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple = subscriptions.get(key).endpointTerminationTuple;
+            HelperClasses.EndpointTerminationTuple endpointTerminationTuple = subscriptions.get(key).endpointTerminationTuple;
             if (endpointTerminationTuple.termination < System.currentTimeMillis()) {
                 Log.d("SimpleNotificationProducer", "A subscription has been deemed too old: " + key);
                 removeKeyList.add(key);
@@ -443,9 +444,9 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
                     namespaceContextResolver);
 
-            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+            HelperClasses.EndpointTerminationTuple endpointTerminationTuple;
 
-            endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
+            endpointTerminationTuple = new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime);
             subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
             if (usesManager) {

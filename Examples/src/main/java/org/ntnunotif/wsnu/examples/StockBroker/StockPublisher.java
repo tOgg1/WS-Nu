@@ -26,7 +26,9 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.base.util.Utilities;
 import org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.xmlsoap.schemas.soap.envelope.Body;
 import org.xmlsoap.schemas.soap.envelope.Envelope;
@@ -105,7 +107,7 @@ public class StockPublisher {
 
 
     // A helper-class to assist us with inputmanaging, in case we want to do any console-work.
-    private ServiceUtilities.InputManager inputManager;
+    private HelperClasses.InputManager inputManager;
 
     // The scheduler to schedule a regular fetch of data.
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -116,7 +118,7 @@ public class StockPublisher {
 
 
     // A hashmap storing our known stocks. This so we can detect a change (we dont want to send anything when there isnt a change)
-    private HashMap<String, StockChanged> storedStocks = new HashMap<String, StockChanged>();
+    private HashMap<String, StockChanged> storedStocks = new HashMap<>();
 
     // Reference to our broker
     private String brokerReference = "http://127.0.0.1:8080/myBroker";
@@ -124,15 +126,13 @@ public class StockPublisher {
     public StockPublisher() {
         // Initialize the inputManager
         try{
-            inputManager = new ServiceUtilities.InputManager();
+            inputManager = new HelperClasses.InputManager();
             inputManager.addMethodReroute("update", "update", false, this.getClass().getMethod("update", null), this);
             inputManager.start();
         }catch(NoSuchMethodException e){
             // Do nothing
         }
-
     }
-
 
     // Start the scheduler.
     public void start() {
@@ -208,7 +208,7 @@ public class StockPublisher {
     public void sendUpdatedStock(StockChanged stockChanged){
         // Create the actual notify. Note that the third argument is the producerreference, which we in this scenario set to
         // the ip of the applicationserver
-        Notify notify = ServiceUtilities.createNotify(stockChanged, brokerReference, ApplicationServer.getURI());
+        Notify notify = WsnUtilities.createNotify(stockChanged, brokerReference, ApplicationServer.getURI());
 
         // Create the soap envelope
         JAXBElement<Envelope> envelope = generateEnvelope(notify);
@@ -278,7 +278,7 @@ public class StockPublisher {
     // Parses the stocks. The below will not be documented. It is essentially a sequential search parser finding the relevant
     // information from the reuters.com webpage
     public ArrayList<StockChanged> getStocks(String webPage){
-        ArrayList<StockChanged> stocks = new ArrayList<StockChanged>();
+        ArrayList<StockChanged> stocks = new ArrayList<>();
 
         String america = "All American Indices";
         String europe = "All European Indices";

@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by tormod on 3/15/14.
+ *
  */
 public class NotificationEventTest {
     private static NotificationConsumer _consumer;

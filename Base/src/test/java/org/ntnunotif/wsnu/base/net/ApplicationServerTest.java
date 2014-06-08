@@ -42,7 +42,7 @@ import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by tormod on 3/6/14.
+ *
  */
 public class ApplicationServerTest {
 

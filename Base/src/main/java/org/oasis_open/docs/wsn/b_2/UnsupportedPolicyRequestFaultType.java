@@ -66,7 +66,7 @@ public class UnsupportedPolicyRequestFaultType
      */
     public List<QName> getUnsupportedPolicy() {
         if (unsupportedPolicy == null) {
-            unsupportedPolicy = new ArrayList<QName>();
+            unsupportedPolicy = new ArrayList<>();
         }
         return this.unsupportedPolicy;
     }

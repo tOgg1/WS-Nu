@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 
 /**
- * Created by tormod on 06.06.14.
+ *
  */
 public class ApplicationServerConfigTest {
 

@@ -22,7 +22,7 @@ package org.ntnunotif.wsnu.services.filterhandling;
 import com.google.common.collect.ImmutableMap;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -217,7 +217,7 @@ public class FilterSupport {
                                                NuNamespaceContextResolver namespaceContextResolver) {
         Log.d("FilterSupport", "Evaluating notify with number of messages: " + notify.getNotificationMessage().size());
         // Tries not to destroy source Notify
-        Notify returnValue = ServiceUtilities.cloneNotifyShallow(notify);
+        Notify returnValue = WsnUtilities.cloneNotifyShallow(notify);
 
         // Do a check on all filters, to see if the filter at at least one instance evaluates to false
         for (QName fName : subscriptionInfo.getFilterSet()) {

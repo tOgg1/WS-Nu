@@ -66,7 +66,7 @@ public class UnrecognizedPolicyRequestFaultType
      */
     public List<QName> getUnrecognizedPolicy() {
         if (unrecognizedPolicy == null) {
-            unrecognizedPolicy = new ArrayList<QName>();
+            unrecognizedPolicy = new ArrayList<>();
         }
         return this.unrecognizedPolicy;
     }

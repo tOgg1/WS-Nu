@@ -36,6 +36,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * If the connected Web Service has more than one such method, the first found will be selected. If you need two invocations, you should implement a new version of WebServiceConnector
  * Created by tormod on 23.03.14.
  */
+@Deprecated
 public class SoapForwardConnector extends WebServiceConnector {
 
     private final Object _webService;
@@ -57,8 +58,6 @@ public class SoapForwardConnector extends WebServiceConnector {
                     if(((WebMethod)annotation).operationName().equals("AcceptSoapMessage")) {
                         _soapMethod = method;
                         return;
-                    }else{
-                        continue;
                     }
                 }
             }

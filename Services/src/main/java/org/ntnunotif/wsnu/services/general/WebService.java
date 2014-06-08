@@ -47,10 +47,10 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 public abstract class WebService {
 
     /**
-     * ContentManagers to filter file-requests. See {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}
+     * ContentManagers to filter file-requests. See {@link org.ntnunotif.wsnu.services.general.HelperClasses.ContentManager}
      * for more information.
      */
-    protected ArrayList<ServiceUtilities.ContentManager> contentManagers;
+    protected ArrayList<HelperClasses.ContentManager> contentManagers;
 
     /**
      * BaseFactory to create relevant objects.
@@ -240,8 +240,7 @@ public abstract class WebService {
                                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
                             }
                             FileInputStream stream = new FileInputStream(wsdlLocation);
-                            InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
-                            return message;
+                            return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
                         }catch(FileNotFoundException e){
                             Log.d("WebService", "Wsdl-file not found, please generate it with generateWsdlAndXsd()");
                             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
@@ -258,7 +257,7 @@ public abstract class WebService {
 
         uri = uri.replaceAll("^/", "");
 
-        for (ServiceUtilities.ContentManager contentManager : contentManagers) {
+        for (HelperClasses.ContentManager contentManager : contentManagers) {
             if(!contentManager.accepts(uri)){
                 Log.d("WebService", "Webservice did not accept uri" + uri + "\n on the basis of content.");
                 return new InternalMessage(STATUS_FAULT|STATUS_FAULT_ACCESS_NOT_ALLOWED, null);
@@ -267,8 +266,7 @@ public abstract class WebService {
 
         try{
             FileInputStream stream = new FileInputStream(uri.replaceAll("^/", ""));
-            InternalMessage returnMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
-            return returnMessage;
+            return new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE|STATUS_MESSAGE_IS_INPUTSTREAM, stream);
         }catch(FileNotFoundException e){
             Log.d("WebService", "File not found: " + uri.replaceAll("^/", ""));
             return new InternalMessage(STATUS_FAULT|STATUS_FAULT_NOT_FOUND, null);
@@ -554,12 +552,7 @@ public abstract class WebService {
      * @return The Hub connected to the built Web Service
      */
     public Hub quickBuild(Class<? extends WebServiceConnector> connectorClass, Object... args) {
-        SoapForwardingHub hub = null;
-        try {
-            hub = new SoapForwardingHub();
-        } catch (Exception e) {
-            hub.stop();
-        }
+        SoapForwardingHub hub = new SoapForwardingHub();
 
         try {
             Constructor[] constructors = connectorClass.getConstructors();
@@ -581,12 +574,14 @@ public abstract class WebService {
                 break;
             }
 
+            if(relevantConstructor == null){
+                return null;
+            }
+
             Object[] newArgs = new Object[args.length + 1];
             newArgs[0] = this;
 
-            for (int i = 0; i < args.length; i++) {
-                newArgs[i + 1] = args[i];
-            }
+            System.arraycopy(args, 0, newArgs, 1, args.length);
 
             WebServiceConnector connector = (WebServiceConnector) relevantConstructor.newInstance(newArgs);
             hub.registerService(connector);
@@ -606,22 +601,22 @@ public abstract class WebService {
 
     /**
      * Adds a content manager.
-     * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
+     * @param manager A {@link org.ntnunotif.wsnu.services.general.HelperClasses.ContentManager}.
      */
-    public void addContentManager(ServiceUtilities.ContentManager manager){
+    public void addContentManager(HelperClasses.ContentManager manager){
         contentManagers.add(manager);
     }
 
     /**
      * Removes a content manager.
-     * @param manager A {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}.
+     * @param manager A {@link org.ntnunotif.wsnu.services.general.HelperClasses.ContentManager}.
      */
-    public void removeContentManger(ServiceUtilities.ContentManager manager){
+    public void removeContentManger(HelperClasses.ContentManager manager){
         contentManagers.remove(manager);
     }
 
     /**
-     * Clears all {@link org.ntnunotif.wsnu.services.general.ServiceUtilities.ContentManager}'s.
+     * Clears all {@link org.ntnunotif.wsnu.services.general.HelperClasses.ContentManager}'s.
      */
     public void clearContentManagers(){
         contentManagers.clear();
@@ -645,7 +640,7 @@ public abstract class WebService {
             throw new IllegalStateException("WebService must have endpointReference specified for creation of wsdl files");
         }
 
-        String os = System.getProperty("os.name");
+//      String os = System.getProperty("os.name");
         String classPath = System.getProperty("java.class.path");
 
         File directory = new File(pureEndpointReference);

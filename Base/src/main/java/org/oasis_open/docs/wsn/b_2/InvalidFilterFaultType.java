@@ -66,7 +66,7 @@ public class InvalidFilterFaultType
      */
     public List<QName> getUnknownFilter() {
         if (unknownFilter == null) {
-            unknownFilter = new ArrayList<QName>();
+            unknownFilter = new ArrayList<>();
         }
         return this.unknownFilter;
     }

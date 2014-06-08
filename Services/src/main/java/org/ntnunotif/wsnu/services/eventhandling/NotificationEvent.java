@@ -40,9 +40,9 @@ import java.util.List;
  */
 public final class NotificationEvent extends EventObject {
 
-    private Notify _notify;
-    private RequestInformation _requestInformation;
-    private Calendar _timestamp = Calendar.getInstance();
+    private final Notify _notify;
+    private final RequestInformation _requestInformation;
+    private final Calendar _timestamp = Calendar.getInstance();
 
     /**
      * Creates an event with source, content and request information
@@ -66,6 +66,7 @@ public final class NotificationEvent extends EventObject {
     public NotificationEvent(Object source, Notify notify) {
         super(source);
         _notify = notify;
+        _requestInformation = null;
     }
 
     /**

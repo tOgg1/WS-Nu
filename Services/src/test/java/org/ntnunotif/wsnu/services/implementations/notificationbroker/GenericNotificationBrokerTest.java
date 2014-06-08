@@ -29,7 +29,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
 import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.SimplePublisherRegistrationManager;
@@ -43,7 +43,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 
 /**
- * Created by tormod on 01.05.14.
+ *
  */
 public class GenericNotificationBrokerTest {
 
@@ -111,7 +111,7 @@ public class GenericNotificationBrokerTest {
         message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/");
         assertTrue((message.statusCode & STATUS_OK) > 0);
 
-        producer.sendNotification(ServiceUtilities.createNotify(
+        producer.sendNotification(WsnUtilities.createNotify(
                 new JAXBElement<>(new QName("lol"), String.class, "Hey"),
                 "127.0.0.1:8080/myBroker"));
         Thread.sleep(100);
@@ -132,7 +132,7 @@ public class GenericNotificationBrokerTest {
         message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/");
         assertTrue((message.statusCode & STATUS_OK) > 0);
 
-        producer.sendNotification(ServiceUtilities.createNotify(
+        producer.sendNotification(WsnUtilities.createNotify(
                 new JAXBElement<>(new QName("lol"), String.class, "Hey"),
                 "127.0.0.1:8080/myBroker"));
 

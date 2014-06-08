@@ -25,7 +25,7 @@ import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
 
 /**
- * Created by tormod on 25.03.14.
+ *
  */
 public class SimpleNotificationProducerTest {
 

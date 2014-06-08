@@ -101,30 +101,8 @@ public class ServiceUtilitiesTest {
     }
 
     @Test
-    public void testParseW3cTime() throws Exception{
-        String testOne="<wsa:Address>79.120.4.2</wsa:Address>";
-        String extractedOne = ServiceUtilities.parseW3CEndpoint(testOne);
-        assertEquals("http://79.120.4.2", extractedOne);
-
-        String testTwo="<Address>tormod.haugland.com:8080</Address>";
-        String extractedTwo = ServiceUtilities.parseW3CEndpoint(testTwo);
-        assertEquals("http://tormod.haugland.com:8080", extractedTwo);
-
-        String testThree="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><EndpointReference xmlns=\"http:" +
-                "//www.w3.org/2005/08/addressing\"><Address>78.91.27.226:8080</Address></EndpointReference>";
-        String extractedThree = ServiceUtilities.parseW3CEndpoint(testThree);
-        assertEquals("http://78.91.27.226:8080", extractedThree);
-
-        String testFour="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><EndpointReference xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>\n" +
-                "                    78.91.27.226:8080\n" +
-                "                </Address></EndpointReference>";
-        String extractedFour = ServiceUtilities.parseW3CEndpoint(testFour);
-        assertEquals("http://78.91.27.226:8080", extractedFour);
-    }
-
-    @Test
     public void testContentManager() throws Exception{
-        ServiceUtilities.ContentManager contentManager = new ServiceUtilities.ContentManager("151.236.234");
+        HelperClasses.ContentManager contentManager = new HelperClasses.ContentManager("151.236.234");
 
         contentManager.addContains("porn");
         contentManager.addRegex(".*[.]html");
@@ -150,13 +128,13 @@ public class ServiceUtilitiesTest {
         envelope.setHeader(objectFactory.createHeader());
         envelope.setBody(objectFactory.createBody());
 
-        Notify notify = ServiceUtilities.createNotify(envelope, "TormodHaugland.com");
+        Notify notify = WsnUtilities.createNotify(envelope, "TormodHaugland.com");
 
         FileOutputStream file1 = new FileOutputStream(getClass().getResource("/TestNotifyOne.xml").getFile());
         XMLParser.writeObjectToStream(notify, file1);
 
         /* Multiple messages */
-        Notify doubleNotif = ServiceUtilities.createNotify(new Envelope[]{envelope, envelope}, "TormodHaugland.com");
+        Notify doubleNotif = WsnUtilities.createNotify(new Envelope[]{envelope, envelope}, "TormodHaugland.com");
 
         FileOutputStream file2 = new FileOutputStream(getClass().getResource("/TestNotifyTwo.xml").getFile());
         XMLParser.writeObjectToStream(doubleNotif, file2);

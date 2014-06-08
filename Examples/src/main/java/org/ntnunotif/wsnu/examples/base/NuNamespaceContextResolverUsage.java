@@ -114,7 +114,7 @@ public class NuNamespaceContextResolverUsage {
             System.err.println("context one should not contain this prefix");
         }
         // The returned namespace is indeed the same object that we put in
-        if (context2.getNamespaceURI(prefix1) == namespace1) {
+        if (context2.getNamespaceURI(prefix1).equals(namespace1)) {
             System.out.println("context two contained prefix 1");
         } else {
             System.err.println("context two should contain this prefix");

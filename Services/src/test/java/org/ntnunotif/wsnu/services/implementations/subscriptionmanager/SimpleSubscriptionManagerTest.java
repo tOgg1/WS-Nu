@@ -38,7 +38,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 
 /**
- * Created by tormod on 3/19/14.
+ *
  */
 
 public class SimpleSubscriptionManagerTest{

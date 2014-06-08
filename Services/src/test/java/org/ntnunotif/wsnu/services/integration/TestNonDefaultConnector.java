@@ -10,7 +10,7 @@ import org.ntnunotif.wsnu.services.implementations.notificationconsumer.Notifica
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * Created by tormod on 06.06.14.
+ *
  */
 public class TestNonDefaultConnector {
     private static NotificationConsumer consumer;

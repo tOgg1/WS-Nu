@@ -29,7 +29,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -58,13 +58,13 @@ public class SimpleConsumer implements ConsumerListener {
         startTime = System.currentTimeMillis();
 
         /* Creates an inputManager and registers some commands it wants rerouted */
-        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+        HelperClasses.InputManager inputManager = new HelperClasses.InputManager();
 
         /* Reroutes matches of ^inf?o?.*? to the function handleInfo using regex */
         inputManager.addMethodReroute("info", "^inf?o?.*?", true, this.getClass().getMethod("handleInfo", String.class), this);
         inputManager.addMethodReroute("subscribe", "^subscribe *[0-9a-zA-Z.:/]+", true, this.getClass().getMethod("handleSubscribe", String.class), this);
         inputManager.addMethodReroute("request", "^request (.*)+", true, this.getClass().getMethod("handleRequest", String.class), this);
-        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
+        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new HelperClasses.Tuple[]{new HelperClasses.Tuple(0, 0)});
         inputManager.start();
     }
 

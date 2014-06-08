@@ -20,7 +20,7 @@
 package org.ntnunotif.wsnu.base.util;
 
 /**
- * Created by tormod on 23.03.14.
+ *
  */
 public class InvalidWebServiceException extends RuntimeException {
 

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 05.05.2014.
+ *
  */
 public class StockTopics {
 

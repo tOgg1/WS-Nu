@@ -23,6 +23,7 @@ import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
@@ -51,8 +52,8 @@ import java.util.HashMap;
 @Deprecated
 public class SimpleNotificationBroker extends AbstractNotificationBroker {
 
-    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _subscriptions = new HashMap<>();
-    private HashMap<String, ServiceUtilities.EndpointTerminationTuple> _publishers = new HashMap<>();
+    private HashMap<String, HelperClasses.EndpointTerminationTuple> _subscriptions = new HashMap<>();
+    private HashMap<String, HelperClasses.EndpointTerminationTuple> _publishers = new HashMap<>();
 
     public SimpleNotificationBroker() {
         super();
@@ -117,7 +118,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         String newSubscriptionKey = generateSubscriptionKey();
         String subscriptionEndpoint = generateHashedURLFromKey("publisherregistration", newSubscriptionKey);
 
-        _publishers.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
+        _publishers.put(newSubscriptionKey, new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime));
 
         RegisterPublisherResponse response = new RegisterPublisherResponse();
 
@@ -172,7 +173,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
             throw new InvalidFilterFault("Filters not supported for this NotificationProducer");
         }
 
-        long terminationTime = 0;
+        long terminationTime;
         if(subscribeRequest.getInitialTerminationTime() != null){
             try {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
@@ -214,7 +215,7 @@ public class SimpleNotificationBroker extends AbstractNotificationBroker {
         response.setSubscriptionReference(builder.build());
 
         /* Set up the subscription */
-        _subscriptions.put(newSubscriptionKey, new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime));
+        _subscriptions.put(newSubscriptionKey, new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime));
         Log.d("SimpleNotificationProducer", "Added new subscription");
 
         return response;

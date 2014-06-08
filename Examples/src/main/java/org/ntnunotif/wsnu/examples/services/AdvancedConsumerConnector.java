@@ -149,6 +149,15 @@ public class AdvancedConsumerConnector extends WebService implements ServiceConn
     @Override
     @WebMethod(exclude = true)
     public void endpointUpdated(String newEndpointReference) {
-        return;
+
+    }
+
+    /**
+     * The Web service of the connection is this object, so just return this.
+     * @return
+     */
+    @Override
+    public Object getWebService() {
+        return this;
     }
 }

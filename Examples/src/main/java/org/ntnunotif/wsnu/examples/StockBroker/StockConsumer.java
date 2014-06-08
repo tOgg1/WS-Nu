@@ -24,6 +24,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
@@ -137,9 +138,9 @@ public class StockConsumer implements ConsumerListener {
         consumer.sendSubscriptionRequest("http://127.0.0.1:8080/stockBroker");
 
         // Sets up an inputmanager, see the JavaDocs for how to use this.
-        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
+        HelperClasses.InputManager inputManager = new HelperClasses.InputManager();
         try {
-            inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
+            inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new HelperClasses.Tuple[]{new HelperClasses.Tuple(0, 0)});
         } catch (NoSuchMethodException e) {
             // Do nothing
         }
@@ -194,7 +195,6 @@ public class StockConsumer implements ConsumerListener {
             // We don't want to handle anything else than a StockChanged
             } else {
                 Log.w("StockConsumer", "Received an object that was not a StockChanged");
-                continue;
             }
         }
     }
@@ -261,7 +261,7 @@ public class StockConsumer implements ConsumerListener {
             //symbol.setText("Symbol: " + stock.getSymbol());
             name.setText(stock.getName() + " (" + stock.getSymbol()+")");
 
-            boolean isPositive = stock.getChangeAbsolute() > 0 ? true : false;
+            boolean isPositive = stock.getChangeAbsolute() > 0;
             String posStr = stock.getChangeAbsolute() > 0 ? "+" : "";
 
             String changedText = "Change: " + posStr + format.format(stock.getChangeAbsolute()) + "(" + posStr + format.format(stock.getChangeRelative()) + "%)";

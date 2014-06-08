@@ -28,7 +28,7 @@ import java.util.*;
  */
 public class NuNamespaceContextResolver {
 
-    private Map<Object, ScopeLevelBindings> scopeLevelBindingsMap = new HashMap<>();
+    private final Map<Object, ScopeLevelBindings> scopeLevelBindingsMap = new HashMap<>();
     private ScopeLevelBindings currentScope = null;
 
     /**

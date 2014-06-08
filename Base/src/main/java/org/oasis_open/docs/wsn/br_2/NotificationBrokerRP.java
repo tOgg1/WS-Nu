@@ -83,7 +83,7 @@ public class NotificationBrokerRP {
      */
     public List<TopicExpressionType> getTopicExpression() {
         if (topicExpression == null) {
-            topicExpression = new ArrayList<TopicExpressionType>();
+            topicExpression = new ArrayList<>();
         }
         return this.topicExpression;
     }
@@ -136,7 +136,7 @@ public class NotificationBrokerRP {
      */
     public List<String> getTopicExpressionDialect() {
         if (topicExpressionDialect == null) {
-            topicExpressionDialect = new ArrayList<String>();
+            topicExpressionDialect = new ArrayList<>();
         }
         return this.topicExpressionDialect;
     }

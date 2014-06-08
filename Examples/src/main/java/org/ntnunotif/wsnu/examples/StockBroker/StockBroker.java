@@ -22,7 +22,7 @@ package org.ntnunotif.wsnu.examples.StockBroker;
 import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNotificationBroker;
 import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.SimplePublisherRegistrationManager;
 
@@ -84,8 +84,8 @@ public class StockBroker {
         broker.setRegistrationManager(manager);
 
         // Creates an InputManager. Please see the JavaDocs for more information.
-        ServiceUtilities.InputManager inputManager = new ServiceUtilities.InputManager();
-        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new ServiceUtilities.Tuple[]{new ServiceUtilities.Tuple(0, 0)});
+        HelperClasses.InputManager inputManager = new HelperClasses.InputManager();
+        inputManager.addMethodReroute("exit", "^exit", true, System.class.getDeclaredMethod("exit", Integer.TYPE), this, new HelperClasses.Tuple[]{new HelperClasses.Tuple(0, 0)});
         inputManager.start();
     }
 

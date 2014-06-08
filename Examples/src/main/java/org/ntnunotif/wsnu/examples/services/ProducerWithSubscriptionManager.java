@@ -24,7 +24,7 @@ import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericN
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimplePausableSubscriptionManager;
 
 /**
- * Created by tormod on 10.05.14.
+ *
  */
 public class ProducerWithSubscriptionManager {
 

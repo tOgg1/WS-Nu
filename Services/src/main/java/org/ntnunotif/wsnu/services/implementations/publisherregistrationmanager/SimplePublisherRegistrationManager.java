@@ -41,14 +41,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by tormod on 23.04.14.
+ *
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "PublisherRegistrationManager")
 @XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class SimplePublisherRegistrationManager extends AbstractPublisherRegistrationManager {
 
-    private HashMap<String, Long> _publishers = new HashMap<>();
+    private final HashMap<String, Long> _publishers = new HashMap<>();
 
     /**
      * Empty Constructor
@@ -164,7 +164,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
             for(Map.Entry<String, Long> entry : _publishers.entrySet()){
 
                 /* The subscription is expired */
-                if(entry.getValue().longValue() > timeNow){
+                if(entry.getValue() > timeNow){
                     toBeRemoved.add(entry.getKey());
                 }
             }

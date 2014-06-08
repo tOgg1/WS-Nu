@@ -57,7 +57,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      * SubscriptionListeners
      * @param hub
      */
-    private ArrayList<SubscriptionChangedListener> _listeners = new ArrayList<>();
+    private final ArrayList<SubscriptionChangedListener> _listeners = new ArrayList<>();
 
     /**
      * Default constructor
@@ -141,7 +141,7 @@ public abstract class AbstractSubscriptionManager extends WebService implements 
      * @param type
      */
     protected void fireSubscriptionChanged(String endpoint ,SubscriptionEvent.Type type){
-        SubscriptionEvent event = new SubscriptionEvent(endpointReference, type);
+        SubscriptionEvent event = new SubscriptionEvent(endpoint, type);
         for (SubscriptionChangedListener listener : _listeners) {
             listener.subscriptionChanged(event);
         }

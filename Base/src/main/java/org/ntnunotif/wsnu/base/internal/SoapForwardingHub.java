@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
@@ -163,6 +164,7 @@ public class SoapForwardingHub implements Hub {
                 for(ServiceConnection service : _services){
                     Log.d("SoapForwardingHub", "Attempting to forward request to " + service);
                     returnMessage = service.acceptMessage(internalMessage);
+
                     if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
                     }else if((returnMessage.statusCode & STATUS_OK) > 0){
@@ -189,15 +191,6 @@ public class SoapForwardingHub implements Hub {
                     }catch(Exception e){
                         Log.e("SoapForwardingHub", "Casting the returnMessage to InputStream failed, " +
                                 "even though someone set the MESSAGE_IS_INPUTSTREAM flag.");
-                        return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
-                    }
-                }else if((returnMessage.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0){
-                    try{
-                        ByteStreams.copy(Utilities.convertToInputStream((OutputStream) returnMessage.getMessage()),
-                                         streamToRequestor);
-                        return new InternalMessage(STATUS_OK, null);
-                    }catch(Exception e){
-                        Log.e("SoapForwardingHub", "Casting the returnMessage to OutputStream failed, even though someone set the MESSAGE_IS_OUTPUSTREAM flag");
                         return new InternalMessage(STATUS_FAULT | STATUS_FAULT_INTERNAL_ERROR, null);
                     }
                 }else{
@@ -343,12 +336,7 @@ public class SoapForwardingHub implements Hub {
                     Log.e("SoapForwardingHub", "Someone set the RETURNING_MESSAGE_IS_INPUTSTREAM when in fact it wasn't.");
                     return new InternalMessage(STATUS_FAULT_INVALID_PAYLOAD|STATUS_FAULT, null);
                 }
-            } else if((message.statusCode & STATUS_MESSAGE_IS_OUTPUTSTREAM) > 0) {
-                    InputStream messageAsStream = Utilities.convertToInputStream((OutputStream) messageContent);
-                    message.setMessage(messageAsStream);
-                return _server.sendMessage(message);
-            /* This is worse */
-            }else{
+            } else{
                 ObjectFactory factory = new ObjectFactory();
                 Envelope envelope = new Envelope();
                 Header header = new Header();
@@ -395,10 +383,7 @@ public class SoapForwardingHub implements Hub {
     public void removeServices(WebServiceConnector... args){
         ArrayList<WebServiceConnector> toBeRemoved = new ArrayList<>();
 
-        for(WebServiceConnector webServiceConnector : args){
-            toBeRemoved.add(webServiceConnector);
-        }
-
+        Collections.addAll(toBeRemoved, args);
         _services.removeAll(toBeRemoved);
     }
 
@@ -456,7 +441,7 @@ public class SoapForwardingHub implements Hub {
 
     @Override
     public String getInetAdress() {
-        return _server.getURI();
+        return ApplicationServer.getURI();
     }
 
     /**

@@ -69,7 +69,7 @@ public class Notify {
      */
     public List<NotificationMessageHolderType> getNotificationMessage() {
         if (notificationMessage == null) {
-            notificationMessage = new ArrayList<NotificationMessageHolderType>();
+            notificationMessage = new ArrayList<>();
         }
         return this.notificationMessage;
     }
@@ -99,7 +99,7 @@ public class Notify {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

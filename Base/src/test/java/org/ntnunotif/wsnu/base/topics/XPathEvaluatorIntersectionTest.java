@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 06.04.2014.
+ *
  */
 public class XPathEvaluatorIntersectionTest {
 

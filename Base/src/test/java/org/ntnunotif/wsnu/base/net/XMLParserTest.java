@@ -32,7 +32,7 @@ import javax.xml.namespace.QName;
 import java.io.*;
 
 /**
- * Created by Inge on 07.03.14.
+ *
  */
 public class XMLParserTest {
 

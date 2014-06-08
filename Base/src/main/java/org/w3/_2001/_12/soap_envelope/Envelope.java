@@ -48,7 +48,7 @@ public class Envelope {
     @XmlElement(name = "Body", namespace = "http://www.w3.org/2001/12/soap-envelope", required = true)
     protected Body body;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the header property.

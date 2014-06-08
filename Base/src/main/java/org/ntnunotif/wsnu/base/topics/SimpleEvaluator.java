@@ -100,7 +100,7 @@ public class SimpleEvaluator implements TopicExpressionEvaluatorInterface {
                 bothNSisNull = bothNSisNull && (nodeNS == null || nodeNS.equals(XMLConstants.NULL_NS_URI));
 
                 try {
-                    Node addNode = null;
+                    Node addNode;
                     // The returned set should only contain a single topic node with only non-topic parents
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     factory.setNamespaceAware(true);

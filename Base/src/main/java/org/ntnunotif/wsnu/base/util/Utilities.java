@@ -44,17 +44,6 @@ import java.util.List;
 public class Utilities {
 
     /**
-     * Takes an outputstream with data. Then prepares an inputstream with this data and returns it.
-     *
-     * @param stream
-     * @return
-     */
-    public static InputStream convertToInputStream(OutputStream stream) {
-        return null;
-    }
-
-
-    /**
      * Takes any object, and tries to convert its data to an inputstream. The internal attempt-order is as follows:
      * 1.   String
      * 2.   Something parsable
@@ -400,8 +389,7 @@ public class Utilities {
 
         body.getAny().add(soapObjectFactory.createFault(fault));
 
-        JAXBElement toSend = soapObjectFactory.createEnvelope(envelope);
-        return toSend;
+        return soapObjectFactory.createEnvelope(envelope);
     }
 
     public static int countOccurences(String from, String word){

@@ -13,7 +13,7 @@ import java.util.Collection;
 import static junit.framework.TestCase.*;
 
 /**
- * Created by tormod on 08.06.14.
+ *
  */
 public class SoapForwardingHubTest {
 

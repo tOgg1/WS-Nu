@@ -29,7 +29,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * Created by tormod on 29.04.14.
+ *
  */
 public class StockPublisherTest {
 

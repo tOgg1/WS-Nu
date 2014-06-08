@@ -35,7 +35,7 @@ import java.util.Collection;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * Created by tormod on 24.03.14.
+ *
  */
 public class AbstractNotificationProducerTest {
     private static AbstractNotificationProducer producer;
@@ -96,7 +96,7 @@ public class AbstractNotificationProducerTest {
         hub.stop();
     }
 
-    public void testGenerateSubscriptionKey() throws Exception {
+    public void testGenerateSubscriptionKey() {
         String newKey = producer.generateNewHashedURL("subscription");
         assertTrue("Newkey was null", newKey != null);
     }

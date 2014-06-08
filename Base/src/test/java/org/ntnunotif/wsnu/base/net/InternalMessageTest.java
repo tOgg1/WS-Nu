@@ -26,7 +26,7 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
- * Created by tormod on 3/15/14.
+ *
  */
 public class InternalMessageTest extends TestCase {
 

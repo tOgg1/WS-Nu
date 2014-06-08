@@ -88,7 +88,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/t-1", name = "TopicSet")
     public JAXBElement<TopicSetType> createTopicSet(TopicSetType value) {
-        return new JAXBElement<TopicSetType>(_TopicSet_QNAME, TopicSetType.class, null, value);
+        return new JAXBElement<>(_TopicSet_QNAME, TopicSetType.class, null, value);
     }
 
     /**
@@ -97,7 +97,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/t-1", name = "TopicNamespace")
     public JAXBElement<TopicNamespaceType> createTopicNamespace(TopicNamespaceType value) {
-        return new JAXBElement<TopicNamespaceType>(_TopicNamespace_QNAME, TopicNamespaceType.class, null, value);
+        return new JAXBElement<>(_TopicNamespace_QNAME, TopicNamespaceType.class, null, value);
     }
 
 }

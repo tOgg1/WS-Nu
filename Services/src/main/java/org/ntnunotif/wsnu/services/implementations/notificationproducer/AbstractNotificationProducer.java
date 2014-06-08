@@ -26,12 +26,12 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionChangedListener;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WebService;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.AbstractSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
-import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.NotificationProducer;
 
@@ -48,7 +48,7 @@ import java.util.Collection;
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
 /**
- * Created by tormod on 3/11/14.
+ *
  */
 public abstract class AbstractNotificationProducer extends WebService implements NotificationProducer, SubscriptionChangedListener {
 
@@ -83,7 +83,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
     public String generateSubscriptionKey(){
         Long time = System.nanoTime();
         String string = time.toString();
-        String hash = "";
+        String hash;
         try {
             hash = ServiceUtilities.generateSHA1Key(string);
             while(keyExists(hash))
@@ -151,7 +151,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      * @throws IllegalAccessException
      */
     @WebMethod(exclude = true)
-    public void sendSingleNotify(Notify notify, W3CEndpointReference w3CEndpointReference) throws IllegalAccessException {
+    public void sendSingleNotify(Notify notify, W3CEndpointReference w3CEndpointReference) {
         if (hub == null) {
             Log.e("AbstractNotificationProducer", "Tried to send message with hub null. If a quickBuild is available," +
                     " consider running this before sending messages");
@@ -173,8 +173,6 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     @WebMethod(exclude = true)
     public void sendNotification(Notify notify, NuNamespaceContextResolver namespaceContextResolver) {
-        ObjectFactory factory = new ObjectFactory();
-
         // bind namespaces to topics
         for (NotificationMessageHolderType holderType : notify.getNotificationMessage()) {
 
@@ -278,11 +276,11 @@ public abstract class AbstractNotificationProducer extends WebService implements
     }
 
     public static class SubscriptionHandle {
-        public final ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
+        public final HelperClasses.EndpointTerminationTuple endpointTerminationTuple;
         public final FilterSupport.SubscriptionInfo subscriptionInfo;
         public boolean isPaused = false;
 
-        public SubscriptionHandle(ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple,
+        public SubscriptionHandle(HelperClasses.EndpointTerminationTuple endpointTerminationTuple,
                                   FilterSupport.SubscriptionInfo subscriptionInfo) {
             this.endpointTerminationTuple = endpointTerminationTuple;
             this.subscriptionInfo = subscriptionInfo;

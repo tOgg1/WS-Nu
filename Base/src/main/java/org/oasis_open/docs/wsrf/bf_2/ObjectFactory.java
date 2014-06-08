@@ -71,7 +71,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsrf/bf-2", name = "BaseFault")
     public JAXBElement<BaseFaultType> createBaseFault(BaseFaultType value) {
-        return new JAXBElement<BaseFaultType>(_BaseFault_QNAME, BaseFaultType.class, null, value);
+        return new JAXBElement<>(_BaseFault_QNAME, BaseFaultType.class, null, value);
     }
 
 }

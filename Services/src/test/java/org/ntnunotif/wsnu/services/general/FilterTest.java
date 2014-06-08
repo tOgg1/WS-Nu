@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Inge on 02.04.2014.
+ *
  */
 public class FilterTest {
     private static final String subscribeWithFilterLocationRes = "/server_test_subscribe.xml";

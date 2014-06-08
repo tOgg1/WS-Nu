@@ -27,6 +27,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
+import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -68,12 +69,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     /**
      * HashMap of subscriptions.
      */
-    protected Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
+    protected final Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
     /**
      * HashMap of publishers.
      */
-    protected Map<String, PublisherHandle> publishers = new HashMap<>();
+    protected final Map<String, PublisherHandle> publishers = new HashMap<>();
 
     /**
      * HashMap of latestMessages.
@@ -239,7 +240,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         // Go through all recipients and remember which should be removed
         for (String key : subscriptions.keySet()) {
-            ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple = subscriptions.get(key).endpointTerminationTuple;
+            HelperClasses.EndpointTerminationTuple endpointTerminationTuple = subscriptions.get(key).endpointTerminationTuple;
             if (endpointTerminationTuple.termination < System.currentTimeMillis()) {
                 Log.d("SimpleNotificationProducer", "A subscription has been deemed too old: " + key);
                 removeKeyList.add(key);
@@ -459,8 +460,8 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         // create subscription info
         FilterSupport.SubscriptionInfo subscriptionInfo = new FilterSupport.SubscriptionInfo(filtersPresent,
                 connection.getRequestInformation().getNamespaceContextResolver());
-        ServiceUtilities.EndpointTerminationTuple endpointTerminationTuple;
-        endpointTerminationTuple = new ServiceUtilities.EndpointTerminationTuple(endpointReference, terminationTime);
+        HelperClasses.EndpointTerminationTuple endpointTerminationTuple;
+        endpointTerminationTuple = new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
         Log.d("GenericNotificationBroker", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
@@ -550,7 +551,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
 
         publishers.put(newSubscriptionKey,
-                new PublisherHandle(new ServiceUtilities.EndpointTerminationTuple(newSubscriptionKey, terminationTime),
+                new PublisherHandle(new HelperClasses.EndpointTerminationTuple(newSubscriptionKey, terminationTime),
                                     topics, registerPublisherRequest.isDemand()));
 
         RegisterPublisherResponse response = new RegisterPublisherResponse();
@@ -678,7 +679,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                 }
                 return;
             default:
-
             case RENEW:
                 return;
         }

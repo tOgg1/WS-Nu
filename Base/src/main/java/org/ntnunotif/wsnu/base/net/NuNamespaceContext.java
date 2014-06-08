@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class NuNamespaceContext implements NamespaceContext {
 
-    private Map<String, String> table = new HashMap<>();
+    private final Map<String, String> table = new HashMap<>();
 
     /**
      * Creates an empty context (no bindings)

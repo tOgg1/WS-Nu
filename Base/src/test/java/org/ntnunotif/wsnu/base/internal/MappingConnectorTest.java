@@ -32,7 +32,7 @@ import javax.jws.WebMethod;
 import java.util.HashMap;
 
 /**
- * Created by tormod on 25.03.14.
+ *
  */
 public class MappingConnectorTest {
     private static MappingConnector connector;
@@ -70,7 +70,7 @@ public class MappingConnectorTest {
 
         Envelope env = new Envelope();
         Body body = new Body();
-        body.getAny().add(new String("heeeeeyy"));
+        body.getAny().add("heeeeeyy");
         env.setBody(body);
         InternalMessage message = new InternalMessage(InternalMessage.STATUS_OK, env);
 

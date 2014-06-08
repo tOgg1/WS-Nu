@@ -1,50 +1,22 @@
 
 package org.oasis_open.docs.wsrf.bf_2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-import javax.xml.ws.wsaddressing.W3CEndpointReference;
-import org.oasis_open.docs.wsn.b_2.InvalidFilterFaultType;
-import org.oasis_open.docs.wsn.b_2.InvalidMessageContentExpressionFaultType;
-import org.oasis_open.docs.wsn.b_2.InvalidProducerPropertiesExpressionFaultType;
-import org.oasis_open.docs.wsn.b_2.InvalidTopicExpressionFaultType;
-import org.oasis_open.docs.wsn.b_2.MultipleTopicsSpecifiedFaultType;
-import org.oasis_open.docs.wsn.b_2.NoCurrentMessageOnTopicFaultType;
-import org.oasis_open.docs.wsn.b_2.NotifyMessageNotSupportedFaultType;
-import org.oasis_open.docs.wsn.b_2.PauseFailedFaultType;
-import org.oasis_open.docs.wsn.b_2.ResumeFailedFaultType;
-import org.oasis_open.docs.wsn.b_2.SubscribeCreationFailedFaultType;
-import org.oasis_open.docs.wsn.b_2.TopicExpressionDialectUnknownFaultType;
-import org.oasis_open.docs.wsn.b_2.TopicNotSupportedFaultType;
-import org.oasis_open.docs.wsn.b_2.UnableToCreatePullPointFaultType;
-import org.oasis_open.docs.wsn.b_2.UnableToDestroyPullPointFaultType;
-import org.oasis_open.docs.wsn.b_2.UnableToDestroySubscriptionFaultType;
-import org.oasis_open.docs.wsn.b_2.UnableToGetMessagesFaultType;
-import org.oasis_open.docs.wsn.b_2.UnacceptableInitialTerminationTimeFaultType;
-import org.oasis_open.docs.wsn.b_2.UnacceptableTerminationTimeFaultType;
-import org.oasis_open.docs.wsn.b_2.UnrecognizedPolicyRequestFaultType;
-import org.oasis_open.docs.wsn.b_2.UnsupportedPolicyRequestFaultType;
+import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationFailedFaultType;
 import org.oasis_open.docs.wsn.br_2.PublisherRegistrationRejectedFaultType;
 import org.oasis_open.docs.wsn.br_2.ResourceNotDestroyedFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnavailableFaultType;
 import org.oasis_open.docs.wsrf.r_2.ResourceUnknownFaultType;
 import org.w3c.dom.Element;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -151,7 +123,7 @@ public class BaseFaultType {
     @XmlElement(name = "FaultCause")
     protected BaseFaultType.FaultCause faultCause;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the any property.
@@ -178,7 +150,7 @@ public class BaseFaultType {
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -279,7 +251,7 @@ public class BaseFaultType {
      */
     public List<BaseFaultType.Description> getDescription() {
         if (description == null) {
-            description = new ArrayList<BaseFaultType.Description>();
+            description = new ArrayList<>();
         }
         return this.description;
     }
@@ -437,7 +409,7 @@ public class BaseFaultType {
         @XmlSchemaType(name = "anyURI")
         protected String dialect;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+        private Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -464,7 +436,7 @@ public class BaseFaultType {
          */
         public List<Object> getContent() {
             if (content == null) {
-                content = new ArrayList<Object>();
+                content = new ArrayList<>();
             }
             return this.content;
         }

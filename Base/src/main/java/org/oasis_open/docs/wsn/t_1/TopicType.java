@@ -121,7 +121,7 @@ public class TopicType
      */
     public List<TopicType> getTopic() {
         if (topic == null) {
-            topic = new ArrayList<TopicType>();
+            topic = new ArrayList<>();
         }
         return this.topic;
     }
@@ -150,7 +150,7 @@ public class TopicType
      */
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -203,7 +203,7 @@ public class TopicType
      */
     public List<QName> getMessageTypes() {
         if (messageTypes == null) {
-            messageTypes = new ArrayList<QName>();
+            messageTypes = new ArrayList<>();
         }
         return this.messageTypes;
     }

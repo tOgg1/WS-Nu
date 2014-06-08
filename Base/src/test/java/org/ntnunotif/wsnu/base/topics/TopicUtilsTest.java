@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Inge on 21.03.14.
+ *
  */
 public class TopicUtilsTest {
     private static List<List<QName>> fullQNameList;
