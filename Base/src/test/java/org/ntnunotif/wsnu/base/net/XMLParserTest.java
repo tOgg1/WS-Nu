@@ -143,4 +143,22 @@ public class XMLParserTest {
         XMLParser.writeObjectToStream(new ObjectFactory().createEnvelope(envelope), fileOut);
 
     }
+
+    @Test
+    public void testParseWithHeader() throws Exception {
+
+        Envelope envelope = new Envelope();
+        Body body = new Body();
+        Header header = new Header();
+
+        header.getOtherAttributes().put(new QName("http://www.w3.org/2005/08/addressing", "wsa"), "http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify");
+        envelope.setBody(body);
+        envelope.setHeader(header);
+
+        JAXBElement<Envelope> element = new ObjectFactory().createEnvelope(envelope);
+
+        XMLParser.setFormattedOutput(true);
+        XMLParser.writeObjectToStream(element, System.out);
+
+    }
 }
