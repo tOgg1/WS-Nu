@@ -548,7 +548,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         // Send subscriptionRequest back if isDemand isRequested
         if(registerPublisherRequest.isDemand()){
-            this.sendSubscriptionRequest(endpointReference);
+            WsnUtilities.sendSubscriptionRequest(endpointReference, getEndpointReference(), getHub());
         }
 
         publishers.put(newSubscriptionKey,
@@ -630,7 +630,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     public void pauseDemandPublishers(){
         for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
             if(entry.getValue().demand){
-                sendPauseRequest(entry.getKey());
+                WsnUtilities.sendPauseRequest(entry.getKey(), getHub());
             }
         }
     }
@@ -643,7 +643,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     public void resumeDemandPublishers(){
         for (Map.Entry<String, PublisherHandle> entry : publishers.entrySet()) {
             if(entry.getValue().demand){
-                sendResumeRequest(entry.getKey());
+                WsnUtilities.sendResumeRequest(entry.getKey(), getHub());
             }
         }
     }
@@ -684,7 +684,6 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                 return;
         }
     }
-
 
     /**
      * Method implemented through {@link org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent}.

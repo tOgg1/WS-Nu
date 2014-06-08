@@ -26,6 +26,7 @@ import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
@@ -135,7 +136,7 @@ public class StockConsumer implements ConsumerListener {
         consumer.forceEndpointReference("http://"+ServiceUtilities.getExternalIp() + ":8080/stockConsumer");
 
         // We send a subscription-request to our broker. This ip needs to be changed to the IP of your broker.
-        consumer.sendSubscriptionRequest("http://127.0.0.1:8080/stockBroker");
+        WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080/stockBroker", consumer.getEndpointReference(), consumer.getHub());
 
         // Sets up an inputmanager, see the JavaDocs for how to use this.
         HelperClasses.InputManager inputManager = new HelperClasses.InputManager();

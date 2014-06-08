@@ -30,6 +30,7 @@ import org.ntnunotif.wsnu.examples.generated.IntegerContent;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
+import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
@@ -98,7 +99,7 @@ public class SimpleConsumer implements ConsumerListener {
     }
 
     public void sendRequest(String raw){
-        InternalMessage message = consumer.sendRequest(raw);
+        InternalMessage message = ServiceUtilities.sendRequest(raw);
         System.out.println(message.getMessage());
         System.out.println(message.getRequestInformation().toString());
     }
@@ -133,7 +134,7 @@ public class SimpleConsumer implements ConsumerListener {
             Log.d("SimpleConsumer", "Inserted http://-tag");
             raw = "http://"+raw;
         }
-        InternalMessage message = consumer.sendRequest(raw);
+        InternalMessage message = ServiceUtilities.sendRequest(raw);
         System.out.println(message.getMessage());
     }
 

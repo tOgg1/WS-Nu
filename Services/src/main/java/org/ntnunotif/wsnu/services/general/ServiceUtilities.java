@@ -24,6 +24,7 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
+import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
 import org.oasis_open.docs.wsn.bw_2.UnacceptableTerminationTimeFault;
 import org.trmd.ntsh.NothingToSeeHere;
@@ -53,7 +54,19 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
  */
 public class ServiceUtilities {
 
+    /**
+     * W3CEndpointReference builder, allowing us to easily create endpoint references.
+     */
     private final static W3CEndpointReferenceBuilder w3CEndpointReferenceBuilder = new W3CEndpointReferenceBuilder();
+
+    // Below is a short list of relevant ObjectFactories
+    public static final ObjectFactory baseFactory = new ObjectFactory();
+    public static final org.oasis_open.docs.wsn.br_2.ObjectFactory brokeredFactory = new org.oasis_open.docs.wsn.br_2.ObjectFactory();
+    public static final org.xmlsoap.schemas.soap.envelope.ObjectFactory xmlSoapFactory = new org.xmlsoap.schemas.soap.envelope.ObjectFactory();
+    public static final org.w3._2001._12.soap_envelope.ObjectFactory w3SoapFactory = new org.w3._2001._12.soap_envelope.ObjectFactory();
+    public static final org.oasis_open.docs.wsn.t_1.ObjectFactory topicsFactory = new org.oasis_open.docs.wsn.t_1.ObjectFactory();
+    public static final org.oasis_open.docs.wsrf.bf_2.ObjectFactory faultFactory = new org.oasis_open.docs.wsrf.bf_2.ObjectFactory();
+    public static final org.oasis_open.docs.wsrf.r_2.ObjectFactory resourceFactory = new org.oasis_open.docs.wsrf.r_2.ObjectFactory();
 
     /**
      * Takes a termination-time string, represented either as XsdDuration or XsdDatetime, and returns it specified (end)date.
@@ -333,12 +346,30 @@ public class ServiceUtilities {
         }
     }
 
+    /**
+     * Helper function to send a request to an address. The entirity of this function is:
+     *
+     * <code>
+     *      return sendRequest(address + request);
+     * </code>
+     *
+     * The method called is the overloaded {@link #sendRequest(String)}.
+     *
+     * @param address The destination address. E.g. http://example.com/webService
+     * @param request The request. This can be any valid url-request. I.e. ?recipe=fa23fabfd&AmIHungry=Yes&WouldIRatherEatThanWriteJavaDoc=Yes
+     * @return The content received from the server, if any. The InternalMessage will also contain a {@link org.ntnunotif.wsnu.base.util.RequestInformation} object
+     */
+    public InternalMessage sendRequest(String address, String request){
+        return sendRequest(address + request);
+    }
+
     //TODO
     /**
+     * Helper function to send a request to an address. This method does not require access to a Hub as it sends
+     * the message straight through the {@link org.ntnunotif.wsnu.base.net.ApplicationServer}.
      *
-     * @param url
-     * @return
-     * @throws Exception
+     * @param url The entire request url to be sent. E.g. http://recipes.com/?recipe=234234hgfgh.
+     * @return The content received from the server, if any. The InternalMessage will also contain a {@link org.ntnunotif.wsnu.base.util.RequestInformation} object
      */
     public static InternalMessage sendRequest(String url) {
         InternalMessage message = new InternalMessage(STATUS_OK, null);
@@ -348,12 +379,12 @@ public class ServiceUtilities {
         return ApplicationServer.getInstance().sendMessage(message);
     }
 
-    //TODO
     /**
+     * Sends a {@link org.w3c.dom.Node} object to the specified endpoint.
      *
-     * @param endpoint
-     * @param node
-     * @param hub
+     * @param endpoint The endpoint of the recipient.
+     * @param node The node to be parsed and sent.
+     * @param hub A reference to a hub we can send our message through.
      * @return
      */
     public static InternalMessage sendNode(String endpoint, Node node, Hub hub){

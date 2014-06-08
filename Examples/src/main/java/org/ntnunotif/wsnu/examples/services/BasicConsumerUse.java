@@ -26,6 +26,7 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -73,7 +74,7 @@ public class BasicConsumerUse {
         // Let us just assume it is located here:
         String producerAddress = "http://localhost:8080/exampleProducer";
         // And now register us as consumers
-        InternalMessage reply = notificationConsumer.sendSubscriptionRequest(producerAddress);
+        InternalMessage reply = WsnUtilities.sendSubscriptionRequest(producerAddress, notificationConsumer.getEndpointReference(), notificationConsumer.getHub());
 
         // We expect the request to fail, there are no producers on this address:
         if ((reply.statusCode & InternalMessage.STATUS_FAULT) != 0) {

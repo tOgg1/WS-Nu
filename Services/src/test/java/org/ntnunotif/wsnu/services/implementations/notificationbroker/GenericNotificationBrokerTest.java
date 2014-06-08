@@ -100,15 +100,15 @@ public class GenericNotificationBrokerTest {
 
     @Test
     public void testSubscribe() throws Exception {
-        InternalMessage message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080");
+        InternalMessage message = WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080", consumer.getEndpointReference(), hub);
         assertTrue((message.statusCode & STATUS_OK) > 0);
     }
 
     @Test
     public void testNotify() throws Exception {
-        InternalMessage message = broker.sendSubscriptionRequest("http://127.0.0.1:8080/myProducer/");
+        InternalMessage message = WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080/myProducer/", broker.getEndpointReference(), hub);
         assertTrue((message.statusCode & STATUS_OK) > 0);
-        message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/");
+        message = WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/", consumer.getEndpointReference(), hub);
         assertTrue((message.statusCode & STATUS_OK) > 0);
 
         producer.sendNotification(WsnUtilities.createNotify(
@@ -120,16 +120,16 @@ public class GenericNotificationBrokerTest {
 
     @Test
     public void testRegisterPublisher() throws Exception {
-        InternalMessage message = consumer.sendPublisherRegistrationRequest("http://127.0.0.1:8080");
+        InternalMessage message = WsnUtilities.sendPublisherRegistrationRequest("http://127.0.0.1:8080", producer.getEndpointReference(), hub);
         System.out.println(message.getMessage());
         assertTrue((message.statusCode & STATUS_OK) > 0);
     }
 
     @Test
     public void testGetCurrentMessage() throws Exception {
-        InternalMessage message = broker.sendSubscriptionRequest("http://127.0.0.1:8080/myProducer/");
+        InternalMessage message = WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080/myProducer/", producer.getEndpointReference(), hub);
         assertTrue((message.statusCode & STATUS_OK) > 0);
-        message = consumer.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/");
+        message = WsnUtilities.sendSubscriptionRequest("http://127.0.0.1:8080/myBroker/", consumer.getEndpointReference(), hub);
         assertTrue((message.statusCode & STATUS_OK) > 0);
 
         producer.sendNotification(WsnUtilities.createNotify(
@@ -139,7 +139,6 @@ public class GenericNotificationBrokerTest {
         TopicExpressionType type = new TopicExpressionType();
         type.setDialect("http://www.w3.org/TR/1999/REC-xpath-19991116");
         type.getContent().add("sometopic");
-        InternalMessage curMessage = consumer.sendGetCurrentMessage("http://127.0.0.1:8080/myBroker/", type);
-
+        InternalMessage curMessage = WsnUtilities.sendGetCurrentMessage("http://127.0.0.1:8080/myBroker/", type, hub);
     }
 }
