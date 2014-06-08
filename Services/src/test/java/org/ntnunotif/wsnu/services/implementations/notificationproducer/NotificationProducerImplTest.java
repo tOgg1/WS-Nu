@@ -36,8 +36,12 @@ public class NotificationProducerImplTest {
     @Before
     public void setUp() {
         defaultProducer = new NotificationProducerImpl();
-        noFilterProducer = new NotificationProducerImpl(false);
-        noFilterNoCachingProducer = new NotificationProducerImpl(false, false);
+        noFilterProducer = new NotificationProducerImpl();
+        noFilterProducer.setFilterSupport(null);
+        noFilterProducer.setCacheMessages(true);
+        noFilterNoCachingProducer = new NotificationProducerImpl();
+        noFilterNoCachingProducer.setFilterSupport(null);
+        noFilterNoCachingProducer.setCacheMessages(false);
     }
 
     @AfterClass

@@ -34,6 +34,7 @@ public class ApplicationServerConfigTest {
 
         SoapForwardingHub hub = new SoapForwardingHub();
         server.start(hub);
+        hub.stop();
     }
 
     @Test

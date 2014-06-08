@@ -85,7 +85,13 @@ public class NotificationBrokerImpl extends AbstractNotificationBroker {
     /**
      * FilterSupport variable.
      */
-    private final FilterSupport filterSupport;
+    private FilterSupport filterSupport;
+
+    /**
+     * Variable indicating whether the broker should cache messages. Setting this to true allows retrieval through
+     * {@link org.oasis_open.docs.wsn.b_2.GetCurrentMessage}.
+     */
+    private boolean cacheMessages;
 
     /**
      * Default constructor. Adds filtersupport and enables caching of messages.
@@ -96,64 +102,6 @@ public class NotificationBrokerImpl extends AbstractNotificationBroker {
         cacheMessages = true;
     }
 
-    /**
-     * Constructor taking a variable indicating whether filters should be supported or not.
-     * @param supportFilters
-     */
-    public NotificationBrokerImpl(boolean supportFilters) {
-        if (supportFilters) {
-            Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage allowed");
-            filterSupport = FilterSupport.createDefaultFilterSupport();
-        } else {
-            Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage allowed");
-            filterSupport = null;
-        }
-        cacheMessages = true;
-    }
-
-    /**
-     * Constructor taking two variables: one indicating whether filters should be supported or not. And
-     * another indicating whether caching of messages should be supported.
-     * @param supportFilters
-     * @param cacheMessages
-     */
-    public NotificationBrokerImpl(boolean supportFilters, boolean cacheMessages) {
-        if (supportFilters) {
-            if (cacheMessages) {
-                Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage allowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            } else {
-                Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage disallowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            }
-        } else {
-            if (cacheMessages) {
-                Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage allowed, but unusable");
-                filterSupport = null;
-            } else {
-                Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage disallowed");
-                filterSupport = null;
-            }
-        }
-        this.cacheMessages = cacheMessages;
-    }
-
-    /**
-     * Constructor taking two variables: One is a {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} object.
-     * And the other is a variable indicating whether caching of messages should be supported.
-     * @param filterSupport
-     * @param cacheMessages
-     */
-    public NotificationBrokerImpl(FilterSupport filterSupport, boolean cacheMessages) {
-        if (cacheMessages){
-            Log.d("NotificationBrokerImpl", "Created new with custom filter support and GetCurrentMessage allowed");
-        } else {
-            Log.d("NotificationBrokerImpl", "Created new with custom filter support and GetCurrentMessage disallowed");
-        }
-
-        this.filterSupport = filterSupport;
-        this.cacheMessages = cacheMessages;
-    }
 
     /**
      * Constructor taking a hub as a parameter, sending it up to {@link org.ntnunotif.wsnu.services.implementations.notificationbroker.AbstractNotificationBroker}.
@@ -168,50 +116,32 @@ public class NotificationBrokerImpl extends AbstractNotificationBroker {
     }
 
     /**
-
-    */
-    public NotificationBrokerImpl(Hub hub, boolean supportFilters) {
-        this.hub = hub;
-        if (supportFilters) {
-            Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
-            filterSupport = FilterSupport.createDefaultFilterSupport();
-        } else {
-            Log.d("NotificationBrokerImpl", "Created new with hub and without filter support and GetCurrentMessage allowed");
-            filterSupport = null;
-        }
-        cacheMessages = true;
+     * @return The current filtersupport.
+     */
+    public FilterSupport getFilterSupport() {
+        return filterSupport;
     }
 
-    public NotificationBrokerImpl(Hub hub, boolean supportFilters, boolean cacheMessages) {
-        this.hub = hub;
-        if (supportFilters) {
-            if (cacheMessages) {
-                Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            } else {
-                Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage disallowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            }
-        } else {
-            if (cacheMessages) {
-                Log.d("NotificationBrokerImpl", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
-                filterSupport = null;
-            } else {
-                Log.d("NotificationBrokerImpl", "Created new with hub, without filter support and GetCurrentMessage disallowed");
-                filterSupport = null;
-            }
-        }
-        this.cacheMessages = cacheMessages;
+    /**
+     * @return True if this producer is currently caching messages, else false.
+     */
+    public boolean cachesMessages() {
+        return cacheMessages;
     }
 
-    public NotificationBrokerImpl(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
-        this.hub = hub;
-        if (cacheMessages)
-            Log.d("NotificationBrokerImpl", "Created new with hub, custom filter support and GetCurrentMessage allowed");
-        else
-            Log.d("NotificationBrokerImpl", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
+    /**
+     * Sets the filtersupport.
+     * @param filterSupport A {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} object.
+     */
+    public void setFilterSupport(FilterSupport filterSupport) {
         this.filterSupport = filterSupport;
+    }
 
+    /**
+     * Set's whether or not the producer should cache messages.
+     * @param cacheMessages
+     */
+    public void setCacheMessages(boolean cacheMessages) {
         this.cacheMessages = cacheMessages;
     }
 
