@@ -38,7 +38,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
  * @author Tormod Haugland
 *          Created by tormod on 3/3/14.
  */
-public abstract class WebServiceConnector implements ServiceConnection{
+public abstract class WebServiceConnector implements ServiceConnection {
 
     final Object _webService;
 
@@ -212,6 +212,11 @@ public abstract class WebServiceConnector implements ServiceConnection{
     public InternalMessage acceptMessage(InternalMessage message) {
         _requestInformation = message.getRequestInformation();
         return new InternalMessage(STATUS_OK, null);
+    }
+
+    @Override
+    public Object getWebService() {
+        return _webService;
     }
 
     @Override

@@ -68,5 +68,11 @@ public interface ServiceConnection {
      * @param newEndpointReference
      */
     public void endpointUpdated(String newEndpointReference);
+
+    /**
+     * Method that should return the connected Web Service object of this ServiceConnection.
+     * @return The Web Service object.
+     */
+    public Object getWebService();
 }
 

@@ -64,9 +64,10 @@ Further documentation can be found at [the ws-nu homepage](http://ws-nu.net).
   * Full IPv6 support
   * Support for complex header generation 
   * All WS-N send messages have been moved from the WebService class to WsnUtilities
+  * Methods added to SoapForwardingHub to allow removal of ServiceConnections with the Web Service objects
 * Major bug fixes
   * WS-N messages should now be attached with a wsa:action-headers
-
+  
 ## Release log
 
 ### 0.3 - first official release 

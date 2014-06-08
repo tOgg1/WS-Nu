@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
 
@@ -50,7 +51,7 @@ public class SoapForwardingHub implements Hub {
     /**
      * List of internal web-service connections.
      */
-    private ArrayList<ServiceConnection> _services;
+    private HashSet<ServiceConnection> _services;
 
     /**
      * Application-server object
@@ -58,12 +59,19 @@ public class SoapForwardingHub implements Hub {
     private ApplicationServer _server;
 
     /**
-     * Default constructor
+     * Default constructor. Starts the {@link org.ntnunotif.wsnu.base.net.ApplicationServer}. If you already have an ApplicationServer
+     * running, call {@link #SoapForwardingHub(org.ntnunotif.wsnu.base.net.ApplicationServer)}
      */
-    public SoapForwardingHub() throws Exception {
-        this._services = new ArrayList<ServiceConnection>();
+    public SoapForwardingHub() {
+        this._services = new HashSet<>();
         this._server = ApplicationServer.getInstance();
-        this._server.start(this);
+        try {
+            this._server.start(this);
+        } catch (Exception e) {
+            Log.e("SoapForwardingHub", "Unable to start ApplicationServer");
+            e.printStackTrace();
+            throw new RuntimeException("Unable to start ApplicationServer, reason given: " + e.getMessage());
+        }
     }
 
     /**
@@ -72,7 +80,7 @@ public class SoapForwardingHub implements Hub {
      * @throws Exception
      */
     public SoapForwardingHub(ApplicationServer server) throws Exception{
-        this._services = new ArrayList<ServiceConnection>();
+        this._services = new HashSet<>();
         this._server = server;
         this._server.start(this);
     }
@@ -385,9 +393,13 @@ public class SoapForwardingHub implements Hub {
      * @param args
      */
     public void removeServices(WebServiceConnector... args){
+        ArrayList<WebServiceConnector> toBeRemoved = new ArrayList<>();
+
         for(WebServiceConnector webServiceConnector : args){
-            this.removeService(webServiceConnector);
+            toBeRemoved.add(webServiceConnector);
         }
+
+        _services.removeAll(toBeRemoved);
     }
 
     /**
@@ -395,9 +407,24 @@ public class SoapForwardingHub implements Hub {
      * @param webServiceConnectors
      */
     public void removeServices(Collection<WebServiceConnector> webServiceConnectors){
-        for(WebServiceConnector webServiceConnector : webServiceConnectors){
-            this.removeService(webServiceConnector);
+        _services.removeAll(webServiceConnectors);
+    }
+
+    /**
+     * This method removes a ServiceConnection from the hub if its connected Web Service is the object passed in as argument.
+     * @param object A Web Service object
+     */
+    public void removeService(Object object){
+        ServiceConnection toBeRemoved = null;
+
+        for (ServiceConnection service : _services) {
+            if(service.getWebService().equals(object)){
+                toBeRemoved = service;
+                break;
+            }
         }
+
+        _services.remove(toBeRemoved);
     }
 
     @Override
@@ -418,6 +445,13 @@ public class SoapForwardingHub implements Hub {
     @Override
     public Collection<ServiceConnection> getServices() {
         return _services;
+    }
+
+    /**
+     * Clears the hub of all ServiceConnections.
+     */
+    public void clearAllServices(){
+        _services.clear();
     }
 
     @Override

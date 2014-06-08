@@ -146,7 +146,7 @@ public class ApplicationServer{
      * If any custom settings are to be set for this instance, they MUST be called before the first invocation of this method.
      * @return Returns the running singleton instance,
      */
-    public static ApplicationServer getInstance() throws Exception{
+    public static ApplicationServer getInstance() {
         if(!_hasBeenInvoked){
             _singleton = new ApplicationServer();
             _hasBeenInvoked = true;
