@@ -27,6 +27,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
@@ -364,14 +365,14 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if (consumerEndpoint == null) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
+            ExceptionUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
         String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
 
         // EndpointReference is returned as "" from getAddress if something went wrong.
         if(endpointReference.equals("")){
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
+            ExceptionUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
         Log.initLogFile();
@@ -404,7 +405,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                     } else {
                         Log.w("GenericNotificationBroker", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
-                        ServiceUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
+                        ExceptionUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
                     }
 
@@ -419,11 +420,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if (terminationTime < System.currentTimeMillis()) {
-                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
+                    ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
+                ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
             }
         } else {
             /* Set it to terminate in one day */
@@ -441,7 +442,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
+            ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
                     "convertable to a gregorian calendar-instance. If the problem persists," +
                     "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
@@ -513,14 +514,14 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         W3CEndpointReference publisherEndpoint = registerPublisherRequest.getPublisherReference();
 
         if(publisherEndpoint == null){
-            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Missing endpointreference");
+            ExceptionUtilities.throwPublisherRegistrationFailedFault("en", "Missing endpointreference");
         }
 
         String endpointReference = ServiceUtilities.getAddress(registerPublisherRequest.getPublisherReference());
 
         // EndpointReference is returned as "" from getAddress if something went wrong.
         if(endpointReference.equals("")){
-            ServiceUtilities.throwPublisherRegistrationFailedFault("en", "Could not register publisher, failed to " +
+            ExceptionUtilities.throwPublisherRegistrationFailedFault("en", "Could not register publisher, failed to " +
                     "understand the endpoint reference");
         }
 
@@ -529,17 +530,17 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         for (TopicExpressionType topic : topics) {
             try {
                 if(!TopicValidator.isLegalExpression(topic, namespaceContextResolver.resolveNamespaceContext(topic))){
-                    ServiceUtilities.throwTopicNotSupportedFault("en", "Expression given is not a legal topicexpression");
+                    ExceptionUtilities.throwTopicNotSupportedFault("en", "Expression given is not a legal topicexpression");
                 }
             } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                ServiceUtilities.throwInvalidTopicExpressionFault("en", "TopicExpressionDialect unknown");
+                ExceptionUtilities.throwInvalidTopicExpressionFault("en", "TopicExpressionDialect unknown");
             }
         }
 
         long terminationTime = registerPublisherRequest.getInitialTerminationTime().toGregorianCalendar().getTimeInMillis();
 
         if(terminationTime < System.currentTimeMillis()){
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Invalid termination time. Can't be before current time");
+            ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Invalid termination time. Can't be before current time");
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
@@ -590,7 +591,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         if (!cacheMessages) {
             Log.w("GenericNotificationBroker", "Someone tried to get current message when caching is disabled");
-            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
+            ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
                     getCurrentMessageRequest.getTopic().getContent());
         }
 
@@ -599,7 +600,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
 
         if(askedFor == null) {
-            ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
+            ExceptionUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
         }
 
         List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, connection.getRequestInformation().getNamespaceContext(askedFor));
@@ -611,7 +612,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         if (holderType == null) {
             Log.d("GenericNotificationBroker", "Was asked for current message on a topic that was not sent");
-            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
+            ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
             return null;
         } else {
             GetCurrentMessageResponse response = new GetCurrentMessageResponse();

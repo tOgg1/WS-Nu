@@ -184,6 +184,7 @@ public class HelperClasses {
             }
         }
 
+        @SuppressWarnings("unchecked")
         public void handleCommand(String command){
             boolean wasInvoked = false;
                 /* Check for method rerouting */

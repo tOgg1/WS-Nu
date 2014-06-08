@@ -73,6 +73,7 @@ public class InputManagerExample {
     public void handleCommandExit(String command){
         // Exit graciously
         variableThatNeedsToBeSetFalseBeforeShutdown = false;
+        System.out.println(command);
         System.out.println("You exited graciously!" + variableThatNeedsToBeSetFalseBeforeShutdown);
         System.exit(0);
     }

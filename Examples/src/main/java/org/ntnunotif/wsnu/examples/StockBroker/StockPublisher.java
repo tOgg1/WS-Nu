@@ -127,7 +127,7 @@ public class StockPublisher {
         // Initialize the inputManager
         try{
             inputManager = new HelperClasses.InputManager();
-            inputManager.addMethodReroute("update", "update", false, this.getClass().getMethod("update", null), this);
+            inputManager.addMethodReroute("update", "update", false, this.getClass().getMethod("update", (java.lang.Class<?>[])null), this);
             inputManager.start();
         }catch(NoSuchMethodException e){
             // Do nothing

@@ -23,7 +23,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
-import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.br_2.DestroyRegistration;
 import org.oasis_open.docs.wsn.br_2.DestroyRegistrationResponse;
@@ -124,9 +124,9 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
                     _publishers.remove(subRef);
                     return new DestroyRegistrationResponse();
                 }
-                ServiceUtilities.throwResourceNotDestroyed("en", "Ill-formated subscription-parameter");
+                ExceptionUtilities.throwResourceNotDestroyed("en", "Ill-formated subscription-parameter");
             } else if(entry.getValue().length == 0){
-                ServiceUtilities.throwResourceNotDestroyed("en", "Subscription-parameter is missing value");
+                ExceptionUtilities.throwResourceNotDestroyed("en", "Subscription-parameter is missing value");
             }
 
             String subRef = entry.getValue()[0];
@@ -135,7 +135,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
             if(!_publishers.containsKey(subRef)){
                 Log.d("SimplePublishersRegistrationManager", "Subscription not found");
                 Log.d("SimplePublishersRegistrationManager", "Expected: " + subRef);
-                ServiceUtilities.throwResourceNotDestroyed("en", "Subscription not found.");
+                ExceptionUtilities.throwResourceNotDestroyed("en", "Subscription not found.");
             }
 
             Log.d("SimplePublishersRegistrationManager", "Removed subscription");
@@ -145,7 +145,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
 
             return new DestroyRegistrationResponse();
         }
-        ServiceUtilities.throwResourceNotDestroyed("en", "The registration was not found as any parameter" +
+        ExceptionUtilities.throwResourceNotDestroyed("en", "The registration was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?" + WsnUtilities.publisherRegistrationString + "=registrationkey");
         return null;

@@ -21,6 +21,7 @@ package org.ntnunotif.wsnu.services.filterhandling;
 
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.QueryExpressionType;
@@ -63,7 +64,7 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
 
                 Log.w("DefaultMessageContentFilterEvaluator", "Asked to evaluate filter with unknown dialect: " +
                         queryExpressionFilter.getDialect());
-                ServiceUtilities.throwInvalidMessageContentExpressionFault("en",
+                ExceptionUtilities.throwInvalidMessageContentExpressionFault("en",
                         "Dialect used in filter was unknown. Accepts only " + dialectSupported + ", but found " +
                                 queryExpressionFilter.getDialect()
                 );
@@ -86,12 +87,12 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
                 } catch (IllegalArgumentException e) {
                     Log.w("DefaultMessageContentFilterEvaluator", "Malformed MessageContentFilter, can not " +
                             "understand complex or empty filters.");
-                    ServiceUtilities.throwInvalidMessageContentExpressionFault("en", "XPath expression must must be " +
+                    ExceptionUtilities.throwInvalidMessageContentExpressionFault("en", "XPath expression must must be " +
                             "single strong, not neither empty nor complex.");
                     return false;
                 } catch (XPathExpressionException e) {
                     Log.w("DefaultMessageContentFilterEvaluator", "Was asked to check a malformed XPath expression");
-                    ServiceUtilities.throwInvalidMessageContentExpressionFault("en", "MessageContextFilter did not " +
+                    ExceptionUtilities.throwInvalidMessageContentExpressionFault("en", "MessageContextFilter did not " +
                             "follow correct XPath context");
                     return false;
                 }
@@ -99,7 +100,7 @@ public class DefaultMessageContentFilterEvaluator implements FilterEvaluator {
             }
         } else {
             Log.e("DefaultMessageContentFilterEvaluator", "Evaluator was used to evaluate wrong expression class");
-            ServiceUtilities.throwInvalidMessageContentExpressionFault("en", "Filter claimed to be " + fName +
+            ExceptionUtilities.throwInvalidMessageContentExpressionFault("en", "Filter claimed to be " + fName +
                     ", but was not parsed as such.");
             return false;
         }

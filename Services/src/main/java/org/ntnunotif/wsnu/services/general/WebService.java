@@ -175,7 +175,7 @@ public abstract class WebService {
      */
     public void forceEndpointReference(String endpointReference){
         this.endpointReference = endpointReference;
-        this.pureEndpointReference = ServiceUtilities.filterEndpointReference(endpointReference);
+        this.pureEndpointReference = Utilities.stripUrlOfProtocolAndHost(endpointReference);
 
         if(connection == null) {
             Log.w("WebService", "Tried to force an endpoint reference for a null connector.");

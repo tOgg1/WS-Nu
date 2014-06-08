@@ -43,6 +43,7 @@ public class MappingConnectorTest {
 
         @WebMethod
         public void myAwesomeWebMethod(String roflParameter){
+            System.out.println(roflParameter);
         }
     }
 

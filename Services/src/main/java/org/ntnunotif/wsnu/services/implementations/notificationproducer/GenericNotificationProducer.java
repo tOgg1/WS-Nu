@@ -26,6 +26,7 @@ import org.ntnunotif.wsnu.base.topics.TopicValidator;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
@@ -350,14 +351,14 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if (consumerEndpoint == null) {
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
+            ExceptionUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
         String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
 
         // EndpointReference is returned as "" from getAddress if something went wrong.
         if(endpointReference.equals("")){
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
+            ExceptionUtilities.throwSubscribeCreationFailedFault("en", "EndpointReference mal formatted or missing.");
         }
 
         FilterType filters = subscribeRequest.getFilter();
@@ -386,7 +387,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                     } else {
                         Log.w("GenericNotificationProducer", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
-                        ServiceUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
+                        ExceptionUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
                     }
 
@@ -401,11 +402,11 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if (terminationTime < System.currentTimeMillis()) {
-                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
+                    ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
+                ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
             }
         } else {
             /* Set it to terminate in one day */
@@ -423,7 +424,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
+            ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
                     "convertable to a gregorian calendar-instance. If the problem persists," +
                     "please post an issue at http://github.com/tOgg1/WS-Nu");
         }
@@ -472,7 +473,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         if (!cacheMessages) {
             Log.w("GenericNotificationProducer", "Someone tried to get current message when caching is disabled");
-            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "This producer does not cache messages, " +
+            ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "This producer does not cache messages, " +
                     "and therefore does not support the getCurrentMessage interface");
         }
 
@@ -480,7 +481,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
 
         if (askedFor == null) {
-            ServiceUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
+            ExceptionUtilities.throwInvalidTopicExpressionFault("en", "Topic missing from request.");
         }
 
         List<QName> topicQNames = TopicValidator.evaluateTopicExpressionToQName(askedFor, connection.getRequestInformation().getNamespaceContext(askedFor));
@@ -491,7 +492,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
         if (holderType == null) {
             Log.d("GenericNotificationProducer", "Was asked for current message on a topic that was not sent");
-            ServiceUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
+            ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
             return null;
 
         } else {

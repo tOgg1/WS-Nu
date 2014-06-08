@@ -22,6 +22,7 @@ package org.ntnunotif.wsnu.services.implementations.subscriptionmanager;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -122,12 +123,12 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
                         fireSubscriptionChanged(subRef, SubscriptionEvent.Type.RESUME);
                         return new ResumeSubscriptionResponse();
                     } else {
-                        ServiceUtilities.throwResumeFailedFault("en", "Subscription is not paused");
+                        ExceptionUtilities.throwResumeFailedFault("en", "Subscription is not paused");
                     }
                 }
-                ServiceUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
+                ExceptionUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
             } else if(entry.getValue().length == 0){
-                ServiceUtilities.throwResumeFailedFault("en", "Subscription-parameter in URL is missing value");
+                ExceptionUtilities.throwResumeFailedFault("en", "Subscription-parameter in URL is missing value");
             }
 
             String subRef = entry.getValue()[0];
@@ -136,7 +137,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimplePausableSubscriptionManager", "Subscription not found");
                 Log.d("SimplePausableSubscriptionManager", "Expected: " + subRef);
-                ServiceUtilities.throwResourceUnknownFault("en", "Subscription not found.");
+                ExceptionUtilities.throwResourceUnknownFault("en", "Subscription not found.");
             }
 
             Log.d("SimplePausableSubscriptionManager", "Paused subscription");
@@ -144,7 +145,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             fireSubscriptionChanged(subRef, SubscriptionEvent.Type.RESUME);
             return new ResumeSubscriptionResponse();
         }
-        ServiceUtilities.throwResumeFailedFault("en", "The subscription was not found as any parameter" +
+        ExceptionUtilities.throwResumeFailedFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
@@ -176,12 +177,12 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
                         fireSubscriptionChanged(subRef, SubscriptionEvent.Type.PAUSE);
                         return new PauseSubscriptionResponse();
                     } else {
-                        ServiceUtilities.throwPauseFailedFault("en", "Subscription is already paused");
+                        ExceptionUtilities.throwPauseFailedFault("en", "Subscription is already paused");
                     }
                 }
-                ServiceUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
+                ExceptionUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
             } else if(entry.getValue().length == 0){
-                ServiceUtilities.throwPauseFailedFault("en", "Subscription-parameter in URL is missing value");
+                ExceptionUtilities.throwPauseFailedFault("en", "Subscription-parameter in URL is missing value");
             }
 
             String subRef = entry.getValue()[0];
@@ -190,7 +191,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimplePausableSubscriptionManager", "Subscription not found");
                 Log.d("SimplePausableSubscriptionManager", "Expected: " + subRef);
-                ServiceUtilities.throwResourceUnknownFault("en", "Subscription not found.");
+                ExceptionUtilities.throwResourceUnknownFault("en", "Subscription not found.");
             }
 
             Log.d("SimplePausableSubscriptionManager", "Paused subscription");
@@ -198,7 +199,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             fireSubscriptionChanged(subRef, SubscriptionEvent.Type.PAUSE);
             return new PauseSubscriptionResponse();
         }
-        ServiceUtilities.throwPauseFailedFault("en", "The subscription was not found as any parameter" +
+        ExceptionUtilities.throwPauseFailedFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
@@ -236,10 +237,10 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
                     fireSubscriptionChanged(subRef, SubscriptionEvent.Type.UNSUBSCRIBE);
                     return new UnsubscribeResponse();
                 } else {
-                    ServiceUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
+                    ExceptionUtilities.throwResourceUnknownFault("en", "Ill-formated subscription-parameter");
                 }
             } else if(entry.getValue().length == 0){
-                ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "Subscription-parameter in URL is missing value");
+                ExceptionUtilities.throwUnableToDestroySubscriptionFault("en", "Subscription-parameter in URL is missing value");
             }
 
             String subRef = entry.getValue()[0];
@@ -248,7 +249,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             if(!_subscriptions.containsKey(subRef)){
                 Log.d("SimpleSubscriptionManager", "Subscription not found");
                 Log.d("SimpleSubscriptionManager", "Expected: " + subRef);
-                ServiceUtilities.throwResourceUnknownFault("en", "Subscription not found.");
+                ExceptionUtilities.throwResourceUnknownFault("en", "Subscription not found.");
             }
 
             Log.d("SimpleSubscriptionManager", "Removed subscription");
@@ -257,7 +258,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             return new UnsubscribeResponse();
         }
 
-        ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "The subscription was not found as any parameter" +
+        ExceptionUtilities.throwUnableToDestroySubscriptionFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
@@ -293,11 +294,11 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
                 String subRef = entry.getValue()[0];
 
                 if(!_subscriptions.containsKey(subRef)){
-                    ServiceUtilities.throwResourceUnknownFault("en", "Given resource was unknown: " + subRef);
+                    ExceptionUtilities.throwResourceUnknownFault("en", "Given resource was unknown: " + subRef);
                 }
             /* We just continue down here as the time-fetching operations are rather large */
             }else if(entry.getValue().length == 0){
-                ServiceUtilities.throwResourceUnknownFault("en", "A blank resource is always unknown.");
+                ExceptionUtilities.throwResourceUnknownFault("en", "A blank resource is always unknown.");
             }
 
             String subRef = entry.getValue()[0];
@@ -305,7 +306,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
             long time = ServiceUtilities.interpretTerminationTime(renewRequest.getTerminationTime());
 
             if(time < System.currentTimeMillis()) {
-                ServiceUtilities.throwUnacceptableTerminationTimeFault("en", "Tried to renew a subscription so it " +
+                ExceptionUtilities.throwUnacceptableTerminationTimeFault("en", "Tried to renew a subscription so it " +
                         "should last until a time that has already passed.");
             }
 
@@ -316,7 +317,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         }
 
         Log.d("SimpleSubscriptionManager", "Subscription not found, probably ill-formatted request");
-        ServiceUtilities.throwResourceUnknownFault("en", "The subscription was not found as any parameter" +
+        ExceptionUtilities.throwResourceUnknownFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
                 "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;

@@ -22,6 +22,7 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
+import org.ntnunotif.wsnu.services.general.ExceptionUtilities;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
@@ -149,7 +150,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         W3CEndpointReference consumerEndpoint = subscribeRequest.getConsumerReference();
 
         if(consumerEndpoint == null){
-            ServiceUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
+            ExceptionUtilities.throwSubscribeCreationFailedFault("en", "Missing endpointreference");
         }
 
         String endpointReference = ServiceUtilities.getAddress(consumerEndpoint);
@@ -158,7 +159,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
         FilterType filter = subscribeRequest.getFilter();
 
         if(filter != null){
-            ServiceUtilities.throwInvalidFilterFault("NULL", "Filters not supported by this producer", new QName("null", "null"));
+            ExceptionUtilities.throwInvalidFilterFault("NULL", "Filters not supported by this producer", new QName("null", "null"));
         }
 
         long terminationTime = 0;
@@ -167,11 +168,11 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
                 terminationTime = ServiceUtilities.interpretTerminationTime(subscribeRequest.getInitialTerminationTime().getValue());
 
                 if(terminationTime < System.currentTimeMillis()){
-                    ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
+                    ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Termination time can not be before 'now'");
                 }
 
             } catch (UnacceptableTerminationTimeFault unacceptableTerminationTimeFault) {
-                ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
+                ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Malformated termination time");
             }
         }else{
             /* Set it to terminate in one day */
@@ -189,7 +190,7 @@ public class SimpleNotificationProducer extends AbstractNotificationProducer {
             response.setTerminationTime(calendar);
         } catch (DatatypeConfigurationException e) {
             Log.d("SimpleNotificationProducer", "Could not convert date time, is it formatted properly?");
-            ServiceUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
+            ExceptionUtilities.throwUnacceptableInitialTerminationTimeFault("en", "Internal error: The date was not " +
                     "convertable to a gregorian calendar-instance. If the problem persists, " +
                     "please post an issue at http://github.com/tOgg1/WS-Nu");
         }

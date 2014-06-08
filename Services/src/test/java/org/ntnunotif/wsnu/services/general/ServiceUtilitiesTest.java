@@ -35,8 +35,6 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.io.FileOutputStream;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.*;
 
 /**
@@ -151,24 +149,6 @@ public class ServiceUtilitiesTest {
 
         assertEquals("tormod.haugland.com", address);
 
-    }
-
-    @Test
-    public void testFilterendpointReference() throws Exception {
-        String endpoint_1 = "http://tormod.haugland.com/lol";
-        String endpoint_2 = "http://tormod.no/hei";
-        String endpoint_3 = "http://127.0.0.1:8080/hei";
-        String endpoint_4 = "https://127.03.42.523/tormod/webservice/lol";
-
-        String filtered_1 = ServiceUtilities.filterEndpointReference(endpoint_1);
-        String filtered_2 = ServiceUtilities.filterEndpointReference(endpoint_2);
-        String filtered_3 = ServiceUtilities.filterEndpointReference(endpoint_3);
-        String filtered_4 = ServiceUtilities.filterEndpointReference(endpoint_4);
-
-        assertEquals("lol", filtered_1);
-        assertEquals("hei", filtered_2);
-        assertEquals("hei", filtered_3);
-        assertEquals("tormod/webservice/lol", filtered_4);
     }
 
     @Test

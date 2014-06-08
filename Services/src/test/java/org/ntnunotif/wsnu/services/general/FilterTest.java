@@ -61,6 +61,7 @@ public class FilterTest {
     private static FilterSupport defaultFilterSupport;
 
     @BeforeClass
+    @SuppressWarnings("unchecked")
     public static void globalSetup() throws Exception{
 
         Log.setEnableDebug(false);
