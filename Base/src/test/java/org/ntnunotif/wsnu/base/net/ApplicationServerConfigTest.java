@@ -3,7 +3,6 @@ package org.ntnunotif.wsnu.base.net;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 
 /**
  *
@@ -30,11 +29,7 @@ public class ApplicationServerConfigTest {
 
     @Test
     public void testNonDefaultConnector() throws Exception {
-        server.addStandardConnector("127.0.0.1", 8081);
 
-        SoapForwardingHub hub = new SoapForwardingHub();
-        server.start(hub);
-        hub.stop();
     }
 
     @Test

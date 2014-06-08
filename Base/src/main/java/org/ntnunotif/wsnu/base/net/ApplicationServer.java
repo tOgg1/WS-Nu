@@ -157,7 +157,6 @@ public class ApplicationServer{
 
     /**
      * Stop the http-server.
-     * @throws java.lang.Exception Throws an exception if the server is unable to stop.
      */
     public void stop(){
         try {
@@ -165,12 +164,10 @@ public class ApplicationServer{
                 _server.stop();
             }
 
-            System.out.println("Hello1");
             if(_serverThread != null) {
                 _serverThread.join();
             }
 
-            System.out.println("Hello2");
             if(_parentHub != null) {
                 _parentHub = null;
             }

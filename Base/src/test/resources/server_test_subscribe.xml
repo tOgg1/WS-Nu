@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <soap:Envelope
         xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
-
         xmlns:wsa="http://www.w3.org/2005/08/addressing">
     <soap:Header>
         <wsa:Action>

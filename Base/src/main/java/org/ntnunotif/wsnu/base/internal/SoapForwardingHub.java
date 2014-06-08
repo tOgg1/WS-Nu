@@ -159,7 +159,7 @@ public class SoapForwardingHub implements Hub {
 
             if(foundConnection){
                 returnMessage = connection.acceptMessage(internalMessage);
-            }else{
+            } else {
                 Log.d("SoapForwardingHub", "Looking for service to send to");
                 for(ServiceConnection service : _services){
                     Log.d("SoapForwardingHub", "Attempting to forward request to " + service);
@@ -167,9 +167,11 @@ public class SoapForwardingHub implements Hub {
 
                     if((returnMessage.statusCode & STATUS_FAULT_INVALID_DESTINATION) > 0){
                         continue;
-                    }else if((returnMessage.statusCode & STATUS_OK) > 0){
+                    } else if((returnMessage.statusCode & STATUS_OK) > 0){
                         break;
-                    }else if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                    } else if((returnMessage.statusCode & STATUS_FAULT_INTERNAL_ERROR) > 0){
+                        break;
+                    } else if((returnMessage.statusCode & STATUS_EXCEPTION_SHOULD_BE_HANDLED) > 0){
                         break;
                     }
                 }
