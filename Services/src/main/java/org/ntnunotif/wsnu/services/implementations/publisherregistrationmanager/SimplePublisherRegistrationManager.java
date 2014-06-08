@@ -24,6 +24,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.br_2.DestroyRegistration;
 import org.oasis_open.docs.wsn.br_2.DestroyRegistrationResponse;
 import org.oasis_open.docs.wsn.brw_2.ResourceNotDestroyedFault;
@@ -113,7 +114,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
         RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
-            if(!entry.getKey().equals("publisherregistration")){
+            if(!entry.getKey().equals(WsnUtilities.publisherRegistrationString)){
                 continue;
             }
 
@@ -146,7 +147,7 @@ public class SimplePublisherRegistrationManager extends AbstractPublisherRegistr
         }
         ServiceUtilities.throwResourceNotDestroyed("en", "The registration was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
-                "\"http://urlofthis.domain/webservice/?publisherregistration=registrationkey");
+                "\"http://urlofthis.domain/webservice/?" + WsnUtilities.publisherRegistrationString + "=registrationkey");
         return null;
     }
 

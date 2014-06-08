@@ -28,6 +28,7 @@ import org.ntnunotif.wsnu.services.eventhandling.PublisherRegistrationEvent;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.filterhandling.FilterSupport;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
 import org.oasis_open.docs.wsn.br_2.RegisterPublisherResponse;
@@ -446,7 +447,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
         /* Generate new subscription hash */
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateHashedURLFromKey("subscription", newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey(WsnUtilities.subscriptionString, newSubscriptionKey);
 
         /* Build endpoint reference */
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
@@ -541,7 +542,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         }
 
         String newSubscriptionKey = generateSubscriptionKey();
-        String subscriptionEndpoint = generateHashedURLFromKey("publisherregistration", newSubscriptionKey);
+        String subscriptionEndpoint = generateHashedURLFromKey(WsnUtilities.publisherRegistrationString, newSubscriptionKey);
 
         // Send subscriptionRequest back if isDemand isRequested
         if(registerPublisherRequest.isDemand()){

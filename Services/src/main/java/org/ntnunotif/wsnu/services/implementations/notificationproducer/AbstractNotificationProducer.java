@@ -141,6 +141,7 @@ public abstract class AbstractNotificationProducer extends WebService implements
      */
     @WebMethod(exclude = true)
     protected abstract String getEndpointReferenceOfRecipient(String subscriptionKey);
+
     /**
      * Will try to send the {@link org.oasis_open.docs.wsn.b_2.Notify} to the
      * {@link javax.xml.ws.wsaddressing.W3CEndpointReference} indicated.

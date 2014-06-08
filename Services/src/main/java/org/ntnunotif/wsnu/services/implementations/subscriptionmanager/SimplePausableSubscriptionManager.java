@@ -23,6 +23,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.base.util.RequestInformation;
 import org.ntnunotif.wsnu.services.eventhandling.SubscriptionEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
+import org.ntnunotif.wsnu.services.general.WsnUtilities;
 import org.oasis_open.docs.wsn.b_2.*;
 import org.oasis_open.docs.wsn.bw_2.PauseFailedFault;
 import org.oasis_open.docs.wsn.bw_2.ResumeFailedFault;
@@ -107,7 +108,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
-            if(!entry.getKey().equals("subscription")){
+            if(!entry.getKey().equals(WsnUtilities.subscriptionString)){
                 continue;
             }
 
@@ -145,7 +146,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         }
         ServiceUtilities.throwResumeFailedFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
-                "\"http://urlofthis.domain/webservice/?subscription=subscriptionreference");
+                "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
     }
 
@@ -161,7 +162,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         RequestInformation requestInformation = connection.getRequestInformation();
 
         for (Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
-            if(!entry.getKey().equals("subscription")){
+            if(!entry.getKey().equals(WsnUtilities.subscriptionString)){
                 continue;
             }
 
@@ -199,7 +200,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         }
         ServiceUtilities.throwPauseFailedFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
-                "\"http://urlofthis.domain/webservice/?subscription=subscriptionreference");
+                "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
     }
 
@@ -223,7 +224,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         RequestInformation requestInformation = connection.getRequestInformation();
 
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()){
-            if(!entry.getKey().equals("subscription")){
+            if(!entry.getKey().equals(WsnUtilities.subscriptionString)){
                 continue;
             }
 
@@ -258,7 +259,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
 
         ServiceUtilities.throwUnableToDestroySubscriptionFault("en", "The subscription was not found as any parameter" +
                 " in the request-uri. Please send a request on the form: " +
-                "\"http://urlofthis.domain/webservice/?subscription=subscriptionreference");
+                "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
     }
 
@@ -282,7 +283,7 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         Log.d("SimpleSubscriptionManager", "Received renew request");
         /* Find the subscription tag */
         for(Map.Entry<String, String[]> entry : requestInformation.getParameters().entrySet()) {
-            if (!entry.getKey().equals("subscription")) {
+            if (!entry.getKey().equals(WsnUtilities.subscriptionString)) {
                 continue;
             }
             Log.d("SimpleSubscriptionManager", "Found subscription parameter");
@@ -315,8 +316,9 @@ public class SimplePausableSubscriptionManager extends AbstractPausableSubscript
         }
 
         Log.d("SimpleSubscriptionManager", "Subscription not found, probably ill-formatted request");
-        ServiceUtilities.throwResourceUnknownFault("en", "The resource was not found. The request was probably ill " +
-                "formatted");
+        ServiceUtilities.throwResourceUnknownFault("en", "The subscription was not found as any parameter" +
+                " in the request-uri. Please send a request on the form: " +
+                "\"http://urlofthis.domain/webservice/?"+WsnUtilities.subscriptionString+"=subscriptionreference");
         return null;
     }
 
