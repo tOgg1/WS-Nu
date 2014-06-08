@@ -30,7 +30,7 @@ import java.util.EventObject;
 import java.util.List;
 
 /**
- * This class contains a Notify object received by NotificationConsumer.
+ * This class contains a Notify object received by NotificationConsumerImpl.
  *
  * This is the main object passed into the {@link org.ntnunotif.wsnu.services.eventhandling.ConsumerListener#notify(NotificationEvent)}
  * method.

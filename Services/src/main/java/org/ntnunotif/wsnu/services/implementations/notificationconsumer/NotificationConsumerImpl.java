@@ -38,7 +38,7 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
  * Created by tormod on 3/11/14.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "SimpleConsumer")
-public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
+public class NotificationConsumerImpl extends org.ntnunotif.wsnu.services.general.WebService implements org.oasis_open.docs.wsn.bw_2.NotificationConsumer{
 
     /**
      * Helper that deals with Notification events
@@ -46,14 +46,14 @@ public class NotificationConsumer extends org.ntnunotif.wsnu.services.general.We
     private final NotificationEventSupport _eventSupport = new NotificationEventSupport(this);
 
 
-    public NotificationConsumer() {
+    public NotificationConsumerImpl() {
         super();
     }
 
     /**
      * Constructor that takes in hub as an argument
      */
-    public NotificationConsumer(Hub hub) {
+    public NotificationConsumerImpl(Hub hub) {
         super(hub);
         this.hub = hub;
     }

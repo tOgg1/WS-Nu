@@ -22,14 +22,14 @@ package org.ntnunotif.wsnu.examples.services;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 
 /**
  * A minimalistic notification consumer
  */
 public class MinimalisticConsumer implements ConsumerListener {
 
-    private NotificationConsumer consumer;
+    private NotificationConsumerImpl consumer;
 
     private final String consumerEndpoint = "myConsumer";
 
@@ -40,14 +40,14 @@ public class MinimalisticConsumer implements ConsumerListener {
      */
     public MinimalisticConsumer() {
         // Instantiate the consumer
-        consumer = new NotificationConsumer();
+        consumer = new NotificationConsumerImpl();
 
         // By calling the consumers quickbuild method, we are starting both the consumer and the rest of the
         // system, all in one.
         myHub = consumer.quickBuild(consumerEndpoint);
 
         // Our class implements the ConsumerListener interface, meaning we can listen
-        // on the NotificationConsumer for notifications
+        // on the NotificationConsumerImpl for notifications
         consumer.addConsumerListener(this);
 
         // This is strictly speaking everything that needs to be done. However, we have not yet subscribed to anything

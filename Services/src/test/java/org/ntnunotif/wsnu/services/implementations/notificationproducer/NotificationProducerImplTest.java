@@ -27,17 +27,17 @@ import org.ntnunotif.wsnu.base.net.ApplicationServer;
 /**
  *
  */
-public class GenericNotificationProducerTest {
+public class NotificationProducerImplTest {
 
-    private GenericNotificationProducer defaultProducer;
-    private GenericNotificationProducer noFilterProducer;
-    private GenericNotificationProducer noFilterNoCachingProducer;
+    private NotificationProducerImpl defaultProducer;
+    private NotificationProducerImpl noFilterProducer;
+    private NotificationProducerImpl noFilterNoCachingProducer;
 
     @Before
     public void setUp() {
-        defaultProducer = new GenericNotificationProducer();
-        noFilterProducer = new GenericNotificationProducer(false);
-        noFilterNoCachingProducer = new GenericNotificationProducer(false, false);
+        defaultProducer = new NotificationProducerImpl();
+        noFilterProducer = new NotificationProducerImpl(false);
+        noFilterNoCachingProducer = new NotificationProducerImpl(false, false);
     }
 
     @AfterClass

@@ -25,8 +25,8 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.NotificationProducerImpl;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
 import org.oasis_open.docs.wsn.b_2.Subscribe;
@@ -56,7 +56,7 @@ public class SimultaneousConsumerAndProducer {
         // Start with building the producer (the producer need to run before any consumers may be registered to get
         // notifies)
 
-        GenericNotificationProducer producer = new GenericNotificationProducer();
+        NotificationProducerImpl producer = new NotificationProducerImpl();
         // We need to remember the hub so that we can use it for the consumers
         SoapForwardingHub hub = producer.quickBuild(PRODUCER_ENDPOINT);
 
@@ -71,7 +71,7 @@ public class SimultaneousConsumerAndProducer {
         }
 
         // Create the first consumer
-        NotificationConsumer consumer1 = new NotificationConsumer();
+        NotificationConsumerImpl consumer1 = new NotificationConsumerImpl();
         // The quickBuild takes in the hub we are should connect to
         consumer1.quickBuild(CONSUMER_1_ENDPOINT, hub);
         consumer1.addConsumerListener(new PrintConsumerListener("First Consumer"));
@@ -100,7 +100,7 @@ public class SimultaneousConsumerAndProducer {
 
 
         // Create the second consumer
-        NotificationConsumer consumer2 = new NotificationConsumer();
+        NotificationConsumerImpl consumer2 = new NotificationConsumerImpl();
         // The quickBuild takes in the hub we are should connect to
         consumer2.quickBuild(CONSUMER_2_ENDPOINT, hub);
         consumer2.addConsumerListener(new PrintConsumerListener("Second Consumer"));

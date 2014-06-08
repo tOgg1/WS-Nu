@@ -30,8 +30,8 @@ import org.ntnunotif.wsnu.base.util.InternalMessage;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.NotificationProducerImpl;
 import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.SimplePublisherRegistrationManager;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimpleSubscriptionManager;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
@@ -45,15 +45,15 @@ import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 /**
  *
  */
-public class GenericNotificationBrokerTest {
+public class NotificationBrokerImplTest {
 
     private static Hub hub;
 
-    private static GenericNotificationBroker broker;
+    private static NotificationBrokerImpl broker;
     private static SimplePublisherRegistrationManager publisher_manager;
     private static SimpleSubscriptionManager sub_manager;
-    private static NotificationConsumer consumer;
-    private static GenericNotificationProducer producer;
+    private static NotificationConsumerImpl consumer;
+    private static NotificationProducerImpl producer;
     private static ConsumerListener listener;
     private static boolean flag;
 
@@ -66,14 +66,14 @@ public class GenericNotificationBrokerTest {
             }
         };
 
-        broker = new GenericNotificationBroker();
+        broker = new NotificationBrokerImpl();
         hub = broker.quickBuild("myBroker");
 
-        producer = new GenericNotificationProducer(hub);
+        producer = new NotificationProducerImpl(hub);
         producer.setEndpointReference("myProducer");
         publisher_manager = new SimplePublisherRegistrationManager(hub);
         sub_manager = new SimpleSubscriptionManager(hub);
-        consumer = new NotificationConsumer(hub);
+        consumer = new NotificationConsumerImpl(hub);
         consumer.addConsumerListener(listener);
 
         UnpackingConnector connector_one = new UnpackingConnector(publisher_manager);

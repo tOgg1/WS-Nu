@@ -57,7 +57,7 @@ public class AdvancedConsumerConnector extends WebService implements ServiceConn
     }
 
     /**
-     * The implementation of NotificationConsumer's notify.
+     * The implementation of NotificationConsumerImpl's notify.
      */
     @Override
     @WebMethod(operationName = "Notify")
@@ -116,7 +116,7 @@ public class AdvancedConsumerConnector extends WebService implements ServiceConn
     }
 
     /**
-     * Get the service type. In this scenario a NotificationConsumer
+     * Get the service type. In this scenario a NotificationConsumerImpl
      */
     @Override
     @WebMethod(exclude = true)

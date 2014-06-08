@@ -20,7 +20,7 @@
 package org.ntnunotif.wsnu.examples.services;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNotificationBroker;
+import org.ntnunotif.wsnu.services.implementations.notificationbroker.NotificationBrokerImpl;
 import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.SimplePublisherRegistrationManager;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimpleSubscriptionManager;
 
@@ -29,7 +29,7 @@ import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimpleSub
  */
 public class BrokerWithSubscriptionManagerAndPublisherRegistrationManager {
 
-    private GenericNotificationBroker broker;
+    private NotificationBrokerImpl broker;
     private SimpleSubscriptionManager subscriptionManager;
     private SimplePublisherRegistrationManager publisherRegistrationManager;
 
@@ -45,7 +45,7 @@ public class BrokerWithSubscriptionManagerAndPublisherRegistrationManager {
     public BrokerWithSubscriptionManagerAndPublisherRegistrationManager() {
 
         // Instantiate the Web Services
-        broker = new GenericNotificationBroker();
+        broker = new NotificationBrokerImpl();
         subscriptionManager = new SimpleSubscriptionManager();
         publisherRegistrationManager = new SimplePublisherRegistrationManager();
 

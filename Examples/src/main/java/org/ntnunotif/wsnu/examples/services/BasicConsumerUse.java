@@ -27,7 +27,7 @@ import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.eventhandling.ConsumerListener;
 import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.TopicExpressionType;
 import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
@@ -51,9 +51,9 @@ public class BasicConsumerUse {
 
         // This example shows just how simple it is to create a Consumer.
 
-        // First you need an instance of the NotificationConsumer class. This will be the class you interact with to
+        // First you need an instance of the NotificationConsumerImpl class. This will be the class you interact with to
         // register with producers/ brokers, and where you tell your program where to send the notify messages.
-        NotificationConsumer notificationConsumer = new NotificationConsumer();
+        NotificationConsumerImpl notificationConsumer = new NotificationConsumerImpl();
 
         // We would also need to know its endpoint reference (the part directly after our root address)
         final String endpoint = "exampleConsumerEndpoint";

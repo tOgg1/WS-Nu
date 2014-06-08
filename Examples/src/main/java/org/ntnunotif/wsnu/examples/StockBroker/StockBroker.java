@@ -23,12 +23,12 @@ import org.ntnunotif.wsnu.base.internal.Hub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.Log;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
-import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNotificationBroker;
+import org.ntnunotif.wsnu.services.implementations.notificationbroker.NotificationBrokerImpl;
 import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.SimplePublisherRegistrationManager;
 
 /**
  * A StockBroker (pun intended). This class implements the
- * {@link org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNotificationBroker} interface
+ * {@link org.ntnunotif.wsnu.services.implementations.notificationbroker.NotificationBrokerImpl} interface
  * with the following settings:
  *
  * <ul>
@@ -44,7 +44,7 @@ import org.ntnunotif.wsnu.services.implementations.publisherregistrationmanager.
 public class StockBroker {
 
     // Our NotificiationBroker Web Service
-    private GenericNotificationBroker broker;
+    private NotificationBrokerImpl broker;
 
     // Our PublisherRegistrationManager Web Service
     private SimplePublisherRegistrationManager manager;
@@ -58,10 +58,10 @@ public class StockBroker {
 
     public void start() throws Exception {
 
-        // Start and initialize our GenericNotificationBroker. We want a Broker that
+        // Start and initialize our NotificationBrokerImpl. We want a Broker that
         // demands the publisher to be registered beforehand, and we also want it to cache messages.
         // Confuse not the "setDemandRegistered"-method with demand-based publishing.
-        broker = new GenericNotificationBroker();
+        broker = new NotificationBrokerImpl();
         broker.setCacheMessages(true);
         broker.setDemandRegistered(true);
         hub = broker.quickBuild("myBroker");

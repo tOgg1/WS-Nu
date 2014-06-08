@@ -23,7 +23,7 @@ import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.NuNamespaceContextResolver;
 import org.ntnunotif.wsnu.base.topics.SimpleEvaluator;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.NotificationProducerImpl;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 import org.oasis_open.docs.wsn.b_2.ObjectFactory;
@@ -50,9 +50,9 @@ public class BasicProducerUse {
 
         // This example shows how simple it is to create a producer that may distribute notifies.
 
-        // First you need an instance of the GenericNotificationProducer class. This will serve as the delegate to
+        // First you need an instance of the NotificationProducerImpl class. This will serve as the delegate to
         // distribute notifications. If you wish, you may extend the class, though we do not do that here.
-        GenericNotificationProducer producer = new GenericNotificationProducer();
+        NotificationProducerImpl producer = new NotificationProducerImpl();
 
         // This producer is now set up (by default) to support GetCurrentMessage on a specific topic, and it support
         // filtering on topics and message content.

@@ -5,7 +5,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ntnunotif.wsnu.base.net.ApplicationServer;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 
 import static junit.framework.TestCase.assertTrue;
 
@@ -13,13 +13,13 @@ import static junit.framework.TestCase.assertTrue;
  *
  */
 public class TestNonDefaultConnector {
-    private static NotificationConsumer consumer;
+    private static NotificationConsumerImpl consumer;
     private static ApplicationServer server;
 
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        consumer = new NotificationConsumer();
+        consumer = new NotificationConsumerImpl();
 
         ApplicationServer.useConfigFile = false;
         server = ApplicationServer.getInstance();

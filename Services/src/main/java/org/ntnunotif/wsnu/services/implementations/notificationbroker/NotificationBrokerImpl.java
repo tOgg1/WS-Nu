@@ -65,7 +65,7 @@ import java.util.*;
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/brw-2", name = "NotificationBroker")
 @XmlSeeAlso({org.oasis_open.docs.wsn.t_1.ObjectFactory.class, org.oasis_open.docs.wsn.br_2.ObjectFactory.class, org.oasis_open.docs.wsrf.r_2.ObjectFactory.class, org.oasis_open.docs.wsrf.bf_2.ObjectFactory.class, org.oasis_open.docs.wsn.b_2.ObjectFactory.class})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
-public class GenericNotificationBroker extends AbstractNotificationBroker {
+public class NotificationBrokerImpl extends AbstractNotificationBroker {
 
     /**
      * HashMap of subscriptions.
@@ -90,8 +90,8 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     /**
      * Default constructor. Adds filtersupport and enables caching of messages.
      */
-    public GenericNotificationBroker() {
-        Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
+    public NotificationBrokerImpl() {
+        Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
@@ -100,12 +100,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
      * Constructor taking a variable indicating whether filters should be supported or not.
      * @param supportFilters
      */
-    public GenericNotificationBroker(boolean supportFilters) {
+    public NotificationBrokerImpl(boolean supportFilters) {
         if (supportFilters) {
-            Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
         } else {
-            Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage allowed");
             filterSupport = null;
         }
         cacheMessages = true;
@@ -117,21 +117,21 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
      * @param supportFilters
      * @param cacheMessages
      */
-    public GenericNotificationBroker(boolean supportFilters, boolean cacheMessages) {
+    public NotificationBrokerImpl(boolean supportFilters, boolean cacheMessages) {
         if (supportFilters) {
             if (cacheMessages) {
-                Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage allowed");
+                Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage allowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             } else {
-                Log.d("GenericNotificationBroker", "Created new with default filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationBrokerImpl", "Created new with default filter support and GetCurrentMessage disallowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             }
         } else {
             if (cacheMessages) {
-                Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage allowed, but unusable");
+                Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage allowed, but unusable");
                 filterSupport = null;
             } else {
-                Log.d("GenericNotificationBroker", "Created new without filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationBrokerImpl", "Created new without filter support and GetCurrentMessage disallowed");
                 filterSupport = null;
             }
         }
@@ -144,11 +144,11 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
      * @param filterSupport
      * @param cacheMessages
      */
-    public GenericNotificationBroker(FilterSupport filterSupport, boolean cacheMessages) {
+    public NotificationBrokerImpl(FilterSupport filterSupport, boolean cacheMessages) {
         if (cacheMessages){
-            Log.d("GenericNotificationBroker", "Created new with custom filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new with custom filter support and GetCurrentMessage allowed");
         } else {
-            Log.d("GenericNotificationBroker", "Created new with custom filter support and GetCurrentMessage disallowed");
+            Log.d("NotificationBrokerImpl", "Created new with custom filter support and GetCurrentMessage disallowed");
         }
 
         this.filterSupport = filterSupport;
@@ -160,9 +160,9 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
      * Also creates default filtersupport and sets cachemessages to true.
      * @param hub
      */
-    public GenericNotificationBroker(Hub hub) {
+    public NotificationBrokerImpl(Hub hub) {
         this.hub = hub;
-        Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+        Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
@@ -170,46 +170,46 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
     /**
 
     */
-    public GenericNotificationBroker(Hub hub, boolean supportFilters) {
+    public NotificationBrokerImpl(Hub hub, boolean supportFilters) {
         this.hub = hub;
         if (supportFilters) {
-            Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
         } else {
-            Log.d("GenericNotificationBroker", "Created new with hub and without filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new with hub and without filter support and GetCurrentMessage allowed");
             filterSupport = null;
         }
         cacheMessages = true;
     }
 
-    public GenericNotificationBroker(Hub hub, boolean supportFilters, boolean cacheMessages) {
+    public NotificationBrokerImpl(Hub hub, boolean supportFilters, boolean cacheMessages) {
         this.hub = hub;
         if (supportFilters) {
             if (cacheMessages) {
-                Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage allowed");
+                Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             } else {
-                Log.d("GenericNotificationBroker", "Created new with hub, default filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationBrokerImpl", "Created new with hub, default filter support and GetCurrentMessage disallowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             }
         } else {
             if (cacheMessages) {
-                Log.d("GenericNotificationBroker", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
+                Log.d("NotificationBrokerImpl", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
                 filterSupport = null;
             } else {
-                Log.d("GenericNotificationBroker", "Created new with hub, without filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationBrokerImpl", "Created new with hub, without filter support and GetCurrentMessage disallowed");
                 filterSupport = null;
             }
         }
         this.cacheMessages = cacheMessages;
     }
 
-    public GenericNotificationBroker(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
+    public NotificationBrokerImpl(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
         this.hub = hub;
         if (cacheMessages)
-            Log.d("GenericNotificationBroker", "Created new with hub, custom filter support and GetCurrentMessage allowed");
+            Log.d("NotificationBrokerImpl", "Created new with hub, custom filter support and GetCurrentMessage allowed");
         else
-            Log.d("GenericNotificationBroker", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
+            Log.d("NotificationBrokerImpl", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
         this.filterSupport = filterSupport;
 
         this.cacheMessages = cacheMessages;
@@ -312,13 +312,13 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
                         latestMessages.put(topicName, messageHolderType);
 
                     } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                        Log.w("GenericNotificationBroker", "Tried to send a topic with an invalid expression");
+                        Log.w("NotificationBrokerImpl", "Tried to send a topic with an invalid expression");
                         invalidTopicExpressionFault.printStackTrace();
                     } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
-                        Log.w("GenericNotificationBroker", "Tried to send a message with multiple topics");
+                        Log.w("NotificationBrokerImpl", "Tried to send a message with multiple topics");
                         multipleTopicsSpecifiedFault.printStackTrace();
                     } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                        Log.w("GenericNotificationBroker", "Tried to send a topic with an invalid expression dialect");
+                        Log.w("NotificationBrokerImpl", "Tried to send a topic with an invalid expression dialect");
                         topicExpressionDialectUnknownFault.printStackTrace();
                     }
                 }
@@ -357,7 +357,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
 
         // Log subscribe event
-        Log.d("GenericNotificationBroker", "Got new subscription request");
+        Log.d("NotificationBrokerImpl", "Got new subscription request");
 
         // Remember the namespace context
         //NamespaceContext namespaceContextResolver = connection.getRequestInformation().getNamespaceContext();
@@ -398,12 +398,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
 
                         QName fName = filter.getName();
 
-                        Log.d("GenericNotificationBroker", "Subscription request contained filter: "
+                        Log.d("NotificationBrokerImpl", "Subscription request contained filter: "
                                 + fName);
 
                         filtersPresent.put(fName, filter.getValue());
                     } else {
-                        Log.w("GenericNotificationBroker", "Subscription attempt with non-supported filter: "
+                        Log.w("NotificationBrokerImpl", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
                         ExceptionUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
@@ -465,7 +465,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         endpointTerminationTuple = new HelperClasses.EndpointTerminationTuple(endpointReference, terminationTime);
         subscriptions.put(newSubscriptionKey, new SubscriptionHandle(endpointTerminationTuple, subscriptionInfo));
 
-        Log.d("GenericNotificationBroker", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
+        Log.d("NotificationBrokerImpl", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
 
         return response;
     }
@@ -590,12 +590,12 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
             ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
 
         if (!cacheMessages) {
-            Log.w("GenericNotificationBroker", "Someone tried to get current message when caching is disabled");
+            Log.w("NotificationBrokerImpl", "Someone tried to get current message when caching is disabled");
             ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "No messages are stored on Topic " +
                     getCurrentMessageRequest.getTopic().getContent());
         }
 
-        Log.d("GenericNotificationBroker", "Accepted getCurrentMessage");
+        Log.d("NotificationBrokerImpl", "Accepted getCurrentMessage");
         // Find out which topic there was asked for (Exceptions automatically thrown)
         TopicExpressionType askedFor = getCurrentMessageRequest.getTopic();
 
@@ -611,7 +611,7 @@ public class GenericNotificationBroker extends AbstractNotificationBroker {
         NotificationMessageHolderType holderType = latestMessages.get(topicName);
 
         if (holderType == null) {
-            Log.d("GenericNotificationBroker", "Was asked for current message on a topic that was not sent");
+            Log.d("NotificationBrokerImpl", "Was asked for current message on a topic that was not sent");
             ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
             return null;
         } else {

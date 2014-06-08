@@ -37,7 +37,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 
 /**
- * This is an advanced example, where a NotificationConsumer implements the Hub-interface, effectively eliminating
+ * This is an advanced example, where a NotificationConsumerImpl implements the Hub-interface, effectively eliminating
  * the need for a hub and a connector.
  *
  * Created by tormod on 09.05.14.
@@ -59,7 +59,7 @@ public class AdvancedConsumerHub extends WebService implements Hub, Notification
     }
 
     /**
-     * Implementation of NotificationConsumer's notify.
+     * Implementation of NotificationConsumerImpl's notify.
      */
     @Override
     @WebMethod(operationName = "Notify")

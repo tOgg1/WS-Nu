@@ -20,7 +20,7 @@
 package org.ntnunotif.wsnu.examples.services;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.NotificationProducerImpl;
 import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimplePausableSubscriptionManager;
 
 /**
@@ -28,7 +28,7 @@ import org.ntnunotif.wsnu.services.implementations.subscriptionmanager.SimplePau
  */
 public class ProducerWithSubscriptionManager {
 
-    private GenericNotificationProducer producer;
+    private NotificationProducerImpl producer;
     private SimplePausableSubscriptionManager manager;
 
     private SoapForwardingHub myHub;
@@ -41,7 +41,7 @@ public class ProducerWithSubscriptionManager {
      */
     public ProducerWithSubscriptionManager() {
         // Instantiate the Web Services
-        producer = new GenericNotificationProducer();
+        producer = new NotificationProducerImpl();
 
         // We are using a pausable subscription manager here. A regular one could be added in the same fashion
         manager = new SimplePausableSubscriptionManager();

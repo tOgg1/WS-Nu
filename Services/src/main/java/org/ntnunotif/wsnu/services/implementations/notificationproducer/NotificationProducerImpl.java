@@ -48,11 +48,11 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.*;
 
 /**
- * A <code>GenericNotificationProducer</code> has the ability to register subscriptions with filters. It can cache the
+ * A <code>NotificationProducerImpl</code> has the ability to register subscriptions with filters. It can cache the
  * latest messages it has sent (one message per topic). It can be configured to do all this, just one thing or none.
  */
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
-public class GenericNotificationProducer extends AbstractNotificationProducer {
+public class NotificationProducerImpl extends AbstractNotificationProducer {
 
     private static final QName topicExpressionQName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
 
@@ -65,54 +65,54 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     private final Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which caches messages and has default filter support (filter
+     * Creates a <code>NotificationProducerImpl</code> which caches messages and has default filter support (filter
      * on topic and message content).
      */
-    public GenericNotificationProducer() {
-        Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
+    public NotificationProducerImpl() {
+        Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which caches messages and may have default filter support
+     * Creates a <code>NotificationProducerImpl</code> which caches messages and may have default filter support
      * (filter on topic and message content).
      *
      * @param supportFilters if this producer should have default filter support.
      */
-    public GenericNotificationProducer(boolean supportFilters) {
+    public NotificationProducerImpl(boolean supportFilters) {
         if (supportFilters) {
-            Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
         } else {
-            Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage allowed");
             filterSupport = null;
         }
         cacheMessages = true;
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which may cache messages and may have default filter support
+     * Creates a <code>NotificationProducerImpl</code> which may cache messages and may have default filter support
      * (filter on topic and message content).
      *
      * @param supportFilters if this producer should have default filter support.
      * @param cacheMessages  if this producer should cache the latest messages on a topic
      */
-    public GenericNotificationProducer(boolean supportFilters, boolean cacheMessages) {
+    public NotificationProducerImpl(boolean supportFilters, boolean cacheMessages) {
         if (supportFilters) {
             if (cacheMessages) {
-                Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage allowed");
+                Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             } else {
-                Log.d("GenericNotificationProducer", "Created new with default filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage disallowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             }
         } else {
             if (cacheMessages) {
-                Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage allowed, but unusable");
+                Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage allowed, but unusable");
                 filterSupport = null;
             } else {
-                Log.d("GenericNotificationProducer", "Created new without filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage disallowed");
                 filterSupport = null;
             }
         }
@@ -120,78 +120,78 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which may cache messages and supports the filters
+     * Creates a <code>NotificationProducerImpl</code> which may cache messages and supports the filters
      * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
      *
      * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
      * @param cacheMessages if this producer should cache the latest messages on a topic
      */
-    public GenericNotificationProducer(FilterSupport filterSupport, boolean cacheMessages) {
+    public NotificationProducerImpl(FilterSupport filterSupport, boolean cacheMessages) {
         if (cacheMessages)
-            Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new with custom filter support and GetCurrentMessage allowed");
         else
-            Log.d("GenericNotificationProducer", "Created new with custom filter support and GetCurrentMessage disallowed");
+            Log.d("NotificationProducerImpl", "Created new with custom filter support and GetCurrentMessage disallowed");
         this.filterSupport = filterSupport;
 
         this.cacheMessages = cacheMessages;
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which caches messages and has default filter support (filter
+     * Creates a <code>NotificationProducerImpl</code> which caches messages and has default filter support (filter
      * on topic and message content).
      *
      * @param hub the hub this producer should be connected to after startup
      */
-    public GenericNotificationProducer(Hub hub) {
+    public NotificationProducerImpl(Hub hub) {
         this.hub = hub;
-        Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+        Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which caches messages and may have default filter support
+     * Creates a <code>NotificationProducerImpl</code> which caches messages and may have default filter support
      * (filter on topic and message content).
      *
      * @param hub            the hub this producer should be connected to after startup
      * @param supportFilters if this producer should have default filter support.
      */
-    public GenericNotificationProducer(Hub hub, boolean supportFilters) {
+    public NotificationProducerImpl(Hub hub, boolean supportFilters) {
         this.hub = hub;
         if (supportFilters) {
-            Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
             filterSupport = FilterSupport.createDefaultFilterSupport();
         } else {
-            Log.d("GenericNotificationProducer", "Created new with hub and without filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new with hub and without filter support and GetCurrentMessage allowed");
             filterSupport = null;
         }
         cacheMessages = true;
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which may cache messages and may have default filter support
+     * Creates a <code>NotificationProducerImpl</code> which may cache messages and may have default filter support
      * (filter on topic and message content).
      *
      * @param hub            the hub this producer should be connected to after startup
      * @param supportFilters if this producer should have default filter support.
      * @param cacheMessages  if this producer should cache the latest messages on a topic
      */
-    public GenericNotificationProducer(Hub hub, boolean supportFilters, boolean cacheMessages) {
+    public NotificationProducerImpl(Hub hub, boolean supportFilters, boolean cacheMessages) {
         this.hub = hub;
         if (supportFilters) {
             if (cacheMessages) {
-                Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage allowed");
+                Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             } else {
-                Log.d("GenericNotificationProducer", "Created new with hub, default filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage disallowed");
                 filterSupport = FilterSupport.createDefaultFilterSupport();
             }
         } else {
             if (cacheMessages) {
-                Log.d("GenericNotificationProducer", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
+                Log.d("NotificationProducerImpl", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
                 filterSupport = null;
             } else {
-                Log.d("GenericNotificationProducer", "Created new with hub, without filter support and GetCurrentMessage disallowed");
+                Log.d("NotificationProducerImpl", "Created new with hub, without filter support and GetCurrentMessage disallowed");
                 filterSupport = null;
             }
         }
@@ -199,19 +199,19 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
     }
 
     /**
-     * Creates a <code>GenericNotificationProducer</code> which may cache messages and supports the filters
+     * Creates a <code>NotificationProducerImpl</code> which may cache messages and supports the filters
      * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
      *
      * @param hub           the hub this producer should be connected to after startup
      * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
      * @param cacheMessages if this producer should cache the latest messages on a topic
      */
-    public GenericNotificationProducer(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
+    public NotificationProducerImpl(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
         this.hub = hub;
         if (cacheMessages)
-            Log.d("GenericNotificationProducer", "Created new with hub, custom filter support and GetCurrentMessage allowed");
+            Log.d("NotificationProducerImpl", "Created new with hub, custom filter support and GetCurrentMessage allowed");
         else
-            Log.d("GenericNotificationProducer", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
+            Log.d("NotificationProducerImpl", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
         this.filterSupport = filterSupport;
 
         this.cacheMessages = cacheMessages;
@@ -297,13 +297,13 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                         latestMessages.put(topicName, messageHolderType);
 
                     } catch (InvalidTopicExpressionFault invalidTopicExpressionFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression");
+                        Log.w("NotificationProducerImpl", "Tried to send a topic with an invalid expression");
                         invalidTopicExpressionFault.printStackTrace();
                     } catch (MultipleTopicsSpecifiedFault multipleTopicsSpecifiedFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a message with multiple topics");
+                        Log.w("NotificationProducerImpl", "Tried to send a message with multiple topics");
                         multipleTopicsSpecifiedFault.printStackTrace();
                     } catch (TopicExpressionDialectUnknownFault topicExpressionDialectUnknownFault) {
-                        Log.w("GenericNotificationProducer", "Tried to send a topic with an invalid expression dialect");
+                        Log.w("NotificationProducerImpl", "Tried to send a topic with an invalid expression dialect");
                         topicExpressionDialectUnknownFault.printStackTrace();
                     }
                 }
@@ -342,7 +342,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             SubscribeCreationFailedFault, TopicNotSupportedFault, InvalidMessageContentExpressionFault {
 
         // Log subscribe event
-        Log.d("GenericNotificationProducer", "Got new subscription request");
+        Log.d("NotificationProducerImpl", "Got new subscription request");
 
         // Remember the namespace context
         //NamespaceContext namespaceContext = connection.getRequestInformation().getNamespaceContext();
@@ -380,12 +380,12 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
 
                         QName fName = filter.getName();
 
-                        Log.d("GenericNotificationProducer", "Subscription request contained filter: "
+                        Log.d("NotificationProducerImpl", "Subscription request contained filter: "
                                 + fName);
 
                         filtersPresent.put(fName, filter.getValue());
                     } else {
-                        Log.w("GenericNotificationProducer", "Subscription attempt with non-supported filter: "
+                        Log.w("NotificationProducerImpl", "Subscription attempt with non-supported filter: "
                                 + filter.getName());
                         ExceptionUtilities.throwInvalidFilterFault("en", "Filter not supported for this producer: " +
                                 filter.getName(), filter.getName());
@@ -454,7 +454,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
                 manager.addSubscriber(newSubscriptionKey, terminationTime);
             }
 
-            Log.d("GenericNotificationProducer", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
+            Log.d("NotificationProducerImpl", "Added new subscription[" + newSubscriptionKey + "]: " + endpointReference);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -472,7 +472,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
             ResourceUnknownFault, NoCurrentMessageOnTopicFault, TopicNotSupportedFault {
 
         if (!cacheMessages) {
-            Log.w("GenericNotificationProducer", "Someone tried to get current message when caching is disabled");
+            Log.w("NotificationProducerImpl", "Someone tried to get current message when caching is disabled");
             ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "This producer does not cache messages, " +
                     "and therefore does not support the getCurrentMessage interface");
         }
@@ -491,7 +491,7 @@ public class GenericNotificationProducer extends AbstractNotificationProducer {
         NotificationMessageHolderType holderType = latestMessages.get(topicName);
 
         if (holderType == null) {
-            Log.d("GenericNotificationProducer", "Was asked for current message on a topic that was not sent");
+            Log.d("NotificationProducerImpl", "Was asked for current message on a topic that was not sent");
             ExceptionUtilities.throwNoCurrentMessageOnTopicFault("en", "There was no messages on the topic requested");
             return null;
 

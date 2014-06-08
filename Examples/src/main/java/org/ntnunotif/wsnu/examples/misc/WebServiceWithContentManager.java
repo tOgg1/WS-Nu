@@ -20,19 +20,19 @@
 package org.ntnunotif.wsnu.examples.misc;
 
 import org.ntnunotif.wsnu.services.general.HelperClasses;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 
 /**
  * Example of using ContentManagers to filter content.
  */
 public class WebServiceWithContentManager {
 
-    private NotificationConsumer consumer;
+    private NotificationConsumerImpl consumer;
     private final String endpointReference = "http://example.org/myConsumer";
     private HelperClasses.ContentManager inclusiveManager, exclusiveManager;
 
     public WebServiceWithContentManager() {
-        consumer = new NotificationConsumer();
+        consumer = new NotificationConsumerImpl();
     }
 
     /**

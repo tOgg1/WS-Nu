@@ -281,7 +281,7 @@ public class WsnUtilities {
      * a specified termination date, and will send a termination time in exactly 1 year.
      *
      * @param address The address of the producer or broker that is to be subscribed to.
-     * @param consumerReference The consumer reference. I.e. the NotificationConsumer that is to receive notifications.
+     * @param consumerReference The consumer reference. I.e. the NotificationConsumerImpl that is to receive notifications.
      * @param hub A reference to a hub we can send our message through.
      * @return An InternalMessage with the result of the request.
      */
@@ -293,7 +293,7 @@ public class WsnUtilities {
      * Sends a {@link org.oasis_open.docs.wsn.b_2.Subscribe}, i.e. a subscription request.
      *
      * @param address The address of the producer or broker that is to be subscribed to.
-     * @param consumerReference The consumer reference. I.e. the NotificationConsumer that is to receive notifications.
+     * @param consumerReference The consumer reference. I.e. the NotificationConsumerImpl that is to receive notifications.
      * @param hub A reference to a hub we can send our message through.
      * @return An InternalMessage with the result of the request.
      */
@@ -395,7 +395,7 @@ public class WsnUtilities {
      * @return
      */
     public static InternalMessage sendPublisherRegistrationRequest(String brokerEndpoint, String publisherReference, Hub hub) {
-        return sendPublisherRegistrationRequest(brokerEndpoint, System.currentTimeMillis()+86400, false, publisherReference, hub);
+        return sendPublisherRegistrationRequest(brokerEndpoint, System.currentTimeMillis() + 86400, false, publisherReference, hub);
     }
 
     /**

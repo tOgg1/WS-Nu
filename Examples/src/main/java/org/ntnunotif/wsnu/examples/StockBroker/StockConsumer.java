@@ -27,7 +27,7 @@ import org.ntnunotif.wsnu.services.eventhandling.NotificationEvent;
 import org.ntnunotif.wsnu.services.general.HelperClasses;
 import org.ntnunotif.wsnu.services.general.ServiceUtilities;
 import org.ntnunotif.wsnu.services.general.WsnUtilities;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
 import javax.imageio.ImageIO;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Example consumer. The StockConsumer implements a NotificationConsumer interface to receive
+ * Example consumer. The StockConsumer implements a NotificationConsumerImpl interface to receive
  * {@link org.ntnunotif.wsnu.examples.StockBroker.generated.StockChanged} objects.
  *
  * Uses the {@link javax.swing} library to implement a graphical user interface.
@@ -50,9 +50,9 @@ import java.util.List;
 public class StockConsumer implements ConsumerListener {
 
 
-    // The actual NotificationConsumer interface. Note that we have declared it final to avoid
+    // The actual NotificationConsumerImpl interface. Note that we have declared it final to avoid
     // having it removed from context and cleaned up from the garbage collector.
-    private final NotificationConsumer consumer;
+    private final NotificationConsumerImpl consumer;
 
     // A HashMap of our stocks.
     private HashMap<String, StockPanel> stocks;
@@ -69,7 +69,7 @@ public class StockConsumer implements ConsumerListener {
     // Initializing relevant objects
     public StockConsumer() {
         stocks = new HashMap<>();
-        consumer = new NotificationConsumer();
+        consumer = new NotificationConsumerImpl();
     }
 
     // Initialize interface. For more information, see http://docs.oracle.com/javase/tutorial/uiswing/
@@ -123,11 +123,11 @@ public class StockConsumer implements ConsumerListener {
 
     // Initialize the Web Service
     public void initWebservice(){
-        // This class is a ConsumerListener, meaning any notification received by our NotificationConsumer-interface
-        // will be forwarded here. This given we register "this" as a consumerlistener with the NotificationConsumer.
+        // This class is a ConsumerListener, meaning any notification received by our NotificationConsumerImpl-interface
+        // will be forwarded here. This given we register "this" as a consumerlistener with the NotificationConsumerImpl.
         consumer.addConsumerListener(this);
 
-        // This method builds the Hub, ApplicationServer and a Connector. It then adds the NotificationConsumer to the consumer
+        // This method builds the Hub, ApplicationServer and a Connector. It then adds the NotificationConsumerImpl to the consumer
         // and registers the service with the hub. TL;DR: This method does everything for you.
         consumer.quickBuild("stockConsumer");
 
@@ -167,7 +167,7 @@ public class StockConsumer implements ConsumerListener {
         stocks.get(stock.getSymbol()).updateStock(stock);
     }
 
-    // This method is the implemented method from ConsumerListener. Whenever a NotificationConsumer receives a
+    // This method is the implemented method from ConsumerListener. Whenever a NotificationConsumerImpl receives a
     // Notify, it sends this event to every ConsumerListener listening.
     @Override
     public void notify(NotificationEvent event) {

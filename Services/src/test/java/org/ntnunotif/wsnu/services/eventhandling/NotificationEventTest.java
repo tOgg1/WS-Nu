@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
 import org.ntnunotif.wsnu.base.net.XMLParser;
 import org.ntnunotif.wsnu.base.util.Log;
-import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumer;
+import org.ntnunotif.wsnu.services.implementations.notificationconsumer.NotificationConsumerImpl;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Notify;
 
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class NotificationEventTest {
-    private static NotificationConsumer _consumer;
+    private static NotificationConsumerImpl _consumer;
     private static Notify _notification;
     private static NotificationEvent _event;
     private static ConsumerListener _listener;
@@ -48,7 +48,7 @@ public class NotificationEventTest {
         Log.setEnableWarnings(false);
         Log.setEnableErrors(false);
 
-        _consumer = new NotificationConsumer(new SoapForwardingHub());
+        _consumer = new NotificationConsumerImpl(new SoapForwardingHub());
         _notification = (Notify)XMLParser.parse(NotificationEventTest.class.getResourceAsStream("/server_test_notify.xml")).getMessage();
         _event = new NotificationEvent(new Object(), _notification);
         _listener = new ConsumerListener() {

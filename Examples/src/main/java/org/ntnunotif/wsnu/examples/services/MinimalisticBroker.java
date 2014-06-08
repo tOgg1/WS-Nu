@@ -20,7 +20,7 @@
 package org.ntnunotif.wsnu.examples.services;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNotificationBroker;
+import org.ntnunotif.wsnu.services.implementations.notificationbroker.NotificationBrokerImpl;
 
 /**
  * Example showing very basic use of the NotificationBroker. This example will not go detailed into how
@@ -28,7 +28,7 @@ import org.ntnunotif.wsnu.services.implementations.notificationbroker.GenericNot
  */
 public class MinimalisticBroker {
 
-    private GenericNotificationBroker broker;
+    private NotificationBrokerImpl broker;
 
     private final String brokerEndpoint = "myBroker";
 
@@ -38,7 +38,7 @@ public class MinimalisticBroker {
      */
     public MinimalisticBroker() {
         // Instantiate the broker
-        broker = new GenericNotificationBroker();
+        broker = new NotificationBrokerImpl();
 
         // By calling the brokers quickbuild method, we are starting both the broker and the rest of the
         // system, all in one.

@@ -20,14 +20,14 @@
 package org.ntnunotif.wsnu.examples.services;
 
 import org.ntnunotif.wsnu.base.internal.SoapForwardingHub;
-import org.ntnunotif.wsnu.services.implementations.notificationproducer.GenericNotificationProducer;
+import org.ntnunotif.wsnu.services.implementations.notificationproducer.NotificationProducerImpl;
 
 /**
  * A minimalistic producer example.
  */
 public class MinimalisticProducer {
 
-    private GenericNotificationProducer producer;
+    private NotificationProducerImpl producer;
 
     private final String producerEndpoint = "myProducer";
 
@@ -38,7 +38,7 @@ public class MinimalisticProducer {
      */
     public MinimalisticProducer() {
         // Instantiate the producer
-        producer = new GenericNotificationProducer();
+        producer = new NotificationProducerImpl();
 
         // By calling the producers quickbuild method, we are starting both the producer and the rest of the
         // system, all in one.
