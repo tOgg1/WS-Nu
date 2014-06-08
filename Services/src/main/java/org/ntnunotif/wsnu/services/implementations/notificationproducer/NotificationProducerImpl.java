@@ -54,15 +54,13 @@ import java.util.*;
 @WebService(targetNamespace = "http://docs.oasis-open.org/wsn/bw-2", name = "NotificationProducer")
 public class NotificationProducerImpl extends AbstractNotificationProducer {
 
-    private static final QName topicExpressionQName = new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression", "wsnt");
-
     private final Map<String, NotificationMessageHolderType> latestMessages = new HashMap<>();
 
-    private final FilterSupport filterSupport;
-
-    private final boolean cacheMessages;
-
     private final Map<String, SubscriptionHandle> subscriptions = new HashMap<>();
+
+    private FilterSupport filterSupport;
+
+    private boolean cacheMessages;
 
     /**
      * Creates a <code>NotificationProducerImpl</code> which caches messages and has default filter support (filter
@@ -72,68 +70,6 @@ public class NotificationProducerImpl extends AbstractNotificationProducer {
         Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
         filterSupport = FilterSupport.createDefaultFilterSupport();
         cacheMessages = true;
-    }
-
-    /**
-     * Creates a <code>NotificationProducerImpl</code> which caches messages and may have default filter support
-     * (filter on topic and message content).
-     *
-     * @param supportFilters if this producer should have default filter support.
-     */
-    public NotificationProducerImpl(boolean supportFilters) {
-        if (supportFilters) {
-            Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
-            filterSupport = FilterSupport.createDefaultFilterSupport();
-        } else {
-            Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage allowed");
-            filterSupport = null;
-        }
-        cacheMessages = true;
-    }
-
-    /**
-     * Creates a <code>NotificationProducerImpl</code> which may cache messages and may have default filter support
-     * (filter on topic and message content).
-     *
-     * @param supportFilters if this producer should have default filter support.
-     * @param cacheMessages  if this producer should cache the latest messages on a topic
-     */
-    public NotificationProducerImpl(boolean supportFilters, boolean cacheMessages) {
-        if (supportFilters) {
-            if (cacheMessages) {
-                Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage allowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            } else {
-                Log.d("NotificationProducerImpl", "Created new with default filter support and GetCurrentMessage disallowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            }
-        } else {
-            if (cacheMessages) {
-                Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage allowed, but unusable");
-                filterSupport = null;
-            } else {
-                Log.d("NotificationProducerImpl", "Created new without filter support and GetCurrentMessage disallowed");
-                filterSupport = null;
-            }
-        }
-        this.cacheMessages = cacheMessages;
-    }
-
-    /**
-     * Creates a <code>NotificationProducerImpl</code> which may cache messages and supports the filters
-     * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
-     *
-     * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
-     * @param cacheMessages if this producer should cache the latest messages on a topic
-     */
-    public NotificationProducerImpl(FilterSupport filterSupport, boolean cacheMessages) {
-        if (cacheMessages)
-            Log.d("NotificationProducerImpl", "Created new with custom filter support and GetCurrentMessage allowed");
-        else
-            Log.d("NotificationProducerImpl", "Created new with custom filter support and GetCurrentMessage disallowed");
-        this.filterSupport = filterSupport;
-
-        this.cacheMessages = cacheMessages;
     }
 
     /**
@@ -150,70 +86,32 @@ public class NotificationProducerImpl extends AbstractNotificationProducer {
     }
 
     /**
-     * Creates a <code>NotificationProducerImpl</code> which caches messages and may have default filter support
-     * (filter on topic and message content).
-     *
-     * @param hub            the hub this producer should be connected to after startup
-     * @param supportFilters if this producer should have default filter support.
+     * @return The current filtersupport.
      */
-    public NotificationProducerImpl(Hub hub, boolean supportFilters) {
-        this.hub = hub;
-        if (supportFilters) {
-            Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
-            filterSupport = FilterSupport.createDefaultFilterSupport();
-        } else {
-            Log.d("NotificationProducerImpl", "Created new with hub and without filter support and GetCurrentMessage allowed");
-            filterSupport = null;
-        }
-        cacheMessages = true;
+    public FilterSupport getFilterSupport() {
+        return filterSupport;
     }
 
     /**
-     * Creates a <code>NotificationProducerImpl</code> which may cache messages and may have default filter support
-     * (filter on topic and message content).
-     *
-     * @param hub            the hub this producer should be connected to after startup
-     * @param supportFilters if this producer should have default filter support.
-     * @param cacheMessages  if this producer should cache the latest messages on a topic
+     * @return True if this producer is currently caching messages, else false.
      */
-    public NotificationProducerImpl(Hub hub, boolean supportFilters, boolean cacheMessages) {
-        this.hub = hub;
-        if (supportFilters) {
-            if (cacheMessages) {
-                Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage allowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            } else {
-                Log.d("NotificationProducerImpl", "Created new with hub, default filter support and GetCurrentMessage disallowed");
-                filterSupport = FilterSupport.createDefaultFilterSupport();
-            }
-        } else {
-            if (cacheMessages) {
-                Log.d("NotificationProducerImpl", "Created new with hub, without filter support and GetCurrentMessage allowed, but unusable");
-                filterSupport = null;
-            } else {
-                Log.d("NotificationProducerImpl", "Created new with hub, without filter support and GetCurrentMessage disallowed");
-                filterSupport = null;
-            }
-        }
-        this.cacheMessages = cacheMessages;
+    public boolean cachesMessages() {
+        return cacheMessages;
     }
 
     /**
-     * Creates a <code>NotificationProducerImpl</code> which may cache messages and supports the filters
-     * the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} supports.
-     *
-     * @param hub           the hub this producer should be connected to after startup
-     * @param filterSupport the {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} to use with filters
-     * @param cacheMessages if this producer should cache the latest messages on a topic
+     * Sets the filtersupport.
+     * @param filterSupport A {@link org.ntnunotif.wsnu.services.filterhandling.FilterSupport} object.
      */
-    public NotificationProducerImpl(Hub hub, FilterSupport filterSupport, boolean cacheMessages) {
-        this.hub = hub;
-        if (cacheMessages)
-            Log.d("NotificationProducerImpl", "Created new with hub, custom filter support and GetCurrentMessage allowed");
-        else
-            Log.d("NotificationProducerImpl", "Created new with hub, custom filter support and GetCurrentMessage disallowed");
+    public void setFilterSupport(FilterSupport filterSupport) {
         this.filterSupport = filterSupport;
+    }
 
+    /**
+     * Set's whether or not the producer should cache messages.
+     * @param cacheMessages
+     */
+    public void setCacheMessages(boolean cacheMessages) {
         this.cacheMessages = cacheMessages;
     }
 

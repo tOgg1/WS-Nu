@@ -57,13 +57,12 @@ public class FilterSupportUse {
 
         // Now this support is set up. To use it with a NotificationProducerImpl, add it in the producers constructor.
         // The example producer does not need to support GetCurrentMessage caching.
-        NotificationProducerImpl producer = new NotificationProducerImpl(filterSupport, false);
+        NotificationProducerImpl producer = new NotificationProducerImpl();
+        producer.setFilterSupport(filterSupport);
+        producer.setCacheMessages(false);
         // Now you may run the quickbuild, and the producer is ready to go.
 
         //producer.quickBuild("someEndpointReference");
-
-
-
 
         // If, for some reason, you need to use the filter support in a producer or similar thing you are making
         // yourself, some basics are covered below. If you need more information, I would encourage you to look into the

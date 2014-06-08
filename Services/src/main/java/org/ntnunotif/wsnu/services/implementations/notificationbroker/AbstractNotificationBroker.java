@@ -43,11 +43,6 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
      */
     protected boolean demandRegistered;
 
-    /**
-     * Variable indicating whether the broker should cache messages. Setting this to true allows retrieval through
-     * {@link org.oasis_open.docs.wsn.b_2.GetCurrentMessage}.
-     */
-    protected boolean cacheMessages;
 
     /**
      * Reference to the registration manager used by this broker.
@@ -75,13 +70,6 @@ public abstract class AbstractNotificationBroker extends AbstractNotificationPro
      */
     public void setDemandRegistered(boolean demandRegistered) {
         this.demandRegistered = demandRegistered;
-    }
-
-    /**
-     * @see {@link #cacheMessages} True or false.
-     */
-    public void setCacheMessages(boolean cacheMessages) {
-        this.cacheMessages = cacheMessages;
     }
 
     /**
