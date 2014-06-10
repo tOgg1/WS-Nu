@@ -66,6 +66,7 @@ Further documentation can be found at [the ws-nu homepage](http://ws-nu.net).
   * All WS-N send-methods have been moved from the WebService class to WsnUtilities
     * These have also been altered to return relevant info and throw relevant exceptions that can be thrown at the external Web Service, in the form of JAXB-objects.
   * Methods added to SoapForwardingHub to allow removal of ServiceConnections with the Web Service objects
+  * The ApplicationServer should now also be able to handle chunked http-messages.
 * Major bug fixes
   * WS-N messages should now be attached with a wsa:action-headers
   
