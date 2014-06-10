@@ -13,15 +13,12 @@ import javax.annotation.Nullable;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.ntnunotif.wsnu.base.util.InternalMessage.*;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_FAULT_INTERNAL_ERROR;
-import static org.ntnunotif.wsnu.base.util.InternalMessage.STATUS_OK;
 import static org.ntnunotif.wsnu.services.general.ServiceUtilities.createArrayOfEquals;
 
 /**
@@ -299,13 +296,7 @@ public class WsnUtilities {
      */
     public static InternalMessage sendSubscriptionRequest(String address, String terminationTime, String consumerReference, Hub hub){
         Subscribe subscribe = new Subscribe();
-
-        W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
-        builder.address(consumerReference);
-
-        W3CEndpointReference reference = builder.build();
-        subscribe.setConsumerReference(reference);
-
+        subscribe.setConsumerReference(ServiceUtilities.buildW3CEndpointReference(consumerReference));
         subscribe.setInitialTerminationTime(ServiceUtilities.baseFactory.createSubscribeInitialTerminationTime(terminationTime));
 
         InternalMessage message = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, subscribe);
