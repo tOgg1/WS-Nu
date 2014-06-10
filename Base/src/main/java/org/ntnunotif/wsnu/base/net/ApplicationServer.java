@@ -394,6 +394,8 @@ public class ApplicationServer{
         @Override
         public void handle(String s, org.eclipse.jetty.server.Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
 
+            boolean isChunked = false;
+
             if(_parentHub == null){
                 httpServletResponse.setStatus(HttpStatus.NOT_FOUND_404);
                 request.setHandled(true);
@@ -409,15 +411,20 @@ public class ApplicationServer{
                 // TODO: Here we need to handle all headers that is necessary.
                 // Temporary debugging
                 while(headers.hasMoreElements()){
-                    Log.d("ApplicationServer", headerName + "=" + headers.nextElement());
+                    String next = headers.nextElement();
+                    Log.d("ApplicationServer", headerName + "=" + next);
+                    if(headerName.equals("Transfer-Encoding") && next.equals("chunked")){
+                        isChunked = true;
+                    }
                 }
+
             }
 
             Log.d("ApplicationServer", "Accepted message");
 
             /* Get content, if there is any */
             InternalMessage outMessage;
-            if(httpServletRequest.getContentLength() > 0) {
+            if(httpServletRequest.getContentLength() > 0 || isChunked) {
                 InputStream input = httpServletRequest.getInputStream();
                 outMessage = new InternalMessage(STATUS_OK|STATUS_HAS_MESSAGE, input);
             }else{

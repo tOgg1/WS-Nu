@@ -468,7 +468,8 @@ public class SoapForwardingHub implements Hub {
                 return connection;
             }
 
-            if(endpoint.matches("/?" + Utilities.stripUrlOfProtocolAndHost(connection.getServiceEndpoint()) + "(.*)")){
+            if(endpoint.matches("/?" + Utilities.stripUrlOfProtocolAndHost(connection.getServiceEndpoint()) + "(.*)") ||
+              ("/"+endpoint).matches("/?" + Utilities.stripUrlOfProtocolAndHost(connection.getServiceEndpoint()) + "(.*)")){
                 return connection;
             }
 

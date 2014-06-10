@@ -57,6 +57,7 @@ public class XMLParser {
      */
     private static String[] classPaths = {
             "org.w3._2001._12.soap_envelope",
+//          "org.w3._2005._08.addressing",
             "org.oasis_open.docs.wsn.b_2",
             "org.oasis_open.docs.wsn.br_2",
             "org.oasis_open.docs.wsn.t_1",
